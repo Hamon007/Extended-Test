@@ -4,160 +4,154 @@
   position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(ellipse at center, #2a0a0a 0%, #1a0510 40%, #08050a 100%);
   overflow: hidden;
   cursor: pointer;
+  background: #08050a;
 }
 
-/* Seitenbilder */
-.title-screen__card-left,
-.title-screen__card-right {
+/* ── Hintergrundbild ── */
+
+.title-screen__bg {
   position: absolute;
-  top: 0;
+  inset: 0;
+  width: 100%;
   height: 100%;
-  width: auto;
-  max-width: 55%;
   object-fit: cover;
-  object-position: top;
-  opacity: 0.35;
+  object-position: center;
   pointer-events: none;
   user-select: none;
 }
 
-.title-screen__card-left {
-  left: -10%;
-  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 30%, transparent 100%);
+.title-screen__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.05) 0%,
+    rgba(0,0,0,0.15) 50%,
+    rgba(0,0,0,0.65) 100%
+  );
+  pointer-events: none;
 }
 
-.title-screen__card-right {
-  right: -10%;
-  mask-image: linear-gradient(to left, transparent 0%, rgba(0,0,0,0.6) 30%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0,0,0,0.6) 30%, transparent 100%);
-}
+/* ── Logo ── */
 
-/* Mittelbereich */
-.title-screen__center {
-  position: relative;
+.title-screen__logo {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 2px;
   text-align: center;
-}
-
-/* Logo */
-.title-screen__logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  pointer-events: none;
 }
 
 .title-screen__logo-codex {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: clamp(2.4rem, 8vw, 3.6rem);
-  color: var(--gold-bright);
+  font-size: clamp(2rem, 9vw, 3.8rem);
+  color: #f8df80;
   text-shadow:
-    0 0 30px rgba(240, 208, 128, 0.8),
-    0 0 60px rgba(201, 168, 76, 0.4),
-    0 2px 4px rgba(0,0,0,0.8);
-  letter-spacing: 0.12em;
-  line-height: 1.1;
+    0 0 20px rgba(240,208,128,0.9),
+    0 0 50px rgba(201,168,76,0.5),
+    0 2px 6px rgba(0,0,0,0.9);
+  letter-spacing: 0.06em;
+  line-height: 1;
 }
 
 .title-screen__logo-immortalis {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: clamp(1.4rem, 5vw, 2.2rem);
-  color: var(--gold);
+  font-size: clamp(1.2rem, 5.5vw, 2.5rem);
+  color: #e8c860;
   text-shadow:
-    0 0 20px rgba(201, 168, 76, 0.6),
-    0 2px 4px rgba(0,0,0,0.8);
-  letter-spacing: 0.3em;
-  line-height: 1.1;
+    0 0 14px rgba(201,168,76,0.8),
+    0 2px 4px rgba(0,0,0,0.9);
+  letter-spacing: 0.12em;
+  line-height: 1;
 }
 
-/* Zierlinie */
-.title-screen__ornament {
-  font-family: 'Cinzel', serif;
-  color: var(--gold-dark);
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  opacity: 0.8;
+/* ── Start-Button ── */
+
+.title-screen__bottom-center {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
-/* Start-Button */
 .title-screen__start-btn {
   font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.25em;
-  color: var(--gold-bright);
-  background: transparent;
-  border: 1px solid var(--gold);
-  border-radius: 2px;
-  padding: 12px 28px;
+  font-size: clamp(0.7rem, 2.5vw, 0.95rem);
+  letter-spacing: 0.2em;
+  color: #f0d080;
+  background: linear-gradient(135deg, rgba(26,18,5,0.85) 0%, rgba(45,31,5,0.85) 100%);
+  border: 2px solid #c9a84c;
+  border-radius: 4px;
+  padding: 14px 32px;
   cursor: pointer;
+  white-space: nowrap;
   animation: title-pulse 1.8s ease-in-out infinite;
-  text-shadow: 0 0 12px rgba(240,208,128,0.6);
+  text-shadow: 0 0 10px rgba(240,208,128,0.5);
   box-shadow:
-    0 0 12px rgba(201,168,76,0.2),
-    inset 0 0 12px rgba(201,168,76,0.05);
-  transition: background 0.2s, box-shadow 0.2s;
+    0 0 20px rgba(201,168,76,0.4),
+    inset 0 0 20px rgba(201,168,76,0.08);
   -webkit-tap-highlight-color: transparent;
 }
 
 .title-screen__start-btn:active {
-  background: rgba(201,168,76,0.12);
-  box-shadow: 0 0 24px rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.2);
 }
 
 @keyframes title-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.45; }
+  50%       { opacity: 0.5; }
 }
 
-/* Untere Button-Gruppen */
+/* ── Untere Button-Gruppen ── */
+
 .title-screen__bottom-left,
 .title-screen__bottom-right {
   position: absolute;
-  bottom: 20px;
+  bottom: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 12px;
   z-index: 10;
 }
 
-.title-screen__bottom-left {
-  left: 12px;
-  align-items: flex-start;
-}
-
-.title-screen__bottom-right {
-  right: 12px;
-  align-items: flex-end;
-}
+.title-screen__bottom-left  { left: 12px; }
+.title-screen__bottom-right { right: 12px; }
 
 .title-screen__meta-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
-  color: var(--gold-dark);
-  background: rgba(8, 5, 10, 0.7);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(8,5,10,0.65);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.title-screen__meta-btn:hover,
 .title-screen__meta-btn:active {
-  color: var(--gold);
-  border-color: var(--gold-dark);
+  background: rgba(201,168,76,0.15);
+  border-color: #c9a84c;
+}
+
+.title-screen__meta-icon { font-size: 1.1rem; line-height: 1; }
+
+.title-screen__meta-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.38rem;
+  color: #8a6520;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
