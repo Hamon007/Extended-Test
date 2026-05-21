@@ -36,6 +36,72 @@
 .battle-deck-status--ok   { background: rgba(76,175,80,0.12); color: #81c784; border: 1px solid #2e7d32; }
 .battle-deck-status--warn { background: rgba(255,152,0,0.1);  color: #ffb74d; border: 1px solid #e65100; }
 
+/* ── Energie / Ausdauertränke ─────────────────────────────── */
+.battle-energy {
+  margin: 10px 12px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #2a1525;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.battle-energy__pips {
+  display: flex;
+  gap: 3px;
+  font-size: 1rem;
+}
+
+.battle-energy__pip {
+  filter: grayscale(1) brightness(0.5);
+  opacity: 0.5;
+  transition: filter 0.15s, opacity 0.15s;
+}
+
+.battle-energy__pip--full {
+  filter: none;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(255, 213, 79, 0.7);
+}
+
+.battle-energy__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.battle-energy__count {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #f0d080;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.battle-energy__potion {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid #8a6520;
+  border-radius: 14px;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.battle-energy__potion:active:not(:disabled) { background: rgba(201, 168, 76, 0.25); }
+
+.battle-energy__potion:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Gegner-Liste */
 .battle-enemy-list {
   flex: 1;

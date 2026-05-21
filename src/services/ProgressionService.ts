@@ -10,9 +10,10 @@
 import type { BattleResult, EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import type { DailyBonusResult, RewardDetails } from '../types/ProgressionTypes';
-import { DAILY_BONUS_CRYSTALS, DEFEAT_CONSOLATION } from '../types/ProgressionTypes';
+import { DAILY_BONUS_CRYSTALS, DEFEAT_CONSOLATION, POTION_DROP_CHANCE } from '../types/ProgressionTypes';
 import { CardDatabase } from './CardDatabase';
 import { SaveService } from './SaveService';
+import { EnergyService } from './EnergyService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -75,9 +76,13 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     };
     SaveService.saveGachaState(updatedState);
 
+    // Chance auf einen Ausdauertrank
+    const potionsGained = Math.random() < POTION_DROP_CHANCE ? 1 : 0;
+    if (potionsGained > 0) EnergyService.addPotions(potionsGained);
+
     console.log(
       `[Progression] Sieg: +${result.rewardCrystals} Kristalle,`,
-      `${newCards.length} neue Karte(n)`,
+      `${newCards.length} neue Karte(n), ${potionsGained} Trank`,
     );
 
     return {
@@ -85,6 +90,7 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
       crystalsGained: result.rewardCrystals,
       xpGained:       result.rewardXp,
       newCards,
+      potionsGained,
     };
   }
 
