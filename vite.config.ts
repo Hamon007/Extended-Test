@@ -76,6 +76,10 @@ export default defineConfig({
 
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
 
+        cleanupOutdatedCaches: true,
+        clientsClaim:          true,
+        skipWaiting:           true,
+
         runtimeCaching: [
           {
             urlPattern: /\/assets\/cards\/.+\.png$/,

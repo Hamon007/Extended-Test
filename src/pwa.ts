@@ -9,13 +9,10 @@
 import { registerSW } from 'virtual:pwa-register';
 
 export function initPWA(): void {
-  // In Produktionsbuilds registriert vite-plugin-pwa automatisch.
-  // Dieser Aufruf aktiviert Update-Handling.
-  const updateSW = registerSW({
-    // Neuer SW verfügbar → sofort übernehmen
+  registerSW({
+    // New SW ready → skip waiting then reload so new assets are served
     onNeedRefresh() {
-      console.log('[PWA] Update verfügbar — wird installiert …');
-      updateSW(true); // true = sofortige Übernahme
+      window.location.reload();
     },
 
     onOfflineReady() {
