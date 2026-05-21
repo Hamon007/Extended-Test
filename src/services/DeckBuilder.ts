@@ -17,6 +17,7 @@ import type {
 } from '../types/DeckTypes';
 import { DECK_SIZE, MAX_MR_PER_DECK, MR_TIER } from '../types/DeckTypes';
 import { CardDatabase } from './CardDatabase';
+import { FusionSystem } from './FusionSystem';
 import { createEmptyDeck } from './DeckBuilderHelpers';
 
 // ── Hilfsfunktionen (privat) ──────────────────────────────────
@@ -86,7 +87,10 @@ function validateDeck(deck: Deck, inventory: CardInstance[]): DeckValidation {
   const resolved    = resolveSlots(deck, inventory);
   const missingCount = resolved.filter(s => s.missing).length;
   const mrCount     = resolved.filter(s => s.instance && isMRTier(s.instance.rarity)).length;
-  const totalMP     = resolved.reduce((sum, s) => sum + (s.card?.stats.mpCost ?? 0), 0);
+  const totalMP     = resolved.reduce((sum, s) => {
+    if (!s.card || !s.instance) return sum;
+    return sum + FusionSystem.getEffectiveStats(s.card, s.instance.rarity).mpCost;
+  }, 0);
 
   // Duplikat-Prüfung
   const seen = new Set<string>();
