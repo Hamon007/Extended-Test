@@ -128,6 +128,86 @@
       "gachaWeight": 25
     },
     {
+      "id": "loki_crowned",
+      "number": "007★",
+      "name": "Gekrönter Loki",
+      "title": "Der Trickster, der sich selbst zum Gott krönte",
+      "quote": "Ich habe euch nie belogen. Ihr habt nur nie zugehört. Nun trage ich die Krone, die niemand mir gab.",
+      "rarity": "LR",
+      "element": "chaos",
+      "type": "combo_builder",
+      "faction": "aesir",
+      "factionLabel": "Gott der Æsir — Erwacht",
+      "stats": {
+        "atk": 6800,
+        "def": 4600,
+        "hp": 16000,
+        "mpCost": 60,
+        "spd": 11,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Tausend Gesichter",
+          "description": "Kopiert die Fähigkeit der zuletzt gespielten Karte und setzt sie sofort ein. Gibt 40 MP zurück.",
+          "mpCost": 45,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "effectTag": "copy_skill"
+        },
+        {
+          "name": "Krone der Lügen",
+          "description": "Verursacht 280% ATK als Chaos-Schaden und stiehlt einer Combo-Kette einen Multiplikator-Schritt für sich.",
+          "mpCost": 70,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "combo_steal"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Schlangenzunge",
+          "description": "Wenn Loki eine Combo auslöst, erhöht sich der Combo-Multiplikator um einen zusätzlichen Schritt.",
+          "trigger": "on_combo",
+          "effectTag": "combo_amp"
+        },
+        {
+          "name": "Selbstgekrönt",
+          "description": "Solange der Gekrönte Loki im Feld ist, brechen Combos niemals durch Wiederholung desselben Spielers.",
+          "trigger": "passive",
+          "effectTag": "no_combo_break"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "CHAOS_WEAVE",
+          "description": "Chaos-Karten setzen den Combo-Zähler nicht zurück wenn Loki spielt."
+        },
+        {
+          "tag": "TRICK_LINK",
+          "description": "Kann zwischen zwei beliebigen Spielern als Brücke fungieren ohne Combo zu brechen."
+        },
+        {
+          "tag": "CROWN_RESONANCE",
+          "description": "Erwachte Karten in der Kette erhalten +25% zusätzlichen Combo-Schaden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azgaroth",
+          "description": "Schöpfer und Gekrönter Trickster: Azgaroths passive Kraft wird verdreifacht."
+        }
+      ],
+      "image": "/assets/cards/loki.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "eventOnly": true
+    },
+    {
       "id": "satan",
       "number": "008",
       "name": "Satan",

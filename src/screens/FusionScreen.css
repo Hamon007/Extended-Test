@@ -202,6 +202,28 @@
   letter-spacing: 0.1em;
 }
 
+.fusion-row__awaken-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #f0d080;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(240, 208, 128, 0.7);
+  animation: awaken-glow 1.6s ease-in-out infinite;
+}
+
+@keyframes awaken-glow {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.fusion-row__awaken-target {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.6rem;
+  color: #f0d080;
+  font-style: italic;
+}
+
 /* Stat-Vorschau */
 .fusion-row__stats {
   display: flex;
@@ -266,6 +288,14 @@
   opacity: 0.35;
   cursor: not-allowed;
   filter: grayscale(0.6);
+}
+
+.fusion-row__btn--awaken {
+  background: linear-gradient(135deg, #2d2405, #5a4708);
+  border-color: #f0d080;
+  color: #fff7e0;
+  box-shadow: 0 0 14px rgba(240, 208, 128, 0.5);
+  animation: awaken-glow 1.8s ease-in-out infinite;
 }
 
 /* ── Leer-Zustand ── */
@@ -393,3 +423,13 @@
 }
 
 .fusion-overlay__btn:active { transform: scale(0.97); }
+
+/* ── Awakening-Overlay-Varianten ── */
+.fusion-overlay__box--awaken {
+  background: radial-gradient(ellipse at center, #2a2008, #0d0810);
+}
+
+.fusion-overlay__awaken-from {
+  font-size: 1rem;
+  color: #8a6520;
+}
