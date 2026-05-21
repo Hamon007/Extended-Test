@@ -125,6 +125,7 @@ const App: React.FC = () => {
 
   const handleMenuNav = (target: string) => {
     if (target === 'cardCollection') goTo('cardCollection');
+    if (target === 'deck') goTo('deck');
   };
 
   // ── Render ────────────────────────────────────────────────────

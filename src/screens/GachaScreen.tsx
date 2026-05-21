@@ -210,7 +210,7 @@ const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
 
         {/* Artwork */}
         <div className="result-single__art">
-          {card && !imgError ? (
+          {card && card.image && !imgError ? (
             <img src={card.image} alt={card.name} onError={() => setImgError(true)} />
           ) : (
             <div className="result-single__placeholder">🌑</div>
@@ -287,7 +287,7 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible }) => {
       {visible ? (
         <>
           <div className="multi-card__art">
-            {card && !imgError ? (
+            {card && card.image && !imgError ? (
               <img
                 src={card.image}
                 alt={card.name}
