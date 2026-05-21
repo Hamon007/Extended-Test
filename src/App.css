@@ -1,0 +1,123 @@
+/* ── Daily-Bonus-Toast ──────────────────────────────────────── */
+.daily-toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: linear-gradient(135deg, #1a1205, #2d1f05);
+  border: 1px solid #c9a84c;
+  border-radius: 24px;
+  padding: 10px 22px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #f0d080;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  box-shadow: 0 0 20px rgba(201,168,76,0.4);
+  animation: toast-drop 0.35s cubic-bezier(0.34,1.56,0.64,1),
+             toast-fade 0.5s ease 3.0s forwards;
+  pointer-events: none;
+}
+
+@keyframes toast-drop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes toast-fade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* ── App Root ──────────────────────────────────────────────── */
+.app {
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #08050a;
+  max-width: 480px;
+  margin: 0 auto;
+  border-left:  1px solid #2a1a22;
+  border-right: 1px solid #2a1a22;
+}
+
+.app-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Bottom Nav ────────────────────────────────────────────── */
+.app-nav {
+  flex-shrink: 0;
+  display: flex;
+  background: linear-gradient(180deg, #150d12, #0e0810);
+  border-top: 2px solid #8a6520;
+}
+
+.app-nav__btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-nav__btn:active { background: rgba(201,168,76,0.08); }
+
+.app-nav__btn--active {
+  background: rgba(201,168,76,0.06);
+  border-top: 2px solid #c9a84c;
+  margin-top: -2px;
+}
+
+.app-nav__icon  { font-size: 22px; }
+
+.app-nav__label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 1px;
+}
+
+.app-nav__btn--active .app-nav__label { color: #c9a84c; }
+
+/* ── Lade-Splash ────────────────────────────────────────────── */
+.app-loading {
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #08050a;
+  gap: 16px;
+}
+
+.app-loading__icon {
+  font-size: 3rem;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.9); }
+}
+
+.app-loading__text {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #8a6520;
+  letter-spacing: 3px;
+}
