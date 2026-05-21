@@ -142,7 +142,7 @@ const App: React.FC = () => {
           <TitleScreen onEnter={() => goTo('main')} />
         )}
         {screen === 'main' && (
-          <MainScreen onBack={goBack} onProfileClick={() => goTo('cardCollection')} />
+          <MainScreen onBack={goBack} />
         )}
         {screen === 'gacha' && (
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
