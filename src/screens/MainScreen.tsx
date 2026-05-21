@@ -7,6 +7,7 @@ import './MainScreen.css';
 
 interface MainScreenProps {
   onBack: () => void;
+  onProfileClick?: () => void;
 }
 
 // ── Konstanten ────────────────────────────────────────────────
@@ -64,7 +65,7 @@ function formatCountdown(ms: number): string {
 
 // ── Haupt-Komponente ──────────────────────────────────────────
 
-const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
+const MainScreen: React.FC<MainScreenProps> = ({ onBack, onProfileClick }) => {
   const [countdown, setCountdown] = useState(() => nextBattleMs());
   const [tipIndex,  setTipIndex]  = useState(0);
   const [npcIndex,  setNpcIndex]  = useState(0);
@@ -179,7 +180,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         {/* Profil-Seite */}
         <div className="main-card__profile">
           <div className="main-profile-frame">
-            <div className="main-profile-frame__card">
+            <div
+              className="main-profile-frame__card"
+              onClick={onProfileClick}
+              style={onProfileClick ? { cursor: 'pointer' } : undefined}
+            >
               <img
                 className="main-profile-frame__img"
                 src={`${B}assets/cards/azazel.png`}
