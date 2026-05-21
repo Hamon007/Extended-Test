@@ -163,27 +163,22 @@ export interface PullFailure {
   error: PullError;
 }
 
-function singlePull(state: GachaState): SinglePullOutcome | PullFailure {
-  if (state.crystals < PULL_COST_SINGLE) {
-    return { ok: false, error: 'NOT_ENOUGH_CRYSTALS' };
-  }
+// Alpha: Kristalle werden nicht abgezogen — unbegrenzte Beschwörungen zum Testen
+const ALPHA_CRYSTALS = 999_999;
 
+function singlePull(state: GachaState): SinglePullOutcome | PullFailure {
   try {
-    const stateAfterCost = { ...state, crystals: state.crystals - PULL_COST_SINGLE };
-    const { result, nextState } = executeSinglePull(stateAfterCost);
-    return { ok: true, result, nextState };
+    const stateForPull = { ...state, crystals: ALPHA_CRYSTALS };
+    const { result, nextState } = executeSinglePull(stateForPull);
+    return { ok: true, result, nextState: { ...nextState, crystals: ALPHA_CRYSTALS } };
   } catch {
     return { ok: false, error: 'DB_EMPTY' };
   }
 }
 
 function multiPull(state: GachaState): MultiPullOutcome | PullFailure {
-  if (state.crystals < PULL_COST_MULTI) {
-    return { ok: false, error: 'NOT_ENOUGH_CRYSTALS' };
-  }
-
   try {
-    let current = { ...state, crystals: state.crystals - PULL_COST_MULTI };
+    let current = { ...state, crystals: ALPHA_CRYSTALS };
     const results: PullResult[] = [];
 
     for (let i = 0; i < MULTI_PULL_COUNT; i++) {
@@ -198,7 +193,7 @@ function multiPull(state: GachaState): MultiPullOutcome | PullFailure {
       bestRarity: highestRarity(results),
     };
 
-    return { ok: true, result: multiResult, nextState: current };
+    return { ok: true, result: multiResult, nextState: { ...current, crystals: ALPHA_CRYSTALS } };
   } catch {
     return { ok: false, error: 'DB_EMPTY' };
   }
