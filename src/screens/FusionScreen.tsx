@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFusionStore } from '../hooks/useFusionStore';
-import { FusionSystem, type FusionGroup, type FusionError } from '../services/FusionSystem';
+import { FusionSystem, type FusionGroup } from '../services/FusionSystem';
+import { AwakeningSystem } from '../services/AwakeningSystem';
 import { RARITY_COLOR } from '../types/Card';
 import type { CardStats } from '../types/Card';
 import './FusionScreen.css';
@@ -9,15 +10,16 @@ interface FusionScreenProps {
   onBack: () => void;
 }
 
-const ERROR_LABEL: Record<FusionError, string> = {
+const ERROR_LABEL: Record<string, string> = {
   MAXED:                 'Karte ist bereits auf Maximalstufe (LR).',
   NOT_ENOUGH_DUPLICATES: 'Nicht genug Duplikate.',
   NOT_ENOUGH_CRYSTALS:   'Nicht genug Kristalle.',
   NOT_FOUND:             'Karte nicht gefunden.',
+  CANNOT_AWAKEN:         'Diese Karte kann nicht erwachen.',
 };
 
 const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
-  const { state, groups, lastFusion, error, fuse, clearLast } = useFusionStore();
+  const { state, groups, lastFusion, lastAwakening, error, fuse, awaken, clearLast } = useFusionStore();
 
   // Nur Gruppen mit Material oder bereits fusioniertem Träger anzeigen
   const visible = groups.filter(g =>
@@ -44,6 +46,7 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
         Verschmelze Duplikate, um Karten aufzuwerten:
         <strong> N → R → SR → SSR → MR → MR+ → MR++ → MR+++ → LR</strong>.
         Jede Stufe erhöht die Werte und senkt die MP-Kosten.
+        LR-Karten mit Awakening-Form können <strong>✦ ERWACHEN</strong>.
       </div>
 
       {/* ── Liste ── */}
@@ -64,7 +67,12 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
                 : 'Noch keine Karte bereit'}
             </div>
             {visible.map(g => (
-              <FusionRow key={g.cardId} group={g} onFuse={() => fuse(g.cardId)} />
+              <FusionRow
+                key={g.cardId}
+                group={g}
+                onFuse={() => fuse(g.cardId)}
+                onAwaken={() => awaken(g.carrier.uuid)}
+              />
             ))}
           </>
         )}
@@ -79,6 +87,9 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
       {lastFusion && (
         <FusionResultOverlay lastFusion={lastFusion} onClose={clearLast} />
       )}
+      {lastAwakening && (
+        <AwakenResultOverlay lastAwakening={lastAwakening} onClose={clearLast} />
+      )}
     </div>
   );
 };
@@ -86,12 +97,13 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
 // ── Eine Karten-Zeile ─────────────────────────────────────────
 
 interface FusionRowProps {
-  group:  FusionGroup;
-  onFuse: () => void;
+  group:    FusionGroup;
+  onFuse:   () => void;
+  onAwaken: () => void;
 }
 
-const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse }) => {
-  const { card, currentRarity, nextRarity, duplicatesNeeded, duplicatesAvailable,
+const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
+  const { card, carrier, currentRarity, nextRarity, duplicatesNeeded, duplicatesAvailable,
           crystalCost, canFuse, totalCopies } = group;
   const [imgError, setImgError] = useState(false);
 
@@ -103,7 +115,9 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse }) => {
     ? FusionSystem.getEffectiveStats(card, nextRarity)
     : null;
 
-  const isMaxed = !nextRarity;
+  const isMaxed   = !nextRarity;
+  const awakenInfo = AwakeningSystem.getAwakenInfo(carrier);
+  const canAwaken = awakenInfo.canAwaken;
 
   return (
     <div className={`fusion-row ${canFuse ? 'fusion-row--ready' : ''}`}
@@ -135,7 +149,8 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse }) => {
               </span>
             </>
           )}
-          {isMaxed && <span className="fusion-row__max">MAX</span>}
+          {isMaxed && !canAwaken && <span className="fusion-row__max">MAX</span>}
+          {isMaxed && canAwaken && <span className="fusion-row__awaken-tag">✦ AWAKENING BEREIT</span>}
         </div>
 
         {/* Stat-Vorschau */}
@@ -157,6 +172,14 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse }) => {
             <span className="fusion-row__cost">💎 {crystalCost.toLocaleString('de-DE')}</span>
           </div>
         )}
+
+        {/* Awakening-Anforderung */}
+        {isMaxed && canAwaken && (
+          <div className="fusion-row__req">
+            <span className="fusion-row__awaken-target">→ {awakenInfo.awakenedCard?.name}</span>
+            <span className="fusion-row__cost">💎 {AwakeningSystem.AWAKENING_CRYSTAL_COST.toLocaleString('de-DE')}</span>
+          </div>
+        )}
       </div>
 
       {/* Aktion */}
@@ -167,6 +190,14 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse }) => {
           disabled={!canFuse}
         >
           FUSION
+        </button>
+      )}
+      {isMaxed && canAwaken && (
+        <button
+          className="fusion-row__btn fusion-row__btn--awaken"
+          onClick={onAwaken}
+        >
+          ✦ ERWACHEN
         </button>
       )}
     </div>
@@ -213,6 +244,32 @@ const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) =>
           <span>{lastFusion.from}</span>
           <span className="fusion-overlay__arrow">→</span>
           <span className="fusion-overlay__to" style={{ color: toColor }}>{lastFusion.to}</span>
+        </div>
+        <button className="fusion-overlay__btn" onClick={onClose}>Weiter</button>
+      </div>
+    </div>
+  );
+};
+
+// ── Awakening-Erfolgs-Overlay ─────────────────────────────────
+
+interface AwakenOverlayProps {
+  lastAwakening: { fromName: string; toName: string };
+  onClose:       () => void;
+}
+
+const AwakenResultOverlay: React.FC<AwakenOverlayProps> = ({ lastAwakening, onClose }) => {
+  const lrColor = RARITY_COLOR.LR;
+  return (
+    <div className="fusion-overlay" onClick={onClose}>
+      <div className="fusion-overlay__box fusion-overlay__box--awaken"
+           style={{ '--rc': lrColor } as React.CSSProperties}>
+        <div className="fusion-overlay__spark">✦</div>
+        <div className="fusion-overlay__title">TRUE AWAKENING</div>
+        <div className="fusion-overlay__rarities">
+          <span className="fusion-overlay__awaken-from">{lastAwakening.fromName}</span>
+          <span className="fusion-overlay__arrow">→</span>
+          <span className="fusion-overlay__to" style={{ color: lrColor }}>{lastAwakening.toName}</span>
         </div>
         <button className="fusion-overlay__btn" onClick={onClose}>Weiter</button>
       </div>
