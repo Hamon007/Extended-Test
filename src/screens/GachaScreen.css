@@ -607,6 +607,104 @@
   text-overflow: ellipsis;
 }
 
+/* ── Karte anklickbar ─────────────────────────────────────── */
+.result-single__card {
+  cursor: pointer;
+}
+.result-single__card:active {
+  transform: scale(0.97);
+}
+
+.result-single__tap-hint {
+  position: absolute;
+  bottom: 48px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: rgba(201,168,76,0.55);
+  z-index: 11;
+  pointer-events: none;
+}
+
+.multi-card--visible {
+  cursor: pointer;
+}
+.multi-card--visible:active {
+  transform: scale(0.95);
+}
+
+/* ── Nochmal-Buttons ─────────────────────────────────────── */
+.result-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.result-multi__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 20px;
+  animation: fadeIn 0.3s ease;
+  flex-shrink: 0;
+}
+
+.result-again-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+
+.result-again-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.result-again-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.result-again-btn--single {
+  background: linear-gradient(135deg, #1e1218, #2d1820);
+  border: 2px solid #8a6520;
+  color: #f0d080;
+  box-shadow: 0 2px 8px rgba(201,168,76,0.15);
+}
+
+.result-again-btn--single:hover:not(:disabled) {
+  box-shadow: 0 2px 16px rgba(201,168,76,0.3);
+}
+
+.result-again-btn--multi {
+  background: linear-gradient(135deg, #200d28, #3d1040);
+  border: 2px solid #9c27b0;
+  color: #e040fb;
+  box-shadow: 0 2px 8px rgba(156,39,176,0.2);
+}
+
+.result-again-btn--multi:hover:not(:disabled) {
+  box-shadow: 0 2px 16px rgba(156,39,176,0.4);
+}
+
+.result-again-btn__cost {
+  font-size: 9px;
+  color: #c9a84c;
+  letter-spacing: 0.5px;
+}
+
 /* ── Zurück-Button ────────────────────────────────────────── */
 .result-close-btn {
   background: linear-gradient(135deg, #2a1520, #1a0d12);
