@@ -144,13 +144,7 @@ const App: React.FC = () => {
         {screen === 'main' && (
           <MainScreen onBack={goBack} />
         )}
-        {screen === 'gacha' && (
-          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-            <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
-              <GachaScreen />
-            </div>
-          </div>
-        )}
+        {screen === 'gacha' && <GachaScreen />}
         {screen === 'deck' && (
           <div style={{ flex: 1, overflow: 'hidden', minHeight: 0, width: '100%', height: '100%' }}>
             <DeckBuilderScreen />

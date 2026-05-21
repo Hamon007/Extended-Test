@@ -179,11 +179,19 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         {/* Profil-Seite */}
         <div className="main-card__profile">
           <div className="main-profile-frame">
-            <img
-              className="main-profile-frame__img"
-              src={`${B}assets/cards/azazel.png`}
-              alt="Azazel"
-            />
+            <div className="main-profile-frame__card">
+              <img
+                className="main-profile-frame__img"
+                src={`${B}assets/cards/azazel.png`}
+                alt="Azazel"
+              />
+              <div className="main-profile-frame__num">006.</div>
+              <div className="main-profile-frame__compass">✦</div>
+              <div className="main-profile-frame__overlay">
+                <div className="main-profile-frame__card-name">Azazel,</div>
+                <div className="main-profile-frame__card-title">Richter der sterbenden Sonne</div>
+              </div>
+            </div>
             <div className="main-profile-frame__stars">★★★★★</div>
             <div className="main-profile-frame__name">Azazel</div>
           </div>
