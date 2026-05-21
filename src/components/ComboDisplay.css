@@ -1,0 +1,228 @@
+/* ── ComboDisplay ──────────────────────────────────────────── */
+
+/* Container — positioned by parent (BattleScreen) */
+.combo-display {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
+  transition: filter 0.2s;
+}
+
+/* Hochstufige Combos: stärkerer Glow */
+.combo-display--high {
+  filter: drop-shadow(0 0 14px rgba(255,152,0,0.6));
+  animation: combo-high-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes combo-high-pulse {
+  0%,100% { filter: drop-shadow(0 0 14px rgba(255,152,0,0.5)); }
+  50%      { filter: drop-shadow(0 0 28px rgba(255,152,0,0.9)); }
+}
+
+/* MAX COMBO */
+.combo-display--max {
+  filter: drop-shadow(0 0 20px rgba(240,208,128,0.8)) !important;
+  animation: max-combo-pulse 0.4s ease-in-out infinite !important;
+}
+
+@keyframes max-combo-pulse {
+  0%,100% { filter: drop-shadow(0 0 20px rgba(240,208,128,0.7)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 40px rgba(240,208,128,1.0)); transform: scale(1.06); }
+}
+
+/* Break-Animation */
+.combo-display--breaking {
+  animation: combo-break 0.65s ease-out forwards !important;
+  filter: drop-shadow(0 0 16px rgba(204,34,0,0.7)) !important;
+}
+
+@keyframes combo-break {
+  0%   { transform: scale(1.1);  filter: drop-shadow(0 0 20px rgba(204,34,0,0.9)); opacity: 1; }
+  15%  { transform: translateX(-6px) scale(1.05); }
+  30%  { transform: translateX(6px);  }
+  45%  { transform: translateX(-4px); }
+  60%  { transform: translateX(0) scale(0.95); }
+  80%  { opacity: 0.5; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* ── SVG-Ring ─────────────────────────────────────────────── */
+.combo-ring {
+  position: absolute;
+  inset: 0;
+}
+
+.combo-ring__progress {
+  transition: stroke-dashoffset 0.05s linear, stroke 0.3s;
+}
+
+/* ── Innere Anzeige ───────────────────────────────────────── */
+.combo-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  pointer-events: none;
+}
+
+.combo-label {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #8a6520;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.combo-count {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #f0d080;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(240,208,128,0.6);
+  animation: count-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes count-pop {
+  from { transform: scale(0.5); opacity: 0.5; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.combo-mult {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* ── MAX-COMBO-Badge ──────────────────────────────────────── */
+.combo-max-badge {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 9px;
+  color: #f0d080;
+  white-space: nowrap;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(240,208,128,0.8);
+  animation: max-badge-float 0.5s ease-out;
+}
+
+@keyframes max-badge-float {
+  from { transform: translateX(-50%) translateY(6px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);   opacity: 1; }
+}
+
+/* ── Break-Nachricht ──────────────────────────────────────── */
+.combo-break-msg {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #ef9a9a;
+  white-space: nowrap;
+  letter-spacing: 3px;
+  animation: break-msg-fade 0.65s ease-out forwards;
+}
+
+@keyframes break-msg-fade {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DAMAGE POPUPS
+   ══════════════════════════════════════════════════════════════ */
+
+/* Popups werden relativ zum .combo-overlay Container positioniert */
+.dmg-popup {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  animation: dmg-float-up 1.3s ease-out forwards;
+  z-index: 80;
+}
+
+@keyframes dmg-float-up {
+  0%   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-80px); opacity: 0; }
+}
+
+.dmg-popup__number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px;
+  color: #ff5722;
+  font-weight: 700;
+  text-shadow:
+    0 0 8px rgba(255,87,34,0.6),
+    1px 1px 0 rgba(0,0,0,0.8);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dmg-popup--high .dmg-popup__number {
+  font-size: 22px;
+  color: #ff9800;
+  text-shadow: 0 0 12px rgba(255,152,0,0.7), 1px 1px 0 rgba(0,0,0,0.8);
+}
+
+.dmg-popup--max .dmg-popup__number {
+  font-size: 26px;
+  color: #f0d080;
+  text-shadow:
+    0 0 16px rgba(240,208,128,0.9),
+    0 0 32px rgba(240,208,128,0.5),
+    1px 1px 0 rgba(0,0,0,0.8);
+  animation: dmg-float-up 1.5s ease-out forwards;
+}
+
+.dmg-popup__mult {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+}
+
+.dmg-popup__tags {
+  display: flex;
+  gap: 3px;
+}
+
+.dmg-popup__tag {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  letter-spacing: 0.5px;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-weight: 700;
+}
+
+.dmg-popup__tag--syn  {
+  background: rgba(156,39,176,0.85);
+  color: #fff;
+  box-shadow: 0 0 6px rgba(156,39,176,0.6);
+}
+.dmg-popup__tag--elem {
+  background: rgba(33,150,243,0.85);
+  color: #fff;
+  box-shadow: 0 0 6px rgba(33,150,243,0.6);
+}

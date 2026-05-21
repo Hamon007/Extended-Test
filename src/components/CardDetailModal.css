@@ -1,0 +1,433 @@
+/* ── CardDetailModal ───────────────────────────────────────── */
+
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: overlay-in 0.2s ease;
+  overflow: hidden;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Modal-Container — Sheet von unten */
+.detail-modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  background: #0e0812;
+  border-top: 2px solid var(--rarity-color, #c9a84c);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* Schließen-Button */
+.detail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid #3a2030;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: #c9a84c;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.detail-close:hover { background: rgba(201,168,76,0.2); }
+
+/* ── Artwork ──────────────────────────────────────────────── */
+.detail-artwork {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #0d0810;
+}
+
+.detail-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.detail-artwork__gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, #0e0812 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.detail-artwork__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+  gap: 12px;
+}
+.detail-artwork__placeholder span { font-size: 3rem; opacity: 0.4; }
+.detail-artwork__placeholder p {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #8a6520;
+  letter-spacing: 2px;
+}
+
+/* ── Scrollbarer Body ─────────────────────────────────────── */
+.detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.detail-body::-webkit-scrollbar      { width: 4px; }
+.detail-body::-webkit-scrollbar-thumb{ background: #3a2030; border-radius: 2px; }
+
+/* ── Header ───────────────────────────────────────────────── */
+.detail-header { margin-bottom: 10px; }
+
+.detail-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.detail-rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.detail-number {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+}
+
+.detail-faction {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid #3a2030;
+  border-radius: 3px;
+  padding: 2px 6px;
+  letter-spacing: 0.5px;
+}
+
+.detail-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  color: #f0d080;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.detail-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: #8a6520;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ── Trennlinie ───────────────────────────────────────────── */
+.detail-divider {
+  border: none;
+  border-top: 1px solid;
+  opacity: 0.4;
+  margin: 12px 0;
+}
+
+/* ── Stats Grid ───────────────────────────────────────────── */
+.detail-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stat-box {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-box__icon  { font-size: 14px; }
+.stat-box__label {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #8a6520;
+  letter-spacing: 1px;
+}
+.stat-box__value {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  font-weight: 600;
+}
+
+/* ── Tags ─────────────────────────────────────────────────── */
+.detail-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.detail-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+.detail-tag--type    { background: rgba(201,168,76,0.12); color: #c9a84c; border: 1px solid #8a6520; }
+.detail-tag--element { background: rgba(33,150,243,0.1);  color: #90caf9; border: 1px solid #1565c0; }
+
+/* ── Sections (Skill / Passive / Combo) ───────────────────── */
+.detail-section { margin-bottom: 14px; }
+
+.detail-section__title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #2a1525;
+}
+
+/* Skill */
+.detail-skill {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+}
+
+.detail-skill__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.detail-skill__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  font-weight: 600;
+  flex: 1;
+}
+
+.detail-skill__cost,
+.detail-skill__cd {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #90caf9;
+  background: rgba(33,150,243,0.1);
+  border: 1px solid #1565c0;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+.detail-skill__cd { color: #ffcc80; border-color: #e65100; background: rgba(230,81,0,0.1); }
+
+.detail-skill__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #e8d5b0;
+  line-height: 1.55;
+}
+
+/* Passive */
+.detail-passive {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-left: 3px solid #c9a84c;
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+}
+
+.detail-passive__name {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #f0d080;
+  margin-bottom: 4px;
+}
+
+.detail-passive__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #e8d5b0;
+  line-height: 1.55;
+}
+
+/* Combo-Tags */
+.detail-combo-list { display: flex; flex-direction: column; gap: 6px; }
+
+.detail-combo {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.detail-combo__tag {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #f0d080;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid #8a6520;
+  border-radius: 3px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detail-combo__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #e8d5b0;
+  line-height: 1.45;
+}
+
+/* Synergien */
+.detail-synergy-list { display: flex; flex-direction: column; gap: 8px; }
+
+.detail-synergy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.detail-synergy__partner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-synergy__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #8a6520;
+  flex-shrink: 0;
+  background: #0d0810;
+}
+
+.detail-synergy__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.detail-synergy__name {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #f0d080;
+}
+
+.detail-synergy__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #c9a84c;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+/* Zitat */
+.detail-quote {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: #8a6520;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+  border: none;
+  border-left: none;
+  background: rgba(201,168,76,0.05);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 14px 0 10px;
+}
+
+/* Ökonomie-Badges */
+.detail-economy {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.detail-economy__item {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  padding: 3px 8px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a1525;
+  color: #c9a84c;
+}
+
+.detail-economy__item--limited    { color: #ffcc80; border-color: #e65100; }
+.detail-economy__item--locked     { color: #ef9a9a; border-color: #b71c1c; }
+.detail-economy__item--awakening  { color: #f0d080; border-color: #c9a84c; }
