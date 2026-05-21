@@ -27,12 +27,6 @@ function buildInvMap(inventory: CardInstance[]): Map<string, CardInstance> {
   return m;
 }
 
-function deckCardIds(uuids: string[], invMap: Map<string, CardInstance>): string[] {
-  return uuids
-    .map(u => invMap.get(u)?.cardId)
-    .filter((id): id is string => id !== undefined);
-}
-
 function computeTotalMP(uuids: string[], invMap: Map<string, CardInstance>): number {
   return uuids.reduce((sum, uuid) => {
     const inst = invMap.get(uuid);
@@ -66,10 +60,6 @@ function canAdd(
 
   const invMap = buildInvMap(inventory);
 
-  if (deckCardIds(deck.uuids, invMap).includes(cardId)) {
-    return { ok: false, error: 'DUPLICATE_CARD_ID' };
-  }
-
   // Kosten-Budget prüfen
   const newCard = CardDatabase.getById(cardId);
   if (newCard) {
@@ -94,17 +84,7 @@ function validateDeck(deck: Deck, inventory: CardInstance[]): DeckValidation {
   const totalMP      = computeTotalMP(deck.uuids, invMap);
   const isOverBudget = totalMP > MAX_DECK_COST;
 
-  // Duplikat-Prüfung
-  const seen = new Set<string>();
-  const hasDupes = resolved.some(s => {
-    if (!s.instance) return false;
-    if (seen.has(s.instance.cardId)) return true;
-    seen.add(s.instance.cardId);
-    return false;
-  });
-
   const errors: DeckRuleError[] = [];
-  if (hasDupes)     errors.push('DUPLICATE_CARD_ID');
   if (isOverBudget) errors.push('COST_EXCEEDED');
 
   const isComplete = deck.uuids.length === DECK_SIZE;

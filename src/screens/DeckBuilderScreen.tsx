@@ -11,10 +11,9 @@ import './DeckBuilderScreen.css';
 // ── Fehlertext ────────────────────────────────────────────────
 
 const RULE_LABEL: Record<string, string> = {
-  DECK_FULL:           `Deck ist voll (max. ${DECK_SIZE} Karten)`,
-  DUPLICATE_CARD_ID:   'Diese Karte ist bereits im Deck',
-  COST_EXCEEDED:       `Deck-Budget überschritten (max. ${MAX_DECK_COST} MP)`,
-  ALREADY_IN_DECK:     'Diese Instanz ist bereits im Deck',
+  DECK_FULL:       `Deck ist voll (max. ${DECK_SIZE} Karten)`,
+  COST_EXCEEDED:   `Deck-Budget überschritten (max. ${MAX_DECK_COST} MP)`,
+  ALREADY_IN_DECK: 'Diese Instanz ist bereits im Deck',
 };
 
 // ── Inventar: einzigartige Karten mit erstem verfügbaren UUID ─
@@ -82,20 +81,12 @@ const DeckBuilderScreen: React.FC = () => {
   }
 
   function handleAddCard(entry: InventoryEntry) {
-    const deckHasCardId = resolved.some(
-      s => s.instance?.cardId === entry.cardId
-    );
-    if (deckHasCardId) {
-      showToast(RULE_LABEL.DUPLICATE_CARD_ID);
-      return;
-    }
-
     const deckSet = new Set(deck.uuids);
     const available = inventory.find(
       i => i.cardId === entry.cardId && !deckSet.has(i.uuid)
     );
     if (!available) {
-      showToast('Keine freie Instanz verfügbar');
+      showToast('Alle Instanzen bereits im Deck');
       return;
     }
 
@@ -314,13 +305,13 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const card = CardDatabase.getById(entry.cardId);
   const rc   = RARITY_COLOR[entry.rarity as keyof typeof RARITY_COLOR] ?? '#9e9e9e';
 
-  const alreadyInDeck = deckResolved.some(s => s.instance?.cardId === entry.cardId);
+  const deckSet       = new Set(deckUuids);
+  const available     = inventory.find(i => i.cardId === entry.cardId && !deckSet.has(i.uuid));
+  const inDeckCount   = deckResolved.filter(s => s.instance?.cardId === entry.cardId).length;
+  const allInDeck     = inDeckCount > 0 && !available;
 
-  const deckSet   = new Set(deckUuids);
-  const available = inventory.find(i => i.cardId === entry.cardId && !deckSet.has(i.uuid));
-
-  let blocked   = alreadyInDeck;
-  let blockTip  = '';
+  let blocked  = allInDeck;
+  let blockTip = allInDeck ? 'Alle Kopien im Deck' : '';
 
   if (!blocked && !available) {
     blocked  = true;
@@ -339,11 +330,9 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     }
   }
 
-  if (alreadyInDeck) blockTip = 'Im Deck';
-
   return (
     <div
-      className={`inv-card ${blocked ? 'inv-card--blocked' : 'inv-card--available'} ${alreadyInDeck ? 'inv-card--in-deck' : ''}`}
+      className={`inv-card ${blocked ? 'inv-card--blocked' : 'inv-card--available'} ${allInDeck ? 'inv-card--in-deck' : ''}`}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={blocked ? undefined : onAdd}
       title={blockTip || card?.name}
@@ -368,16 +357,19 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
         {entry.rarity}
       </div>
 
+      {/* Zeigt Gesamtanzahl und wie viele im Deck */}
       {entry.totalCount > 1 && (
-        <div className="inv-card__count">×{entry.totalCount}</div>
+        <div className="inv-card__count">
+          {inDeckCount > 0 ? `${inDeckCount}/` : '×'}{entry.totalCount}
+        </div>
       )}
 
-      {alreadyInDeck && (
+      {inDeckCount > 0 && entry.totalCount === 1 && (
         <div className="inv-card__in-deck-badge">✓</div>
       )}
 
       {/* Block-Overlay */}
-      {blocked && !alreadyInDeck && (
+      {blocked && !allInDeck && (
         <div className="inv-card__block-overlay">
           <span>{blockTip}</span>
         </div>

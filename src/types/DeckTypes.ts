@@ -37,7 +37,6 @@ export interface ResolvedSlot {
 
 export type DeckRuleError =
   | 'DECK_FULL'             // bereits 10 Karten im Deck
-  | 'DUPLICATE_CARD_ID'     // gleiche card_id bereits im Deck
   | 'COST_EXCEEDED'         // Deck-Gesamtkosten überschreiten MAX_DECK_COST
   | 'ALREADY_IN_DECK';      // exakt diese UUID ist bereits drin
 
