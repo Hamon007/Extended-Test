@@ -11,13 +11,10 @@ export default defineConfig({
       strategies:   'generateSW',
       registerType: 'autoUpdate',
 
-      // Nur kleine Assets pre-cachen (Icons, keine großen PNGs)
       includeAssets: [
         'icon-192.png',
         'icon-512.png',
         'icon-maskable-512.png',
-        'offline.html',
-        'favicon.ico',
       ],
 
       manifest: {
@@ -68,19 +65,11 @@ export default defineConfig({
       },
 
       workbox: {
-        // App-Shell: SPA-Fallback
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
 
-        // Pre-Cache: nur JS/CSS/HTML/Fonts (keine großen Bilder)
-        globPatterns: [
-          '**/*.{js,css,html}',
-          '*.{ico,svg,webmanifest}',
-          'icon-{192,512}.png',
-          'icon-maskable-512.png',
-        ],
+        globPatterns: ['**/*.{js,css,html}'],
 
-        // Limit erhöhen (für Bundle-JS falls nötig)
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
 
         runtimeCaching: [
