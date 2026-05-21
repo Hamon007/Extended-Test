@@ -7,10 +7,14 @@
 
 // ── Enums / Literal-Typen ────────────────────────────────────────────────────
 
+// Jede Hauptstufe hat Unterstufen: base, +, ++, +++ (durch Fusion).
 export type Rarity =
-  | 'N' | 'R' | 'SR' | 'SSR'
-  | 'MR' | 'MR+' | 'MR++' | 'MR+++'
-  | 'LR';
+  | 'N'   | 'N+'   | 'N++'   | 'N+++'
+  | 'R'   | 'R+'   | 'R++'   | 'R+++'
+  | 'SR'  | 'SR+'  | 'SR++'  | 'SR+++'
+  | 'SSR' | 'SSR+' | 'SSR++' | 'SSR+++'
+  | 'MR'  | 'MR+'  | 'MR++'  | 'MR+++'
+  | 'LR'  | 'LR+'  | 'LR++'  | 'LR+++';
 
 export type Element =
   | 'dark'    // Finsternis
@@ -139,20 +143,41 @@ export interface Card {
 // ── Hilfsfunktionen (reine Typen, kein State) ────────────────────────────────
 
 export const RARITY_ORDER: Rarity[] = [
-  'N', 'R', 'SR', 'SSR', 'MR', 'MR+', 'MR++', 'MR+++', 'LR'
+  'N',   'N+',   'N++',   'N+++',
+  'R',   'R+',   'R++',   'R+++',
+  'SR',  'SR+',  'SR++',  'SR+++',
+  'SSR', 'SSR+', 'SSR++', 'SSR+++',
+  'MR',  'MR+',  'MR++',  'MR+++',
+  'LR',  'LR+',  'LR++',  'LR+++',
 ];
 
-export const RARITY_COLOR: Record<Rarity, string> = {
-  'N':    '#9e9e9e',
-  'R':    '#4caf50',
-  'SR':   '#2196f3',
-  'SSR':  '#9c27b0',
-  'MR':   '#ff9800',
-  'MR+':  '#ff6f00',
-  'MR++': '#e65100',
-  'MR+++':'#bf360c',
-  'LR':   '#f0d080',
+/** Die sechs Hauptstufen (ohne Unterstufen). */
+export const RARITY_MAJORS: Rarity[] = ['N', 'R', 'SR', 'SSR', 'MR', 'LR'];
+
+/** Hauptstufe einer (Unter-)Rarität, z.B. 'MR++' → 'MR'. */
+export function rarityMajor(r: Rarity): Rarity {
+  return r.replace(/\+/g, '') as Rarity;
+}
+
+/** Anzahl der '+'-Unterstufen, z.B. 'MR++' → 2. */
+export function raritySubLevel(r: Rarity): number {
+  return (r.match(/\+/g) ?? []).length;
+}
+
+const MAJOR_COLOR: Record<string, string> = {
+  N:   '#9e9e9e',
+  R:   '#4caf50',
+  SR:  '#2196f3',
+  SSR: '#9c27b0',
+  MR:  '#ff9800',
+  LR:  '#f0d080',
 };
+
+// Alle 24 Stufen erben die Farbe ihrer Hauptstufe.
+export const RARITY_COLOR: Record<Rarity, string> = RARITY_ORDER.reduce((acc, r) => {
+  acc[r] = MAJOR_COLOR[rarityMajor(r)] ?? '#9e9e9e';
+  return acc;
+}, {} as Record<Rarity, string>);
 
 export const ELEMENT_LABEL: Record<Element, string> = {
   dark:      '🌑 Dunkel',

@@ -10,6 +10,7 @@
  */
 
 import type { Card } from '../types/Card';
+import { rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
 
@@ -25,7 +26,7 @@ export interface AwakenInfo {
 
 /** Kann diese konkrete Instanz erwachen? */
 function getAwakenInfo(instance: CardInstance): AwakenInfo {
-  if (instance.rarity !== 'LR') return { canAwaken: false, reason: 'NOT_LR' };
+  if (rarityMajor(instance.rarity) !== 'LR') return { canAwaken: false, reason: 'NOT_LR' };
 
   const base = CardDatabase.getById(instance.cardId);
   if (!base?.awakening) return { canAwaken: false, reason: 'NO_AWAKENING' };
@@ -65,7 +66,7 @@ function awaken(state: GachaState, uuid: string): AwakenSuccess | AwakenFailure 
 
   const newInventory = state.inventory.map(i =>
     i.uuid === uuid
-      ? { ...i, cardId: target.id, rarity: 'LR' as const, isNew: true }
+      ? { ...i, cardId: target.id, rarity: target.rarity, isNew: true }
       : i
   );
 

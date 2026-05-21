@@ -4,64 +4,70 @@
  * Karten-Fusion / Rank-Up.
  * Rein funktional — kein State, kein React.
  *
- * Prinzip (gemäß Konzept "Karten-Progression"):
- *   N → R → SR → SSR → MR → MR+ → MR++ → MR+++ → LR
- *   Duplikate derselben Karte werden verschmolzen, um die
- *   Trägerkarte eine Stufe aufsteigen zu lassen.
- *   Fusion erhöht Stats und senkt die MP-Kosten.
- *   Für LR werden so mehrere MR-Duplikate benötigt.
+ * Modell (gemäß Konzept "Karten-Progression"):
+ *   Jede Hauptstufe hat Unterstufen: base → + → ++ → +++.
+ *   Pro Fusionsschritt wird 1 Duplikat derselben Karte verbraucht
+ *   und die Trägerkarte steigt eine Unterstufe.
+ *   Nach +++ bringt das 4. Duplikat die Karte in die nächste
+ *   Hauptstufe (Endform). Eine Karte kann maximal EINE Hauptstufe
+ *   über ihre Basis aufsteigen:
+ *     N→R, R→SR, SR→SSR, SSR→MR, MR→LR.
+ *   LR-Basiskarten enden bei LR+++ (keine höhere Hauptstufe).
+ *   Jede Stufe erhöht Stats und senkt MP-Kosten.
  * ─────────────────────────────────────────────────────────────
  */
 
 import type { Card, CardStats, Rarity } from '../types/Card';
-import { RARITY_ORDER } from '../types/Card';
+import { RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
 
 // ── Fusions-Kosten ────────────────────────────────────────────
-// Anzahl Duplikate (Fodder), um VON dieser Rarität eine Stufe aufzusteigen.
+// Jeder Schritt kostet genau 1 Duplikat. Kristallkosten je Hauptstufe.
 
-export const FUSION_DUPLICATES: Partial<Record<Rarity, number>> = {
-  N:       1,
-  R:       1,
-  SR:      1,
-  SSR:     2,
-  MR:      2,
-  'MR+':   2,
-  'MR++':  3,
-  'MR+++': 3,
-  // LR: Maximum, keine weitere Stufe
+export const DUPLICATES_PER_STEP = 1;
+
+const STEP_CRYSTAL_COST: Record<string, number> = {
+  N:   50,
+  R:   150,
+  SR:  400,
+  SSR: 1000,
+  MR:  3000,
+  LR:  8000,
 };
 
-// Kristallkosten pro Fusion (von dieser Rarität aufsteigend).
-export const FUSION_CRYSTAL_COST: Partial<Record<Rarity, number>> = {
-  N:       50,
-  R:       100,
-  SR:      250,
-  SSR:     500,
-  MR:      1000,
-  'MR+':   2000,
-  'MR++':  4000,
-  'MR+++': 8000,
-};
+// ── Stat-Skalierung pro Unterstufe über Basis ─────────────────
 
-// ── Stat-Skalierung pro Rang über Basis ───────────────────────
-
-const ATK_PER_RANK  = 0.20;  // +20 % ATK je Rang
-const DEF_PER_RANK  = 0.20;  // +20 % DEF je Rang
-const HP_PER_RANK   = 0.15;  // +15 % HP  je Rang
-const MP_CUT_PER_RANK = 0.08; // −8 % MP-Kosten je Rang
-const CRIT_PER_RANK = 2;     // +2 % Krit je Rang (falls vorhanden)
+const ATK_PER_RANK    = 0.12; // +12 % ATK je Unterstufe
+const DEF_PER_RANK    = 0.12; // +12 % DEF je Unterstufe
+const HP_PER_RANK     = 0.10; // +10 % HP  je Unterstufe
+const MP_CUT_PER_RANK = 0.06; // −6 % MP-Kosten je Unterstufe
+const CRIT_PER_RANK   = 1;    // +1 % Krit je Unterstufe (falls vorhanden)
 
 // ── Reine Helfer ──────────────────────────────────────────────
 
-function nextRarity(r: Rarity): Rarity | null {
-  const i = RARITY_ORDER.indexOf(r);
-  if (i < 0 || i >= RARITY_ORDER.length - 1) return null;
-  return RARITY_ORDER[i + 1];
+/** Höchste erreichbare Rarität für eine Karte mit gegebener Basis-Hauptstufe. */
+function ceilingRarity(baseRarity: Rarity): Rarity {
+  const major = rarityMajor(baseRarity);
+  const mi = RARITY_MAJORS.indexOf(major);
+  if (mi < 0) return baseRarity;
+  // Oberste Hauptstufe (LR): Decke ist +++ derselben Stufe.
+  if (mi === RARITY_MAJORS.length - 1) {
+    return `${major}+++` as Rarity;
+  }
+  // Sonst: Basis der nächsten Hauptstufe.
+  return RARITY_MAJORS[mi + 1];
 }
 
-/** Wie viele Ränge liegt die aktuelle Rarität über der Basis-Rarität der Karte? */
+/** Nächste Rarität beim Fusionieren — null wenn Decke erreicht. */
+function nextRarity(baseRarity: Rarity, current: Rarity): Rarity | null {
+  const ceilingIdx = RARITY_ORDER.indexOf(ceilingRarity(baseRarity));
+  const curIdx     = RARITY_ORDER.indexOf(current);
+  if (curIdx < 0 || curIdx >= ceilingIdx) return null;
+  return RARITY_ORDER[curIdx + 1];
+}
+
+/** Wie viele Unterstufen liegt die aktuelle Rarität über der Basis? */
 function ranksAboveBase(baseRarity: Rarity, currentRarity: Rarity): number {
   return Math.max(0, RARITY_ORDER.indexOf(currentRarity) - RARITY_ORDER.indexOf(baseRarity));
 }
@@ -91,7 +97,7 @@ export interface FusionGroup {
   fodder:              CardInstance[]; // übrige Instanzen (Verschmelzungs-Material)
   totalCopies:         number;
   currentRarity:       Rarity;
-  nextRarity:          Rarity | null;  // null = bereits LR
+  nextRarity:          Rarity | null;  // null = Decke erreicht (Endform)
   duplicatesNeeded:    number;
   duplicatesAvailable: number;
   crystalCost:         number;
@@ -124,9 +130,8 @@ function buildGroups(inventory: CardInstance[]): FusionGroup[] {
 
     const carrier = sorted[0];
     const fodder  = sorted.slice(1);
-    const next    = nextRarity(carrier.rarity);
-    const dupNeeded   = next ? (FUSION_DUPLICATES[carrier.rarity] ?? 0) : 0;
-    const crystalCost = next ? (FUSION_CRYSTAL_COST[carrier.rarity] ?? 0) : 0;
+    const next    = nextRarity(card.rarity, carrier.rarity);
+    const crystalCost = next ? (STEP_CRYSTAL_COST[rarityMajor(carrier.rarity)] ?? 0) : 0;
 
     groups.push({
       cardId,
@@ -136,10 +141,10 @@ function buildGroups(inventory: CardInstance[]): FusionGroup[] {
       totalCopies:         insts.length,
       currentRarity:       carrier.rarity,
       nextRarity:          next,
-      duplicatesNeeded:    dupNeeded,
+      duplicatesNeeded:    DUPLICATES_PER_STEP,
       duplicatesAvailable: fodder.length,
       crystalCost,
-      canFuse:             !!next && dupNeeded > 0 && fodder.length >= dupNeeded,
+      canFuse:             !!next && fodder.length >= DUPLICATES_PER_STEP,
     });
   }
 
@@ -183,10 +188,10 @@ function fuse(state: GachaState, cardId: string): FusionSuccess | FusionFailure 
   if (group.duplicatesAvailable < group.duplicatesNeeded)  return { ok: false, error: 'NOT_ENOUGH_DUPLICATES' };
   if (state.crystals < group.crystalCost)                  return { ok: false, error: 'NOT_ENOUGH_CRYSTALS' };
 
-  const consumed     = group.fodder.slice(0, group.duplicatesNeeded);
+  const consumed      = group.fodder.slice(0, group.duplicatesNeeded);
   const consumedUuids = new Set(consumed.map(c => c.uuid));
-  const fromRarity   = group.carrier.rarity;
-  const toRarity     = group.nextRarity;
+  const fromRarity    = group.carrier.rarity;
+  const toRarity      = group.nextRarity;
 
   const newInventory = state.inventory
     .filter(inst => !consumedUuids.has(inst.uuid))
@@ -215,5 +220,6 @@ export const FusionSystem = {
   fuse,
   getEffectiveStats,
   nextRarity,
+  ceilingRarity,
   ranksAboveBase,
 };
