@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGachaStore } from '../hooks/useGachaStore';
 import { CardDatabase } from '../services/CardDatabase';
+import type { Card } from '../types/Card';
 import type { PullResult } from '../types/GachaTypes';
 import {
   PULL_COST_SINGLE, PULL_COST_MULTI,
@@ -8,23 +9,24 @@ import {
 } from '../types/GachaTypes';
 import { RARITY_COLOR } from '../types/Card';
 import { GachaSystem } from '../services/GachaSystem';
+import CardDetailModal from '../components/CardDetailModal';
 import './GachaScreen.css';
-
-// ── Fehler-Texte ──────────────────────────────────────────────
 
 const ERROR_LABEL: Record<string, string> = {
   NOT_ENOUGH_CRYSTALS: 'Nicht genug Kristalle.',
   DB_EMPTY:            'Keine Karten in der Datenbank.',
 };
 
-// ── Haupt-Screen ──────────────────────────────────────────────
-
 const GachaScreen: React.FC = () => {
   const store = useGachaStore();
   const { state, lastSingle, lastMulti, error, isPulling } = store;
+  const [detailCard, setDetailCard] = useState<Card | null>(null);
 
-  // Zeigt Ergebnisansicht wenn Pulls vorhanden
   const showResult = lastSingle !== null || lastMulti !== null;
+
+  const openDetail = (cardId: string) => {
+    setDetailCard(CardDatabase.getById(cardId) ?? null);
+  };
 
   return (
     <div className="gacha-screen">
@@ -44,33 +46,40 @@ const GachaScreen: React.FC = () => {
       <PityBar pity={state.pityCounter} total={state.totalPulls} />
 
       {showResult ? (
-        /* ── Ergebnisansicht ── */
         <>
           {lastSingle && (
-            <SingleResult result={lastSingle} onClose={store.clearResults} />
+            <SingleResult
+              result={lastSingle}
+              isPulling={isPulling}
+              onClose={store.clearResults}
+              onCardClick={openDetail}
+              onSingleAgain={store.doSingle}
+              onMultiAgain={store.doMulti}
+            />
           )}
           {lastMulti && (
-            <MultiResult results={lastMulti.results} onClose={store.clearResults} />
+            <MultiResult
+              results={lastMulti.results}
+              isPulling={isPulling}
+              onClose={store.clearResults}
+              onCardClick={openDetail}
+              onSingleAgain={store.doSingle}
+              onMultiAgain={store.doMulti}
+            />
           )}
         </>
       ) : (
-        /* ── Beschwörungsansicht ── */
         <div className="gacha-main">
 
-          {/* Beschwörungs-Art */}
           <BannerCard />
-
-          {/* Drop-Rates Info */}
           <DropRateTable />
 
-          {/* Fehleranzeige */}
           {error && (
             <div className="gacha-error">
               ⚠ {ERROR_LABEL[error] ?? error}
             </div>
           )}
 
-          {/* Aktions-Buttons */}
           <div className="gacha-actions">
             <button
               className={`gacha-btn gacha-btn--single ${!GachaSystem.canSinglePull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
@@ -95,7 +104,6 @@ const GachaScreen: React.FC = () => {
             </button>
           </div>
 
-          {/* Stats-Leiste */}
           <div className="gacha-stats">
             <div className="gacha-stat">
               <span className="gacha-stat__label">GESAMT</span>
@@ -107,7 +115,6 @@ const GachaScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Kristalle auffüllen wenn leer */}
           {state.crystals < PULL_COST_SINGLE && (
             <button className="gacha-refill-btn" onClick={store.debugReset}>
               💎 Kristalle auffüllen (+{(3000).toLocaleString('de-DE')})
@@ -116,6 +123,8 @@ const GachaScreen: React.FC = () => {
 
         </div>
       )}
+
+      <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
     </div>
   );
 };
@@ -196,9 +205,18 @@ const DropRateTable: React.FC = () => (
 
 // ── Einzelner Pull – Ergebnis ─────────────────────────────────
 
-interface SingleResultProps { result: PullResult; onClose: () => void; }
+interface SingleResultProps {
+  result:       PullResult;
+  isPulling:    boolean;
+  onClose:      () => void;
+  onCardClick:  (cardId: string) => void;
+  onSingleAgain:() => void;
+  onMultiAgain: () => void;
+}
 
-const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
+const SingleResult: React.FC<SingleResultProps> = ({
+  result, isPulling, onClose, onCardClick, onSingleAgain, onMultiAgain,
+}) => {
   const { instance, wasPity } = result;
   const card = CardDatabase.getById(instance.cardId);
   const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
@@ -206,9 +224,14 @@ const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
 
   return (
     <div className="result-single">
-      <div className="result-single__card" style={{ '--rc': rarityColor } as React.CSSProperties}>
-
-        {/* Artwork */}
+      <div
+        className="result-single__card"
+        style={{ '--rc': rarityColor } as React.CSSProperties}
+        onClick={() => onCardClick(instance.cardId)}
+        role="button"
+        tabIndex={0}
+        aria-label={`Kartendetail öffnen: ${card?.name ?? instance.cardId}`}
+      >
         <div className="result-single__art">
           {card && card.image && !imgError ? (
             <img src={card.image} alt={card.name} onError={() => setImgError(true)} />
@@ -218,17 +241,36 @@ const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
           <div className="result-single__art-gradient" />
         </div>
 
-        {/* Badges */}
         {wasPity && <div className="result-badge result-badge--pity">PITY</div>}
         <div className="result-badge result-badge--rarity" style={{ color: rarityColor }}>
           {instance.rarity}
         </div>
 
-        {/* Info */}
         <div className="result-single__info">
           <p className="result-single__name">{card?.name ?? instance.cardId}</p>
           {card && <p className="result-single__title">{card.title}</p>}
         </div>
+
+        <div className="result-single__tap-hint">Tippen für Details</div>
+      </div>
+
+      <div className="result-actions">
+        <button
+          className="result-again-btn result-again-btn--single"
+          onClick={onSingleAgain}
+          disabled={isPulling}
+        >
+          <span>EINZELN</span>
+          <span className="result-again-btn__cost">💎 {PULL_COST_SINGLE.toLocaleString('de-DE')}</span>
+        </button>
+        <button
+          className="result-again-btn result-again-btn--multi"
+          onClick={onMultiAgain}
+          disabled={isPulling}
+        >
+          <span>10×</span>
+          <span className="result-again-btn__cost">💎 {PULL_COST_MULTI.toLocaleString('de-DE')}</span>
+        </button>
       </div>
 
       <button className="result-close-btn" onClick={onClose}>
@@ -240,30 +282,64 @@ const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
 
 // ── Multi-Pull – Ergebnis ─────────────────────────────────────
 
-interface MultiResultProps { results: PullResult[]; onClose: () => void; }
+interface MultiResultProps {
+  results:      PullResult[];
+  isPulling:    boolean;
+  onClose:      () => void;
+  onCardClick:  (cardId: string) => void;
+  onSingleAgain:() => void;
+  onMultiAgain: () => void;
+}
 
-const MultiResult: React.FC<MultiResultProps> = ({ results, onClose }) => {
-  // Karten werden mit Stagger-Animation enthüllt
+const MultiResult: React.FC<MultiResultProps> = ({
+  results, isPulling, onClose, onCardClick, onSingleAgain, onMultiAgain,
+}) => {
   const [revealed, setRevealed] = useState(0);
+  const allRevealed = revealed >= results.length;
 
   useEffect(() => {
-    if (revealed >= results.length) return;
+    if (allRevealed) return;
     const t = setTimeout(() => setRevealed(r => r + 1), 120);
     return () => clearTimeout(t);
-  }, [revealed, results.length]);
+  }, [revealed, allRevealed]);
 
   return (
     <div className="result-multi">
       <div className="result-multi__grid">
         {results.map((pr, i) => (
-          <MultiCard key={pr.instance.uuid} pullResult={pr} visible={i < revealed} />
+          <MultiCard
+            key={pr.instance.uuid}
+            pullResult={pr}
+            visible={i < revealed}
+            onCardClick={onCardClick}
+          />
         ))}
       </div>
 
-      {revealed >= results.length && (
-        <button className="result-close-btn result-close-btn--multi" onClick={onClose}>
-          ◀ ZURÜCK
-        </button>
+      {allRevealed && (
+        <div className="result-multi__actions">
+          <div className="result-actions">
+            <button
+              className="result-again-btn result-again-btn--single"
+              onClick={onSingleAgain}
+              disabled={isPulling}
+            >
+              <span>EINZELN</span>
+              <span className="result-again-btn__cost">💎 {PULL_COST_SINGLE.toLocaleString('de-DE')}</span>
+            </button>
+            <button
+              className="result-again-btn result-again-btn--multi"
+              onClick={onMultiAgain}
+              disabled={isPulling}
+            >
+              <span>NOCHMAL 10×</span>
+              <span className="result-again-btn__cost">💎 {PULL_COST_MULTI.toLocaleString('de-DE')}</span>
+            </button>
+          </div>
+          <button className="result-close-btn result-close-btn--multi" onClick={onClose}>
+            ◀ ZURÜCK
+          </button>
+        </div>
       )}
     </div>
   );
@@ -271,9 +347,13 @@ const MultiResult: React.FC<MultiResultProps> = ({ results, onClose }) => {
 
 // ── Einzelne Karte im Multi-Grid ──────────────────────────────
 
-interface MultiCardProps { pullResult: PullResult; visible: boolean; }
+interface MultiCardProps {
+  pullResult:  PullResult;
+  visible:     boolean;
+  onCardClick: (cardId: string) => void;
+}
 
-const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible }) => {
+const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, onCardClick }) => {
   const { instance, wasPity } = pullResult;
   const card = CardDatabase.getById(instance.cardId);
   const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
@@ -283,6 +363,10 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible }) => {
     <div
       className={`multi-card ${visible ? 'multi-card--visible' : ''}`}
       style={{ '--rc': rarityColor } as React.CSSProperties}
+      onClick={() => visible && onCardClick(instance.cardId)}
+      role={visible ? 'button' : undefined}
+      tabIndex={visible ? 0 : undefined}
+      aria-label={visible ? `${card?.name ?? instance.cardId} Details` : undefined}
     >
       {visible ? (
         <>
@@ -305,10 +389,7 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible }) => {
           )}
 
           <div className="multi-card__footer">
-            <span
-              className="multi-card__rarity"
-              style={{ color: rarityColor }}
-            >
+            <span className="multi-card__rarity" style={{ color: rarityColor }}>
               {instance.rarity}
             </span>
             <span className="multi-card__name">{card?.name ?? instance.cardId}</span>

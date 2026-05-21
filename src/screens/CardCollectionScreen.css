@@ -202,6 +202,59 @@
   text-transform: capitalize;
 }
 
+/* ── Nicht-besessene Karten ──────────────────────────────────── */
+
+.card-col-item--unowned .card-col-item__img {
+  filter: grayscale(1) brightness(0.35);
+}
+
+.card-col-item--unowned .card-col-item__rarity-badge {
+  opacity: 0.3;
+}
+
+.card-col-item__unowned-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-col-item__lock-icon {
+  font-size: 1.4rem;
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+
+/* ── Anzahl-Badge (Duplikate) ─────────────────────────────────── */
+
+.card-col-item__owned-count {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: var(--gold-bright);
+  background: rgba(8, 5, 10, 0.85);
+  border: 1px solid var(--gold-dark);
+  border-radius: 2px;
+  padding: 1px 4px;
+  line-height: 1.4;
+}
+
+/* ── Liste: nicht besessen ───────────────────────────────────── */
+
+.card-col-list-item--unowned {
+  opacity: 0.38;
+}
+
+.card-col-list-item__count {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: var(--gold-dark);
+  flex-shrink: 0;
+}
+
 /* ── Leer-Zustand ────────────────────────────────────────────── */
 
 .card-col-empty {

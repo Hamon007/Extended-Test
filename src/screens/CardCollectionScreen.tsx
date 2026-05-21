@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { CardDatabase } from '../services/CardDatabase';
+import { SaveService } from '../services/SaveService';
 import { RARITY_COLOR } from '../types/Card';
 import type { Card } from '../types/Card';
 import './CardCollectionScreen.css';
@@ -25,7 +26,6 @@ const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClo
     <div className="card-detail-backdrop" onClick={onClose}>
       <div className="card-detail" onClick={e => e.stopPropagation()}>
 
-        {/* ── Kartenframe ── */}
         {card.image ? (
           <div className="card-detail__frame" style={{ borderColor: rarityColor }}>
             <div className="card-detail__frame-number">
@@ -40,20 +40,17 @@ const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClo
           </div>
         )}
 
-        {/* ── Name & Titel ── */}
         <div className="card-detail__name">{card.name.toUpperCase()}</div>
         {(card as { title?: string }).title && (
           <div className="card-detail__subtitle">{(card as { title?: string }).title}</div>
         )}
 
-        {/* ── Zitat ── */}
         {(card as { quote?: string }).quote && (
           <div className="card-detail__quote-box">
             „{(card as { quote?: string }).quote}"
           </div>
         )}
 
-        {/* ── Stats ── */}
         <div className="card-detail__stats">
           {[
             { label: 'Seltenheit', value: card.rarity, color: rarityColor },
@@ -71,7 +68,6 @@ const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClo
           ))}
         </div>
 
-        {/* ── Schließen ── */}
         <button className="card-detail__back" onClick={onClose}>◄ Zurück</button>
       </div>
     </div>
@@ -83,6 +79,16 @@ const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClo
 const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
+  // Eigene Karten aus Inventar laden
+  const ownedMap = useMemo(() => {
+    const inventory = SaveService.loadGachaState().inventory;
+    const map = new Map<string, number>();
+    for (const inst of inventory) {
+      map.set(inst.cardId, (map.get(inst.cardId) ?? 0) + 1);
+    }
+    return map;
+  }, []);
+
   const { withArtwork, withoutArtwork } = useMemo(() => {
     const all = CardDatabase.getAll().slice().sort((a, b) =>
       a.name.localeCompare(b.name, 'de')
@@ -93,6 +99,9 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
     };
   }, []);
 
+  const totalCards = withArtwork.length + withoutArtwork.length;
+  const ownedUnique = ownedMap.size;
+
   return (
     <div className="card-col-screen">
 
@@ -100,7 +109,7 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
       <div className="card-col-header">
         <button className="card-col-header__back" onClick={onBack}>← Zurück</button>
         <h1 className="card-col-header__title">Kartensammlung</h1>
-        <span className="card-col-header__count">{withArtwork.length + withoutArtwork.length}</span>
+        <span className="card-col-header__count">{ownedUnique} / {totalCards}</span>
       </div>
 
       {/* ── Scrollbarer Bereich ── */}
@@ -110,10 +119,12 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
           <div className="card-col-grid">
             {withArtwork.map(card => {
               const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+              const ownedCount  = ownedMap.get(card.id) ?? 0;
+              const isOwned     = ownedCount > 0;
               return (
                 <button
                   key={card.id}
-                  className="card-col-item"
+                  className={`card-col-item ${!isOwned ? 'card-col-item--unowned' : ''}`}
                   onClick={() => setSelectedCard(card)}
                   style={{ '--rarity-color': rarityColor } as React.CSSProperties}
                 >
@@ -122,6 +133,14 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
                     <div className="card-col-item__rarity-badge" style={{ color: rarityColor, borderColor: rarityColor }}>
                       {card.rarity}
                     </div>
+                    {!isOwned && (
+                      <div className="card-col-item__unowned-overlay">
+                        <span className="card-col-item__lock-icon">🔒</span>
+                      </div>
+                    )}
+                    {isOwned && ownedCount > 1 && (
+                      <div className="card-col-item__owned-count">×{ownedCount}</div>
+                    )}
                   </div>
                   <div className="card-col-item__info">
                     <div className="card-col-item__name">{card.name}</div>
@@ -138,12 +157,21 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
             <div className="card-col-list">
               {withoutArtwork.map(card => {
                 const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
-                const fallback = TYPE_FALLBACK[card.type] ?? '⚔️';
+                const fallback    = TYPE_FALLBACK[card.type] ?? '⚔️';
+                const isOwned     = (ownedMap.get(card.id) ?? 0) > 0;
+                const ownedCount  = ownedMap.get(card.id) ?? 0;
                 return (
-                  <button key={card.id} className="card-col-list-item" onClick={() => setSelectedCard(card)}>
-                    <span className="card-col-list-item__icon">{fallback}</span>
+                  <button
+                    key={card.id}
+                    className={`card-col-list-item ${!isOwned ? 'card-col-list-item--unowned' : ''}`}
+                    onClick={() => setSelectedCard(card)}
+                  >
+                    <span className="card-col-list-item__icon">{isOwned ? fallback : '🔒'}</span>
                     <span className="card-col-list-item__name">{card.name}</span>
                     <span className="card-col-list-item__rarity" style={{ color: rarityColor }}>{card.rarity}</span>
+                    {isOwned && ownedCount > 1 && (
+                      <span className="card-col-list-item__count">×{ownedCount}</span>
+                    )}
                   </button>
                 );
               })}
@@ -153,7 +181,6 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
 
       </div>
 
-      {/* ── Kartendetail-Overlay ── */}
       {selectedCard && (
         <CardDetail card={selectedCard} onClose={() => setSelectedCard(null)} />
       )}
