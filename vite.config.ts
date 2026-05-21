@@ -17,7 +17,6 @@ export default defineConfig({
         'icon-512.png',
         'icon-maskable-512.png',
         'offline.html',
-        'favicon.ico',
       ],
 
       manifest: {
@@ -75,7 +74,7 @@ export default defineConfig({
         // Pre-Cache: nur JS/CSS/HTML/Fonts (keine großen Bilder)
         globPatterns: [
           '**/*.{js,css,html}',
-          '*.{ico,svg,webmanifest}',
+          '*.{svg,webmanifest}',
           'icon-{192,512}.png',
           'icon-maskable-512.png',
         ],
