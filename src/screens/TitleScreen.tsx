@@ -5,18 +5,20 @@ interface TitleScreenProps {
   onEnter: () => void;
 }
 
+const B = import.meta.env.BASE_URL;
+
 const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter }) => {
   return (
     <div className="title-screen" onClick={onEnter}>
       {/* Hintergrundbilder */}
       <img
         className="title-screen__card-left"
-        src="/assets/cards/azazel.png"
+        src={`${B}assets/cards/azazel.png`}
         alt="Azazel"
       />
       <img
         className="title-screen__card-right"
-        src="/assets/cards/satan.png"
+        src={`${B}assets/cards/satan.png`}
         alt="Satan"
       />
 

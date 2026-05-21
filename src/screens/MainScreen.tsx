@@ -20,10 +20,12 @@ const TIPS = [
   'Tipp: MR-Karten dürfen nur einmal pro Deck verwendet werden.',
 ];
 
+const B = import.meta.env.BASE_URL;
+
 const NPC_IMAGES = [
-  '/assets/cards/azazel.png',
-  '/assets/cards/azgaroth.png',
-  '/assets/cards/satan.png',
+  `${B}assets/cards/azazel.png`,
+  `${B}assets/cards/azgaroth.png`,
+  `${B}assets/cards/satan.png`,
 ];
 
 const BATTLE_HOURS = [0, 7, 14, 21];
@@ -170,6 +172,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNav, onBack }) => {
         <span className="main-infobanner__text">Willkommen bei Codex Immortalis!</span>
       </div>
 
+      {/* ── Scrollbarer Inhaltsbereich ── */}
+      <div className="main-body">
+
       {/* ── Hauptkarte ── */}
       <div className="main-card">
         {/* Profil-Seite */}
@@ -177,7 +182,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNav, onBack }) => {
           <div className="main-profile-frame">
             <img
               className="main-profile-frame__img"
-              src="/assets/cards/azazel.png"
+              src={`${B}assets/cards/azazel.png`}
               alt="Azazel"
             />
             <div className="main-profile-frame__stars">★★★★★</div>
@@ -225,6 +230,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNav, onBack }) => {
 
       {/* ── Trenner ── */}
       <div className="main-divider">─────── ✦ Mobile Ignite ✦ ───────</div>
+
+      </div>{/* end main-body */}
 
       {/* ── Bottom Navigation ── */}
       <nav className="main-nav">
