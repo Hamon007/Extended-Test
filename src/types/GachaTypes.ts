@@ -66,4 +66,4 @@ export const PULL_COST_SINGLE = 100;
 export const PULL_COST_MULTI  = 1000;
 export const MULTI_PULL_COUNT = 10;
 export const PITY_THRESHOLD   = 100;      // bei Pull 100 garantierter SSR
-export const STARTING_CRYSTALS = 3000;
+export const STARTING_CRYSTALS = 999_999; // Alpha: unbegrenzt
