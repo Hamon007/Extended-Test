@@ -8,6 +8,7 @@ import type { CardInstance } from './GachaTypes';
 
 export const DEFEAT_CONSOLATION  = 10;   // Kristalle bei Niederlage
 export const DAILY_BONUS_CRYSTALS = 200; // Tages-Login-Bonus
+export const POTION_DROP_CHANCE = 0.35;  // Chance auf einen Ausdauertrank bei Sieg
 
 // ── Belohnungs-Details (nach Battle) ─────────────────────────────────────────
 
@@ -16,6 +17,7 @@ export interface RewardDetails {
   crystalsGained:  number;       // 0 wenn Niederlage (außer Trost)
   xpGained:        number;
   newCards:        CardInstance[]; // tatsächlich gedropte Karten
+  potionsGained?:  number;       // gedropte Ausdauertränke (Sieg)
   defeatReason?:   'hp' | 'rounds';
 }
 

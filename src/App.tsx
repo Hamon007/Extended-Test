@@ -119,8 +119,8 @@ const App: React.FC = () => {
     switch (target) {
       case 'gacha':    goTo('gacha'); break;
       case 'menu':     goTo('menu'); break;
+      case 'battle':   goTo('battle'); break;
       case 'guild':    setPlaceholderLabel('🏰 Gilde'); goTo('placeholder'); break;
-      case 'quest':    setPlaceholderLabel('🚩 Quest'); goTo('placeholder'); break;
       case 'sacrifice':setPlaceholderLabel('⚗️ Opfern'); goTo('placeholder'); break;
     }
   };
@@ -192,10 +192,10 @@ const App: React.FC = () => {
             <span className="app-nav__icon">🏠</span>
             <span className="app-nav__label">Heim</span>
           </button>
-          <button className={`app-nav__btn${screen === 'placeholder' && placeholderLabel.includes('Quest') ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('quest')}>
-            <span className="app-nav__icon">🚩</span>
-            <span className="app-nav__label">Quest</span>
+          <button className={`app-nav__btn${screen === 'battle' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('battle')}>
+            <span className="app-nav__icon">⚔️</span>
+            <span className="app-nav__label">Kampf</span>
           </button>
           <button className={`app-nav__btn${screen === 'menu' || screen === 'cardCollection' ? ' app-nav__btn--active' : ''}`}
             onClick={() => navTo('menu')}>

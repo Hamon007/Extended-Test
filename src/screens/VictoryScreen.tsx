@@ -43,6 +43,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             </div>
           )}
 
+          {/* Ausdauertrank */}
+          {details.potionsGained && details.potionsGained > 0 && (
+            <div className="reward-row reward-row--xp">
+              <span className="reward-row__label">🧪 Ausdauertrank</span>
+              <span className="reward-row__value">+{details.potionsGained}</span>
+            </div>
+          )}
+
           {/* Karten-Drops */}
           {details.newCards.length > 0 && (
             <div className="victory-cards">

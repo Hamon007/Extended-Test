@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useBattleStore }       from '../hooks/useBattleStore';
 import { useComboStore }        from '../hooks/useComboStore';
 import { useDeckStore }         from '../hooks/useDeckStore';
+import { useEnergyStore }       from '../hooks/useEnergyStore';
 import { EnemyDatabase }        from '../services/EnemyDatabase';
 import { SaveService }          from '../services/SaveService';
 import { ComboSystem }          from '../services/ComboSystem';
@@ -22,6 +23,7 @@ import './BattleScreen.css';
 const BattleScreen: React.FC = () => {
   const battle = useBattleStore();
   const deck   = useDeckStore();
+  const energy = useEnergyStore();
 
   const [selectedEnemy, setSelectedEnemy] = useState<EnemyData | null>(null);
   const [rewardDetails, setRewardDetails] = useState<RewardDetails | null>(null);
@@ -53,7 +55,8 @@ const BattleScreen: React.FC = () => {
     battle.resetBattle();
     setRewardDetails(null);
     rewardApplied.current = false;
-  }, [battle]);
+    energy.refresh(); // evtl. erspielte Tränke übernehmen
+  }, [battle, energy]);
 
   // ── Victory / Defeat Screens ──────────────────────────────
   if (rewardDetails) {
@@ -70,10 +73,41 @@ const BattleScreen: React.FC = () => {
   }
 
   // ── Gegner-Auswahl ────────────────────────────────────────
+  const noEnergy = energy.energy < 1;
+  const canStart = deckComplete && !!selectedEnemy && !noEnergy;
+
+  const handleStart = () => {
+    if (!selectedEnemy || !deckComplete) return;
+    if (!energy.consume()) return; // keine Energie → kein Start
+    battle.startBattle(deckInstances, selectedEnemy);
+  };
+
   return (
     <div className="battle-screen--select">
       <div className="battle-select-header">
         <h1 className="battle-select-title">◆ KAMPF ◆</h1>
+      </div>
+
+      {/* Energie / Ausdauertränke */}
+      <div className="battle-energy">
+        <div className="battle-energy__pips" aria-label={`Energie ${energy.energy} von ${energy.max}`}>
+          {Array.from({ length: energy.max }).map((_, i) => (
+            <span key={i} className={`battle-energy__pip ${i < energy.energy ? 'battle-energy__pip--full' : ''}`}>
+              ⚡
+            </span>
+          ))}
+        </div>
+        <div className="battle-energy__meta">
+          <span className="battle-energy__count">{energy.energy}/{energy.max} Kämpfe</span>
+          <button
+            className="battle-energy__potion"
+            onClick={energy.usePotion}
+            disabled={energy.potions < 1 || energy.energy >= energy.max}
+            title="Ausdauertrank nutzen (+1 Energie)"
+          >
+            🧪 ×{energy.potions}
+          </button>
+        </div>
       </div>
 
       <div className={`battle-deck-status ${deckComplete ? 'battle-deck-status--ok' : 'battle-deck-status--warn'}`}>
@@ -96,11 +130,12 @@ const BattleScreen: React.FC = () => {
       </div>
 
       <button
-        className={`battle-start-btn ${!deckComplete || !selectedEnemy ? 'battle-start-btn--disabled' : ''}`}
-        disabled={!deckComplete || !selectedEnemy}
-        onClick={() => selectedEnemy && battle.startBattle(deckInstances, selectedEnemy)}
+        className={`battle-start-btn ${!canStart ? 'battle-start-btn--disabled' : ''}`}
+        disabled={!canStart}
+        onClick={handleStart}
       >
         {!deckComplete ? 'Deck unvollständig'
+          : noEnergy ? 'Keine Energie — Trank nutzen oder morgen wiederkommen'
           : !selectedEnemy ? 'Gegner wählen'
           : `⚔ Kampf starten → ${selectedEnemy.name}`}
       </button>
