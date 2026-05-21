@@ -43,9 +43,9 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
 
       {/* ── Hinweis ── */}
       <div className="fusion-intro">
-        Verschmelze Duplikate, um Karten aufzuwerten:
-        <strong> N → R → SR → SSR → MR → MR+ → MR++ → MR+++ → LR</strong>.
-        Jede Stufe erhöht die Werte und senkt die MP-Kosten.
+        Pro Schritt 1 Duplikat: <strong>Basis → + → ++ → +++ → nächste Stufe</strong>.
+        4 Duplikate heben eine Karte eine Hauptstufe (z.B. MR → LR).
+        Jede Stufe erhöht Werte und senkt MP-Kosten.
         LR-Karten mit Awakening-Form können <strong>✦ ERWACHEN</strong>.
       </div>
 
@@ -167,7 +167,7 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
         {!isMaxed && (
           <div className="fusion-row__req">
             <span className={duplicatesAvailable >= duplicatesNeeded ? 'fusion-req--ok' : 'fusion-req--miss'}>
-              Duplikate {duplicatesAvailable}/{duplicatesNeeded}
+              {duplicatesNeeded} Duplikat nötig · {duplicatesAvailable} verfügbar
             </span>
             <span className="fusion-row__cost">💎 {crystalCost.toLocaleString('de-DE')}</span>
           </div>

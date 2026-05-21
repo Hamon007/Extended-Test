@@ -11,8 +11,11 @@ import type { CardInstance } from './GachaTypes';
 export const DECK_SIZE       = 5;
 export const MAX_MR_PER_DECK = 1;
 
-/** Alle Seltenheiten die auf das MR-Limit angerechnet werden. */
-export const MR_TIER: readonly Rarity[] = ['MR', 'MR+', 'MR++', 'MR+++', 'LR'];
+/** Alle Seltenheiten die auf das MR-Limit angerechnet werden (MR- und LR-Hauptstufe). */
+export const MR_TIER: readonly Rarity[] = [
+  'MR', 'MR+', 'MR++', 'MR+++',
+  'LR', 'LR+', 'LR++', 'LR+++',
+];
 
 // ── Deck-Struktur ─────────────────────────────────────────────────────────────
 
