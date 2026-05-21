@@ -6,7 +6,6 @@ import './MainScreen.css';
 // ── Typen ─────────────────────────────────────────────────────
 
 interface MainScreenProps {
-  onNav: (target: string) => void;
   onBack: () => void;
 }
 
@@ -65,7 +64,7 @@ function formatCountdown(ms: number): string {
 
 // ── Haupt-Komponente ──────────────────────────────────────────
 
-const MainScreen: React.FC<MainScreenProps> = ({ onNav, onBack }) => {
+const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [countdown, setCountdown] = useState(() => nextBattleMs());
   const [tipIndex,  setTipIndex]  = useState(0);
   const [npcIndex,  setNpcIndex]  = useState(0);
@@ -233,30 +232,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onNav, onBack }) => {
 
       </div>{/* end main-body */}
 
-      {/* ── Bottom Navigation ── */}
-      <nav className="main-nav">
-        <button className="main-nav__btn" onClick={() => onNav('guild')}>
-          <span className="main-nav__icon">🏰</span>
-          <span className="main-nav__label">Gilde</span>
-        </button>
-        <button className="main-nav__btn" onClick={() => onNav('gacha')}>
-          <span className="main-nav__icon">🔮</span>
-          <span className="main-nav__label">Beschwören</span>
-        </button>
-        <button className="main-nav__btn main-nav__btn--center" onClick={() => onNav('quest')}>
-          <span className="main-nav__icon">🚩</span>
-          <span className="main-nav__label">Quest</span>
-          <span className="main-nav__badge">*</span>
-        </button>
-        <button className="main-nav__btn" onClick={() => onNav('sacrifice')}>
-          <span className="main-nav__icon">⚗️</span>
-          <span className="main-nav__label">Opfern</span>
-        </button>
-        <button className="main-nav__btn" onClick={() => onNav('menu')}>
-          <span className="main-nav__icon">☰</span>
-          <span className="main-nav__label">Menü</span>
-        </button>
-      </nav>
     </div>
   );
 };

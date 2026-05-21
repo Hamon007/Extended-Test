@@ -53,12 +53,16 @@ class CardDatabaseService {
     const valid: Card[] = [];
     const invalid: unknown[] = [];
 
+    const base = import.meta.env.BASE_URL;
     for (const entry of raw) {
       if (isValidCard(entry)) {
-        // Resolve artwork_key → image path if image is empty/missing
-        const card = entry as Card & { artwork_key?: string };
-        if (!card.image && card.artwork_key) {
+        const card = { ...(entry as Card & { artwork_key?: string }) };
+        // Prefer artwork_key resolution (already BASE_URL-aware via ArtworkMapper)
+        if (card.artwork_key) {
           card.image = resolveArtwork(card.artwork_key);
+        } else if (card.image && card.image.startsWith('/') && !card.image.startsWith(base)) {
+          // Fix hardcoded absolute paths from cards.json (e.g. /assets/cards/azazel.png)
+          card.image = base + card.image.replace(/^\//, '');
         }
         valid.push(card);
         this.byId.set(card.id, card);

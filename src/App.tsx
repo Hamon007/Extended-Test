@@ -26,6 +26,9 @@ type Screen =
   | 'cardCollection'
   | 'placeholder';
 
+// Screens without bottom nav
+const NO_NAV_SCREENS: Screen[] = ['title'];
+
 // ── Placeholder-Screen ────────────────────────────────────────
 
 interface PlaceholderProps {
@@ -75,6 +78,7 @@ const App: React.FC = () => {
   const [dailyToast,       setDailyToast]       = useState<number | null>(null);
 
   const screen = stack[stack.length - 1];
+  const showNav = !NO_NAV_SCREENS.includes(screen);
 
   useEffect(() => {
     CardDatabase.init();
@@ -99,7 +103,7 @@ const App: React.FC = () => {
     );
   }
 
-  // ── Navigations-Handler ──────────────────────────────────────
+  // ── Navigation ────────────────────────────────────────────────
 
   const goTo = (next: Screen) => {
     setStack(prev => [...prev, next]);
@@ -109,44 +113,24 @@ const App: React.FC = () => {
     setStack(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
   };
 
-  // Navigations-Handler für MainScreen
-  const handleMainNav = (target: string) => {
+  const navTo = (target: string) => {
     switch (target) {
-      case 'gacha':
-        goTo('gacha');
-        break;
-      case 'menu':
-        goTo('menu');
-        break;
-      case 'guild':
-        setPlaceholderLabel('🏰 Gilde');
-        goTo('placeholder');
-        break;
-      case 'quest':
-        setPlaceholderLabel('🚩 Quest');
-        goTo('placeholder');
-        break;
-      case 'sacrifice':
-        setPlaceholderLabel('⚗️ Opfern');
-        goTo('placeholder');
-        break;
-      default:
-        break;
+      case 'gacha':    goTo('gacha'); break;
+      case 'menu':     goTo('menu'); break;
+      case 'guild':    setPlaceholderLabel('🏰 Gilde'); goTo('placeholder'); break;
+      case 'quest':    setPlaceholderLabel('🚩 Quest'); goTo('placeholder'); break;
+      case 'sacrifice':setPlaceholderLabel('⚗️ Opfern'); goTo('placeholder'); break;
     }
   };
 
-  // Navigations-Handler für MenuScreen
   const handleMenuNav = (target: string) => {
-    if (target === 'cardCollection') {
-      goTo('cardCollection');
-    }
+    if (target === 'cardCollection') goTo('cardCollection');
   };
 
   // ── Render ────────────────────────────────────────────────────
 
   return (
     <div className="app">
-      {/* Daily-Bonus-Toast (nur auf main-Screen sichtbar) */}
       {dailyToast !== null && screen === 'main' && (
         <div className="daily-toast" role="status">
           ☀️ Tages-Bonus! <strong>+{dailyToast} 💎</strong>
@@ -158,70 +142,24 @@ const App: React.FC = () => {
           <TitleScreen onEnter={() => goTo('main')} />
         )}
         {screen === 'main' && (
-          <MainScreen
-            onNav={handleMainNav}
-            onBack={goBack}
-          />
+          <MainScreen onBack={goBack} />
         )}
         {screen === 'gacha' && (
           <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', padding: '6px 10px',
-              background: 'var(--bg-mid)', borderBottom: '1px solid var(--border)',
-              flexShrink: 0,
-            }}>
-              <button
-                onClick={goBack}
-                style={{
-                  fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
-                  letterSpacing: '0.08em', color: 'var(--gold)',
-                  background: 'transparent', border: '1px solid var(--border)',
-                  borderRadius: '2px', padding: '5px 10px', cursor: 'pointer',
-                }}
-              >
-                ← Zurück
-              </button>
-            </div>
             <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
               <GachaScreen />
             </div>
           </div>
         )}
         {screen === 'deck' && (
-          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', padding: '6px 10px',
-              background: 'var(--bg-mid)', borderBottom: '1px solid var(--border)',
-              flexShrink: 0,
-            }}>
-              <button
-                onClick={goBack}
-                style={{
-                  fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
-                  letterSpacing: '0.08em', color: 'var(--gold)',
-                  background: 'transparent', border: '1px solid var(--border)',
-                  borderRadius: '2px', padding: '5px 10px', cursor: 'pointer',
-                }}
-              >
-                ← Zurück
-              </button>
-            </div>
-            <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
-              <DeckBuilderScreen />
-            </div>
+          <div style={{ flex: 1, overflow: 'hidden', minHeight: 0, width: '100%', height: '100%' }}>
+            <DeckBuilderScreen />
           </div>
         )}
-        {screen === 'battle' && (
-          <BattleScreen />
-        )}
-        {screen === 'collection' && (
-          <CollectionScreen />
-        )}
+        {screen === 'battle'     && <BattleScreen />}
+        {screen === 'collection' && <CollectionScreen />}
         {screen === 'menu' && (
-          <MenuScreen
-            onNav={handleMenuNav}
-            onBack={goBack}
-          />
+          <MenuScreen onNav={handleMenuNav} onBack={goBack} />
         )}
         {screen === 'cardCollection' && (
           <CardCollectionScreen onBack={goBack} />
@@ -230,6 +168,37 @@ const App: React.FC = () => {
           <PlaceholderScreen label={placeholderLabel} onBack={goBack} />
         )}
       </div>
+
+      {/* ── Globale Bottom-Navigation ── */}
+      {showNav && (
+        <nav className="app-nav">
+          <button className={`app-nav__btn${screen === 'placeholder' && placeholderLabel.includes('Gilde') ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('guild')}>
+            <span className="app-nav__icon">🏰</span>
+            <span className="app-nav__label">Gilde</span>
+          </button>
+          <button className={`app-nav__btn${screen === 'gacha' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('gacha')}>
+            <span className="app-nav__icon">🔮</span>
+            <span className="app-nav__label">Beschwören</span>
+          </button>
+          <button className={`app-nav__btn${screen === 'main' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => { setStack(['title', 'main']); }}>
+            <span className="app-nav__icon">🏠</span>
+            <span className="app-nav__label">Heim</span>
+          </button>
+          <button className={`app-nav__btn${screen === 'placeholder' && placeholderLabel.includes('Quest') ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('quest')}>
+            <span className="app-nav__icon">🚩</span>
+            <span className="app-nav__label">Quest</span>
+          </button>
+          <button className={`app-nav__btn${screen === 'menu' || screen === 'cardCollection' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('menu')}>
+            <span className="app-nav__icon">☰</span>
+            <span className="app-nav__label">Menü</span>
+          </button>
+        </nav>
+      )}
     </div>
   );
 };

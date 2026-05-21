@@ -92,6 +92,14 @@
   100% { opacity: 0; }
 }
 
+/* ── Scrollbarer Inhaltsbereich ─────────────────────────────── */
+
+.card-col-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* ── Karten-Grid ─────────────────────────────────────────────── */
 
 .card-col-grid {
@@ -99,9 +107,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 10px;
-  overflow-y: auto;
-  flex: 1;
-  align-content: start;
 }
 
 /* ── Karten-Item ─────────────────────────────────────────────── */
