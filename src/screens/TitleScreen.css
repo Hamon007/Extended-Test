@@ -1,12 +1,13 @@
 /* ── TitleScreen — vollständig responsive ───────────────────── */
 
-/*
-  position: fixed + inset: 0  →  bricht aus der max-width: 480px App-Box aus
-  und nutzt immer den vollen Viewport (PC, Tablet, Smartphone hoch/quer)
-*/
 .title-screen {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  height: 100dvh; /* dynamisch: Browser-UI ausgeschlossen */
   z-index: 100;
   overflow: hidden;
   cursor: pointer;
@@ -26,10 +27,10 @@
   user-select: none;
 }
 
-/* Portrait Smartphone: Bild mittig zentriert zeigen */
+/* Portrait Smartphone: Figuren zeigen, nicht Bildtext */
 @media (orientation: portrait) and (max-width: 600px) {
   .title-screen__bg {
-    object-position: 38% center;
+    object-position: 52% center;
   }
 }
 
@@ -47,63 +48,64 @@
   }
 }
 
-/* Tablet / Desktop Querformat: volles Bild */
-@media (orientation: landscape) and (min-height: 521px) {
-  .title-screen__bg {
-    object-position: center center;
-  }
-}
+/* ── Verlauf-Overlay: deckt Bildtext oben & unten ab ────────── */
 
 .title-screen__bg-overlay {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.0) 0%,
-    rgba(0,0,0,0.1) 45%,
-    rgba(0,0,0,0.6) 100%
+    rgba(8, 5, 10, 0.88)  0%,   /* Oben: Bildtitel verbergen */
+    rgba(8, 5, 10, 0.50) 12%,
+    rgba(0, 0,  0, 0.00) 28%,
+    rgba(0, 0,  0, 0.00) 58%,
+    rgba(8, 5, 10, 0.65) 78%,   /* Unten: Bildbutton verbergen */
+    rgba(8, 5, 10, 0.97) 93%,
+    rgba(8, 5, 10, 1.00) 100%
   );
-  pointer-events: none;
 }
 
 /* ── Logo ────────────────────────────────────────────────────── */
 
 .title-screen__logo {
   position: absolute;
-  top: clamp(6%, 10vh, 14%);
+  top: clamp(5%, 8vh, 12%);
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   text-align: center;
   pointer-events: none;
-  width: max-content;
+  width: 90%;
 }
 
 .title-screen__logo-codex {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: clamp(1.8rem, 6vw, 4.5rem);
+  font-size: clamp(2.2rem, 9vw, 5rem);
   color: #f8df80;
   text-shadow:
-    0 0 20px rgba(240,208,128,0.9),
-    0 0 50px rgba(201,168,76,0.5),
-    0 2px 6px rgba(0,0,0,0.95);
-  letter-spacing: 0.06em;
+    0 0 24px rgba(240, 208, 128, 1.0),
+    0 0 60px rgba(201, 168, 76, 0.7),
+    0 2px 8px rgba(0, 0, 0, 0.99);
+  letter-spacing: 0.07em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .title-screen__logo-immortalis {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: clamp(1rem, 3.5vw, 2.8rem);
+  font-size: clamp(1.1rem, 4.5vw, 3rem);
   color: #e8c860;
   text-shadow:
-    0 0 14px rgba(201,168,76,0.8),
-    0 2px 4px rgba(0,0,0,0.95);
-  letter-spacing: 0.14em;
+    0 0 16px rgba(201, 168, 76, 0.9),
+    0 2px 6px rgba(0, 0, 0, 0.99);
+  letter-spacing: 0.18em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 /* Landscape Smartphone: Logo kleiner */
@@ -111,21 +113,21 @@
   .title-screen__logo {
     top: 4%;
   }
-  .title-screen__logo-codex      { font-size: clamp(1.4rem, 5vw, 2.5rem); }
-  .title-screen__logo-immortalis { font-size: clamp(0.8rem, 2.8vw, 1.6rem); }
+  .title-screen__logo-codex      { font-size: clamp(1.4rem, 6vw, 2.8rem); }
+  .title-screen__logo-immortalis { font-size: clamp(0.8rem, 3vw, 1.8rem); }
 }
 
 /* ── Start-Button ────────────────────────────────────────────── */
 
 .title-screen__bottom-center {
   position: absolute;
-  bottom: clamp(14%, 18vh, 22%);
+  bottom: clamp(16%, 20vh, 24%);
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
 }
 
-/* Landscape Smartphone: Button weiter unten */
+/* Landscape Smartphone */
 @media (orientation: landscape) and (max-height: 520px) {
   .title-screen__bottom-center {
     bottom: 14%;
@@ -134,25 +136,25 @@
 
 .title-screen__start-btn {
   font-family: 'Cinzel', serif;
-  font-size: clamp(0.65rem, 2vw, 1rem);
+  font-size: clamp(0.7rem, 2.2vw, 1.05rem);
   letter-spacing: 0.2em;
   color: #f0d080;
-  background: linear-gradient(135deg, rgba(26,18,5,0.85) 0%, rgba(45,31,5,0.85) 100%);
+  background: linear-gradient(135deg, rgba(26, 18, 5, 0.9) 0%, rgba(45, 31, 5, 0.9) 100%);
   border: 2px solid #c9a84c;
   border-radius: 4px;
-  padding: clamp(10px, 1.5vh, 16px) clamp(24px, 4vw, 48px);
+  padding: clamp(11px, 1.6vh, 18px) clamp(28px, 5vw, 56px);
   cursor: pointer;
   white-space: nowrap;
   animation: title-pulse 1.8s ease-in-out infinite;
-  text-shadow: 0 0 10px rgba(240,208,128,0.5);
+  text-shadow: 0 0 12px rgba(240, 208, 128, 0.6);
   box-shadow:
-    0 0 20px rgba(201,168,76,0.4),
-    inset 0 0 20px rgba(201,168,76,0.08);
+    0 0 24px rgba(201, 168, 76, 0.45),
+    inset 0 0 20px rgba(201, 168, 76, 0.10);
   -webkit-tap-highlight-color: transparent;
 }
 
 .title-screen__start-btn:active {
-  background: rgba(201,168,76,0.2);
+  background: rgba(201, 168, 76, 0.2);
   animation-play-state: paused;
 }
 
@@ -166,7 +168,7 @@
 .title-screen__bottom-left,
 .title-screen__bottom-right {
   position: absolute;
-  bottom: clamp(10px, 2.5vh, 24px);
+  bottom: clamp(10px, 2.5vh, 28px);
   display: flex;
   gap: clamp(6px, 1.5vw, 16px);
   z-index: 10;
@@ -175,7 +177,7 @@
 .title-screen__bottom-left  { left:  clamp(8px, 2vw, 24px); }
 .title-screen__bottom-right { right: clamp(8px, 2vw, 24px); }
 
-/* Landscape Smartphone: Buttons kompakter */
+/* Landscape Smartphone */
 @media (orientation: landscape) and (max-height: 520px) {
   .title-screen__bottom-left,
   .title-screen__bottom-right {
@@ -190,11 +192,11 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  background: rgba(8,5,10,0.65);
-  border: 1px solid rgba(201,168,76,0.3);
+  background: rgba(8, 5, 10, 0.72);
+  border: 1px solid rgba(201, 168, 76, 0.35);
   border-radius: 50%;
-  width: clamp(38px, 6vw, 52px);
-  height: clamp(38px, 6vw, 52px);
+  width: clamp(40px, 7vw, 54px);
+  height: clamp(40px, 7vw, 54px);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: border-color 0.15s, background 0.15s;
@@ -202,19 +204,20 @@
 }
 
 .title-screen__meta-btn:active {
-  background: rgba(201,168,76,0.15);
+  background: rgba(201, 168, 76, 0.18);
   border-color: #c9a84c;
 }
 
 .title-screen__meta-icon {
-  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  font-size: clamp(1rem, 2.2vw, 1.4rem);
   line-height: 1;
 }
 
 .title-screen__meta-label {
   font-family: 'Cinzel', serif;
-  font-size: clamp(0.3rem, 0.8vw, 0.45rem);
+  font-size: clamp(0.32rem, 0.85vw, 0.48rem);
   color: #8a6520;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
