@@ -32,7 +32,6 @@ const BATTLE_HOURS = [0, 7, 14, 21];
 
 function nextBattleMs(): number {
   const now = new Date();
-  const nowMs = now.getTime();
   // nächste UTC-Stunde in [0,7,14,21]
   const h = now.getUTCHours();
   const m = now.getUTCMinutes();
