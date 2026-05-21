@@ -1,0 +1,279 @@
+/* ── VictoryScreen ─────────────────────────────────────────── */
+
+.victory-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: radial-gradient(ellipse at 50% 30%, #1a2a0a 0%, #0a1205 60%, #08050a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: victory-enter 0.4s ease;
+}
+
+@keyframes victory-enter {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Partikel (CSS-only) ───────────────────────────────────── */
+.victory-particles { position: absolute; inset: 0; pointer-events: none; }
+
+.vp {
+  position: absolute;
+  border-radius: 50%;
+  animation: vp-float linear infinite;
+  opacity: 0;
+}
+
+/* Generiere 12 Partikel-Varianten via nth-child */
+.vp--0 { width: 6px;  height: 6px;  background: #f0d080; left: 10%; top: 80%; animation-duration: 3.2s; animation-delay: 0s;    }
+.vp--1 { width: 4px;  height: 4px;  background: #c9a84c; left: 25%; top: 90%; animation-duration: 2.8s; animation-delay: 0.4s;  }
+.vp--2 { width: 8px;  height: 8px;  background: #4caf50; left: 40%; top: 85%; animation-duration: 3.5s; animation-delay: 0.8s;  }
+.vp--3 { width: 5px;  height: 5px;  background: #f0d080; left: 55%; top: 88%; animation-duration: 2.5s; animation-delay: 1.2s;  }
+
+/* Alle 12 via nth-child — vereinfacht */
+.vp:nth-child(1)  { left:  8%; animation-duration: 3.1s; animation-delay: 0.0s; }
+.vp:nth-child(2)  { left: 18%; animation-duration: 2.7s; animation-delay: 0.3s; }
+.vp:nth-child(3)  { left: 30%; animation-duration: 3.4s; animation-delay: 0.6s; }
+.vp:nth-child(4)  { left: 42%; animation-duration: 2.9s; animation-delay: 0.9s; }
+.vp:nth-child(5)  { left: 55%; animation-duration: 3.2s; animation-delay: 0.2s; }
+.vp:nth-child(6)  { left: 65%; animation-duration: 2.6s; animation-delay: 0.5s; }
+.vp:nth-child(7)  { left: 75%; animation-duration: 3.6s; animation-delay: 0.8s; }
+.vp:nth-child(8)  { left: 85%; animation-duration: 2.8s; animation-delay: 1.1s; }
+.vp:nth-child(9)  { left: 22%; animation-duration: 3.0s; animation-delay: 1.4s; }
+.vp:nth-child(10) { left: 50%; animation-duration: 2.5s; animation-delay: 1.7s; }
+.vp:nth-child(11) { left: 70%; animation-duration: 3.3s; animation-delay: 0.4s; }
+.vp:nth-child(12) { left: 90%; animation-duration: 2.9s; animation-delay: 1.0s; }
+
+@keyframes vp-float {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 0;   }
+  10%  { opacity: 0.9; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(-90vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── Inhalt ───────────────────────────────────────────────── */
+.victory-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px 32px;
+  width: 100%;
+  max-width: 380px;
+  overflow-y: auto;
+  max-height: 100dvh;
+  scrollbar-width: none;
+}
+.victory-content::-webkit-scrollbar { display: none; }
+
+/* Trophy */
+.victory-trophy {
+  font-size: 4rem;
+  animation: trophy-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  filter: drop-shadow(0 0 20px rgba(240,208,128,0.7));
+}
+
+@keyframes trophy-drop {
+  from { transform: translateY(-40px) scale(0.6); opacity: 0; }
+  to   { transform: translateY(0) scale(1);       opacity: 1; }
+}
+
+/* Titel */
+.victory-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 36px;
+  color: #f0d080;
+  letter-spacing: 4px;
+  text-shadow:
+    0 0 20px rgba(240,208,128,0.7),
+    0 0 40px rgba(240,208,128,0.4);
+  margin: 8px 0 0;
+  animation: title-glow 0.5s ease 0.3s both;
+}
+
+@keyframes title-glow {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Trennlinie */
+.victory-divider {
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+  margin: 14px 0 18px;
+}
+
+/* ── Belohnungen ──────────────────────────────────────────── */
+.victory-rewards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.reward-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  animation: reward-slide-in 0.4s ease both;
+}
+
+.reward-row--crystals { background: rgba(201,168,76,0.12); border: 1px solid #8a6520; animation-delay: 0.4s; }
+.reward-row--xp       { background: rgba(156,39,176,0.1);  border: 1px solid #6a1b9a; animation-delay: 0.5s; }
+
+@keyframes reward-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.reward-row__label {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #c9a84c;
+  letter-spacing: 1px;
+}
+
+.reward-row__value {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 16px;
+  color: #f0d080;
+  font-weight: 700;
+}
+
+/* ── Karten-Drops ─────────────────────────────────────────── */
+.victory-cards {
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #3a2030;
+  border-radius: 8px;
+  padding: 12px;
+  animation: reward-slide-in 0.4s ease 0.6s both;
+}
+
+.victory-cards__title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.victory-cards__grid {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Einzelne Belohnungs-Karte */
+.reward-card {
+  position: relative;
+  width: 90px;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #c9a84c);
+  background: #0d0810;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--rc, #c9a84c) 40%, transparent);
+  animation: card-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both;
+}
+
+@keyframes card-reveal {
+  from { transform: scale(0.6) rotateY(90deg); opacity: 0; }
+  to   { transform: scale(1)   rotateY(0deg);  opacity: 1; }
+}
+
+.reward-card--unknown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.reward-card__art {
+  position: absolute;
+  inset: 0;
+}
+
+.reward-card__art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  display: block;
+}
+
+.reward-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; height: 100%;
+  font-size: 1.8rem;
+  opacity: 0.4;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+}
+
+.reward-card__rarity {
+  position: absolute;
+  top: 5px; left: 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 5px;
+  z-index: 2;
+}
+
+.reward-card__name {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.9), transparent);
+  padding: 16px 5px 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #f0d080;
+  text-align: center;
+  line-height: 1.3;
+  z-index: 2;
+}
+
+.victory-no-drop {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #8a6520;
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
+  animation: reward-slide-in 0.4s ease 0.6s both;
+}
+
+/* ── Weiter-Button ────────────────────────────────────────── */
+.victory-btn {
+  background: linear-gradient(135deg, #1a2a05, #2d4a08, #1a2a05);
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  padding: 14px 32px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #81c784;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 0 12px rgba(76,175,80,0.3);
+  animation: reward-slide-in 0.4s ease 0.8s both;
+}
+
+.victory-btn:hover {
+  box-shadow: 0 0 24px rgba(76,175,80,0.55);
+}
+.victory-btn:active { transform: scale(0.97); }

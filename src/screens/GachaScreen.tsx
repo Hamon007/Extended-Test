@@ -1,0 +1,319 @@
+import React, { useState, useEffect } from 'react';
+import { useGachaStore } from '../hooks/useGachaStore';
+import { CardDatabase } from '../services/CardDatabase';
+import type { PullResult } from '../types/GachaTypes';
+import {
+  PULL_COST_SINGLE, PULL_COST_MULTI,
+  PITY_THRESHOLD, DROP_RATES,
+} from '../types/GachaTypes';
+import { RARITY_COLOR } from '../types/Card';
+import { GachaSystem } from '../services/GachaSystem';
+import './GachaScreen.css';
+
+// ── Fehler-Texte ──────────────────────────────────────────────
+
+const ERROR_LABEL: Record<string, string> = {
+  NOT_ENOUGH_CRYSTALS: 'Nicht genug Kristalle.',
+  DB_EMPTY:            'Keine Karten in der Datenbank.',
+};
+
+// ── Haupt-Screen ──────────────────────────────────────────────
+
+const GachaScreen: React.FC = () => {
+  const store = useGachaStore();
+  const { state, lastSingle, lastMulti, error, isPulling } = store;
+
+  // Zeigt Ergebnisansicht wenn Pulls vorhanden
+  const showResult = lastSingle !== null || lastMulti !== null;
+
+  return (
+    <div className="gacha-screen">
+
+      {/* ── Header ── */}
+      <div className="gacha-header">
+        <h1 className="gacha-header__title">◆ BESCHWÖRUNG ◆</h1>
+        <div className="gacha-header__crystals">
+          <span className="gacha-header__crystal-icon">💎</span>
+          <span className="gacha-header__crystal-count">
+            {state.crystals.toLocaleString('de-DE')}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Pity-Anzeige ── */}
+      <PityBar pity={state.pityCounter} total={state.totalPulls} />
+
+      {showResult ? (
+        /* ── Ergebnisansicht ── */
+        <>
+          {lastSingle && (
+            <SingleResult result={lastSingle} onClose={store.clearResults} />
+          )}
+          {lastMulti && (
+            <MultiResult results={lastMulti.results} onClose={store.clearResults} />
+          )}
+        </>
+      ) : (
+        /* ── Beschwörungsansicht ── */
+        <div className="gacha-main">
+
+          {/* Beschwörungs-Art */}
+          <BannerCard />
+
+          {/* Drop-Rates Info */}
+          <DropRateTable />
+
+          {/* Fehleranzeige */}
+          {error && (
+            <div className="gacha-error">
+              ⚠ {ERROR_LABEL[error] ?? error}
+            </div>
+          )}
+
+          {/* Aktions-Buttons */}
+          <div className="gacha-actions">
+            <button
+              className={`gacha-btn gacha-btn--single ${!GachaSystem.canSinglePull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
+              onClick={store.doSingle}
+              disabled={isPulling || !GachaSystem.canSinglePull(state.crystals)}
+            >
+              <span className="gacha-btn__label">EINZELN BESCHWÖREN</span>
+              <span className="gacha-btn__cost">
+                💎 {PULL_COST_SINGLE.toLocaleString('de-DE')}
+              </span>
+            </button>
+
+            <button
+              className={`gacha-btn gacha-btn--multi ${!GachaSystem.canMultiPull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
+              onClick={store.doMulti}
+              disabled={isPulling || !GachaSystem.canMultiPull(state.crystals)}
+            >
+              <span className="gacha-btn__label">10× BESCHWÖREN</span>
+              <span className="gacha-btn__cost">
+                💎 {PULL_COST_MULTI.toLocaleString('de-DE')}
+              </span>
+            </button>
+          </div>
+
+          {/* Stats-Leiste */}
+          <div className="gacha-stats">
+            <div className="gacha-stat">
+              <span className="gacha-stat__label">GESAMT</span>
+              <span className="gacha-stat__value">{state.totalPulls} Pulls</span>
+            </div>
+            <div className="gacha-stat">
+              <span className="gacha-stat__label">INVENTAR</span>
+              <span className="gacha-stat__value">{state.inventory.length} Karten</span>
+            </div>
+          </div>
+
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Pity-Balken ───────────────────────────────────────────────
+
+interface PityBarProps { pity: number; total: number; }
+
+const PityBar: React.FC<PityBarProps> = ({ pity, total }) => {
+  const pct = Math.min(100, (pity / PITY_THRESHOLD) * 100);
+  const urgent = pity >= 80;
+
+  return (
+    <div className="pity-bar-wrap">
+      <div className="pity-bar-header">
+        <span className="pity-bar-label">PITY</span>
+        <span className={`pity-bar-count ${urgent ? 'pity-bar-count--urgent' : ''}`}>
+          {pity} / {PITY_THRESHOLD}
+          {pity >= PITY_THRESHOLD - 1 && ' ← GARANTIERTER SSR!'}
+        </span>
+        <span className="pity-bar-total">Pull #{total}</span>
+      </div>
+      <div className="pity-bar-track">
+        <div
+          className={`pity-bar-fill ${urgent ? 'pity-bar-fill--urgent' : ''}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="pity-bar-note">
+        Reset bei SSR oder MR ✦ Bei Pull {PITY_THRESHOLD} garantierter SSR
+      </p>
+    </div>
+  );
+};
+
+// ── Banner-Card ───────────────────────────────────────────────
+
+const BannerCard: React.FC = () => (
+  <div className="gacha-banner">
+    <div className="gacha-banner__glow" />
+    <div className="gacha-banner__content">
+      <div className="gacha-banner__icon">🌑</div>
+      <h2 className="gacha-banner__title">Codex der Verdammten</h2>
+      <p className="gacha-banner__subtitle">Beschwöre mächtige Unsterbliche</p>
+    </div>
+  </div>
+);
+
+// ── Drop-Rate-Tabelle ─────────────────────────────────────────
+
+const DropRateTable: React.FC = () => (
+  <div className="drop-table">
+    <div className="drop-table__title">ZIEHCHANCEN</div>
+    <div className="drop-table__rows">
+      {DROP_RATES.map(entry => (
+        <div key={entry.rarity} className="drop-table__row">
+          <span
+            className="drop-table__rarity"
+            style={{ color: RARITY_COLOR[entry.rarity] ?? '#9e9e9e' }}
+          >
+            {entry.rarity}
+          </span>
+          <div className="drop-table__bar-wrap">
+            <div
+              className="drop-table__bar"
+              style={{
+                width: `${entry.rate}%`,
+                background: RARITY_COLOR[entry.rarity] ?? '#9e9e9e',
+              }}
+            />
+          </div>
+          <span className="drop-table__pct">{entry.rate}%</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// ── Einzelner Pull – Ergebnis ─────────────────────────────────
+
+interface SingleResultProps { result: PullResult; onClose: () => void; }
+
+const SingleResult: React.FC<SingleResultProps> = ({ result, onClose }) => {
+  const { instance, wasPity } = result;
+  const card = CardDatabase.getById(instance.cardId);
+  const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="result-single">
+      <div className="result-single__card" style={{ '--rc': rarityColor } as React.CSSProperties}>
+
+        {/* Artwork */}
+        <div className="result-single__art">
+          {card && !imgError ? (
+            <img src={card.image} alt={card.name} onError={() => setImgError(true)} />
+          ) : (
+            <div className="result-single__placeholder">🌑</div>
+          )}
+          <div className="result-single__art-gradient" />
+        </div>
+
+        {/* Badges */}
+        {wasPity && <div className="result-badge result-badge--pity">PITY</div>}
+        <div className="result-badge result-badge--rarity" style={{ color: rarityColor }}>
+          {instance.rarity}
+        </div>
+
+        {/* Info */}
+        <div className="result-single__info">
+          <p className="result-single__name">{card?.name ?? instance.cardId}</p>
+          {card && <p className="result-single__title">{card.title}</p>}
+        </div>
+      </div>
+
+      <button className="result-close-btn" onClick={onClose}>
+        ◀ ZURÜCK
+      </button>
+    </div>
+  );
+};
+
+// ── Multi-Pull – Ergebnis ─────────────────────────────────────
+
+interface MultiResultProps { results: PullResult[]; onClose: () => void; }
+
+const MultiResult: React.FC<MultiResultProps> = ({ results, onClose }) => {
+  // Karten werden mit Stagger-Animation enthüllt
+  const [revealed, setRevealed] = useState(0);
+
+  useEffect(() => {
+    if (revealed >= results.length) return;
+    const t = setTimeout(() => setRevealed(r => r + 1), 120);
+    return () => clearTimeout(t);
+  }, [revealed, results.length]);
+
+  return (
+    <div className="result-multi">
+      <div className="result-multi__grid">
+        {results.map((pr, i) => (
+          <MultiCard key={pr.instance.uuid} pullResult={pr} visible={i < revealed} />
+        ))}
+      </div>
+
+      {revealed >= results.length && (
+        <button className="result-close-btn result-close-btn--multi" onClick={onClose}>
+          ◀ ZURÜCK
+        </button>
+      )}
+    </div>
+  );
+};
+
+// ── Einzelne Karte im Multi-Grid ──────────────────────────────
+
+interface MultiCardProps { pullResult: PullResult; visible: boolean; }
+
+const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible }) => {
+  const { instance, wasPity } = pullResult;
+  const card = CardDatabase.getById(instance.cardId);
+  const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div
+      className={`multi-card ${visible ? 'multi-card--visible' : ''}`}
+      style={{ '--rc': rarityColor } as React.CSSProperties}
+    >
+      {visible ? (
+        <>
+          <div className="multi-card__art">
+            {card && !imgError ? (
+              <img
+                src={card.image}
+                alt={card.name}
+                onError={() => setImgError(true)}
+                loading="lazy"
+              />
+            ) : (
+              <div className="multi-card__placeholder">🌑</div>
+            )}
+            <div className="multi-card__gradient" />
+          </div>
+
+          {wasPity && (
+            <div className="multi-card__pity-badge">P</div>
+          )}
+
+          <div className="multi-card__footer">
+            <span
+              className="multi-card__rarity"
+              style={{ color: rarityColor }}
+            >
+              {instance.rarity}
+            </span>
+            <span className="multi-card__name">{card?.name ?? instance.cardId}</span>
+          </div>
+        </>
+      ) : (
+        <div className="multi-card__back">
+          <span>?</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default GachaScreen;

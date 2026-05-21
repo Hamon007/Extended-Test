@@ -1,0 +1,565 @@
+/* ── BattleScreen ──────────────────────────────────────────── */
+
+/* ── Auswahl-Screen ───────────────────────────────────────── */
+.battle-screen--select {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: radial-gradient(ellipse at top, #1a0812 0%, #08050a 70%);
+  overflow: hidden;
+}
+
+.battle-select-header {
+  padding: 12px 14px 10px;
+  background: linear-gradient(180deg, #1a0d12, #120910);
+  border-bottom: 1px solid #8a6520;
+  flex-shrink: 0;
+}
+
+.battle-select-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px;
+  color: #f0d080;
+  letter-spacing: 2px;
+}
+
+/* Deck-Status */
+.battle-deck-status {
+  margin: 10px 12px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.battle-deck-status--ok   { background: rgba(76,175,80,0.12); color: #81c784; border: 1px solid #2e7d32; }
+.battle-deck-status--warn { background: rgba(255,152,0,0.1);  color: #ffb74d; border: 1px solid #e65100; }
+
+/* Gegner-Liste */
+.battle-enemy-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+
+.enemy-select-card {
+  background: linear-gradient(135deg, #180d1a, #200f20);
+  border: 1px solid #3a2030;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.enemy-select-card:active         { transform: scale(0.99); }
+.enemy-select-card--selected      { border-color: #c9a84c; box-shadow: 0 0 12px rgba(201,168,76,0.25); }
+
+.enemy-select-card__tier {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a1525;
+  border-radius: 4px;
+  padding: 3px 6px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.enemy-select-card__info { flex: 1; }
+.enemy-select-card__name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  margin-bottom: 2px;
+}
+.enemy-select-card__title {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #8a6520;
+  font-style: italic;
+}
+.enemy-select-card__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Start-Button */
+.battle-start-btn {
+  margin: 10px 12px 16px;
+  padding: 14px;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #200d28, #3d1040, #200d28);
+  border: 2px solid #9c27b0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: box-shadow 0.15s;
+  box-shadow: 0 0 16px rgba(156,39,176,0.25);
+}
+.battle-start-btn:not(.battle-start-btn--disabled):hover {
+  box-shadow: 0 0 24px rgba(156,39,176,0.45);
+}
+.battle-start-btn--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #2a1525;
+  box-shadow: none;
+  background: linear-gradient(135deg, #1a0d15, #200f18);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BATTLE-ARENA
+   ══════════════════════════════════════════════════════════════ */
+
+.battle-arena {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 30%, #1a0520 0%, #08050a 65%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Topbar ───────────────────────────────────────────────── */
+.arena-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(10,5,14,0.9);
+  border-bottom: 1px solid #2a1525;
+  flex-shrink: 0;
+}
+
+.arena-round {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  letter-spacing: 1px;
+}
+
+.arena-phase {
+  flex: 1;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.arena-phase--player_turn { color: #81c784; }
+.arena-phase--enemy_turn  { color: #ef9a9a; animation: phase-pulse 0.6s ease-in-out infinite; }
+.arena-phase--round_end   { color: #c9a84c; }
+.arena-phase--ended       { color: #f0d080; font-size: 13px; }
+
+@keyframes phase-pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+.arena-flee-btn {
+  background: none;
+  border: 1px solid #3a2030;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8b1a1a;
+  cursor: pointer;
+}
+.arena-flee-btn:hover { border-color: #8b1a1a; color: #ef9a9a; }
+
+/* ── Gegner-Zone (oben) ───────────────────────────────────── */
+.arena-enemy-zone {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px 8px;
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid #2a1525;
+  flex-shrink: 0;
+}
+
+.arena-enemy-portrait {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #200d20, #3d1030);
+  border: 2px solid #8b1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.arena-enemy-info { flex: 1; min-width: 0; }
+
+.arena-enemy-name {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #f0d080;
+  margin-bottom: 4px;
+}
+
+/* Gegner-Karten-Reihe */
+.arena-enemy-cards-row {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.arena-enemy-cards-row::-webkit-scrollbar { display: none; }
+
+.enemy-card-mini {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #3a2030;
+  border-radius: 4px;
+  padding: 3px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  min-width: 40px;
+  transition: opacity 0.2s;
+}
+.enemy-card-mini--played    { opacity: 0.4; border-color: #8b1a1a; }
+.enemy-card-mini--destroyed { opacity: 0.25; }
+
+.enemy-card-mini__icon  { font-size: 10px; }
+.enemy-card-mini__name  { font-family: 'Cinzel', serif; font-size: 7px; color: #e8d5b0; }
+.enemy-card-mini__atk   { font-family: 'Cinzel', serif; font-size: 7px; color: #ef9a9a; }
+
+/* ── HP/MP-Balken ─────────────────────────────────────────── */
+.battle-bar {
+  position: relative;
+  height: 10px;
+  background: #1a1018;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #2a1525;
+  margin-bottom: 3px;
+}
+.battle-bar--mp { height: 7px; }
+
+.battle-bar__fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.battle-bar__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: rgba(255,255,255,0.85);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Log + Combo-Overlay Wrapper ──────────────────────────── */
+.arena-log-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Combo zentral rechts im Log-Bereich */
+.combo-overlay {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ── Battle-Log ───────────────────────────────────────────── */
+.battle-log {
+  flex: 1;
+  overflow: hidden;
+  padding: 6px 10px;
+  padding-right: 105px; /* Platz für Combo-Anzeige rechts */
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+}
+
+.battle-log__entry {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  line-height: 1.4;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  animation: log-fade-in 0.25s ease;
+}
+@keyframes log-fade-in { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:none;} }
+
+.battle-log__entry--player { color: #81c784; background: rgba(45,138,62,0.08); }
+.battle-log__entry--enemy  { color: #ef9a9a; background: rgba(204,34,0,0.08); }
+.battle-log__entry--system { color: #c9a84c; font-style: italic; font-size: 10px; }
+
+.battle-log__dmg {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.battle-log__dmg--player { color: #ff5722; }
+.battle-log__dmg--enemy  { color: #ff5722; }
+
+/* ── Spieler-Zone (unten) ─────────────────────────────────── */
+.arena-player-zone {
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.5);
+  border-top: 1px solid #2a1525;
+  padding: 8px 10px 4px;
+}
+
+.arena-player-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.arena-stat-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+
+/* Karten-Hand */
+.arena-hand {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+  margin-bottom: 8px;
+}
+.arena-hand::-webkit-scrollbar { display: none; }
+
+/* Einzelne Hand-Karte */
+.hand-card {
+  position: relative;
+  width: 70px;
+  height: 105px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #8a6520);
+  background: #0d0810;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+}
+
+.hand-card--playable {
+  cursor: pointer;
+}
+.hand-card--playable:active {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--rc, #c9a84c) 50%, transparent);
+}
+.hand-card--playable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--rc, #c9a84c) 35%, transparent);
+}
+
+.hand-card--played    { opacity: 0.4; cursor: default; }
+.hand-card--destroyed { opacity: 0.2; cursor: default; }
+.hand-card--no-mp     { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
+
+.hand-card__art {
+  position: absolute;
+  inset: 0;
+}
+.hand-card__art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  display: block;
+}
+.hand-card__placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; opacity: 0.3;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+}
+.hand-card__played-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: #81c784;
+  z-index: 5;
+}
+.hand-card__gradient {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,.95), transparent);
+  pointer-events: none;
+}
+
+.hand-card__mp {
+  position: absolute;
+  top: 3px; right: 3px;
+  z-index: 5;
+  background: rgba(33,150,243,0.85);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #fff;
+}
+.hand-card__mp--low { background: rgba(139,26,26,0.85); }
+
+.hand-card__footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 5;
+  padding: 8px 4px 3px;
+}
+.hand-card__name {
+  display: block;
+  font-family: 'Cinzel', serif; font-size: 7px; color: #f0d080;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+.hand-card__atk {
+  display: block;
+  font-family: 'Cinzel', serif; font-size: 7px; color: #ef9a9a;
+}
+
+/* End-Turn Button */
+.arena-end-turn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #c9a84c;
+  background: linear-gradient(135deg, #1e1218, #2a1820);
+  border: 1px solid #8a6520;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.arena-end-turn:hover:not(.arena-end-turn--disabled) {
+  border-color: #c9a84c;
+  box-shadow: 0 0 8px rgba(201,168,76,0.25);
+}
+.arena-end-turn--ready {
+  border-color: #c9a84c;
+  color: #f0d080;
+  box-shadow: 0 0 10px rgba(201,168,76,0.3);
+  animation: end-pulse 1.2s ease-in-out infinite;
+}
+@keyframes end-pulse { 0%,100%{box-shadow:0 0 10px rgba(201,168,76,0.3);} 50%{box-shadow:0 0 20px rgba(201,168,76,0.55);} }
+.arena-end-turn--disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Ergebnis-Overlay ─────────────────────────────────────── */
+.battle-result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlay-in 0.3s ease;
+}
+@keyframes overlay-in { from{opacity:0;} to{opacity:1;} }
+
+.battle-result-overlay--victory { background: rgba(0,20,0,0.88); }
+.battle-result-overlay--defeat  { background: rgba(20,0,0,0.9);  }
+
+.battle-result-box {
+  background: #0e0812;
+  border-radius: 12px;
+  padding: 28px 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 280px;
+  width: 90%;
+  animation: result-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes result-pop { from{transform:scale(0.7);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+.battle-result-overlay--victory .battle-result-box { border: 2px solid #4caf50; }
+.battle-result-overlay--defeat  .battle-result-box { border: 2px solid #8b1a1a; }
+
+.battle-result-icon  { font-size: 3rem; }
+.battle-result-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  color: #f0d080;
+}
+
+.battle-result-rewards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.reward-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #c9a84c;
+  padding: 5px 10px;
+  background: rgba(201,168,76,0.08);
+  border-radius: 5px;
+}
+
+.battle-result-reason {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: #8a6520;
+  font-style: italic;
+}
+
+.battle-result-btn {
+  background: linear-gradient(135deg, #2a1520, #1a0d12);
+  border: 1px solid #8a6520;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: border-color 0.15s;
+  margin-top: 4px;
+}
+.battle-result-btn:hover { border-color: #c9a84c; }

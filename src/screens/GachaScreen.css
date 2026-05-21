@@ -1,0 +1,619 @@
+/* ── GachaScreen ───────────────────────────────────────────── */
+
+.gacha-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at top, #1a0520 0%, #08050a 60%);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.gacha-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  background: linear-gradient(180deg, #1a0d12, #120910);
+  border-bottom: 1px solid #8a6520;
+  flex-shrink: 0;
+}
+
+.gacha-header__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px;
+  color: #f0d080;
+  letter-spacing: 2px;
+}
+
+.gacha-header__crystals {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #8a6520;
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+
+.gacha-header__crystal-icon { font-size: 14px; }
+
+.gacha-header__crystal-count {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ── Pity-Balken ──────────────────────────────────────────── */
+.pity-bar-wrap {
+  padding: 8px 14px 6px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid #2a1525;
+  flex-shrink: 0;
+}
+
+.pity-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.pity-bar-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 2px;
+}
+
+.pity-bar-count {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+  flex: 1;
+}
+
+.pity-bar-count--urgent { color: #f0d080; animation: urgent-pulse 0.8s ease-in-out infinite; }
+
+@keyframes urgent-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+.pity-bar-total {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #3a2030;
+}
+
+.pity-bar-track {
+  height: 6px;
+  background: #1a1018;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid #2a1525;
+}
+
+.pity-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8a6520, #c9a84c);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.pity-bar-fill--urgent {
+  background: linear-gradient(90deg, #e65100, #f0d080);
+}
+
+.pity-bar-note {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: #3a2030;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ── Haupt-Bereich (scrollbar) ────────────────────────────── */
+.gacha-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+
+/* ── Banner ───────────────────────────────────────────────── */
+.gacha-banner {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #3a2030;
+  background: linear-gradient(135deg, #200d28, #0d0810, #1a0520);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gacha-banner__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.gacha-banner__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 20px;
+}
+
+.gacha-banner__icon { font-size: 2.4rem; margin-bottom: 8px; }
+
+.gacha-banner__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 15px;
+  color: #f0d080;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.gacha-banner__subtitle {
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  color: #8a6520;
+  font-style: italic;
+}
+
+/* ── Drop-Rate-Tabelle ────────────────────────────────────── */
+.drop-table {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a1525;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.drop-table__title {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.drop-table__rows { display: flex; flex-direction: column; gap: 5px; }
+
+.drop-table__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drop-table__rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  font-weight: 700;
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.drop-table__bar-wrap {
+  flex: 1;
+  height: 5px;
+  background: #1a1018;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.drop-table__bar {
+  height: 100%;
+  border-radius: 3px;
+  opacity: 0.8;
+}
+
+.drop-table__pct {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── Fehler ───────────────────────────────────────────────── */
+.gacha-error {
+  background: rgba(139,26,26,0.2);
+  border: 1px solid #8b1a1a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #ef9a9a;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ── Aktions-Buttons ──────────────────────────────────────── */
+.gacha-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gacha-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.gacha-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.15s;
+}
+
+.gacha-btn:active:not(.gacha-btn--disabled)::before {
+  background: rgba(255,255,255,0.06);
+}
+
+.gacha-btn:active:not(.gacha-btn--disabled) {
+  transform: scale(0.98);
+}
+
+.gacha-btn--single {
+  background: linear-gradient(135deg, #1e1218, #2d1820);
+  border: 2px solid #8a6520;
+  box-shadow: 0 2px 12px rgba(201,168,76,0.15);
+}
+
+.gacha-btn--single:hover:not(.gacha-btn--disabled) {
+  border-color: #c9a84c;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+}
+
+.gacha-btn--multi {
+  background: linear-gradient(135deg, #200d28, #3d1040, #200d28);
+  border: 2px solid #9c27b0;
+  box-shadow: 0 2px 16px rgba(156,39,176,0.25);
+}
+
+.gacha-btn--multi:hover:not(.gacha-btn--disabled) {
+  box-shadow: 0 4px 24px rgba(156,39,176,0.45);
+}
+
+.gacha-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.gacha-btn__label {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #f0d080;
+  letter-spacing: 2px;
+}
+
+.gacha-btn__cost {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  letter-spacing: 1px;
+}
+
+/* ── Stats ────────────────────────────────────────────────── */
+.gacha-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.gacha-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+  padding: 8px 16px;
+  flex: 1;
+}
+
+.gacha-stat__label {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #8a6520;
+  letter-spacing: 1.5px;
+}
+
+.gacha-stat__value {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  font-weight: 600;
+}
+
+/* ── Einzel-Ergebnis ──────────────────────────────────────── */
+.result-single {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px 32px;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.result-single__card {
+  position: relative;
+  width: min(260px, 72vw);
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 3px solid var(--rc, #c9a84c);
+  box-shadow:
+    0 0 30px color-mix(in srgb, var(--rc, #c9a84c) 40%, transparent),
+    0 0 60px color-mix(in srgb, var(--rc, #c9a84c) 20%, transparent);
+  animation: card-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes card-reveal {
+  from { transform: scale(0.7) rotateY(90deg); opacity: 0; }
+  to   { transform: scale(1)   rotateY(0deg);  opacity: 1; }
+}
+
+.result-single__art {
+  position: absolute;
+  inset: 0;
+}
+
+.result-single__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.result-single__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+  opacity: 0.5;
+}
+
+.result-single__art-gradient {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.result-badge {
+  position: absolute;
+  z-index: 10;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  padding: 3px 7px;
+}
+
+.result-badge--pity {
+  top: 8px;
+  left: 8px;
+  background: rgba(156,39,176,0.85);
+  color: #fff;
+  border: 1px solid #9c27b0;
+}
+
+.result-badge--rarity {
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid currentColor;
+}
+
+.result-single__info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 8px 10px 10px;
+  text-align: center;
+}
+
+.result-single__name {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: #f0d080;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.result-single__title {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ── Multi-Ergebnis ───────────────────────────────────────── */
+.result-multi {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-multi__grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+
+/* Multi-Karte */
+.multi-card {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #8a6520);
+  background: #0d0810;
+  transition: box-shadow 0.2s;
+}
+
+.multi-card--visible {
+  animation: multi-card-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--rc, #c9a84c) 30%, transparent);
+}
+
+@keyframes multi-card-in {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.multi-card__back {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  color: #2a1525;
+}
+
+.multi-card__art {
+  position: absolute;
+  inset: 0;
+}
+
+.multi-card__art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.multi-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+  opacity: 0.5;
+}
+
+.multi-card__gradient {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,.95), transparent);
+  pointer-events: none;
+}
+
+.multi-card__pity-badge {
+  position: absolute;
+  top: 3px; left: 3px;
+  z-index: 10;
+  background: #9c27b0;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.multi-card__footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 10px 4px 4px;
+  text-align: center;
+}
+
+.multi-card__rarity {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.multi-card__name {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #e8d5b0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Zurück-Button ────────────────────────────────────────── */
+.result-close-btn {
+  background: linear-gradient(135deg, #2a1520, #1a0d12);
+  border: 2px solid #8a6520;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #c9a84c;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.result-close-btn:hover {
+  border-color: #c9a84c;
+  box-shadow: 0 0 12px rgba(201,168,76,0.3);
+}
+
+.result-close-btn--multi {
+  align-self: center;
+  margin: 10px 0 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

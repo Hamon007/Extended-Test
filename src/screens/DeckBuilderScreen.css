@@ -1,0 +1,423 @@
+/* ── DeckBuilderScreen ─────────────────────────────────────── */
+
+.deckbuilder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0e0812 0%, #08050a 100%);
+}
+
+/* ── Toast ────────────────────────────────────────────────── */
+.db-toast {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: rgba(18, 9, 16, 0.96);
+  border: 1px solid #c9a84c;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  animation: toast-in 0.2s ease;
+  pointer-events: none;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.db-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #1a0d12, #120910);
+  border-bottom: 1px solid #8a6520;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.db-header__left { flex: 1; min-width: 0; }
+.db-header__right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Deckname */
+.db-name-btn {
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  padding: 0;
+}
+.db-header__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 12px;
+  color: #f0d080;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.db-name-edit { font-size: 12px; color: #8a6520; }
+
+.db-name-input {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #f0d080;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #c9a84c;
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+  width: 100%;
+  max-width: 180px;
+}
+
+/* Speichern-Button */
+.db-save-btn {
+  background: linear-gradient(135deg, #1a1205, #2d1f05);
+  border: 1px solid #8a6520;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.db-save-btn--dirty {
+  border-color: #c9a84c;
+  color: #f0d080;
+  box-shadow: 0 0 8px rgba(201,168,76,0.3);
+  animation: save-pulse 1.2s ease-in-out infinite;
+}
+@keyframes save-pulse {
+  0%,100% { box-shadow: 0 0 8px rgba(201,168,76,0.3); }
+  50%      { box-shadow: 0 0 16px rgba(201,168,76,0.6); }
+}
+
+.db-reset-btn {
+  background: none;
+  border: 1px solid #3a2030;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #8b1a1a;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.db-reset-btn:hover { border-color: #8b1a1a; color: #ef9a9a; }
+
+/* ── Validation-Banner ────────────────────────────────────── */
+.db-banner {
+  padding: 6px 14px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.db-banner--ok   { background: rgba(76,175,80,0.12);  color: #81c784; border-bottom: 1px solid #2e7d32; }
+.db-banner--warn { background: rgba(255,152,0,0.1);   color: #ffb74d; border-bottom: 1px solid #e65100; }
+
+/* ── Deck-Slots Sektion ───────────────────────────────────── */
+.db-slots-section {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid #2a1525;
+}
+
+.db-slots-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.db-slots-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 2px;
+}
+
+.db-slots-count {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+}
+
+.db-mp-total {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #90caf9;
+  background: rgba(33,150,243,0.1);
+  border: 1px solid #1565c0;
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+/* Deck-Slots horizontal scrollbar */
+.db-slots-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.db-slots-row::-webkit-scrollbar { display: none; }
+
+/* Ein Slot */
+.db-slot {
+  position: relative;
+  width: 72px;
+  height: 108px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #8a6520);
+  background: #0d0810;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.db-slot:hover:not(.db-slot--empty) {
+  transform: scale(1.04);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--rc, #c9a84c) 40%, transparent);
+}
+
+.db-slot--empty {
+  border: 2px dashed #2a1525;
+  display: flex; align-items: center; justify-content: center;
+  cursor: default;
+}
+.db-slot__empty-icon {
+  font-size: 1.4rem;
+  color: #2a1525;
+}
+
+.db-slot--missing {
+  border-color: #ff5722;
+  background: rgba(255,87,34,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.db-slot__missing-icon { font-size: 1.2rem; color: #ff5722; }
+.db-slot__missing-text {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #ff5722;
+}
+
+.db-slot__art {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  position: absolute; inset: 0;
+}
+
+.db-slot__placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; opacity: 0.3;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+}
+
+.db-slot__gradient {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 60%;
+  background: linear-gradient(to top, rgba(0,0,0,.95), transparent);
+  pointer-events: none;
+}
+
+.db-slot__footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 4px 4px 3px;
+  display: flex; flex-direction: column; gap: 1px;
+}
+
+.db-slot__rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 7px; font-weight: 700; letter-spacing: 0.5px;
+}
+
+.db-slot__name {
+  font-family: 'Cinzel', serif;
+  font-size: 7.5px; color: #f0d080;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.db-slot__mp {
+  font-family: 'Cinzel', serif;
+  font-size: 7px; color: #90caf9;
+}
+
+.db-slot__remove {
+  position: absolute; top: 3px; right: 3px;
+  width: 16px; height: 16px;
+  background: rgba(139,26,26,0.8);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; color: #ef9a9a;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.db-slot:hover .db-slot__remove { opacity: 1; }
+
+/* ── Inventar-Sektion ─────────────────────────────────────── */
+.db-inventory-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 8px 10px 0;
+}
+
+.db-inventory-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.db-inventory-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding-bottom: 16px;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.db-inventory-grid::-webkit-scrollbar      { width: 3px; }
+.db-inventory-grid::-webkit-scrollbar-thumb{ background: #3a2030; border-radius: 2px; }
+
+/* Inventar-Karte */
+.inv-card {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #8a6520);
+  background: #0d0810;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.inv-card--available { cursor: pointer; }
+.inv-card--available:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--rc, #c9a84c) 40%, transparent);
+}
+
+.inv-card--blocked  { opacity: 0.45; cursor: not-allowed; }
+.inv-card--in-deck  { opacity: 0.5; border-style: dashed; }
+
+.inv-card__art {
+  position: absolute; inset: 0;
+}
+.inv-card__art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  display: block;
+}
+.inv-card__placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; opacity: 0.3;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+}
+.inv-card__gradient {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(0,0,0,.95), transparent);
+  pointer-events: none;
+}
+
+/* Badges */
+.inv-card__rarity {
+  position: absolute; top: 3px; left: 3px; z-index: 5;
+  font-family: 'Cinzel', serif; font-size: 7px; font-weight: 700;
+  background: rgba(0,0,0,.7); border: 1px solid currentColor;
+  border-radius: 2px; padding: 1px 3px;
+}
+.inv-card__mr-badge {
+  position: absolute; top: 3px; right: 3px; z-index: 5;
+  background: rgba(255,152,0,0.85); color: #fff;
+  font-family: 'Cinzel', serif; font-size: 6px; font-weight: 700;
+  border-radius: 2px; padding: 1px 3px;
+}
+.inv-card__count {
+  position: absolute; bottom: 22px; right: 3px; z-index: 5;
+  background: rgba(0,0,0,.75); color: #c9a84c;
+  font-family: 'Cinzel', serif; font-size: 8px;
+  border-radius: 3px; padding: 1px 4px;
+}
+.inv-card__in-deck-badge {
+  position: absolute; top: 3px; right: 3px; z-index: 5;
+  background: rgba(76,175,80,0.85); color: #fff;
+  width: 14px; height: 14px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+}
+
+/* Block-Overlay */
+.inv-card__block-overlay {
+  position: absolute; inset: 0; z-index: 10;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 24px;
+}
+.inv-card__block-overlay span {
+  font-family: 'Cinzel', serif; font-size: 7px;
+  color: #ff5722; text-align: center;
+  background: rgba(0,0,0,.8); border-radius: 3px;
+  padding: 2px 4px;
+}
+
+/* Karten-Footer */
+.inv-card__footer {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 5;
+  padding: 8px 4px 3px;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.inv-card__name {
+  font-family: 'Cinzel', serif; font-size: 7px;
+  color: #f0d080; line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.inv-card__element {
+  font-size: 7px; color: #c9a84c; opacity: 0.8;
+}
+.inv-card__mp {
+  font-family: 'Cinzel', serif; font-size: 7px; color: #90caf9;
+}
+
+/* ── Leer-Zustand ─────────────────────────────────────────── */
+.db-empty {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; padding: 30px 20px;
+}
+.db-empty__icon { font-size: 2.5rem; opacity: 0.4; }
+.db-empty__text {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  color: #8a6520; letter-spacing: 1px; text-align: center;
+}
+.db-empty__hint {
+  font-family: 'EB Garamond', serif; font-size: 12px;
+  color: #3a2030; font-style: italic; text-align: center;
+}
