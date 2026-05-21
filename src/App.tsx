@@ -7,6 +7,7 @@ import TitleScreen                from './screens/TitleScreen';
 import MainScreen                 from './screens/MainScreen';
 import GachaScreen                from './screens/GachaScreen';
 import DeckBuilderScreen          from './screens/DeckBuilderScreen';
+import FusionScreen               from './screens/FusionScreen';
 import BattleScreen               from './screens/BattleScreen';
 import CollectionScreen           from './screens/CollectionScreen';
 import MenuScreen                 from './screens/MenuScreen';
@@ -20,6 +21,7 @@ type Screen =
   | 'main'
   | 'gacha'
   | 'deck'
+  | 'fusion'
   | 'battle'
   | 'collection'
   | 'menu'
@@ -126,6 +128,7 @@ const App: React.FC = () => {
   const handleMenuNav = (target: string) => {
     if (target === 'cardCollection') goTo('cardCollection');
     if (target === 'deck') goTo('deck');
+    if (target === 'fusion') goTo('fusion');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -154,6 +157,9 @@ const App: React.FC = () => {
           <div style={{ flex: 1, overflow: 'hidden', minHeight: 0, width: '100%', height: '100%' }}>
             <DeckBuilderScreen />
           </div>
+        )}
+        {screen === 'fusion' && (
+          <FusionScreen onBack={goBack} />
         )}
         {screen === 'battle'     && <BattleScreen />}
         {screen === 'collection' && <CollectionScreen />}

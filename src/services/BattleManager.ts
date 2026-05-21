@@ -32,6 +32,7 @@ import {
   PLAYER_MP_START,
 } from '../types/BattleTypes';
 import { CardDatabase } from './CardDatabase';
+import { FusionSystem } from './FusionSystem';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
 
@@ -81,15 +82,17 @@ function buildPlayerSide(
 ): BattleSide {
   const hand: BattleCard[] = instances.map(inst => {
     const card: Card | undefined = CardDatabase.getById(inst.cardId);
+    // Effektive Werte inkl. Fusion (Instanz-Rarität kann über Basis liegen).
+    const stats = card ? FusionSystem.getEffectiveStats(card, inst.rarity) : undefined;
     return {
       instanceId: inst.uuid,
       sourceId:   inst.cardId,
       name:       card?.name ?? inst.cardId,
-      atk:        card?.stats.atk   ?? 0,
-      def:        card?.stats.def   ?? 0,
-      hp:         card?.stats.hp    ?? 1000,
-      hpMax:      card?.stats.hp    ?? 1000,
-      mpCost:     card?.stats.mpCost ?? 50,
+      atk:        stats?.atk    ?? 0,
+      def:        stats?.def    ?? 0,
+      hp:         stats?.hp     ?? 1000,
+      hpMax:      stats?.hp     ?? 1000,
+      mpCost:     stats?.mpCost ?? 50,
       image:      card?.image ?? '',
       card,
       played:     false,
