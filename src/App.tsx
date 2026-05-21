@@ -70,10 +70,11 @@ const PlaceholderScreen: React.FC<PlaceholderProps> = ({ label, onBack }) => (
 
 const App: React.FC = () => {
   const [ready,            setReady]            = useState(false);
-  const [screen,           setScreen]           = useState<Screen>('title');
-  const [prevScreen,       setPrevScreen]       = useState<Screen>('main');
+  const [stack,            setStack]            = useState<Screen[]>(['title']);
   const [placeholderLabel, setPlaceholderLabel] = useState('');
   const [dailyToast,       setDailyToast]       = useState<number | null>(null);
+
+  const screen = stack[stack.length - 1];
 
   useEffect(() => {
     CardDatabase.init();
@@ -100,35 +101,34 @@ const App: React.FC = () => {
 
   // ── Navigations-Handler ──────────────────────────────────────
 
-  const goTo = (next: Screen, from: Screen = screen) => {
-    setPrevScreen(from);
-    setScreen(next);
+  const goTo = (next: Screen) => {
+    setStack(prev => [...prev, next]);
   };
 
   const goBack = () => {
-    setScreen(prevScreen);
+    setStack(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
   };
 
   // Navigations-Handler für MainScreen
   const handleMainNav = (target: string) => {
     switch (target) {
       case 'gacha':
-        goTo('gacha', 'main');
+        goTo('gacha');
         break;
       case 'menu':
-        goTo('menu', 'main');
+        goTo('menu');
         break;
       case 'guild':
         setPlaceholderLabel('🏰 Gilde');
-        goTo('placeholder', 'main');
+        goTo('placeholder');
         break;
       case 'quest':
         setPlaceholderLabel('🚩 Quest');
-        goTo('placeholder', 'main');
+        goTo('placeholder');
         break;
       case 'sacrifice':
         setPlaceholderLabel('⚗️ Opfern');
-        goTo('placeholder', 'main');
+        goTo('placeholder');
         break;
       default:
         break;
@@ -138,7 +138,7 @@ const App: React.FC = () => {
   // Navigations-Handler für MenuScreen
   const handleMenuNav = (target: string) => {
     if (target === 'cardCollection') {
-      goTo('cardCollection', 'menu');
+      goTo('cardCollection');
     }
   };
 
@@ -155,12 +155,12 @@ const App: React.FC = () => {
 
       <div className="app-content">
         {screen === 'title' && (
-          <TitleScreen onEnter={() => goTo('main', 'title')} />
+          <TitleScreen onEnter={() => goTo('main')} />
         )}
         {screen === 'main' && (
           <MainScreen
             onNav={handleMainNav}
-            onBack={() => goTo('title', 'main')}
+            onBack={goBack}
           />
         )}
         {screen === 'gacha' && (

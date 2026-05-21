@@ -20,24 +20,19 @@ const TYPE_FALLBACK: Record<string, string> = {
   combo_builder:'🔗',
 };
 
-// ── Hilfsfunktion: Sortierschlüssel ───────────────────────────
-
-function sortKey(card: Card): number {
-  // Karten mit Artwork zuerst (0), dann ohne (1)
-  return hasArtwork(card.artwork_key) ? 0 : 1;
-}
-
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) => {
   const [selectedName, setSelectedName] = useState<string | null>(null);
 
-  const allCards = useMemo(() => {
-    return CardDatabase.getAll().slice().sort((a, b) => {
-      const byArtwork = sortKey(a) - sortKey(b);
-      if (byArtwork !== 0) return byArtwork;
-      return a.name.localeCompare(b.name, 'de');
-    });
+  const { withArtwork, withoutArtwork } = useMemo(() => {
+    const all = CardDatabase.getAll().slice().sort((a, b) =>
+      a.name.localeCompare(b.name, 'de')
+    );
+    return {
+      withArtwork:    all.filter(c => hasArtwork(c.artwork_key)),
+      withoutArtwork: all.filter(c => !hasArtwork(c.artwork_key)),
+    };
   }, []);
 
   const handleCardClick = (card: Card) => {
@@ -52,7 +47,7 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
       <div className="card-col-header">
         <button className="card-col-header__back" onClick={onBack}>← Zurück</button>
         <h1 className="card-col-header__title">Kartensammlung</h1>
-        <span className="card-col-header__count">{allCards.length}</span>
+        <span className="card-col-header__count">{withArtwork.length + withoutArtwork.length}</span>
       </div>
 
       {/* ── Toast bei Klick ── */}
@@ -62,55 +57,50 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
         </div>
       )}
 
-      {/* ── Karten-Grid ── */}
-      {allCards.length > 0 ? (
-        <div className="card-col-grid">
-          {allCards.map(card => {
-            const artwork = resolveArtwork(card.artwork_key);
-            const fallback = TYPE_FALLBACK[card.type] ?? '⚔️';
-            const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
-
-            return (
-              <button
-                key={card.id}
-                className="card-col-item"
-                onClick={() => handleCardClick(card)}
-                style={{ '--rarity-color': rarityColor } as React.CSSProperties}
-              >
-                {/* Artwork oder Fallback */}
-                <div className="card-col-item__img-wrap">
-                  {artwork ? (
-                    <img
-                      className="card-col-item__img"
-                      src={artwork}
-                      alt={card.name}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="card-col-item__fallback">{fallback}</div>
-                  )}
-                  <div
-                    className="card-col-item__rarity-badge"
-                    style={{ color: rarityColor, borderColor: rarityColor }}
-                  >
-                    {card.rarity}
-                  </div>
+      {/* ── Karten MIT Artwork ── */}
+      <div className="card-col-grid">
+        {withArtwork.map(card => {
+          const artwork = resolveArtwork(card.artwork_key);
+          const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+          return (
+            <button
+              key={card.id}
+              className="card-col-item"
+              onClick={() => handleCardClick(card)}
+              style={{ '--rarity-color': rarityColor } as React.CSSProperties}
+            >
+              <div className="card-col-item__img-wrap">
+                <img className="card-col-item__img" src={artwork} alt={card.name} loading="lazy" />
+                <div className="card-col-item__rarity-badge" style={{ color: rarityColor, borderColor: rarityColor }}>
+                  {card.rarity}
                 </div>
+              </div>
+              <div className="card-col-item__info">
+                <div className="card-col-item__name">{card.name}</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
 
-                {/* Name & Element */}
-                <div className="card-col-item__info">
-                  <div className="card-col-item__name">{card.name}</div>
-                  <div className="card-col-item__element">{card.element}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="card-col-empty">
-          <span>🔍</span>
-          <p>Keine Karten gefunden.</p>
-        </div>
+      {/* ── Karten OHNE Artwork (kompakt) ── */}
+      {withoutArtwork.length > 0 && (
+        <>
+          <div className="card-col-section-title">Weitere Karten ({withoutArtwork.length})</div>
+          <div className="card-col-list">
+            {withoutArtwork.map(card => {
+              const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+              const fallback = TYPE_FALLBACK[card.type] ?? '⚔️';
+              return (
+                <button key={card.id} className="card-col-list-item" onClick={() => handleCardClick(card)}>
+                  <span className="card-col-list-item__icon">{fallback}</span>
+                  <span className="card-col-list-item__name">{card.name}</span>
+                  <span className="card-col-list-item__rarity" style={{ color: rarityColor }}>{card.rarity}</span>
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );
