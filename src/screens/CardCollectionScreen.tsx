@@ -33,17 +33,6 @@ const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClo
             </div>
             <div className="card-detail__frame-compass">✦</div>
             <img className="card-detail__frame-img" src={card.image} alt={card.name} />
-            <div className="card-detail__frame-overlay">
-              <div className="card-detail__frame-name" style={{ color: rarityColor }}>
-                {card.name},
-              </div>
-              <div className="card-detail__frame-title">{(card as { title?: string }).title ?? ''}</div>
-              {(card as { quote?: string }).quote && (
-                <div className="card-detail__frame-quote">
-                  „{(card as { quote?: string }).quote}"
-                </div>
-              )}
-            </div>
           </div>
         ) : (
           <div className="card-detail__no-img">

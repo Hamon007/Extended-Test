@@ -107,6 +107,13 @@ const GachaScreen: React.FC = () => {
             </div>
           </div>
 
+          {/* Kristalle auffüllen wenn leer */}
+          {state.crystals < PULL_COST_SINGLE && (
+            <button className="gacha-refill-btn" onClick={store.debugReset}>
+              💎 Kristalle auffüllen (+{(3000).toLocaleString('de-DE')})
+            </button>
+          )}
+
         </div>
       )}
     </div>

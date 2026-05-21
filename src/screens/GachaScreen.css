@@ -3,7 +3,8 @@
 .gacha-screen {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   background: radial-gradient(ellipse at top, #1a0520 0%, #08050a 60%);
 }
@@ -348,6 +349,22 @@
   color: #f0d080;
   font-weight: 600;
 }
+
+/* ── Kristalle auffüllen ─────────────────────────────────── */
+.gacha-refill-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #f0d080;
+  background: rgba(201,168,76,0.12);
+  border: 1px dashed #8a6520;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+}
+.gacha-refill-btn:active { background: rgba(201,168,76,0.22); }
 
 /* ── Einzel-Ergebnis ──────────────────────────────────────── */
 .result-single {
