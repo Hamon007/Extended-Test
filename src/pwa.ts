@@ -10,7 +10,7 @@ import { registerSW } from 'virtual:pwa-register';
 
 export function initPWA(): void {
   registerSW({
-    // New SW ready → skip waiting then reload so new assets are served
+    immediate: true, // sofort auf neue SW-Version prüfen, nicht warten
     onNeedRefresh() {
       window.location.reload();
     },
