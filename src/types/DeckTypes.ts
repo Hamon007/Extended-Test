@@ -3,19 +3,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Card } from './Card';
-import type { Rarity } from './Card';
 import type { CardInstance } from './GachaTypes';
 
 // ── Konstanten ────────────────────────────────────────────────────────────────
 
-export const DECK_SIZE       = 5;
-export const MAX_MR_PER_DECK = 1;
-
-/** Alle Seltenheiten die auf das MR-Limit angerechnet werden (MR- und LR-Hauptstufe). */
-export const MR_TIER: readonly Rarity[] = [
-  'MR', 'MR+', 'MR++', 'MR+++',
-  'LR', 'LR+', 'LR++', 'LR+++',
-];
+export const DECK_SIZE     = 10;
+export const MAX_DECK_COST = 800;  // max. Gesamt-MP im Deck
 
 // ── Deck-Struktur ─────────────────────────────────────────────────────────────
 
@@ -43,9 +36,9 @@ export interface ResolvedSlot {
 // ── Regel-Fehler ──────────────────────────────────────────────────────────────
 
 export type DeckRuleError =
-  | 'DECK_FULL'             // bereits 5 Karten im Deck
+  | 'DECK_FULL'             // bereits 10 Karten im Deck
   | 'DUPLICATE_CARD_ID'     // gleiche card_id bereits im Deck
-  | 'MR_LIMIT_EXCEEDED'     // bereits 1 MR-Tier-Karte im Deck
+  | 'COST_EXCEEDED'         // Deck-Gesamtkosten überschreiten MAX_DECK_COST
   | 'ALREADY_IN_DECK';      // exakt diese UUID ist bereits drin
 
 // ── Validierungsergebnis ──────────────────────────────────────────────────────
@@ -56,7 +49,7 @@ export interface DeckValidation {
   errors:       DeckRuleError[];
   missingCount: number;        // Slots deren UUID nicht im Inventar ist
   totalMP:      number;
-  mrCount:      number;        // Anzahl MR-Tier-Karten im Deck
+  isOverBudget: boolean;       // totalMP > MAX_DECK_COST
 }
 
 // ── Ergebnis von addCard ──────────────────────────────────────────────────────

@@ -4,16 +4,16 @@ import { DeckBuilder } from '../services/DeckBuilder';
 import { CardDatabase } from '../services/CardDatabase';
 import type { ResolvedSlot } from '../types/DeckTypes';
 import type { CardInstance } from '../types/GachaTypes';
-import { DECK_SIZE, MAX_MR_PER_DECK, MR_TIER } from '../types/DeckTypes';
+import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
 import { RARITY_COLOR, ELEMENT_LABEL } from '../types/Card';
 import './DeckBuilderScreen.css';
 
 // ── Fehlertext ────────────────────────────────────────────────
 
 const RULE_LABEL: Record<string, string> = {
-  DECK_FULL:           'Deck ist voll (max. 5 Karten)',
+  DECK_FULL:           `Deck ist voll (max. ${DECK_SIZE} Karten)`,
   DUPLICATE_CARD_ID:   'Diese Karte ist bereits im Deck',
-  MR_LIMIT_EXCEEDED:   `Max. ${MAX_MR_PER_DECK} MR-Karte pro Deck`,
+  COST_EXCEEDED:       `Deck-Budget überschritten (max. ${MAX_DECK_COST} MP)`,
   ALREADY_IN_DECK:     'Diese Instanz ist bereits im Deck',
 };
 
@@ -53,7 +53,7 @@ function buildInventoryEntries(
     });
   });
 
-  // Sortieren: MR-Tier zuerst, dann nach Seltenheit absteigend
+  // Sortieren: nach Seltenheit absteigend
   return entries.sort((a, b) => {
     const aIdx = Object.keys(RARITY_COLOR).indexOf(a.rarity);
     const bIdx = Object.keys(RARITY_COLOR).indexOf(b.rarity);
@@ -82,10 +82,6 @@ const DeckBuilderScreen: React.FC = () => {
   }
 
   function handleAddCard(entry: InventoryEntry) {
-    const inst = inventory.find(i => i.uuid === entry.firstUuid);
-    if (!inst) return;
-
-    // Prüfe ob die UUID schon im Deck (alle Instanzen dieser Karte)
     const deckHasCardId = resolved.some(
       s => s.instance?.cardId === entry.cardId
     );
@@ -94,7 +90,6 @@ const DeckBuilderScreen: React.FC = () => {
       return;
     }
 
-    // Prüfe ob noch ein UUID dieser Karte verfügbar ist
     const deckSet = new Set(deck.uuids);
     const available = inventory.find(
       i => i.cardId === entry.cardId && !deckSet.has(i.uuid)
@@ -172,7 +167,9 @@ const DeckBuilderScreen: React.FC = () => {
         <div className="db-slots-header">
           <span className="db-slots-label">DECK</span>
           <span className="db-slots-count">{deck.uuids.length} / {DECK_SIZE}</span>
-          <span className="db-mp-total">⚡ {validation.totalMP} MP Gesamt</span>
+          <span className={`db-mp-total ${validation.isOverBudget ? 'db-mp-total--over' : ''}`}>
+            💧 {validation.totalMP} / {MAX_DECK_COST} MP
+          </span>
         </div>
         <div className="db-slots-row">
           {/* Belegte Slots */}
@@ -235,16 +232,12 @@ const ValidationBanner: React.FC<ValidationBannerProps> = ({ validation }) => {
 
   const msgs: string[] = [];
   if (!validation.isComplete) {
-    msgs.push(`Deck unvollständig (${validation.isComplete ? 0 : DECK_SIZE} Slots benötigt)`);
+    msgs.push(`Deck unvollständig (${DECK_SIZE} Karten benötigt)`);
   }
   if (validation.missingCount > 0) {
     msgs.push(`${validation.missingCount} Karte(n) nicht im Inventar`);
   }
   validation.errors.forEach(e => msgs.push(RULE_LABEL[e] ?? e));
-
-  if (msgs.length === 0 && !validation.isComplete) {
-    msgs.push('Deck unvollständig');
-  }
 
   return (
     <div className="db-banner db-banner--warn">
@@ -321,10 +314,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const card = CardDatabase.getById(entry.cardId);
   const rc   = RARITY_COLOR[entry.rarity as keyof typeof RARITY_COLOR] ?? '#9e9e9e';
 
-  // Ist diese Karte (per card_id) bereits im Deck?
   const alreadyInDeck = deckResolved.some(s => s.instance?.cardId === entry.cardId);
 
-  // Würde Hinzufügen eine Regel verletzen?
   const deckSet   = new Set(deckUuids);
   const available = inventory.find(i => i.cardId === entry.cardId && !deckSet.has(i.uuid));
 
@@ -350,8 +341,6 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
 
   if (alreadyInDeck) blockTip = 'Im Deck';
 
-  const isMR = (MR_TIER as readonly string[]).includes(entry.rarity);
-
   return (
     <div
       className={`inv-card ${blocked ? 'inv-card--blocked' : 'inv-card--available'} ${alreadyInDeck ? 'inv-card--in-deck' : ''}`}
@@ -374,17 +363,10 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
         <div className="inv-card__gradient" />
       </div>
 
-      {/* Badges */}
-      <div
-        className="inv-card__rarity"
-        style={{ color: rc }}
-      >
+      {/* Rarity badge */}
+      <div className="inv-card__rarity" style={{ color: rc }}>
         {entry.rarity}
       </div>
-
-      {isMR && (
-        <div className="inv-card__mr-badge" title="MR-Tier — max. 1 pro Deck">MR</div>
-      )}
 
       {entry.totalCount > 1 && (
         <div className="inv-card__count">×{entry.totalCount}</div>
