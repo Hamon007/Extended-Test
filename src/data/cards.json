@@ -1,0 +1,3989 @@
+{
+  "_version": "0.1.0",
+  "_comment": "Codex Immortalis Kartendatenbank. Stats sind Platzhalter bis zum Balance-Pass.",
+  "cards": [
+    {
+      "id": "azazel",
+      "number": "006",
+      "name": "Azazel",
+      "title": "Richter der sterbenden Sonne",
+      "quote": "Ich war einst Licht. Doch ich sah die Lüge des Himmels und wählte die Wahrheit der Finsternis.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "gefallene_engel",
+      "factionLabel": "Gefallene Engel",
+      "stats": {
+        "atk": 4200,
+        "def": 2400,
+        "hp": 9800,
+        "mpCost": 75,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Urteil der sterbenden Sonne",
+          "description": "Verursacht 280% ATK als Dunklen Schaden an einem Feind. Hat 30% Chance, den Feind für 2 Runden zu blenden.",
+          "mpCost": 60,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "blind"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Gefallenes Urteil",
+          "description": "Wenn Azazel einen geblendeten Feind angreift, erhöht sich sein ATK um 40% für diese Runde.",
+          "trigger": "on_attack",
+          "condition": "target_blinded",
+          "effectTag": "atk_boost"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "DARK_CHAIN",
+          "description": "Baut Dunkel-Combo auf. Jede aufeinanderfolgende Dunkel-Karte erhöht Schaden um 15%."
+        },
+        {
+          "tag": "FALLEN_SYNC",
+          "description": "Synergiert mit anderen gefallenen Engeln. +20% ATK im Combo-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "satan",
+          "description": "Hölleneid: Beide erhalten +25% Schaden wenn gleichzeitig im Feld."
+        },
+        {
+          "cardId": "azgaroth",
+          "description": "Ursprung der Finsternis: Azazels Krit-Rate steigt um 15%."
+        }
+      ],
+      "image": "/assets/cards/azazel.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 30
+    },
+    {
+      "id": "loki",
+      "number": "007",
+      "name": "Loki",
+      "title": "Gott der List und der tausend Gesichter",
+      "quote": "Ich bin nicht gut. Ich bin nicht böse. Ich bin die Wahrheit, die ihr nicht versteht.",
+      "rarity": "MR",
+      "element": "chaos",
+      "type": "combo_builder",
+      "faction": "aesir",
+      "factionLabel": "Gott der Æsir",
+      "stats": {
+        "atk": 3100,
+        "def": 2200,
+        "hp": 8600,
+        "mpCost": 70,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Tausend Gesichter",
+          "description": "Kopiert die Fähigkeit der zuletzt gespielten Karte und setzt sie sofort ein. Gibt 30 MP zurück.",
+          "mpCost": 55,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "effectTag": "copy_skill"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Schlangenzunge",
+          "description": "Wenn Loki eine Combo auslöst, erhöht sich der Combo-Multiplikator um einen zusätzlichen Schritt.",
+          "trigger": "on_combo",
+          "effectTag": "combo_amp"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "CHAOS_WEAVE",
+          "description": "Chaos-Karten setzen den Combo-Zähler nicht zurück wenn Loki spielt."
+        },
+        {
+          "tag": "TRICK_LINK",
+          "description": "Kann zwischen zwei beliebigen Spielern als Brücke fungieren ohne Combo zu brechen."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azgaroth",
+          "description": "Schöpfer und Trickster: Azgaroths passive Kraft wird verdoppelt."
+        }
+      ],
+      "awakening": "loki_crowned",
+      "image": "/assets/cards/loki.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "satan",
+      "number": "008",
+      "name": "Satan",
+      "title": "König der Hölle, Fürst der Finsternis, Widersacher des Himmels",
+      "quote": "Ich war nicht erschaffen, um zu dienen. Ich war, bevor Licht seinen Namen kannte.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "vanguard",
+      "faction": "herrschaft_der_hoelle",
+      "factionLabel": "Herrschaft der Hölle",
+      "stats": {
+        "atk": 3800,
+        "def": 3600,
+        "hp": 13500,
+        "mpCost": 80,
+        "crit": 12
+      },
+      "skills": [
+        {
+          "name": "Edikt des Abgrunds",
+          "description": "Verursacht 220% ATK als Dunklen Schaden an allen Feinden. Reduziert ihren DEF um 30% für 3 Runden.",
+          "mpCost": 75,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.2,
+          "effectTag": "def_break"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Ewiger Widersacher",
+          "description": "Satan erhält 20% Schadensreduktion gegen Licht-Einheiten. Reflektiert 15% erlittenen Schaden zurück.",
+          "trigger": "passive",
+          "effectTag": "reflect"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "DARK_CHAIN",
+          "description": "Baut Dunkel-Combo auf. Maximaler Dunkel-Combo-Bonus: +60%."
+        },
+        {
+          "tag": "TYRANT_STAND",
+          "description": "Als Vorhut: Absorbiert 25% des Schadens der Hinter-Reihe."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azazel",
+          "description": "Hölleneid: Beide erhalten +25% Schaden wenn gleichzeitig im Feld."
+        },
+        {
+          "cardId": "azgaroth",
+          "description": "Erste Finsternis: Satan erhält +500 DEF."
+        }
+      ],
+      "image": "/assets/cards/satan.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "xal_zoth",
+      "number": "009",
+      "name": "Xal'Zoth",
+      "title": "Leviathan des endlosen Nichts",
+      "quote": "Vor mir ertrinken Himmel und Hölle gleichermaßen. Denn ich bin das Nichts, das selbst die Ewigkeit verschlingt.",
+      "rarity": "MR",
+      "element": "void",
+      "type": "attacker",
+      "faction": "das_nichts",
+      "factionLabel": "Das Nichts schläft nicht",
+      "stats": {
+        "atk": 5100,
+        "def": 1800,
+        "hp": 10200,
+        "mpCost": 85,
+        "crit": 22
+      },
+      "skills": [
+        {
+          "name": "Verschlingung der Ewigkeit",
+          "description": "Verursacht 350% ATK als Leere-Schaden an einem Feind. Ignoriert 40% DEF. Hat 20% Chance auf sofortiges Eliminieren.",
+          "mpCost": 80,
+          "cooldown": 5,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.5,
+          "effectTag": "void_pierce"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Das Nichts schläft nicht",
+          "description": "Xal'Zoth erhält jede Runde 2% maximale HP als Schaden an ALLE Einheiten (Freund und Feind). Nicht unterbrechbar.",
+          "trigger": "passive",
+          "effectTag": "aura_damage"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "VOID_HUNGER",
+          "description": "Leere-Karten nach Xal'Zoth kosten 20 MP weniger."
+        },
+        {
+          "tag": "ABYSSAL_SYNC",
+          "description": "Erhöht den Kombo-Schaden aller Leere-Einheiten um 25%."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azgaroth",
+          "description": "Ursache und Nichts: Xal'Zoths Aura-Schaden erhöht sich um 50%."
+        }
+      ],
+      "image": "/assets/cards/xal_zoth.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 20
+    },
+    {
+      "id": "azgaroth",
+      "number": "010",
+      "name": "Azgaroth",
+      "title": "Erster unter den Unmächten, Schöpfer der Finsternis",
+      "quote": "Aus dem Nichts erschuf ich das Sein. Aus dem Licht gebar ich den Schatten. Ich bin der Anfang, und ich bin das Ende.",
+      "rarity": "LR",
+      "element": "void",
+      "type": "vanguard",
+      "faction": "die_unmacht",
+      "factionLabel": "Die Unmacht",
+      "stats": {
+        "atk": 7800,
+        "def": 5400,
+        "hp": 18000,
+        "mpCost": 100,
+        "crit": 25,
+        "spd": 7
+      },
+      "skills": [
+        {
+          "name": "Schöpfung der Finsternis",
+          "description": "Verursacht 450% ATK als Leere-Schaden an allen Feinden. Setzt ihren MP-Stand auf 0 zurück. Nicht blockierbar.",
+          "mpCost": 90,
+          "cooldown": 6,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 4.5,
+          "effectTag": "mp_drain"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Erster Ursprung",
+          "description": "Alle eigenen Dunkel- und Leere-Einheiten erhalten +20% ATK und +15% DEF solange Azgaroth im Feld ist.",
+          "trigger": "passive",
+          "effectTag": "field_aura"
+        },
+        {
+          "name": "Vor mir war nichts",
+          "description": "Beim Einsetzen: Alle Feinde verlieren 15% ihres aktuellen HP (ignoriert DEF).",
+          "trigger": "on_enter",
+          "effectTag": "hp_shred"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "VOID_HUNGER",
+          "description": "Azgaroths Leere-Aura verstärkt alle folgenden Leere-Karten um 35%."
+        },
+        {
+          "tag": "DARK_CHAIN",
+          "description": "Maximaler Dunkel-Combo-Bonus wird auf +100% erhöht."
+        },
+        {
+          "tag": "ORIGIN_CHAIN",
+          "description": "Exklusiv: Combo-Kette bricht nie wenn Azgaroth gespielt wird."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azazel",
+          "description": "Ursprung der Finsternis: Azazels Krit-Rate steigt um 15%."
+        },
+        {
+          "cardId": "satan",
+          "description": "Erste Finsternis: Satan erhält +500 DEF."
+        },
+        {
+          "cardId": "xal_zoth",
+          "description": "Ursache und Nichts: Xal'Zoths Aura-Schaden erhöht sich um 50%."
+        }
+      ],
+      "image": "/assets/cards/azgaroth.png",
+      "tradeable": false,
+      "globalLimit": 1000,
+      "deckLimit": 1,
+      "gachaWeight": 5
+    },
+    {
+      "id": "jeanne_darc",
+      "number": "011",
+      "name": "Jeanne d'Arc",
+      "title": "Heilige Flamme von Orléans",
+      "quote": "Ich wurde nicht geboren, um mein eigenes Leben zu leben, sondern um für Frankreich zu kämpfen und Gottes Willen zu erfüllen.",
+      "rarity": "MR",
+      "element": "light",
+      "type": "vanguard",
+      "faction": "heilige_krieger",
+      "factionLabel": "Heilige Krieger",
+      "stats": {
+        "atk": 3600,
+        "def": 4200,
+        "hp": 14000,
+        "mpCost": 75,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Bannière de la Sainte",
+          "description": "Erhöht ATK aller verbündeten Einheiten um 35% und gewährt ihnen für 3 Runden Immunität gegen Debuffs.",
+          "mpCost": 65,
+          "cooldown": 4,
+          "targetType": "all_allies",
+          "trigger": "active",
+          "effectTag": "atk_boost, debuff_immune"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Stimmen des Himmels",
+          "description": "Wenn Jeannes HP unter 30% fällt, regeneriert sie 20% ihres max. HP einmalig und ihr ATK verdoppelt sich für 2 Runden.",
+          "trigger": "passive",
+          "condition": "hp_below_30",
+          "effectTag": "hp_regen, atk_burst"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "LIGHT_VANGUARD",
+          "description": "Vorhut-Licht-Ketten: Jede Licht-Vorhut danach erhält +20% DEF."
+        },
+        {
+          "tag": "HOLY_SHIELD",
+          "description": "Absorbiert 30% des an verbündeten Karten erlittenen Schadens."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Geist der Krieger: Beide erhalten +30% DEF wenn gemeinsam im Feld."
+        }
+      ],
+      "image": "/assets/cards/jeanne_darc.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "garuda",
+      "number": "012",
+      "name": "Garuda",
+      "title": "Sonnenfürst des Sturmhimmels",
+      "quote": "Ich bin der Wind, der Donnerrufer, der Träger der Sonne, der Feind der Finsternis. Meine Schwingen spalten den Himmel, mein Wille befreit die Welt.",
+      "rarity": "MR",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "sonnenwinde",
+      "factionLabel": "König des Sonnenwindes",
+      "stats": {
+        "atk": 4800,
+        "def": 2600,
+        "hp": 10500,
+        "mpCost": 80,
+        "spd": 10,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Sturmhimmel-Schlag",
+          "description": "Taucht aus dem Sturm herab und trifft alle Feinde mit 300% ATK als Wind/Licht-Schaden. Feinde mit weniger als 30% HP werden sofort eliminiert.",
+          "mpCost": 75,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 3.0,
+          "effectTag": "execute"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Feind der Finsternis",
+          "description": "Garuda verursacht 40% mehr Schaden gegen Dunkel- und Leere-Einheiten. Immunität gegen Lähmung.",
+          "trigger": "passive",
+          "effectTag": "element_advantage"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "WIND_SURGE",
+          "description": "Wind-Karten nach Garuda erhalten +25% Geschwindigkeit und Krit-Chance."
+        },
+        {
+          "tag": "SOLAR_CHAIN",
+          "description": "Licht+Wind-Kombination: Schaden-Bonus +30% auf die gesamte Kette."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "jeanne_darc",
+          "description": "Sonne und Flamme: Beide erhalten +20% ATK und +10% Krit-Rate."
+        }
+      ],
+      "image": "/assets/cards/garuda.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "leonidas",
+      "number": "013",
+      "name": "Leonidas",
+      "title": "König der dreihundert Speere",
+      "quote": "Kommt und nehmt sie. Denn wir werden hier liegen, gehorsam den Gesetzen Spartas.",
+      "rarity": "MR",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "sparta",
+      "factionLabel": "Molon Labe",
+      "stats": {
+        "atk": 3400,
+        "def": 5200,
+        "hp": 16000,
+        "mpCost": 70,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Thermopylen-Stand",
+          "description": "Für 3 Runden kann kein verbündeter Charakter sterben (HP bleibt bei 1). Leonidas erhält 50% mehr Schaden dafür.",
+          "mpCost": 60,
+          "cooldown": 6,
+          "targetType": "all_allies",
+          "trigger": "active",
+          "effectTag": "immortal_guard"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Dreihundert",
+          "description": "Leonidas' DEF steigt um 5% für jeden gefallenen Verbündeten (max. +35%).",
+          "trigger": "on_death",
+          "condition": "ally_died",
+          "effectTag": "def_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "WARRIOR_SYNC",
+          "description": "Krieger-Karten nach Leonidas erhalten +15% DEF und HP."
+        },
+        {
+          "tag": "IRON_WALL",
+          "description": "Vorhut-Kombination: Reduziert eingehenden Schaden um 20%."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "jeanne_darc",
+          "description": "Geist der Krieger: Beide erhalten +30% DEF wenn gemeinsam im Feld."
+        },
+        {
+          "cardId": "gor_thul",
+          "description": "Krieger-Rivalen: Beide erhalten +20% ATK, -10% DEF (Rivalen-Effekt)."
+        }
+      ],
+      "image": "/assets/cards/leonidas.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "hel",
+      "number": "014",
+      "name": "Hel",
+      "title": "Königin des stillen Totenreichs",
+      "quote": "Wo mein Atem ruht, verstummt selbst das Echo der Lebenden.",
+      "rarity": "MR",
+      "element": "death",
+      "type": "support",
+      "faction": "niflheim",
+      "factionLabel": "Zwei Welten. Eine Herrscherin.",
+      "stats": {
+        "atk": 2800,
+        "def": 3800,
+        "hp": 12000,
+        "mpCost": 72,
+        "spd": 7
+      },
+      "skills": [
+        {
+          "name": "Stimme beider Welten",
+          "description": "Belebt eine gefallene Verbündete Karte mit 50% HP wieder. Diese Karte erhält für 2 Runden Immunität gegen Sterblichkeit.",
+          "mpCost": 70,
+          "cooldown": 5,
+          "targetType": "ally",
+          "trigger": "active",
+          "effectTag": "revive"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Halb lebendig",
+          "description": "Hel ist halb tot und halb lebendig: Heil-Fähigkeiten wirken zu 50% auf sie. Dafür nimmt sie 30% weniger Tods-Effekte.",
+          "trigger": "passive",
+          "effectTag": "undead_resistance"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "DEATH_BRIDGE",
+          "description": "Tod-Karten nach Hel kosten 15 MP weniger und haben +20% Effektstärke."
+        },
+        {
+          "tag": "REALM_KEEPER",
+          "description": "Wenn Hel im Feld: Gegner können keine Belebungs-Effekte nutzen."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "baron_samedi",
+          "description": "Todesherrscher: Beide erhalten +40% Effektstärke für Tod-Fähigkeiten."
+        }
+      ],
+      "image": "/assets/cards/hel.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "yuki_onna",
+      "number": "018",
+      "name": "Yuki-onna",
+      "title": "Kaiserin des schweigenden Schnees",
+      "quote": "Mit einem Atemzug begrabe ich den Lärm der Welt.",
+      "rarity": "MR",
+      "element": "ice",
+      "type": "support",
+      "faction": "yokai_krone",
+      "factionLabel": "Stille des ewigen Winters",
+      "stats": {
+        "atk": 2600,
+        "def": 3200,
+        "hp": 11500,
+        "mpCost": 68,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Stiller Schneesturm",
+          "description": "Friert alle Feinde für 2 Runden ein (können nicht angreifen). Verursacht 180% ATK als Eis-Schaden pro Runde an eingefrorenen Feinden.",
+          "mpCost": 65,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 1.8,
+          "effectTag": "freeze"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Atemzug des Nichts",
+          "description": "Eingefrorene Feinde können keine Passive und Reaktions-Fähigkeiten auslösen.",
+          "trigger": "passive",
+          "condition": "enemy_frozen",
+          "effectTag": "passive_lock"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "ICE_SEAL",
+          "description": "Eis-Karten nach Yuki-onna verlängern Einfriereffekte um 1 Runde."
+        },
+        {
+          "tag": "SNOW_CHAIN",
+          "description": "Eingefrorene Feinde erleiden +35% Schaden von der nächsten Karte."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "hel",
+          "description": "Stille Herrscher: Eingefrorene Feinde können auch nicht wiederbelebt werden."
+        }
+      ],
+      "image": "/assets/cards/yuki_onna.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "baron_samedi",
+      "number": "017",
+      "name": "Baron Samedi",
+      "title": "Wächter der schwarzen Gräber",
+      "quote": "Ich lache, wenn Könige im Staub erwachen.",
+      "rarity": "MR",
+      "element": "death",
+      "type": "support",
+      "faction": "ghede_lwa",
+      "factionLabel": "Vévé der Toten",
+      "stats": {
+        "atk": 2900,
+        "def": 3400,
+        "hp": 11800,
+        "mpCost": 72,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Schwarzes Grab",
+          "description": "Belegt einen Feind mit dem 'Fluch des Sarges': Nach 3 Runden stirbt er sofort unabhängig von HP. Kann mit Gegenwirkung entfernt werden.",
+          "mpCost": 68,
+          "cooldown": 5,
+          "targetType": "single",
+          "trigger": "active",
+          "effectTag": "death_mark"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Herr des Karnevals",
+          "description": "Baron Samedi ist nicht durch normale Todes-Effekte besiegbar. Er stirbt nur durch Schaden der seinen HP-Stand auf 0 bringt.",
+          "trigger": "passive",
+          "effectTag": "death_immunity"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "DEATH_BRIDGE",
+          "description": "Tod-Karten nach Baron Samedi erhalten +30% Effektstärke."
+        },
+        {
+          "tag": "GRAVE_MARK",
+          "description": "Karten mit Tod-Effekten lösen ihre Flüche 1 Runde früher aus."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "hel",
+          "description": "Todesherrscher: Beide erhalten +40% Effektstärke für Tod-Fähigkeiten."
+        }
+      ],
+      "image": "/assets/cards/baron_samedi.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "gor_thul",
+      "number": "017",
+      "name": "Gor'Thul",
+      "title": "Weltenbrecher des Blutmondklans",
+      "quote": "Die Kriegstrommeln schlagen, mein Zorn ist der Sturm. Festungen zerfallen, Reiche vergehen, und die Erde selbst bebt unter meinem Schritt.",
+      "rarity": "MR",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "blutmondklan",
+      "factionLabel": "Blutmond-Klan",
+      "stats": {
+        "atk": 4500,
+        "def": 4800,
+        "hp": 15500,
+        "mpCost": 82,
+        "spd": 5
+      },
+      "skills": [
+        {
+          "name": "Weltenbrecherramme",
+          "description": "Verursacht 260% ATK als Erde-Schaden an allen Feinden. Reduziert deren Geschwindigkeit für 3 Runden um 40%.",
+          "mpCost": 75,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.6,
+          "effectTag": "slow"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Blut des Mondes",
+          "description": "Gor'Thul nimmt unter dem roten Mond (jede 3. Runde) 50% weniger Schaden und sein ATK steigt um 30%.",
+          "trigger": "passive",
+          "condition": "round_mod_3",
+          "effectTag": "moon_rage"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "WARRIOR_SYNC",
+          "description": "Krieger-Karten nach Gor'Thul erhalten +20% ATK."
+        },
+        {
+          "tag": "BLOODMOON",
+          "description": "Exklusiv: Aktiviert 'Blutmond'-Zustand für das gesamte Team für 2 Runden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Krieger-Rivalen: Beide erhalten +20% ATK, -10% DEF (Rivalen-Effekt)."
+        }
+      ],
+      "image": "/assets/cards/gor_thul.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "kaizen_ryujin",
+      "number": "018",
+      "name": "Kaizen Ryujin",
+      "title": "Drachenblut-Shogun des Sturmhimmels",
+      "quote": "Wenn die Himmel donnern und die Drachen erzittern, steht mein Wille über Sturm und Zeit. Alle Reiche beugen sich unter dem Blut der Drachen.",
+      "rarity": "MR",
+      "element": "lightning",
+      "type": "attacker",
+      "faction": "drachenshogunat",
+      "factionLabel": "Drachenshogunat",
+      "stats": {
+        "atk": 5200,
+        "def": 2800,
+        "hp": 11000,
+        "mpCost": 85,
+        "crit": 25,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Drachen-Donner-Sturmklinge",
+          "description": "Verursacht 320% ATK als Blitz-Schaden an einem Feind und 160% an allen anderen. Betäubt das Hauptziel für 1 Runde.",
+          "mpCost": 80,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.2,
+          "effectTag": "stun"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Blut des Sturmdrachen",
+          "description": "Jede Krit-Treffer erzeugt eine Blitz-Entladung die 80% ATK Schaden an angrenzende Feinde verursacht.",
+          "trigger": "on_attack",
+          "condition": "on_crit",
+          "effectTag": "chain_lightning"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "STORM_CHAIN",
+          "description": "Blitz-Karten nach Kaizen Ryujin erhalten +25% Krit-Schaden."
+        },
+        {
+          "tag": "DRAGON_BLOOD",
+          "description": "Drachen-Karten in der Kombo erhalten +20% ATK und werden nicht durch Eis gestoppt."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "garuda",
+          "description": "Sturmherrscher: Gemeinsam erhöhen sich alle Blitz/Wind-Effekte um 35%."
+        }
+      ],
+      "image": "/assets/cards/kaizen_ryujin.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 22
+    },
+    {
+      "id": "medousa_basileia",
+      "number": "030",
+      "name": "Medousa Basileia",
+      "title": "Steinblick der letzten Königin",
+      "quote": "Ein Blick genügt, und selbst Helden verlernen das Atmen. Vor meinem Urteil erstarrt die Zeit zu Stein.",
+      "rarity": "MR",
+      "element": "earth",
+      "type": "attacker",
+      "faction": "haus_basileia",
+      "factionLabel": "Haus Basileia – Auge der ewigen Versteinerung",
+      "stats": {
+        "atk": 4600,
+        "def": 2900,
+        "hp": 10800,
+        "mpCost": 78,
+        "crit": 19
+      },
+      "skills": [
+        {
+          "name": "Königlicher Steinblick",
+          "description": "Versteinert einen Feind für 2 Runden (komplett handlungsunfähig). Versteinerte Feinde nehmen 50% mehr Schaden.",
+          "mpCost": 72,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "effectTag": "petrify"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Blick der Ewigkeit",
+          "description": "Medousas Angriffe haben 25% Chance, das Ziel zu versteinern (1 Runde).",
+          "trigger": "on_attack",
+          "effectTag": "petrify_chance"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "STONE_GAZE",
+          "description": "Erde-Karten nach Medousa verursachen +30% Schaden an versteinerten Feinden."
+        },
+        {
+          "tag": "BASILEIA",
+          "description": "Exklusiv: Wenn Medousa einen Feind versteintert, erhält die gesamte Kombo +1 Schritt."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Gegner aus der Antike: Beide erhalten +25% ATK gegen mythologische Einheiten."
+        }
+      ],
+      "image": "/assets/cards/medousa_basileia.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 22
+    },
+    {
+      "id": "shuten_doji",
+      "number": "033",
+      "name": "Shuten Dōji",
+      "title": "Blutfürst von Rashōmon",
+      "quote": "Im Rausch des Sake badet die Welt. Schreie sind Trank, Seelen mein Mahl. Knie nieder – oder zerbreche. Ich bin der Durst, den Götter fürchten.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "rashoumon_damonen",
+      "factionLabel": "Dämonenhof von Rashōmon",
+      "stats": {
+        "atk": 5400,
+        "def": 2200,
+        "hp": 10500,
+        "mpCost": 88,
+        "crit": 28,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Blut-Sake-Rausch",
+          "description": "Verursacht 380% ATK als Dunklen Schaden an einem Feind. Heilt Shuten Dōji um 40% des verursachten Schadens. Im Rausch-Zustand: Schaden ×1.5.",
+          "mpCost": 85,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.8,
+          "effectTag": "lifesteal"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Ewiger Rausch",
+          "description": "Shuten Dōji akkumuliert 'Rausch' (max. 5 Stapel). Bei 5 Stapeln tritt er in Rausch-Zustand ein: +50% ATK und Krit-Schaden für 3 Runden.",
+          "trigger": "on_attack",
+          "effectTag": "rage_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "DARK_CHAIN",
+          "description": "Dunkel-Kombos erhöhen Shuten Dōjis Rausch-Stapel um 2 statt 1."
+        },
+        {
+          "tag": "BLOOD_FEAST",
+          "description": "Lebenssauger-Effekte im Verbund geben 20% an alle Verbündeten weiter."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "azazel",
+          "description": "Dunkel-Rausch: Wenn beide im Feld, erreicht Shuten den Rausch-Zustand bei 3 Stapeln."
+        },
+        {
+          "cardId": "yuki_onna",
+          "description": "Feuer und Eis: Gegensätzliche Kräfte – beide erhalten +15% Krit-Chance."
+        }
+      ],
+      "image": "/assets/cards/shuten_doji.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 18
+    },
+    {
+      "id": "khepri",
+      "number": "016",
+      "name": "Khepri",
+      "title": "Träger der wiedergeborenen Sonne",
+      "quote": "Das Licht erhebt sich im Kreis des Lebens.",
+      "rarity": "MR",
+      "element": "light",
+      "type": "attacker",
+      "faction": "aegyptische_goetter",
+      "factionLabel": "Ägyptische Götter",
+      "stats": {
+        "atk": 4800,
+        "def": 3200,
+        "hp": 11500,
+        "mpCost": 80,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Sonnenaufgang",
+          "description": "Verursacht 300% ATK als Licht-Schaden an allen Feinden. Erhöht eigene ATK für 3 Runden um 25%.",
+          "mpCost": 75,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 3.0,
+          "effectTag": "atk_boost"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Ewiger Zyklus",
+          "description": "Am Rundenstart regeneriert Khepri 5% seiner HP. Immunität gegen Schwäche-Effekte.",
+          "trigger": "passive",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Divine",
+          "description": "Göttliche Karten nach Khepri erhalten +20% Licht-Schaden."
+        },
+        {
+          "tag": "Guardian",
+          "description": "Schutzaura: Verbündete erhalten +10% DEF solange Khepri aktiv ist."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "jeanne_darc",
+          "description": "Licht-Allianz: Beide erhalten +25% ATK."
+        }
+      ],
+      "artwork_key": "khepri_base",
+      "image": "/assets/cards/khepri.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 28
+    },
+    {
+      "id": "ishtar",
+      "number": "021",
+      "name": "Ishtar",
+      "title": "Sternenspeer des Morgenkriegs",
+      "quote": "Ich bin der Glanz des Morgensterns, der Kriegsruf, der das Tor zerreißt.",
+      "rarity": "MR",
+      "element": "light",
+      "type": "attacker",
+      "faction": "mesopotamische_goetter",
+      "factionLabel": "Mesopotamische Götter",
+      "stats": {
+        "atk": 4600,
+        "def": 2800,
+        "hp": 10800,
+        "mpCost": 78,
+        "crit": 22
+      },
+      "skills": [
+        {
+          "name": "Speer des Morgenlichts",
+          "description": "Durchbohrt einen Feind mit 340% ATK als Licht-Schaden. Hat 35% Chance, Feind zu betäuben.",
+          "mpCost": 72,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.4,
+          "effectTag": "stun"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Göttin des Doppelgesichts",
+          "description": "Beim Übergang von Angriff zu Verteidigung: ATK und DEF tauschen für 1 Runde.",
+          "trigger": "passive",
+          "effectTag": "stat_swap"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Divine",
+          "description": "Ishtar verdoppelt den Combo-Bonus aller Licht-Karten im Verbund."
+        },
+        {
+          "tag": "Royal",
+          "description": "Königliche Ketten: +15% Schaden für alle folgenden Royal-Karten."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nergal",
+          "description": "Himmel und Unterwelt: Gegensätzliche Kräfte — beide erhalten +20% ATK."
+        }
+      ],
+      "artwork_key": "ishtar_base",
+      "image": "/assets/cards/ishtar.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 26
+    },
+    {
+      "id": "nidhoggr",
+      "number": "022",
+      "name": "Nidhöggr",
+      "title": "Weltennager der Tiefenwurzeln",
+      "quote": "Tief unter Yggdrasil frisst er an den Wurzeln, vergisst nie, verzeiht nie.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "nordische_bestien",
+      "factionLabel": "Nordische Bestien",
+      "stats": {
+        "atk": 5200,
+        "def": 2600,
+        "hp": 11200,
+        "mpCost": 85,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Weltenwurzel-Biss",
+          "description": "Nagt an einem Feind: 360% ATK Dunkel-Schaden. Verringert Feind-DEF dauerhaft um 20% (stapelbar bis 3×).",
+          "mpCost": 80,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.6,
+          "effectTag": "def_shred"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Endloser Hunger",
+          "description": "Nidhöggr heilt sich um 30% des verursachten Schadens.",
+          "trigger": "on_attack",
+          "effectTag": "lifesteal"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Dragon",
+          "description": "Drachen-Ketten: Nidhöggr erhöht den Schaden aller Drachenkarten um 25%."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllisches Nagen: Infernal-Combos brechen bei Nidhöggr nie ab."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "shuten_doji",
+          "description": "Hungerfürsten: Beide erhalten +15% Lebenssauger-Effekt."
+        }
+      ],
+      "artwork_key": "nidhoggr_base",
+      "image": "/assets/cards/nidhoggr.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 24
+    },
+    {
+      "id": "cerberus",
+      "number": "023",
+      "name": "Cerberus",
+      "title": "Dreifacher Wächter des Styx",
+      "quote": "Drei Köpfe — drei Flüche. Zorn, der zerreißt. Furcht, die lähmt. Hunger, der verschlingt.",
+      "rarity": "MR",
+      "element": "death",
+      "type": "vanguard",
+      "faction": "griechische_unterwelt",
+      "factionLabel": "Griechische Unterwelt",
+      "stats": {
+        "atk": 3800,
+        "def": 4800,
+        "hp": 15000,
+        "mpCost": 80,
+        "spd": 5
+      },
+      "skills": [
+        {
+          "name": "Dreifachbiss",
+          "description": "Greift alle Feinde mit 240% ATK als Todesschaden an. Alle Feinde erleiden für 2 Runden Furcht (-30% ATK).",
+          "mpCost": 75,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.4,
+          "effectTag": "fear"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Wächter der Schwelle",
+          "description": "Solange Cerberus lebt, können Feinde nicht fliehen oder Karten zurückziehen. Cerberus nimmt 25% weniger Schaden von Tod-Effekten.",
+          "trigger": "passive",
+          "effectTag": "prevent_escape"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Infernal",
+          "description": "Cerberus ist das Herzstück jedes Höllen-Combos: Infernal-Karten erhalten +20% DEF im Verbund."
+        },
+        {
+          "tag": "Guardian",
+          "description": "Hüter-Aura: Verbündete Karten erhalten 15% Schadensreduktion."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nergal",
+          "description": "Herrscher der Unterwelt: Beide erhalten +30% Schadensbonus gegen Licht-Einheiten."
+        }
+      ],
+      "artwork_key": "cerberus_base",
+      "image": "/assets/cards/cerberus.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 26
+    },
+    {
+      "id": "minotauros_basileus",
+      "number": "024",
+      "name": "Minotauros Basileus",
+      "title": "König des Labyrinthblutes",
+      "quote": "Ich bin das Zentrum eurer Angst. Euer Lauf endet im Labyrinth.",
+      "rarity": "MR",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "griechische_bestien",
+      "factionLabel": "Griechische Bestien",
+      "stats": {
+        "atk": 4500,
+        "def": 5200,
+        "hp": 16000,
+        "mpCost": 82,
+        "spd": 4
+      },
+      "skills": [
+        {
+          "name": "Labyrinth-Stampede",
+          "description": "Stampft auf alle Feinde: 260% ATK als Erde-Schaden. Feinde können für 2 Runden keine Karten von der Hand spielen (Labyrinth-Verwirrung).",
+          "mpCost": 78,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.6,
+          "effectTag": "lockdown"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Blut des Labyrinths",
+          "description": "Minotauros gewinnt 8% ATK für jede Runde die er überlebt (max. 5 Stapel).",
+          "trigger": "passive",
+          "condition": "round_start",
+          "effectTag": "atk_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Titan",
+          "description": "Titan-Combos: Minotauros erhöht HP-Schwellwert für Kampfausdauer um 20%."
+        },
+        {
+          "tag": "Beast",
+          "description": "Bestien-Verbund: Alle Beast-Karten erhalten +15% Krit-Schaden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "medousa_basileia",
+          "description": "Labyrinth-Herrscher: Beide erhalten +25% ATK gegen humanoide Feinde."
+        }
+      ],
+      "artwork_key": "minotauros_basileus_base",
+      "image": "/assets/cards/minotauros_basileus.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 24
+    },
+    {
+      "id": "anzu",
+      "number": "025",
+      "name": "Anzu",
+      "title": "Räuber der Himmelstafeln",
+      "quote": "Ich stieg empor, riss nieder, was ewig schien, und trug die Tafeln fort.",
+      "rarity": "MR",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "mesopotamische_bestien",
+      "factionLabel": "Mesopotamische Bestien",
+      "stats": {
+        "atk": 5000,
+        "def": 2400,
+        "hp": 10500,
+        "mpCost": 82,
+        "spd": 9,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Sturm des Schicksals",
+          "description": "Raubt dem Feind Kraft: 320% ATK als Wind-Schaden und kopiert eine zufällige Fähigkeit des Feindes für diese Runde.",
+          "mpCost": 78,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.2,
+          "effectTag": "copy_skill"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Göttliche Tafeln",
+          "description": "Anzu erhält +10% zu allen Schaden-Multiplikatoren für jede Combo-Stufe die aktiv ist.",
+          "trigger": "on_combo",
+          "effectTag": "combo_amp"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Sturm-Verbund: Anzu verlängert das Combo-Fenster aller Storm-Karten um 0.3s."
+        },
+        {
+          "tag": "Trickster",
+          "description": "Trickster-Ketten: Anzu kann zwischen zwei Spielern als Brücke fungieren."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "garuda",
+          "description": "Herrscher der Lüfte: Beide erhalten +30% Wind-Schaden."
+        }
+      ],
+      "artwork_key": "anzu_base",
+      "image": "/assets/cards/anzu.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "kagutsuchi",
+      "number": "026",
+      "name": "Kagutsuchi",
+      "title": "Flammenkind der Katastrophe",
+      "quote": "Aus der Flamme geboren, als die Götter das Feuer nicht zähmen konnten.",
+      "rarity": "MR",
+      "element": "fire",
+      "type": "attacker",
+      "faction": "japanische_goetter",
+      "factionLabel": "Japanische Götter",
+      "stats": {
+        "atk": 5400,
+        "def": 2200,
+        "hp": 10500,
+        "mpCost": 86,
+        "crit": 25,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Katastrophenfeuer",
+          "description": "Entfacht einen unkontrollierbaren Brand: 380% ATK Feuer-Schaden an einem Feind. Verbreitet sich auf benachbarte Feinde (50% Schaden).",
+          "mpCost": 82,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.8,
+          "effectTag": "burn_spread"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Geburt der Katastrophe",
+          "description": "Beim Einsetzen: Alle Feinde erleiden für 2 Runden Verbrennung (20% HP/Runde, ignoriert DEF).",
+          "trigger": "on_enter",
+          "effectTag": "burn"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Spirit",
+          "description": "Geister-Feuer: Kagutsuchis Verbrennung greift auch auf Geist-Karten über."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllische Flamme: +30% Feuer-Schaden im Infernal-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "pele",
+          "description": "Vulkan-Allianz: Beide erhalten +25% Feuer-Schaden und +15% Krit-Chance."
+        }
+      ],
+      "artwork_key": "kagutsuchi_base",
+      "image": "/assets/cards/kagutsuchi.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 24
+    },
+    {
+      "id": "raijin",
+      "number": "027",
+      "name": "Raijin",
+      "title": "Donnerfürst der Himmelsstürme",
+      "quote": "Wenn die Wolken sich türmen und der Himmel bebt, so trommelt mein Zorn den Donner.",
+      "rarity": "MR",
+      "element": "lightning",
+      "type": "attacker",
+      "faction": "japanische_goetter",
+      "factionLabel": "Japanische Götter",
+      "stats": {
+        "atk": 5000,
+        "def": 2600,
+        "hp": 11000,
+        "mpCost": 80,
+        "crit": 22,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Donnerwalze",
+          "description": "Entfesselt massiven Donnerschlag auf alle Feinde: 300% ATK Blitz-Schaden. Betäubt zufälligen Feind für 1 Runde.",
+          "mpCost": 76,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 3.0,
+          "effectTag": "stun"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Trommeln des Sturms",
+          "description": "Jede dritte Runde: Raijins ATK und SPD verdoppeln sich für 1 Runde (automatisch).",
+          "trigger": "passive",
+          "condition": "round_mod_3",
+          "effectTag": "stat_burst"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Sturm-Verbund: Raijin gilt als permanenter Sturm-Verstärker — +20% für alle Storm-Karten."
+        },
+        {
+          "tag": "Divine",
+          "description": "Göttlicher Donner: Divine-Karten nach Raijin kosten 10 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "kaizen_ryujin",
+          "description": "Sturmgötter vereint: Alle Blitz/Wind-Effekte +35%."
+        }
+      ],
+      "artwork_key": "raijin_base",
+      "image": "/assets/cards/raijin.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 26
+    },
+    {
+      "id": "cipactli",
+      "number": "028",
+      "name": "Cipactli",
+      "title": "Weltenfresser aus dem Urmeer",
+      "quote": "Bevor die Welt geformt wurde, war nur das Meer — und Cipactli.",
+      "rarity": "MR",
+      "element": "water",
+      "type": "vanguard",
+      "faction": "aztekische_goetter",
+      "factionLabel": "Aztekische Götter",
+      "stats": {
+        "atk": 4200,
+        "def": 4600,
+        "hp": 14500,
+        "mpCost": 82,
+        "spd": 4
+      },
+      "skills": [
+        {
+          "name": "Abyssaler Schlund",
+          "description": "Verschlingt alle Feinde: 250% ATK Wasser-Schaden. Saugt 40 MP aus jedem Feind.",
+          "mpCost": 78,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.5,
+          "effectTag": "mp_drain"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Urmeers Hunger",
+          "description": "Cipactli regeneriert 3% max. HP pro Runde. Wasser-Karten im Verbund erhalten +15% DEF.",
+          "trigger": "passive",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Meer-Verbund: Cipactli ist Anker aller Meer-Karten — +25% DEF für alle Sea-Karten."
+        },
+        {
+          "tag": "Titan",
+          "description": "Titanen-Hunger: Cipactlis MP-Saugen verdoppelt sich im Titan-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "scylla",
+          "description": "Tiefseemächte: Beide erhalten +30% Wasser-Schaden und +20% DEF."
+        }
+      ],
+      "artwork_key": "cipactli_base",
+      "image": "/assets/cards/cipactli.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 24
+    },
+    {
+      "id": "nergal",
+      "number": "029",
+      "name": "Nergal",
+      "title": "König der Pesttore",
+      "quote": "Ich herrsche über alles, was endet. Meine Tore öffnen sich für alle.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "mesopotamische_goetter",
+      "factionLabel": "Mesopotamische Götter",
+      "stats": {
+        "atk": 4800,
+        "def": 3400,
+        "hp": 12500,
+        "mpCost": 82,
+        "crit": 15
+      },
+      "skills": [
+        {
+          "name": "Pest des Abgrunds",
+          "description": "Belegt alle Feinde mit Pestfluch: 220% ATK Dunkel-Schaden sofort + 15% HP pro Runde über 3 Runden (ignoriert DEF).",
+          "mpCost": 78,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.2,
+          "effectTag": "poison_dot"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Tore der Finsternis",
+          "description": "Nergal kann nicht durch Licht-Effekte geblendet werden. Dunkel-Karten im Verbund heilen 5% HP nach jedem Angriff.",
+          "trigger": "passive",
+          "effectTag": "dark_lifesteal"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Infernal",
+          "description": "Höllentor: Nergal öffnet Infernal-Combos — erste Infernal-Karte kostet 0 MP."
+        },
+        {
+          "tag": "Undead",
+          "description": "Totenreich: Untote Karten erhalten +20% Angriff im Nergal-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "cerberus",
+          "description": "Herrscher der Unterwelt: Beide erhalten +30% Schadensbonus gegen Licht-Einheiten."
+        },
+        {
+          "cardId": "ishtar",
+          "description": "Himmel und Unterwelt: Gegensätze verstärken sich — +20% ATK."
+        }
+      ],
+      "artwork_key": "nergal_base",
+      "image": "/assets/cards/nergal.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "koschei",
+      "number": "030",
+      "name": "Koschei",
+      "title": "Der unsterbliche Zar des Frostgrabes",
+      "quote": "Mein Tod ist fern verborgen, mein Wille jedoch ist hier.",
+      "rarity": "MR",
+      "element": "ice",
+      "type": "vanguard",
+      "faction": "slawische_mythen",
+      "factionLabel": "Slawische Mythen",
+      "stats": {
+        "atk": 3900,
+        "def": 5000,
+        "hp": 16500,
+        "mpCost": 80,
+        "spd": 5
+      },
+      "skills": [
+        {
+          "name": "Unsterblicher Frost",
+          "description": "Gefriert alle Feinde für 2 Runden und verursacht 200% ATK Eis-Schaden. Koschei regeneriert 20% seiner HP.",
+          "mpCost": 76,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.0,
+          "effectTag": "freeze"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Die verborgene Seele",
+          "description": "Koschei stirbt nicht beim ersten Mal auf 0 HP — steht einmal pro Battle mit 30% HP wieder auf.",
+          "trigger": "on_death",
+          "effectTag": "revive"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Undead",
+          "description": "Unsterbliche Kette: Koschei lässt Untote-Karten einmal sterben und auferstehen."
+        },
+        {
+          "tag": "Royal",
+          "description": "Zarenkrone: Royal-Karten im Verbund erhalten +20% ATK."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "hel",
+          "description": "Todesfürsten: Beide erhalten +40% Effektstärke für Tod/Eis-Fähigkeiten."
+        },
+        {
+          "cardId": "yuki_onna",
+          "description": "Eisiges Erbe: Eis-Effekte dauern 1 Runde länger."
+        }
+      ],
+      "artwork_key": "koschei_base",
+      "image": "/assets/cards/koschei.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 25
+    },
+    {
+      "id": "balor",
+      "number": "031",
+      "name": "Balor",
+      "title": "Auge der vernichtenden Dämmerung",
+      "quote": "Ein geöffneter Blick, und Reiche fallen in Staub.",
+      "rarity": "MR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "keltische_goetter",
+      "factionLabel": "Keltische Götter",
+      "stats": {
+        "atk": 6000,
+        "def": 2000,
+        "hp": 11500,
+        "mpCost": 85,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Vernichtendes Auge",
+          "description": "Öffnet das tödliche Auge: 450% ATK Dunkel-Schaden an einem Feind. Hat 25% Chance auf sofortige Eliminierung.",
+          "mpCost": 82,
+          "cooldown": 5,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 4.5,
+          "effectTag": "execute"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Fluch des Sehers",
+          "description": "Balors Angriffe haben 20% Chance, Feind für 1 Runde zu versteinern.",
+          "trigger": "on_attack",
+          "effectTag": "petrify_chance"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Titan",
+          "description": "Titan-Auge: Balors Eliminierungschance erhöht sich im Titan-Verbund um 15%."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Schattenauge: Shadow-Karten nach Balor verursachen +25% Schaden an versteinerten Feinden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nidhoggr",
+          "description": "Weltenzerstörer: Beide erhalten +20% Schaden wenn Feind weniger als 30% HP hat."
+        }
+      ],
+      "artwork_key": "balor_base",
+      "image": "/assets/cards/balor.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 22
+    },
+    {
+      "id": "nian",
+      "number": "032",
+      "name": "Nian",
+      "title": "Schreckensmaul des Neujahrs",
+      "quote": "Wenn die Trommeln verstummen und das Feuer erlischt, kommt Nian aus der Finsternis.",
+      "rarity": "SSR",
+      "element": "fire",
+      "type": "attacker",
+      "faction": "chinesische_bestien",
+      "factionLabel": "Chinesische Bestien",
+      "stats": {
+        "atk": 1000,
+        "def": 600,
+        "hp": 2200,
+        "mpCost": 5,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Jahres-Schrecken",
+          "description": "Verursacht 280% ATK Feuer-Schaden. Feinde mit Lärm-Immun-Effekt erleiden doppelten Schaden.",
+          "mpCost": 45,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "fear"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Hunger des Jahres",
+          "description": "Nian wird stärker je länger der Kampf andauert: +8% ATK pro Runde (max 5 Stapel).",
+          "trigger": "passive",
+          "effectTag": "atk_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Beast",
+          "description": "Bestien-Schrecken: Nian verdoppelt die Furcht-Wirkung aller Beast-Karten."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllenbestie: +20% Feuer-Schaden im Infernal-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "kagutsuchi",
+          "description": "Feuerbestien: Beide erhalten +20% ATK."
+        }
+      ],
+      "artwork_key": "nian_base",
+      "image": "/assets/cards/nian.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 40
+    },
+    {
+      "id": "wendigo",
+      "number": "033",
+      "name": "Wendigo",
+      "title": "Hunger des Frostwaldes",
+      "quote": "Er ist der Atem der Leere, der Hunger ohne Grund.",
+      "rarity": "SSR",
+      "element": "ice",
+      "type": "attacker",
+      "faction": "nordamerikanische_geister",
+      "factionLabel": "Nordamerikanische Geister",
+      "stats": {
+        "atk": 950,
+        "def": 550,
+        "hp": 2000,
+        "mpCost": 5,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Eisiger Hunger",
+          "description": "Verursacht 260% ATK Eis-Schaden an einem Feind und heilt Wendigo um 50% des Schadens. Ziel ist für 1 Runde eingefroren.",
+          "mpCost": 42,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.6,
+          "effectTag": "freeze"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Unendlicher Hunger",
+          "description": "Wendigo kann nicht durch Sättigung oder Heilungs-Block gestoppt werden. Lifesteal-Rate +20%.",
+          "trigger": "passive",
+          "effectTag": "lifesteal"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Spirit",
+          "description": "Geist-Hunger: Spirit-Karten nach Wendigo erhalten +15% Lifesteal."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Schatten des Waldes: Wendigo startet unsichtbar und trifft den Feind unverteidigt."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "yuki_onna",
+          "description": "Wintergeister: Eis-Effekte dauern 1 Runde länger."
+        }
+      ],
+      "artwork_key": "wendigo_base",
+      "image": "/assets/cards/wendigo.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "tomoe_gozen",
+      "number": "034",
+      "name": "Tomoe Gozen",
+      "title": "Klinge der Abendblüte",
+      "quote": "Unter dem Blutmond tanze ich im Wind, nicht als Frau, nicht als Legende — sondern als Klinge.",
+      "rarity": "SSR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "japanische_krieger",
+      "factionLabel": "Japanische Krieger",
+      "stats": {
+        "atk": 1020,
+        "def": 640,
+        "hp": 2150,
+        "mpCost": 5,
+        "crit": 25
+      },
+      "skills": [
+        {
+          "name": "Blutmond-Klinge",
+          "description": "Springt auf den stärksten Feind und verursacht 310% ATK Dunkel-Schaden. Bei Krit: Schaden ×2.",
+          "mpCost": 48,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.1,
+          "effectTag": "execute"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Ehrenklinge",
+          "description": "Tomoe verursacht +30% Schaden wenn sie der letzte überlebende Verbündete ist.",
+          "trigger": "passive",
+          "condition": "last_ally",
+          "effectTag": "last_stand"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Warrior",
+          "description": "Krieger-Ehre: Tomoe gewährt allen Warrior-Karten +15% Krit-Rate."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Mondschatten: Dunkel-Karten nach Tomoe erhalten +20% Krit-Schaden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "shuten_doji",
+          "description": "Japanische Legenden: Beide erhalten +25% ATK und +10% Krit."
+        }
+      ],
+      "artwork_key": "tomoe_gozen_base",
+      "image": "/assets/cards/tomoe_gozen.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 40
+    },
+    {
+      "id": "scylla",
+      "number": "035",
+      "name": "Scylla",
+      "title": "Königin des zerrissenen Meeres",
+      "quote": "Ich singe nicht. Ich zerreiße.",
+      "rarity": "SSR",
+      "element": "water",
+      "type": "attacker",
+      "faction": "griechische_bestien",
+      "factionLabel": "Griechische Bestien",
+      "stats": {
+        "atk": 980,
+        "def": 580,
+        "hp": 2050,
+        "mpCost": 5,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Sechsfacher Schlund",
+          "description": "Greift mit sechs Köpfen an — trifft zufällig 6 Mal je 60% ATK (kann denselben Feind mehrfach treffen). Typ: Wasser.",
+          "mpCost": 44,
+          "cooldown": 4,
+          "targetType": "random",
+          "trigger": "active",
+          "damage": 0.6,
+          "effectTag": "multi_hit"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Unentrinnbar",
+          "description": "Feinde die von Scylla angegriffen wurden, können für diese Runde keine Karten abspielen.",
+          "trigger": "on_attack",
+          "effectTag": "lockdown"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Meereskönigin: Scylla verdoppelt den Bonus aller Sea-Karten im Verbund."
+        },
+        {
+          "tag": "Beast",
+          "description": "Bestien-Schlund: Multi-Hit-Effekte aller Beast-Karten +1 Treffer."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "cipactli",
+          "description": "Tiefseemächte: Beide erhalten +30% Wasser-Schaden."
+        }
+      ],
+      "artwork_key": "scylla_base",
+      "image": "/assets/cards/scylla.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "arachne",
+      "number": "036",
+      "name": "Arachne",
+      "title": "Herrin des verbotenen Netzes",
+      "quote": "Jeder Held zappelt gleich im Netz der Wahrheit.",
+      "rarity": "SSR",
+      "element": "dark",
+      "type": "support",
+      "faction": "griechische_mythen",
+      "factionLabel": "Griechische Mythen",
+      "stats": {
+        "atk": 780,
+        "def": 860,
+        "hp": 2300,
+        "mpCost": 4,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Schicksalsnetz",
+          "description": "Wirft ein Netz über alle Feinde: Reduziert ihre SPD um 50% und ATK um 20% für 3 Runden. Verursacht 120% ATK Dunkel-Schaden.",
+          "mpCost": 40,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 1.2,
+          "effectTag": "slow"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Weberin der Wahrheit",
+          "description": "Arachne kopiert jeden Buff den Feinde aktiv haben und überträgt ihn auf Verbündete (einmal pro Runde).",
+          "trigger": "passive",
+          "effectTag": "buff_steal"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Shadow",
+          "description": "Schattennetz: Shadow-Karten im Verbund erhalten Arachnes Verlangsamungseffekt gratis."
+        },
+        {
+          "tag": "Trickster",
+          "description": "Netz der List: Trickster-Karten kosten im Verbund 10 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "loki",
+          "description": "Meister der List: Beide erhalten +25% Effektstärke."
+        }
+      ],
+      "artwork_key": "arachne_base",
+      "image": "/assets/cards/arachne.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 44
+    },
+    {
+      "id": "pazuzu",
+      "number": "037",
+      "name": "Pazuzu",
+      "title": "Geißel der verdorbenen Winde",
+      "quote": "Mit einem Atemzug trage ich Seuchen über Imperien.",
+      "rarity": "SSR",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "mesopotamische_daemonen",
+      "factionLabel": "Mesopotamische Dämonen",
+      "stats": {
+        "atk": 1000,
+        "def": 600,
+        "hp": 2100,
+        "mpCost": 5,
+        "crit": 15
+      },
+      "skills": [
+        {
+          "name": "Seuchenwind",
+          "description": "Entfesselt verdorbene Winde auf alle Feinde: 240% ATK Wind-Schaden + Seuchenfluch (verliert 10% HP pro Runde für 3 Runden).",
+          "mpCost": 46,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.4,
+          "effectTag": "poison_dot"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Windgeborene Pest",
+          "description": "Pazuzus Angriffe haben 25% Chance, Seuche zu verbreiten. Verseuchte Feinde können nicht geheilt werden.",
+          "trigger": "on_attack",
+          "effectTag": "plague"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Seuchensturm: Storm-Karten verbreiten Pazuzus Seucheneffekt automatisch."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllenwind: Infernal-Karten erhalten +20% Schaden gegen vergiftete Feinde."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nergal",
+          "description": "Mesopotamische Verdammnis: Beide erhalten +25% Schaden gegen vergiftete/gefluchte Feinde."
+        }
+      ],
+      "artwork_key": "pazuzu_base",
+      "image": "/assets/cards/pazuzu.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "camazotz",
+      "number": "038",
+      "name": "Camazotz",
+      "title": "Fledermausgott der Nachtsonne",
+      "quote": "Ich erhebe mich im Schatten des Eklipsenlichts. Meine Flügel verdunkeln den Tag.",
+      "rarity": "SSR",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "maya_goetter",
+      "factionLabel": "Maya-Götter",
+      "stats": {
+        "atk": 1030,
+        "def": 570,
+        "hp": 2050,
+        "mpCost": 5,
+        "crit": 22
+      },
+      "skills": [
+        {
+          "name": "Nachteklipse",
+          "description": "Verursacht 290% ATK Dunkel-Schaden an einem Feind. Gibt 30 MP zurück wenn der Feind danach stirbt.",
+          "mpCost": 44,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.9,
+          "effectTag": "execute_return"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Nachtsonne",
+          "description": "In geraden Runden verdoppelt sich Camazot'z ATK (Nacht-Zustand). In ungeraden Runden verdoppelt sich DEF (Tag-Zustand).",
+          "trigger": "passive",
+          "effectTag": "day_night"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Shadow",
+          "description": "Schattenflieger: Camazotz gewährt Shadow-Karten +20% ATK-Boost."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllen-Fledermaus: Infernal-Verbund erhält +15% Krit-Rate."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "baron_samedi",
+          "description": "Totengötter: Beide erhalten +30% Schaden wenn Feind unter 50% HP."
+        }
+      ],
+      "artwork_key": "camazotz_base",
+      "image": "/assets/cards/camazotz.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 40
+    },
+    {
+      "id": "pele",
+      "number": "039",
+      "name": "Pele",
+      "title": "Herrin des lebenden Vulkans",
+      "quote": "Aus meinem Atem fließen Feuer, aus meinem Herzen neue Inseln.",
+      "rarity": "SSR",
+      "element": "fire",
+      "type": "attacker",
+      "faction": "polynesische_goetter",
+      "factionLabel": "Polynesische Götter",
+      "stats": {
+        "atk": 1050,
+        "def": 590,
+        "hp": 2150,
+        "mpCost": 5,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Vulkanausbruch",
+          "description": "Lässt einen Vulkan ausbrechen: 310% ATK Feuer-Schaden an allen Feinden. Der Boden brennt für 2 Runden (15% HP/Runde).",
+          "mpCost": 48,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 3.1,
+          "effectTag": "burn_terrain"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Erneuerung durch Lava",
+          "description": "Wenn Peles HP unter 30% fallen, heilt sie sich einmalig um 40% HP und ihre ATK steigt dauerhaft um 20%.",
+          "trigger": "passive",
+          "condition": "hp_below_30",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Spirit",
+          "description": "Vulkangeist: Spirit-Karten erhalten +20% Feuer-Schaden im Verbund."
+        },
+        {
+          "tag": "Divine",
+          "description": "Göttliche Glut: Divine-Karten regenerieren 10 MP wenn Feuerschaden verursacht wird."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "kagutsuchi",
+          "description": "Vulkan-Allianz: Beide erhalten +25% Feuer-Schaden."
+        }
+      ],
+      "artwork_key": "pele_base",
+      "image": "/assets/cards/pele.png",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "gilgamesh",
+      "number": "040",
+      "name": "Gilgamesch",
+      "title": "König von Uruk, Jäger der Unsterblichkeit",
+      "quote": "Zwei Drittel Gott, ein Drittel Mensch — genug für beide Welten.",
+      "rarity": "SSR",
+      "element": "earth",
+      "type": "attacker",
+      "faction": "mesopotamische_helden",
+      "factionLabel": "Mesopotamische Helden",
+      "stats": {
+        "atk": 1040,
+        "def": 720,
+        "hp": 2400,
+        "mpCost": 5,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Schatz des Königs",
+          "description": "Feuert goldene Waffen aus dem Schatzhaus ab: 320% ATK Erde-Schaden. +10% Schaden für jede Runde die seit Kampfbeginn vergangen ist.",
+          "mpCost": 50,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.2,
+          "effectTag": "scaling"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Suche nach dem Ewigen",
+          "description": "Gilgamesch erhält +5% zu allen Werten für jeden Kampf den er überlebt (max 5 Kämpfe, sessionübergreifend zurückgesetzt).",
+          "trigger": "passive",
+          "effectTag": "exp_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Royal",
+          "description": "Königskommando: Royal-Karten im Verbund erhalten +15% ATK und DEF."
+        },
+        {
+          "tag": "Warrior",
+          "description": "Heldenherz: Warrior-Karten nach Gilgamesch erhalten +20% aller Werte."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Könige des Schlachtfelds: Beide erhalten +30% ATK."
+        }
+      ],
+      "artwork_key": "gilgamesh_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 45
+    },
+    {
+      "id": "hercules",
+      "number": "041",
+      "name": "Hercules",
+      "title": "Vollbringer der zwölf Arbeiten",
+      "quote": "Jede Aufgabe, die die Götter mir stellten, erfüllte ich — und zerbrach sie danach.",
+      "rarity": "SSR",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "griechische_helden",
+      "factionLabel": "Griechische Helden",
+      "stats": {
+        "atk": 900,
+        "def": 1050,
+        "hp": 2600,
+        "mpCost": 5,
+        "spd": 5
+      },
+      "skills": [
+        {
+          "name": "Zwölf-Arbeiten-Kraft",
+          "description": "Entfesselt die Kraft aller zwölf Arbeiten: 280% ATK Erde-Schaden an einem Feind. Ignoriert 50% DEF. Stunnt Feind für 1 Runde.",
+          "mpCost": 48,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "stun"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Halbgott-Ausdauer",
+          "description": "Hercules kann bis zu 3× in einem Kampf wiederaufstehen, je mit 25% HP.",
+          "trigger": "on_death",
+          "effectTag": "revive"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Titan",
+          "description": "Titanenstärke: Titan-Karten im Verbund erhalten +20% DEF."
+        },
+        {
+          "tag": "Guardian",
+          "description": "Hüter der Sterblichen: Guardian-Karten nach Hercules erhalten Schadensimmunität für 1 Runde."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Griechische Titanen: Beide erhalten +25% DEF."
+        }
+      ],
+      "artwork_key": "hercules_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 44
+    },
+    {
+      "id": "thor",
+      "number": "042",
+      "name": "Thor",
+      "title": "Donnergott der Neun Welten",
+      "quote": "Mjölnir kehrt immer zurück. Mein Zorn auch.",
+      "rarity": "SSR",
+      "element": "lightning",
+      "type": "attacker",
+      "faction": "nordische_goetter",
+      "factionLabel": "Nordische Götter",
+      "stats": {
+        "atk": 1050,
+        "def": 700,
+        "hp": 2350,
+        "mpCost": 5,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Mjölnir-Schlag",
+          "description": "Schleudert Mjölnir: 330% ATK Blitz-Schaden an einem Feind und 165% an allen anderen. Kehrt zurück für weiteren Treffer nächste Runde (50%).",
+          "mpCost": 50,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.3,
+          "effectTag": "boomerang"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Göttlicher Hammer",
+          "description": "Thor kann nicht betäubt oder verlangsamt werden. Seine Angriffe haben 30% Chance auf Kettenblitz (80 ATK an Nebenfeinde).",
+          "trigger": "on_attack",
+          "effectTag": "chain_lightning"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Sturmgott: Thor erhöht alle Storm-Karten-Schaden um 25%."
+        },
+        {
+          "tag": "Divine",
+          "description": "Göttlicher Donner: Divine-Karten nach Thor kosten 10 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "raijin",
+          "description": "Sturmgötter: Blitz/Wind-Effekte +35%."
+        }
+      ],
+      "artwork_key": "thor_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 44
+    },
+    {
+      "id": "fenrir",
+      "number": "043",
+      "name": "Fenrir",
+      "title": "Kettenlöser des Ragnarök",
+      "quote": "Die Götter ketteten mich — doch ich wuchs stärker mit jeder Kette.",
+      "rarity": "SSR",
+      "element": "dark",
+      "type": "vanguard",
+      "faction": "nordische_bestien",
+      "factionLabel": "Nordische Bestien",
+      "stats": {
+        "atk": 960,
+        "def": 940,
+        "hp": 2550,
+        "mpCost": 5,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Kettenbrecher",
+          "description": "Bricht alle Fesseln: +50% ATK und SPD für 3 Runden. Danach: 280% ATK Dunkel-Schaden an allen Feinden.",
+          "mpCost": 46,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "berserker"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Göttlich Gebunden",
+          "description": "Für jede Kontroll-Wirkung (Freeze/Stun/Slow) die Fenrir erleidet: +15% ATK dauerhaft. Max 5 Stapel.",
+          "trigger": "passive",
+          "condition": "control_applied",
+          "effectTag": "atk_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Beast",
+          "description": "Ragnarök-Bestie: Beast-Karten nach Fenrir erhalten +20% ATK und Stun-Immunität."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllenkettenbrecher: Infernal-Verbund erhält +15% Schaden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nidhoggr",
+          "description": "Ragnarök-Duo: Beide erhalten +25% ATK wenn gemeinsam aktiv."
+        }
+      ],
+      "artwork_key": "fenrir_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "tiamat",
+      "number": "044",
+      "name": "Tiamat",
+      "title": "Urmutter des gesalteten Meeres",
+      "quote": "Ich war vor den Göttern. Aus meinem Leib wurden Himmel und Erde.",
+      "rarity": "SSR",
+      "element": "water",
+      "type": "attacker",
+      "faction": "mesopotamische_goetter",
+      "factionLabel": "Mesopotamische Götter",
+      "stats": {
+        "atk": 1020,
+        "def": 680,
+        "hp": 2400,
+        "mpCost": 5,
+        "crit": 15
+      },
+      "skills": [
+        {
+          "name": "Ursalzflut",
+          "description": "Entfesselt die Urflut: 290% ATK Wasser-Schaden an allen Feinden. Setzt ihren MP-Stand um 30 zurück.",
+          "mpCost": 48,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.9,
+          "effectTag": "mp_drain"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Mutterwasser",
+          "description": "Tiamat regeneriert 5% HP pro Runde. Wasser-Karten im Verbund erhalten +15% HP.",
+          "trigger": "passive",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Urmeer: Tiamat ist Quelle aller Meer-Karten — Sea-Verbund erhält +25% ATK."
+        },
+        {
+          "tag": "Dragon",
+          "description": "Drachenmutter: Dragon-Karten erhalten +20% aller Werte im Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "cipactli",
+          "description": "Urwassermächte: Beide erhalten +30% Wasser-Schaden."
+        }
+      ],
+      "artwork_key": "tiamat_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "morrigan",
+      "number": "045",
+      "name": "Morrigan",
+      "title": "Krähenkönigin des Schlachtfeldes",
+      "quote": "Ich entscheide nicht wer siegt — ich entscheide wer stirbt.",
+      "rarity": "SSR",
+      "element": "dark",
+      "type": "support",
+      "faction": "keltische_goetter",
+      "factionLabel": "Keltische Götter",
+      "stats": {
+        "atk": 840,
+        "def": 820,
+        "hp": 2200,
+        "mpCost": 4,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Schicksalskrähe",
+          "description": "Markiert einen Feind zum Tod: Nächste Karte verursacht +100% Schaden gegen diesen Feind. Verursacht 160% ATK Dunkel-Schaden.",
+          "mpCost": 38,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.6,
+          "effectTag": "death_mark"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Todesbringerin",
+          "description": "Wenn ein Feind stirbt: Morrigan regeneriert 20 MP und erhöht ATK aller Verbündeten um 10% für 1 Runde.",
+          "trigger": "passive",
+          "condition": "enemy_death",
+          "effectTag": "death_buff"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Shadow",
+          "description": "Schattenprophetin: Shadow-Karten erhalten Morrigan-Marks gratis."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Geist des Todes: Spirit-Karten nach Morrigan kosten 10 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "hel",
+          "description": "Todesgöttinnen: Beide erhalten +35% Effektstärke für Todeseffekte."
+        }
+      ],
+      "artwork_key": "morrigan_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 44
+    },
+    {
+      "id": "merlin",
+      "number": "046",
+      "name": "Merlin",
+      "title": "Seher zwischen den Welten",
+      "quote": "Die Zukunft ist kein Geheimnis. Nur die meisten hören nicht hin.",
+      "rarity": "SSR",
+      "element": "void",
+      "type": "combo_builder",
+      "faction": "arthuische_legenden",
+      "factionLabel": "Artuslegende",
+      "stats": {
+        "atk": 780,
+        "def": 760,
+        "hp": 2100,
+        "mpCost": 4,
+        "spd": 7
+      },
+      "skills": [
+        {
+          "name": "Weissagung",
+          "description": "Sieht in die nächste Runde: Verdoppelt den Combo-Multiplikator der nächsten gespielten Karte. Verursacht 150% ATK Leere-Schaden.",
+          "mpCost": 36,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.5,
+          "effectTag": "combo_amp"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Rückwärts im Strom der Zeit",
+          "description": "Merlin erinnert sich an die vorherige Runde: Jede Karte die in der letzten Runde gespielt wurde, kostet 10 MP weniger.",
+          "trigger": "passive",
+          "effectTag": "mp_discount"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Mage",
+          "description": "Zauberer-Weisheit: Mage-Karten nach Merlin erhalten +20% Effektstärke."
+        },
+        {
+          "tag": "Trickster",
+          "description": "Schicksalsnetz: Trickster-Karten im Verbund kosten 15 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "loki",
+          "description": "Meister der Täuschung: Combo-Multiplikator +0.5 wenn beide im Feld."
+        }
+      ],
+      "artwork_key": "merlin_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 44
+    },
+    {
+      "id": "typhon",
+      "number": "047",
+      "name": "Typhon",
+      "title": "Vater aller Monster",
+      "quote": "Ich bin der Sturm, den selbst die Olympier fürchten.",
+      "rarity": "SSR",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "griechische_titanen",
+      "factionLabel": "Griechische Titanen",
+      "stats": {
+        "atk": 1040,
+        "def": 660,
+        "hp": 2350,
+        "mpCost": 5,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Monstervater-Zorn",
+          "description": "Entfesselt hundert Drachenstürme: 310% ATK Wind-Schaden an allen Feinden. Alle Feinde haben für 2 Runden -20% auf alle Werte.",
+          "mpCost": 50,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 3.1,
+          "effectTag": "all_debuff"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Vater der Bestien",
+          "description": "Alle Beast-Karten im gleichen Deck erhalten +10% auf alle Grundwerte (passiv, stackt nicht).",
+          "trigger": "passive",
+          "effectTag": "field_aura"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Titan",
+          "description": "Titan-Vater: Typhon gilt als Anker für alle Titan-Combos — keine Combo-Unterbrechung."
+        },
+        {
+          "tag": "Beast",
+          "description": "Bestien-Patriarch: Beast-Karten erhalten +20% ATK im Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "tiamat",
+          "description": "Urmächte: Beide erhalten +25% Schaden wenn gemeinsam aktiv."
+        }
+      ],
+      "artwork_key": "typhon_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "cu_chulainn",
+      "number": "048",
+      "name": "Cú Chulainn",
+      "title": "Hound of Ulster, Rasender Held",
+      "quote": "Wenn der Wutanfall mich packt, bin ich kein Mensch mehr.",
+      "rarity": "SSR",
+      "element": "light",
+      "type": "attacker",
+      "faction": "keltische_helden",
+      "factionLabel": "Keltische Helden",
+      "stats": {
+        "atk": 1030,
+        "def": 680,
+        "hp": 2300,
+        "mpCost": 5,
+        "crit": 22
+      },
+      "skills": [
+        {
+          "name": "Ríastrad — Kriegerverzerrung",
+          "description": "Tritt in den Beserker-Zustand ein: 300% ATK Licht-Schaden an einem Feind. ATK verdoppelt sich für 2 Runden, DEF auf 0 gesetzt.",
+          "mpCost": 48,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 3.0,
+          "effectTag": "berserker"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Heldennatur",
+          "description": "Cú Chulainns Krit-Rate steigt um 10% für jeden Treffer den er einsteckt (max +50%).",
+          "trigger": "passive",
+          "condition": "take_damage",
+          "effectTag": "crit_stack"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Warrior",
+          "description": "Irischer Held: Warrior-Karten erhalten +20% ATK im Verbund."
+        },
+        {
+          "tag": "Hunter",
+          "description": "Jagdinstinkt: Hunter-Karten nach Cú Chulainn erhalten +25% Krit-Rate."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "morrigan",
+          "description": "Schicksal des Helden: Krit-Rate +15% wenn beide aktiv."
+        }
+      ],
+      "artwork_key": "cu_chulainn_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    },
+    {
+      "id": "ammit",
+      "number": "049",
+      "name": "Ammit",
+      "title": "Fresserin der Seelen",
+      "quote": "Ich esse was übrig bleibt, wenn das Herz lügt.",
+      "rarity": "SR",
+      "element": "death",
+      "type": "attacker",
+      "faction": "aegyptische_bestien",
+      "factionLabel": "Ägyptische Bestien",
+      "stats": {
+        "atk": 720,
+        "def": 580,
+        "hp": 1700,
+        "mpCost": 4
+      },
+      "skills": [
+        {
+          "name": "Herzenwägung",
+          "description": "Verursacht 230% ATK Todesschaden. Feinde mit weniger als 30% HP werden sofort eliminiert.",
+          "mpCost": 36,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.3,
+          "effectTag": "execute"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Seelenfressen",
+          "description": "Ammit heilt sich um 25% des Schadens den sie an Feinden unter 30% HP verursacht.",
+          "trigger": "on_attack",
+          "condition": "target_low_hp",
+          "effectTag": "lifesteal"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Beast",
+          "description": "Schicksalsbestie: Beast-Karten erhalten +15% Execute-Chance im Verbund."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Schattenfresser: Ammit verursacht +20% Schaden an geschwächten Feinden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "nergal",
+          "description": "Herrscher über Tod: Beide erhalten +20% Schaden gegen vergiftete Feinde."
+        }
+      ],
+      "artwork_key": "ammit_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 60
+    },
+    {
+      "id": "baba_yaga",
+      "number": "050",
+      "name": "Baba Jaga",
+      "title": "Hexe des Grenzwaldes",
+      "quote": "Zu meiner Hütte kommt man. Von meiner Hütte kehrt man manchmal zurück.",
+      "rarity": "SR",
+      "element": "chaos",
+      "type": "support",
+      "faction": "slawische_mythen",
+      "factionLabel": "Slawische Mythen",
+      "stats": {
+        "atk": 640,
+        "def": 720,
+        "hp": 1750,
+        "mpCost": 4,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Hühnerbein-Verwandlung",
+          "description": "Verwandelt einen Feind in eine harmlose Kreatur für 2 Runden (kann nicht angreifen, DEF auf 10% reduziert). Verursacht 140% ATK Chaos-Schaden.",
+          "mpCost": 34,
+          "cooldown": 4,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.4,
+          "effectTag": "polymorph"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Weisheit der Grenze",
+          "description": "Baba Jaga gewährt allen Verbündeten Chaos-Immunität. Chaos-Karten im Deck erhalten +15% Effektstärke.",
+          "trigger": "passive",
+          "effectTag": "debuff_immune"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Trickster",
+          "description": "Listige Hexe: Trickster-Karten erhalten +15% Chaos-Effektstärke."
+        },
+        {
+          "tag": "Mage",
+          "description": "Waldmagie: Mage-Karten kosten im Verbund 10 MP weniger."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "koschei",
+          "description": "Slawische Legenden: Beide erhalten +20% Effektstärke."
+        }
+      ],
+      "artwork_key": "baba_yaga_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 62
+    },
+    {
+      "id": "golden_phoenix",
+      "number": "051",
+      "name": "Goldener Phönix",
+      "title": "Erneuerung aus der Asche",
+      "quote": "Der Tod ist nur ein weiterer Anfang.",
+      "rarity": "SR",
+      "element": "light",
+      "type": "support",
+      "faction": "mythische_tiere",
+      "factionLabel": "Mythische Tiere",
+      "stats": {
+        "atk": 620,
+        "def": 780,
+        "hp": 1800,
+        "mpCost": 4,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Aschen-Wiedergeburt",
+          "description": "Belebt eine zerstörte Verbündete Karte mit 40% HP wieder. Heilt alle Verbündeten um 20% HP.",
+          "mpCost": 40,
+          "cooldown": 5,
+          "targetType": "ally",
+          "trigger": "active",
+          "effectTag": "revive"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Heilige Flamme",
+          "description": "Alle Verbündeten erhalten beim Einsetzen +10% HP-Regeneration pro Runde.",
+          "trigger": "on_enter",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Divine",
+          "description": "Heilige Wiedergeburt: Divine-Karten nach Phönix erhalten Einmal-Revive-Effekt."
+        },
+        {
+          "tag": "Light",
+          "description": "Lichtflügel: Light-Karten erhalten +15% Heilungseffekt."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "jeanne_darc",
+          "description": "Licht-Allianz: Heilungseffekte +25%."
+        }
+      ],
+      "artwork_key": "golden_phoenix_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 58
+    },
+    {
+      "id": "bone_king",
+      "number": "052",
+      "name": "Knochenkönig",
+      "title": "Herrscher des alten Grabes",
+      "quote": "Meine Knochen mögen vermodert sein — mein Wille nicht.",
+      "rarity": "SR",
+      "element": "death",
+      "type": "vanguard",
+      "faction": "untote_herrscher",
+      "factionLabel": "Untote Herrscher",
+      "stats": {
+        "atk": 680,
+        "def": 920,
+        "hp": 1800,
+        "mpCost": 4,
+        "spd": 4
+      },
+      "skills": [
+        {
+          "name": "Knochenwand",
+          "description": "Errichtet eine Knochenwand: Alle Verbündeten erhalten 30% Schadensreduktion für 2 Runden. Verursacht 180% ATK Todesschaden an allen Feinden.",
+          "mpCost": 38,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 1.8,
+          "effectTag": "shield"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Untote Ausdauer",
+          "description": "Knochenkönigregeniert 3% HP pro Runde. Kann nicht verlangsamt werden.",
+          "trigger": "passive",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Undead",
+          "description": "Untoter Herrscher: Undead-Karten im Verbund erhalten +15% DEF."
+        },
+        {
+          "tag": "Guardian",
+          "description": "Knochenschild: Guardian-Karten erhalten Knochen-Shield (20% extra DEF) gratis."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "hel",
+          "description": "Todesherrscher: Beide erhalten +25% DEF."
+        }
+      ],
+      "artwork_key": "bone_king_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 62
+    },
+    {
+      "id": "flame_knight",
+      "number": "053",
+      "name": "Flammenritter",
+      "title": "Klinge aus reinem Feuer",
+      "quote": "Mein Schwert brennt. Mein Herz auch.",
+      "rarity": "SR",
+      "element": "fire",
+      "type": "attacker",
+      "faction": "feuerorden",
+      "factionLabel": "Feuer-Orden",
+      "stats": {
+        "atk": 740,
+        "def": 640,
+        "hp": 1650,
+        "mpCost": 4,
+        "crit": 18
+      },
+      "skills": [
+        {
+          "name": "Feuerstoß",
+          "description": "Sturmangriff mit brennender Klinge: 250% ATK Feuer-Schaden. Setzt Feind in Brand für 2 Runden (10% HP/Runde).",
+          "mpCost": 36,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.5,
+          "effectTag": "burn"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Flammen-Aura",
+          "description": "Feinde die Flammenritter angreifen, erleiden automatisch 20% seines ATK als Feuer-Reflektionsschaden.",
+          "trigger": "passive",
+          "effectTag": "reflect"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Warrior",
+          "description": "Feuerkrieger: Warrior-Karten erhalten +15% Feuer-Schaden."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Ritter der Hölle: Infernal-Verbund erhält +20% Krit-Chance."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "kagutsuchi",
+          "description": "Flammenbund: Beide erhalten +20% Feuer-Schaden."
+        }
+      ],
+      "artwork_key": "flame_knight_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 65
+    },
+    {
+      "id": "tide_caller",
+      "number": "054",
+      "name": "Gezeiten-Ruferin",
+      "title": "Stimme des ewigen Meeres",
+      "quote": "Das Meer gehorcht meiner Stimme. Und meine Stimme kennt keine Gnade.",
+      "rarity": "SR",
+      "element": "water",
+      "type": "support",
+      "faction": "meeresvolk",
+      "factionLabel": "Meeresvolk",
+      "stats": {
+        "atk": 600,
+        "def": 760,
+        "hp": 1800,
+        "mpCost": 4,
+        "spd": 7
+      },
+      "skills": [
+        {
+          "name": "Gezeitenruf",
+          "description": "Ruft eine Flutwelle: Alle Feinde -20% ATK und -20% SPD für 3 Runden. Heilt alle Verbündeten um 15% HP.",
+          "mpCost": 36,
+          "cooldown": 4,
+          "targetType": "all",
+          "trigger": "active",
+          "effectTag": "atk_debuff"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Meeres-Empathie",
+          "description": "Alle Wasser-Karten im Verbund regenerieren 5 MP pro Runde zusätzlich.",
+          "trigger": "passive",
+          "effectTag": "mp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Meeresruf: Sea-Karten erhalten +20% Effektstärke."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Wassergeist: Spirit-Karten regenerieren 10 MP pro Runde im Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "cipactli",
+          "description": "Urwasser: Beide erhalten +20% Wassereffekte."
+        }
+      ],
+      "artwork_key": "tide_caller_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 63
+    },
+    {
+      "id": "storm_herald",
+      "number": "055",
+      "name": "Sturmbote",
+      "title": "Stimme des kommenden Orkans",
+      "quote": "Ich bin die Stille vor dem Sturm. Und ich bin auch der Sturm.",
+      "rarity": "SR",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "sturm_klan",
+      "factionLabel": "Sturm-Klan",
+      "stats": {
+        "atk": 730,
+        "def": 600,
+        "hp": 1680,
+        "mpCost": 4,
+        "spd": 9,
+        "crit": 16
+      },
+      "skills": [
+        {
+          "name": "Orkan-Vorläufer",
+          "description": "Entfesselt einen Mini-Orkan: 240% ATK Wind-Schaden an allen Feinden. Erhöht SPD aller Verbündeten für 2 Runden um 30%.",
+          "mpCost": 38,
+          "cooldown": 3,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.4,
+          "effectTag": "spd_boost"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Windläufer",
+          "description": "Sturmbote greift immer zuerst (SPD-Bonus +5 permanent). Wind-Karten im Verbund erhalten +10% SPD.",
+          "trigger": "passive",
+          "effectTag": "spd_boost"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Vorbote des Orkans: Storm-Verbund erhält +15% Krit-Chance."
+        },
+        {
+          "tag": "Hunter",
+          "description": "Windläufer: Hunter-Karten erhalten +20% ATK im Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "garuda",
+          "description": "Windmeister: Beide erhalten +25% Wind-Schaden."
+        }
+      ],
+      "artwork_key": "storm_herald_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 62
+    },
+    {
+      "id": "void_spider",
+      "number": "056",
+      "name": "Leeren-Spinne",
+      "title": "Weberin des kosmischen Nichts",
+      "quote": "Mein Netz ist unsichtbar. Bis du darin gefangen bist.",
+      "rarity": "SR",
+      "element": "void",
+      "type": "combo_builder",
+      "faction": "das_nichts",
+      "factionLabel": "Das Nichts",
+      "stats": {
+        "atk": 660,
+        "def": 700,
+        "hp": 1750,
+        "mpCost": 4,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Leeres Gewebe",
+          "description": "Webt ein unsichtbares Netz: Nächste gespielte Karte im Verbund erhält +50% Schaden. Verursacht 140% ATK Leere-Schaden.",
+          "mpCost": 32,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.4,
+          "effectTag": "combo_boost"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Kosmisches Netz",
+          "description": "Jede gespielte Karte verlängert das Combo-Fenster um 0.2s (max 3 Stapel pro Runde).",
+          "trigger": "on_combo",
+          "effectTag": "window_ext"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Shadow",
+          "description": "Schattennetz: Shadow-Karten erhalten +15% Schaden im Verbund."
+        },
+        {
+          "tag": "Trickster",
+          "description": "Unsichtbares Netz: Trickster-Karten starten eine Runde unsichtbar nach Leeren-Spinne."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "arachne",
+          "description": "Spinnen-Schwestern: Beide erhalten +25% Combo-Fenster-Bonus."
+        }
+      ],
+      "artwork_key": "void_spider_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 60
+    },
+    {
+      "id": "sea_serpent",
+      "number": "057",
+      "name": "Meeresschlange",
+      "title": "Wächter der tiefen Strömung",
+      "quote": "Die Strömungen gehorchen mir. Du auch.",
+      "rarity": "R",
+      "element": "water",
+      "type": "attacker",
+      "faction": "meereswesen",
+      "factionLabel": "Meereswesen",
+      "stats": {
+        "atk": 420,
+        "def": 320,
+        "hp": 1100,
+        "mpCost": 3
+      },
+      "skills": [
+        {
+          "name": "Tiefenzug",
+          "description": "Reißt Feind in die Tiefe: 190% ATK Wasser-Schaden. Feind verliert 15 MP.",
+          "mpCost": 25,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.9,
+          "effectTag": "mp_drain"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Strömungsschutz",
+          "description": "Wasser-Karten im Verbund erhalten +10% DEF.",
+          "trigger": "passive",
+          "effectTag": "def_boost"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Meeresverbund: +10% Schaden für alle Sea-Karten."
+        },
+        {
+          "tag": "Beast",
+          "description": "Bestienverbund: +10% ATK für Beast-Karten."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "tide_caller",
+          "description": "Meereslegion: Beide erhalten +15% ATK."
+        }
+      ],
+      "artwork_key": "sea_serpent_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 90
+    },
+    {
+      "id": "wind_hawk",
+      "number": "058",
+      "name": "Windsperber",
+      "title": "Jäger der oberen Winde",
+      "quote": "Ich jage schneller als mein Schatten.",
+      "rarity": "R",
+      "element": "wind",
+      "type": "attacker",
+      "faction": "windjaeger",
+      "factionLabel": "Windjäger",
+      "stats": {
+        "atk": 440,
+        "def": 280,
+        "hp": 1000,
+        "mpCost": 3,
+        "spd": 8,
+        "crit": 15
+      },
+      "skills": [
+        {
+          "name": "Sturzflug",
+          "description": "Taucht aus dem Sturmhimmel: 200% ATK Wind-Schaden. Trifft zuerst unabhängig von SPD.",
+          "mpCost": 22,
+          "cooldown": 2,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 2.0,
+          "effectTag": "first_strike"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Scharfer Blick",
+          "description": "Windsperber erhält +15% Krit-Rate gegen Feinde mit mehr als 70% HP.",
+          "trigger": "passive",
+          "effectTag": "crit_boost"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Hunter",
+          "description": "Jägerverbund: Hunter-Karten erhalten +10% Krit-Rate."
+        },
+        {
+          "tag": "Storm",
+          "description": "Sturmjäger: +10% Schaden im Storm-Verbund."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "storm_herald",
+          "description": "Windläufer: Beide erhalten +15% SPD."
+        }
+      ],
+      "artwork_key": "wind_hawk_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 92
+    },
+    {
+      "id": "shadow_wolf",
+      "number": "059",
+      "name": "Schattenwolf",
+      "title": "Lautloser Jäger der Nacht",
+      "quote": "Man hört mich nicht. Man sieht mich nicht. Man spürt nur die Zähne.",
+      "rarity": "R",
+      "element": "dark",
+      "type": "attacker",
+      "faction": "schattenjaeger",
+      "factionLabel": "Schattenjäger",
+      "stats": {
+        "atk": 460,
+        "def": 260,
+        "hp": 980,
+        "mpCost": 2,
+        "crit": 20
+      },
+      "skills": [
+        {
+          "name": "Schattenreißer",
+          "description": "Springt aus dem Dunkel: 180% ATK Dunkel-Schaden. Feind mit aktiven Buffs: +40% Schaden.",
+          "mpCost": 20,
+          "cooldown": 2,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.8,
+          "effectTag": "buff_punish"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Schattensinne",
+          "description": "Schattenwolf trifft immer auch wenn Feind getarnt/unsichtbar ist. +10% ATK gegen getarnte Feinde.",
+          "trigger": "passive",
+          "effectTag": "true_sight"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Shadow",
+          "description": "Schattenrudel: Shadow-Karten nach Schattenwolf erhalten +10% Krit-Schaden."
+        },
+        {
+          "tag": "Hunter",
+          "description": "Jagdverbund: Hunter-Karten erhalten +10% ATK."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "wendigo",
+          "description": "Waldwesen: Beide erhalten +15% Dunkel-Schaden."
+        }
+      ],
+      "artwork_key": "shadow_wolf_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 90
+    },
+    {
+      "id": "thunder_bird",
+      "number": "060",
+      "name": "Donnervogel",
+      "title": "Gewitterherr der alten Wildnis",
+      "quote": "Meine Flügel schlagen den Donner. Mein Schrei ist der Blitz.",
+      "rarity": "R",
+      "element": "lightning",
+      "type": "attacker",
+      "faction": "nordamerikanische_geister",
+      "factionLabel": "Nordamerikanische Geister",
+      "stats": {
+        "atk": 450,
+        "def": 300,
+        "hp": 1050,
+        "mpCost": 3,
+        "crit": 14
+      },
+      "skills": [
+        {
+          "name": "Donnerflügel",
+          "description": "Schlägt mit Donnerflügeln zu: 195% ATK Blitz-Schaden an einem Feind. Nebenfeinde erhalten 80% Schaden (Kettenblitz).",
+          "mpCost": 24,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.95,
+          "effectTag": "chain_lightning"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Sturmgeborener",
+          "description": "Donnervogel kann nicht durch Wind-Effekte verlangsamt werden. +10% Blitz-Schaden.",
+          "trigger": "passive",
+          "effectTag": "wind_immune"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Storm",
+          "description": "Sturmkreatur: Storm-Verbund erhält +10% Krit-Rate."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Geist des Donners: Spirit-Karten nach Donnervogel erhalten +15% Blitz-Schaden."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "raijin",
+          "description": "Donnerkraft: Beide erhalten +15% Blitz-Schaden."
+        }
+      ],
+      "artwork_key": "thunder_bird_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 88
+    },
+    {
+      "id": "forest_warden",
+      "number": "061",
+      "name": "Waldwächter",
+      "title": "Hüter des alten Baumes",
+      "quote": "Der Wald hat kein Gedächtnis — nur ich.",
+      "rarity": "R",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "waldgeister",
+      "factionLabel": "Waldgeister",
+      "stats": {
+        "atk": 320,
+        "def": 480,
+        "hp": 1300,
+        "mpCost": 2,
+        "spd": 4
+      },
+      "skills": [
+        {
+          "name": "Wurzelwall",
+          "description": "Errichtet eine Wurzelwand: Verursacht 160% ATK Erde-Schaden an einem Feind. Alle Verbündeten erhalten 20% Schadensreduktion für 1 Runde.",
+          "mpCost": 22,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.6,
+          "effectTag": "shield"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Waldaura",
+          "description": "Erde-Karten im Verbund erhalten +10% HP-Regeneration pro Runde.",
+          "trigger": "passive",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Guardian",
+          "description": "Naturhüter: Guardian-Karten erhalten +10% DEF."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Waldgeist: Spirit-Karten nach Waldwächter erhalten +10% Heilungseffekt."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "leonidas",
+          "description": "Krieger und Hüter: Beide erhalten +15% DEF."
+        }
+      ],
+      "artwork_key": "forest_warden_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 88
+    },
+    {
+      "id": "ice_witch",
+      "number": "062",
+      "name": "Eishexe",
+      "title": "Herrin des ewigen Reifs",
+      "quote": "Kälte ist keine Waffe. Sie ist ein Zustand.",
+      "rarity": "R",
+      "element": "ice",
+      "type": "support",
+      "faction": "winterzauberer",
+      "factionLabel": "Winterzauberer",
+      "stats": {
+        "atk": 350,
+        "def": 420,
+        "hp": 1200,
+        "mpCost": 3,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Eissturm",
+          "description": "Sendet einen Eissturm: Alle Feinde verlieren 20% SPD und erhalten 170% ATK Eis-Schaden.",
+          "mpCost": 24,
+          "cooldown": 3,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 1.7,
+          "effectTag": "slow"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Frostschutz",
+          "description": "Eis-Karten im Verbund erhalten +10% Schadensresistenz. Hexe kann nicht eingefroren werden.",
+          "trigger": "passive",
+          "effectTag": "freeze_immune"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Mage",
+          "description": "Eismagierin: Mage-Karten erhalten +10% Eis-Schaden."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Froststille: Shadow-Karten nach Eishexe erhalten Angriffspriorität."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "yuki_onna",
+          "description": "Eisschwestern: Eis-Effekte dauern 1 Runde länger."
+        }
+      ],
+      "artwork_key": "ice_witch_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 86
+    },
+    {
+      "id": "valkyrie_eira",
+      "number": "063",
+      "name": "Walküre Eira",
+      "title": "Botin des Schlachtenruhms",
+      "quote": "Ich wähle nicht die Toten. Ich wähle die Würdigen.",
+      "rarity": "R",
+      "element": "light",
+      "type": "support",
+      "faction": "nordische_goetter",
+      "factionLabel": "Nordische Götter",
+      "stats": {
+        "atk": 340,
+        "def": 460,
+        "hp": 1280,
+        "mpCost": 3,
+        "spd": 7
+      },
+      "skills": [
+        {
+          "name": "Schlachtensegen",
+          "description": "Segnet alle Verbündeten: +15% ATK und +15% DEF für 2 Runden. Heilt 10% HP.",
+          "mpCost": 26,
+          "cooldown": 3,
+          "targetType": "all_allies",
+          "trigger": "active",
+          "effectTag": "atk_boost"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Walküren-Wahl",
+          "description": "Wenn ein Verbündeter stirbt: Walküre Eira heilt alle übrigen Verbündeten um 10% HP.",
+          "trigger": "passive",
+          "condition": "ally_death",
+          "effectTag": "hp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Divine",
+          "description": "Göttlicher Segen: Divine-Karten erhalten +10% HP-Regeneration."
+        },
+        {
+          "tag": "Warrior",
+          "description": "Krieger-Segen: Warrior-Karten erhalten +15% ATK nach Walküre Eira."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "thor",
+          "description": "Nordische Götter: Beide erhalten +20% aller Werte."
+        }
+      ],
+      "artwork_key": "valkyrie_eira_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 2,
+      "gachaWeight": 85
+    },
+    {
+      "id": "goblin_scout",
+      "number": "064",
+      "name": "Goblin-Späher",
+      "title": "Lauscher aus dem Gebüsch",
+      "quote": "Ich sehe dich. Du siehst mich nicht.",
+      "rarity": "N",
+      "element": "earth",
+      "type": "attacker",
+      "faction": "goblin_stamm",
+      "factionLabel": "Goblin-Stamm",
+      "stats": {
+        "atk": 180,
+        "def": 120,
+        "hp": 520,
+        "mpCost": 1
+      },
+      "skills": [
+        {
+          "name": "Hinterhaltsangriff",
+          "description": "Springt aus dem Gebüsch: 140% ATK Erde-Schaden. Trifft zuerst in dieser Runde.",
+          "mpCost": 10,
+          "cooldown": 2,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.4,
+          "effectTag": "first_strike"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Überlebenstrieb",
+          "description": "Goblin-Späher flieht (verschwindet) wenn HP unter 10% fallen — gilt als besiegt aber nicht zerstört.",
+          "trigger": "passive",
+          "condition": "hp_below_10",
+          "effectTag": "escape"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Beast",
+          "description": "Horde: Beast-Karten +5% ATK."
+        },
+        {
+          "tag": "Shadow",
+          "description": "Dunkelläufer: +5% Krit-Rate."
+        }
+      ],
+      "synergies": [],
+      "artwork_key": "goblin_scout_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 3,
+      "gachaWeight": 200
+    },
+    {
+      "id": "fire_sprite",
+      "number": "065",
+      "name": "Feuergeistchen",
+      "title": "Tänzer der kleinen Flamme",
+      "quote": "So klein. So heiß. So unberechenbar.",
+      "rarity": "N",
+      "element": "fire",
+      "type": "support",
+      "faction": "elementargeister",
+      "factionLabel": "Elementargeister",
+      "stats": {
+        "atk": 140,
+        "def": 100,
+        "hp": 460,
+        "mpCost": 1,
+        "spd": 8
+      },
+      "skills": [
+        {
+          "name": "Funkeln",
+          "description": "Verursacht 120% ATK Feuer-Schaden. Gibt Verbündetem 5 MP zurück.",
+          "mpCost": 8,
+          "cooldown": 1,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.2,
+          "effectTag": "mp_regen"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Flammenherz",
+          "description": "Feuer-Karten im Verbund regenerieren 2 MP pro Runde zusätzlich.",
+          "trigger": "passive",
+          "effectTag": "mp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Spirit",
+          "description": "Geisterverbund: Spirit-Karten +5% Effektstärke."
+        },
+        {
+          "tag": "Infernal",
+          "description": "Höllenfunken: +5% Feuer-Schaden."
+        }
+      ],
+      "synergies": [],
+      "artwork_key": "fire_sprite_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 3,
+      "gachaWeight": 200
+    },
+    {
+      "id": "stone_golem",
+      "number": "066",
+      "name": "Steingolem",
+      "title": "Wächter aus uraltem Fels",
+      "quote": "Ich war hier bevor euch. Ich bin hier danach.",
+      "rarity": "N",
+      "element": "earth",
+      "type": "vanguard",
+      "faction": "elementarwesen",
+      "factionLabel": "Elementarwesen",
+      "stats": {
+        "atk": 140,
+        "def": 300,
+        "hp": 700,
+        "mpCost": 2,
+        "spd": 2
+      },
+      "skills": [
+        {
+          "name": "Felsenwurf",
+          "description": "Wirft einen Felsbrocken: 150% ATK Erde-Schaden. Betäubt Feind für 1 Runde.",
+          "mpCost": 14,
+          "cooldown": 3,
+          "targetType": "single",
+          "trigger": "active",
+          "damage": 1.5,
+          "effectTag": "stun"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Steinerne Haut",
+          "description": "Steingolem nimmt 15% weniger physischen Schaden.",
+          "trigger": "passive",
+          "effectTag": "damage_reduce"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Guardian",
+          "description": "Steinschild: Guardian-Karten +5% DEF."
+        },
+        {
+          "tag": "Titan",
+          "description": "Stein-Titan: +5% ATK für Titan-Karten."
+        }
+      ],
+      "synergies": [],
+      "artwork_key": "stone_golem_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 3,
+      "gachaWeight": 200
+    },
+    {
+      "id": "dust_wisp",
+      "number": "067",
+      "name": "Staubfunken",
+      "title": "Irrlichter der leeren Ebene",
+      "quote": "Ich führe dich irgendwo hin. Vielleicht nicht wohin du willst.",
+      "rarity": "N",
+      "element": "void",
+      "type": "combo_builder",
+      "faction": "elementargeister",
+      "factionLabel": "Elementargeister",
+      "stats": {
+        "atk": 120,
+        "def": 90,
+        "hp": 440,
+        "mpCost": 1,
+        "spd": 9
+      },
+      "skills": [
+        {
+          "name": "Irrlicht",
+          "description": "Verwirrt einen Feind für 1 Runde (25% Chance Angriff verfehlt). Gibt 5 MP zurück.",
+          "mpCost": 8,
+          "cooldown": 2,
+          "targetType": "single",
+          "trigger": "active",
+          "effectTag": "confuse"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Leere-Echo",
+          "description": "Leere-Karten im Verbund erhalten das Combo-Fenster um 0.1s verlängert.",
+          "trigger": "on_combo",
+          "effectTag": "window_ext"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Trickster",
+          "description": "Irrlichter-Trick: +5% Verwirrungschance."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Staubgeist: Spirit-Karten +5% MP-Regeneration."
+        }
+      ],
+      "synergies": [],
+      "artwork_key": "dust_wisp_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 3,
+      "gachaWeight": 200
+    },
+    {
+      "id": "river_nymph",
+      "number": "068",
+      "name": "Flussnymphe",
+      "title": "Tochter der stillen Strömung",
+      "quote": "Das Wasser erinnert sich an alles.",
+      "rarity": "N",
+      "element": "water",
+      "type": "support",
+      "faction": "naturgeister",
+      "factionLabel": "Naturgeister",
+      "stats": {
+        "atk": 130,
+        "def": 160,
+        "hp": 560,
+        "mpCost": 1,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Heilwasser",
+          "description": "Heilt einen Verbündeten um 15% HP und gibt 8 MP zurück.",
+          "mpCost": 10,
+          "cooldown": 2,
+          "targetType": "ally",
+          "trigger": "active",
+          "effectTag": "heal"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Fließender Segen",
+          "description": "Wasser-Karten im Verbund erhalten +5 MP zu Rundenstart.",
+          "trigger": "passive",
+          "effectTag": "mp_regen"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Sea",
+          "description": "Flussvolk: Sea-Karten +5% Heilungseffekt."
+        },
+        {
+          "tag": "Spirit",
+          "description": "Wassergeist: Spirit-Karten +5% MP-Regeneration."
+        }
+      ],
+      "synergies": [],
+      "artwork_key": "river_nymph_base",
+      "image": "",
+      "tradeable": true,
+      "globalLimit": null,
+      "deckLimit": 3,
+      "gachaWeight": 200
+    },
+    {
+      "id": "arthur_pendragon",
+      "number": "069",
+      "name": "Artus Pendragonus",
+      "title": "Der Einende König des Westens",
+      "quote": "Wer das Schwert aus dem Stein zieht, trägt die Last aller.",
+      "rarity": "SSR",
+      "element": "light",
+      "type": "vanguard",
+      "faction": "arthuische_legenden",
+      "factionLabel": "Artuslegende",
+      "stats": {
+        "atk": 920,
+        "def": 1000,
+        "hp": 2500,
+        "mpCost": 5,
+        "spd": 6
+      },
+      "skills": [
+        {
+          "name": "Excalibur-Strahl",
+          "description": "Entfesselt Excaliburs Lichtstrahl: 280% ATK Licht-Schaden an allen Feinden. Heilt alle Verbündeten um 15% HP.",
+          "mpCost": 48,
+          "cooldown": 5,
+          "targetType": "all",
+          "trigger": "active",
+          "damage": 2.8,
+          "effectTag": "heal_allies"
+        }
+      ],
+      "passives": [
+        {
+          "name": "Kraft der Einheit",
+          "description": "Für jede verbündete Karte im Feld: +8% ATK und DEF (max +40%).",
+          "trigger": "passive",
+          "effectTag": "unity_buff"
+        }
+      ],
+      "combos": [
+        {
+          "tag": "Royal",
+          "description": "Königsverbund: Royal-Karten im Verbund erhalten +20% aller Werte."
+        },
+        {
+          "tag": "Guardian",
+          "description": "Hüter des Reiches: Guardian-Karten erhalten Schadensimmunität für 1 Runde."
+        }
+      ],
+      "synergies": [
+        {
+          "cardId": "merlin",
+          "description": "König und Zauberer: Combo-Multiplikator +0.3 wenn beide aktiv."
+        },
+        {
+          "cardId": "cu_chulainn",
+          "description": "Helden des Westens: Beide erhalten +20% ATK."
+        }
+      ],
+      "artwork_key": "arthur_pendragon_base",
+      "image": "",
+      "tradeable": false,
+      "globalLimit": null,
+      "deckLimit": 1,
+      "gachaWeight": 42
+    }
+  ]
+}

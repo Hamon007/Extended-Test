@@ -1,0 +1,210 @@
+{
+  "_version": "0.1.0",
+  "_comment": "Codex Immortalis – Gegnerdatenbank. Gegner sind NPC-Decks mit festen Karten.",
+  "enemies": [
+    {
+      "id": "shadow_captain",
+      "name": "Schattenhauptmann",
+      "title": "Wächter der verfallenen Festung",
+      "tier": 1,
+      "element": "dark",
+      "image": "/assets/enemies/shadow_captain.png",
+      "stats": {
+        "hp": 12000,
+        "mpMax": 100,
+        "mpRegen": 30
+      },
+      "cards": [
+        {
+          "id": "shadow_blade",
+          "name": "Schattenklingen-Soldat",
+          "atk": 1800,
+          "def": 900,
+          "hp": 4000,
+          "mpCost": 25,
+          "image": "/assets/enemies/card_shadow_blade.png"
+        },
+        {
+          "id": "dark_archer",
+          "name": "Dunkler Bogenschütze",
+          "atk": 2200,
+          "def": 600,
+          "hp": 3000,
+          "mpCost": 30,
+          "image": "/assets/enemies/card_dark_archer.png"
+        },
+        {
+          "id": "shadow_shielder",
+          "name": "Schattenverteidiger",
+          "atk": 900,
+          "def": 2000,
+          "hp": 5500,
+          "mpCost": 20,
+          "image": "/assets/enemies/card_shadow_shielder.png"
+        }
+      ],
+      "aiStrategy": "highest_atk_first",
+      "rewardXp": 120,
+      "rewardCrystals": 50,
+      "rewardCards": [
+        {
+          "cardId": "leonidas",
+          "chance": 0.4
+        },
+        {
+          "cardId": "gor_thul",
+          "chance": 0.25
+        }
+      ]
+    },
+    {
+      "id": "infernal_warlord",
+      "name": "Höllenfeldherr",
+      "title": "Brennender General des Abgrunds",
+      "tier": 2,
+      "element": "fire",
+      "image": "/assets/enemies/infernal_warlord.png",
+      "stats": {
+        "hp": 20000,
+        "mpMax": 100,
+        "mpRegen": 35
+      },
+      "cards": [
+        {
+          "id": "flame_warrior",
+          "name": "Flammenkrieger",
+          "atk": 2800,
+          "def": 1200,
+          "hp": 5000,
+          "mpCost": 35,
+          "image": "/assets/enemies/card_flame_warrior.png"
+        },
+        {
+          "id": "lava_golem",
+          "name": "Lava-Golem",
+          "atk": 2000,
+          "def": 3000,
+          "hp": 8000,
+          "mpCost": 40,
+          "image": "/assets/enemies/card_lava_golem.png"
+        },
+        {
+          "id": "fire_mage",
+          "name": "Feuerzauberer",
+          "atk": 3500,
+          "def": 500,
+          "hp": 3500,
+          "mpCost": 45,
+          "image": "/assets/enemies/card_fire_mage.png"
+        },
+        {
+          "id": "infernal_knight",
+          "name": "Höllenritter",
+          "atk": 3200,
+          "def": 2200,
+          "hp": 6000,
+          "mpCost": 50,
+          "image": "/assets/enemies/card_infernal_knight.png"
+        }
+      ],
+      "aiStrategy": "lowest_mp_first",
+      "rewardXp": 280,
+      "rewardCrystals": 120,
+      "rewardCards": [
+        {
+          "cardId": "jeanne_darc",
+          "chance": 0.35
+        },
+        {
+          "cardId": "garuda",
+          "chance": 0.3
+        },
+        {
+          "cardId": "kaizen_ryujin",
+          "chance": 0.2
+        }
+      ]
+    },
+    {
+      "id": "void_sentinel",
+      "name": "Leerensentinel",
+      "title": "Hüter des ewigen Nichts",
+      "tier": 3,
+      "element": "void",
+      "image": "/assets/enemies/void_sentinel.png",
+      "stats": {
+        "hp": 35000,
+        "mpMax": 100,
+        "mpRegen": 40
+      },
+      "cards": [
+        {
+          "id": "void_wraith",
+          "name": "Leeren-Wraith",
+          "atk": 4000,
+          "def": 1500,
+          "hp": 6000,
+          "mpCost": 55,
+          "image": "/assets/enemies/card_void_wraith.png"
+        },
+        {
+          "id": "null_knight",
+          "name": "Null-Ritter",
+          "atk": 3500,
+          "def": 3500,
+          "hp": 9000,
+          "mpCost": 60,
+          "image": "/assets/enemies/card_null_knight.png"
+        },
+        {
+          "id": "entropy_mage",
+          "name": "Entropie-Magier",
+          "atk": 5500,
+          "def": 800,
+          "hp": 5000,
+          "mpCost": 70,
+          "image": "/assets/enemies/card_entropy_mage.png"
+        },
+        {
+          "id": "void_colossus",
+          "name": "Leeren-Koloss",
+          "atk": 6000,
+          "def": 4000,
+          "hp": 14000,
+          "mpCost": 80,
+          "image": "/assets/enemies/card_void_colossus.png"
+        },
+        {
+          "id": "abyss_herald",
+          "name": "Herold des Abgrunds",
+          "atk": 7000,
+          "def": 2000,
+          "hp": 8000,
+          "mpCost": 75,
+          "image": "/assets/enemies/card_abyss_herald.png"
+        }
+      ],
+      "aiStrategy": "random",
+      "rewardXp": 600,
+      "rewardCrystals": 300,
+      "rewardCards": [
+        {
+          "cardId": "azazel",
+          "chance": 0.5
+        },
+        {
+          "cardId": "loki",
+          "chance": 0.4
+        },
+        {
+          "cardId": "xal_zoth",
+          "chance": 0.3
+        },
+        {
+          "cardId": "azgaroth",
+          "chance": 0.05
+        }
+      ]
+    }
+  ]
+}
