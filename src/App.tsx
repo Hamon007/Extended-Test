@@ -1,34 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { CardDatabase }       from './services/CardDatabase';
-import { EnemyDatabase }      from './services/EnemyDatabase';
-import { SaveService }        from './services/SaveService';
-import { ProgressionService } from './services/ProgressionService';
-import CollectionScreen       from './screens/CollectionScreen';
-import GachaScreen            from './screens/GachaScreen';
-import DeckBuilderScreen      from './screens/DeckBuilderScreen';
-import BattleScreen           from './screens/BattleScreen';
+import { CardDatabase }           from './services/CardDatabase';
+import { EnemyDatabase }          from './services/EnemyDatabase';
+import { SaveService }            from './services/SaveService';
+import { ProgressionService }     from './services/ProgressionService';
+import TitleScreen                from './screens/TitleScreen';
+import MainScreen                 from './screens/MainScreen';
+import GachaScreen                from './screens/GachaScreen';
+import DeckBuilderScreen          from './screens/DeckBuilderScreen';
+import BattleScreen               from './screens/BattleScreen';
+import CollectionScreen           from './screens/CollectionScreen';
+import MenuScreen                 from './screens/MenuScreen';
+import CardCollectionScreen       from './screens/CardCollectionScreen';
 import './App.css';
 
-type Tab = 'gacha' | 'deck' | 'battle' | 'collection';
+// ── Screen-Typen ──────────────────────────────────────────────
 
-const TABS: { id: Tab; icon: string; label: string }[] = [
-  { id: 'gacha',      icon: '🔮', label: 'BESCHWÖREN' },
-  { id: 'deck',       icon: '⚔️',  label: 'DECK'       },
-  { id: 'battle',     icon: '🔥',  label: 'KAMPF'      },
-  { id: 'collection', icon: '🃏',  label: 'SAMMLUNG'   },
-];
+type Screen =
+  | 'title'
+  | 'main'
+  | 'gacha'
+  | 'deck'
+  | 'battle'
+  | 'collection'
+  | 'menu'
+  | 'cardCollection'
+  | 'placeholder';
+
+// ── Placeholder-Screen ────────────────────────────────────────
+
+interface PlaceholderProps {
+  label: string;
+  onBack: () => void;
+}
+
+const PlaceholderScreen: React.FC<PlaceholderProps> = ({ label, onBack }) => (
+  <div style={{
+    width: '100%', height: '100%',
+    display: 'flex', flexDirection: 'column',
+    alignItems: 'center', justifyContent: 'center',
+    background: 'var(--bg-deep)', color: 'var(--text)',
+    gap: '20px',
+  }}>
+    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '1rem', color: 'var(--gold)' }}>
+      {label}
+    </p>
+    <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '0.85rem', opacity: 0.6 }}>
+      Kommt bald!
+    </p>
+    <button
+      onClick={onBack}
+      style={{
+        fontFamily: "'Cinzel', serif",
+        fontSize: '0.7rem',
+        letterSpacing: '0.1em',
+        color: 'var(--gold)',
+        background: 'transparent',
+        border: '1px solid var(--border)',
+        borderRadius: '2px',
+        padding: '8px 20px',
+        cursor: 'pointer',
+      }}
+    >
+      ← Zurück
+    </button>
+  </div>
+);
+
+// ── App ───────────────────────────────────────────────────────
 
 const App: React.FC = () => {
-  const [ready,      setReady]      = useState(false);
-  const [tab,        setTab]        = useState<Tab>('gacha');
-  const [dailyToast, setDailyToast] = useState<number | null>(null);
+  const [ready,            setReady]            = useState(false);
+  const [screen,           setScreen]           = useState<Screen>('title');
+  const [prevScreen,       setPrevScreen]       = useState<Screen>('main');
+  const [placeholderLabel, setPlaceholderLabel] = useState('');
+  const [dailyToast,       setDailyToast]       = useState<number | null>(null);
 
   useEffect(() => {
     CardDatabase.init();
     EnemyDatabase.init();
     SaveService.updateLastLogin();
 
-    // Daily Bonus prüfen und anwenden (lokale Gerätezeit)
     const bonus = ProgressionService.checkAndApplyDailyBonus();
     if (bonus.granted) {
       setDailyToast(bonus.crystals);
@@ -47,34 +98,138 @@ const App: React.FC = () => {
     );
   }
 
+  // ── Navigations-Handler ──────────────────────────────────────
+
+  const goTo = (next: Screen, from: Screen = screen) => {
+    setPrevScreen(from);
+    setScreen(next);
+  };
+
+  const goBack = () => {
+    setScreen(prevScreen);
+  };
+
+  // Navigations-Handler für MainScreen
+  const handleMainNav = (target: string) => {
+    switch (target) {
+      case 'gacha':
+        goTo('gacha', 'main');
+        break;
+      case 'menu':
+        goTo('menu', 'main');
+        break;
+      case 'guild':
+        setPlaceholderLabel('🏰 Gilde');
+        goTo('placeholder', 'main');
+        break;
+      case 'quest':
+        setPlaceholderLabel('🚩 Quest');
+        goTo('placeholder', 'main');
+        break;
+      case 'sacrifice':
+        setPlaceholderLabel('⚗️ Opfern');
+        goTo('placeholder', 'main');
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Navigations-Handler für MenuScreen
+  const handleMenuNav = (target: string) => {
+    if (target === 'cardCollection') {
+      goTo('cardCollection', 'menu');
+    }
+  };
+
+  // ── Render ────────────────────────────────────────────────────
+
   return (
     <div className="app">
-      {/* Daily-Bonus-Toast */}
-      {dailyToast !== null && (
+      {/* Daily-Bonus-Toast (nur auf main-Screen sichtbar) */}
+      {dailyToast !== null && screen === 'main' && (
         <div className="daily-toast" role="status">
           ☀️ Tages-Bonus! <strong>+{dailyToast} 💎</strong>
         </div>
       )}
 
       <div className="app-content">
-        {tab === 'gacha'      && <GachaScreen />}
-        {tab === 'deck'       && <DeckBuilderScreen />}
-        {tab === 'battle'     && <BattleScreen />}
-        {tab === 'collection' && <CollectionScreen />}
+        {screen === 'title' && (
+          <TitleScreen onEnter={() => goTo('main', 'title')} />
+        )}
+        {screen === 'main' && (
+          <MainScreen
+            onNav={handleMainNav}
+            onBack={() => goTo('title', 'main')}
+          />
+        )}
+        {screen === 'gacha' && (
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', padding: '6px 10px',
+              background: 'var(--bg-mid)', borderBottom: '1px solid var(--border)',
+              flexShrink: 0,
+            }}>
+              <button
+                onClick={goBack}
+                style={{
+                  fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
+                  letterSpacing: '0.08em', color: 'var(--gold)',
+                  background: 'transparent', border: '1px solid var(--border)',
+                  borderRadius: '2px', padding: '5px 10px', cursor: 'pointer',
+                }}
+              >
+                ← Zurück
+              </button>
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+              <GachaScreen />
+            </div>
+          </div>
+        )}
+        {screen === 'deck' && (
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', padding: '6px 10px',
+              background: 'var(--bg-mid)', borderBottom: '1px solid var(--border)',
+              flexShrink: 0,
+            }}>
+              <button
+                onClick={goBack}
+                style={{
+                  fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
+                  letterSpacing: '0.08em', color: 'var(--gold)',
+                  background: 'transparent', border: '1px solid var(--border)',
+                  borderRadius: '2px', padding: '5px 10px', cursor: 'pointer',
+                }}
+              >
+                ← Zurück
+              </button>
+            </div>
+            <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+              <DeckBuilderScreen />
+            </div>
+          </div>
+        )}
+        {screen === 'battle' && (
+          <BattleScreen />
+        )}
+        {screen === 'collection' && (
+          <CollectionScreen />
+        )}
+        {screen === 'menu' && (
+          <MenuScreen
+            onNav={handleMenuNav}
+            onBack={goBack}
+          />
+        )}
+        {screen === 'cardCollection' && (
+          <CardCollectionScreen onBack={goBack} />
+        )}
+        {screen === 'placeholder' && (
+          <PlaceholderScreen label={placeholderLabel} onBack={goBack} />
+        )}
       </div>
-
-      <nav className="app-nav">
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            className={`app-nav__btn ${tab === t.id ? 'app-nav__btn--active' : ''}`}
-            onClick={() => setTab(t.id)}
-          >
-            <span className="app-nav__icon">{t.icon}</span>
-            <span className="app-nav__label">{t.label}</span>
-          </button>
-        ))}
-      </nav>
     </div>
   );
 };

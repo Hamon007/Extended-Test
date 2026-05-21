@@ -1,0 +1,440 @@
+/* ── MainScreen ──────────────────────────────────────────────── */
+
+.main-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--text);
+}
+
+/* ── Top-Bar ─────────────────────────────────────────────────── */
+
+.main-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.main-topbar__back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.main-topbar__back:active {
+  color: var(--gold-bright);
+  border-color: var(--gold-dark);
+}
+
+.main-topbar__countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: 0 8px;
+}
+
+.main-topbar__countdown-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.main-topbar__countdown-value {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(240,208,128,0.4);
+}
+
+.main-topbar__refresh {
+  font-size: 1rem;
+  color: var(--gold-dark);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+
+.main-topbar__refresh:active {
+  color: var(--gold);
+}
+
+/* ── Ressourcen-Balken ───────────────────────────────────────── */
+
+.main-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(19, 13, 16, 0.8);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.main-res-row {
+  display: flex;
+  gap: 8px;
+}
+
+.main-res-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-res-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.main-res-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(42, 26, 34, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.main-res-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8a6520, var(--gold));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.main-res-bar__fill--mp {
+  background: linear-gradient(90deg, #1a2a5a, #4a7aff);
+}
+
+.main-res-bar__fill--exp {
+  background: linear-gradient(90deg, #1a4a1a, #4aff7a);
+}
+
+.main-res-value {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.main-res-value--mana {
+  color: var(--gold);
+}
+
+/* ── Info-Banner ─────────────────────────────────────────────── */
+
+.main-infobanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(201, 168, 76, 0.06);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.main-infobanner__icon {
+  color: var(--gold-dark);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.main-infobanner__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+/* ── Hauptkarte ──────────────────────────────────────────────── */
+
+.main-card {
+  display: flex;
+  gap: 0;
+  margin: 8px 10px;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.main-card__profile {
+  flex: 0 0 42%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-right: 1px solid var(--border);
+}
+
+.main-profile-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.main-profile-frame__img {
+  width: 100%;
+  max-height: 130px;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--gold-dark);
+  border-radius: 3px;
+}
+
+.main-profile-frame__stars {
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+}
+
+.main-profile-frame__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.1em;
+}
+
+.main-card__right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 6px;
+}
+
+.main-card__action-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  background: rgba(42, 26, 34, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+
+.main-card__action-btn:active {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: var(--gold-dark);
+}
+
+.main-card__badge {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #c0392b;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-card__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.main-card__status {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.main-card__status-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.main-card__status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-card__status-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.main-card__status-value {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--gold-bright);
+}
+
+/* ── Tipp-Bereich ────────────────────────────────────────────── */
+
+.main-tip {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 0 10px 4px;
+  padding: 6px 8px;
+  background: rgba(19, 13, 16, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  min-height: 50px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.main-tip__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.8;
+  flex: 1;
+  padding-right: 60px;
+  line-height: 1.4;
+}
+
+.main-tip__npc {
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Trenner ─────────────────────────────────────────────────── */
+
+.main-divider {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--gold-dark);
+  text-align: center;
+  letter-spacing: 0.15em;
+  padding: 4px 0;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+/* ── Bottom Navigation ───────────────────────────────────────── */
+
+.main-nav {
+  display: flex;
+  align-items: stretch;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: var(--bg-mid);
+  flex-shrink: 0;
+}
+
+.main-nav__btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s;
+  position: relative;
+}
+
+.main-nav__btn:last-child {
+  border-right: none;
+}
+
+.main-nav__btn:active {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.main-nav__btn--center {
+  background: rgba(201, 168, 76, 0.06);
+  flex: 1.3;
+}
+
+.main-nav__btn--center .main-nav__icon {
+  font-size: 1.3rem;
+}
+
+.main-nav__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.main-nav__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-dark);
+  text-transform: uppercase;
+}
+
+.main-nav__badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: #c0392b;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
