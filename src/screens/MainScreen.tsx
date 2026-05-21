@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
+import type { Card } from '../types/Card';
+import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
 
 // ── Typen ─────────────────────────────────────────────────────
 
 interface MainScreenProps {
   onBack: () => void;
-  onProfileClick?: () => void;
 }
 
 // ── Konstanten ────────────────────────────────────────────────
@@ -65,7 +66,8 @@ function formatCountdown(ms: number): string {
 
 // ── Haupt-Komponente ──────────────────────────────────────────
 
-const MainScreen: React.FC<MainScreenProps> = ({ onBack, onProfileClick }) => {
+const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
+  const [detailCard, setDetailCard] = useState<Card | null>(null);
   const [countdown, setCountdown] = useState(() => nextBattleMs());
   const [tipIndex,  setTipIndex]  = useState(0);
   const [npcIndex,  setNpcIndex]  = useState(0);
@@ -182,8 +184,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onProfileClick }) => {
           <div className="main-profile-frame">
             <div
               className="main-profile-frame__card"
-              onClick={onProfileClick}
-              style={onProfileClick ? { cursor: 'pointer' } : undefined}
+              onClick={() => setDetailCard(CardDatabase.getById('azazel') ?? null)}
+              style={{ cursor: 'pointer' }}
             >
               <img
                 className="main-profile-frame__img"
@@ -244,6 +246,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onProfileClick }) => {
       <div className="main-divider">─────── ✦ Mobile Ignite ✦ ───────</div>
 
       </div>{/* end main-body */}
+
+      {/* ── Kartendetail-Modal ── */}
+      <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
 
     </div>
   );
