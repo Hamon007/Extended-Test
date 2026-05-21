@@ -3,7 +3,11 @@ import react                from '@vitejs/plugin-react';
 import { VitePWA }          from 'vite-plugin-pwa';
 import { resolve }          from 'path';
 
+const base = process.env.VITE_BASE ?? '/';
+
 export default defineConfig({
+  base,
+
   plugins: [
     react(),
 
@@ -25,8 +29,8 @@ export default defineConfig({
         background_color: '#050307',
         display:          'standalone',
         orientation:      'portrait',
-        scope:            '/',
-        start_url:        '/',
+        scope:            base,
+        start_url:        base,
         lang:             'de',
         icons: [
           {
@@ -52,20 +56,20 @@ export default defineConfig({
           {
             name:      'Beschwören',
             short_name:'Beschwören',
-            url:       '/?tab=gacha',
+            url:       `${base}?tab=gacha`,
             icons:     [{ src: 'icon-192.png', sizes: '192x192' }],
           },
           {
             name:      'Kampf',
             short_name:'Kampf',
-            url:       '/?tab=battle',
+            url:       `${base}?tab=battle`,
             icons:     [{ src: 'icon-192.png', sizes: '192x192' }],
           },
         ],
       },
 
       workbox: {
-        navigateFallback: '/index.html',
+        navigateFallback:         `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
 
         globPatterns: ['**/*.{js,css,html}'],
@@ -73,7 +77,6 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
 
         runtimeCaching: [
-          // Karten-Artwork: stale-while-revalidate (groß, ändert sich kaum)
           {
             urlPattern: /\/assets\/cards\/.+\.png$/,
             handler:    'StaleWhileRevalidate',
@@ -81,12 +84,11 @@ export default defineConfig({
               cacheName: 'card-images',
               expiration: {
                 maxEntries:    30,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Tage
+                maxAgeSeconds: 60 * 60 * 24 * 30,
               },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          // Gegner-Artwork
           {
             urlPattern: /\/assets\/enemies\/.+\.png$/,
             handler:    'CacheFirst',
@@ -94,18 +96,16 @@ export default defineConfig({
               cacheName: 'enemy-images',
               expiration: {
                 maxEntries:    20,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 Tage
+                maxAgeSeconds: 60 * 60 * 24 * 7,
               },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          // Google Fonts CSS
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler:    'StaleWhileRevalidate',
             options:    { cacheName: 'google-fonts-stylesheets' },
           },
-          // Google Fonts Dateien
           {
             urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
             handler:    'CacheFirst',
@@ -113,7 +113,7 @@ export default defineConfig({
               cacheName: 'google-fonts-webfonts',
               expiration: {
                 maxEntries:    20,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 Jahr
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: { statuses: [0, 200] },
             },
