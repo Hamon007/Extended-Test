@@ -10,25 +10,24 @@ const B = import.meta.env.BASE_URL;
 const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter }) => {
   return (
     <div className="title-screen" onClick={onEnter}>
-      {/* Hintergrundbilder */}
-      <img
-        className="title-screen__card-left"
-        src={`${B}assets/cards/azazel.png`}
-        alt="Azazel"
-      />
-      <img
-        className="title-screen__card-right"
-        src={`${B}assets/cards/satan.png`}
-        alt="Satan"
-      />
 
-      {/* Mittelbereich */}
-      <div className="title-screen__center" onClick={e => e.stopPropagation()}>
-        <div className="title-screen__logo">
-          <span className="title-screen__logo-codex">Codex</span>
-          <span className="title-screen__logo-immortalis">Immortalis</span>
-        </div>
-        <div className="title-screen__ornament">✦ ─────────────── ✦</div>
+      {/* Vollbild-Hintergrund */}
+      <img
+        className="title-screen__bg"
+        src={`${B}assets/title_bg.jpg`}
+        alt=""
+        aria-hidden="true"
+      />
+      <div className="title-screen__bg-overlay" />
+
+      {/* Logo oben mittig */}
+      <div className="title-screen__logo" onClick={e => e.stopPropagation()}>
+        <span className="title-screen__logo-codex">Codex</span>
+        <span className="title-screen__logo-immortalis">Immortalis</span>
+      </div>
+
+      {/* Start-Button unten mittig */}
+      <div className="title-screen__bottom-center" onClick={e => e.stopPropagation()}>
         <button className="title-screen__start-btn" onClick={onEnter}>
           ZUM STARTEN DRÜCKEN
         </button>
@@ -36,17 +35,36 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter }) => {
 
       {/* Untere linke Buttons */}
       <div className="title-screen__bottom-left" onClick={e => e.stopPropagation()}>
-        <button className="title-screen__meta-btn">📖 KONTO</button>
-        <button className="title-screen__meta-btn">⚙️ OPTIONEN</button>
-        <button className="title-screen__meta-btn">🔔 NEWS</button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">📖</span>
+          <span className="title-screen__meta-label">Konto</span>
+        </button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">⚙️</span>
+          <span className="title-screen__meta-label">Optionen</span>
+        </button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">🔔</span>
+          <span className="title-screen__meta-label">News</span>
+        </button>
       </div>
 
       {/* Untere rechte Buttons */}
       <div className="title-screen__bottom-right" onClick={e => e.stopPropagation()}>
-        <button className="title-screen__meta-btn">👤 KONTO</button>
-        <button className="title-screen__meta-btn">🌐 SPRACHE</button>
-        <button className="title-screen__meta-btn">🚪 BEENDEN</button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">👤</span>
+          <span className="title-screen__meta-label">Konto</span>
+        </button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">🌐</span>
+          <span className="title-screen__meta-label">Sprache</span>
+        </button>
+        <button className="title-screen__meta-btn">
+          <span className="title-screen__meta-icon">🚪</span>
+          <span className="title-screen__meta-label">Beenden</span>
+        </button>
       </div>
+
     </div>
   );
 };
