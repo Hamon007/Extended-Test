@@ -49,15 +49,20 @@ npm run preview
 | Ressource | Strategie | Cache-Name | TTL |
 |-----------|-----------|------------|-----|
 | JS / CSS / HTML | Pre-Cache (Vite-Bundle) | workbox-precache | Build-Version |
-| Icons + offline.html | Pre-Cache | workbox-precache | Build-Version |
-| `/assets/cards/*.png` | StaleWhileRevalidate | card-images | 30 Tage |
-| `/assets/enemies/*.png` | CacheFirst | enemy-images | 7 Tage |
+| Icons + offline.html + `title_bg.jpg` | Pre-Cache | workbox-precache | Build-Version |
+| `/assets/cards/*.{png,jpg,webp}` | StaleWhileRevalidate | card-images | 30 Tage, max 60 |
+| `/assets/enemies/*.{png,jpg,webp}` | CacheFirst | enemy-images | 7 Tage, max 30 |
+| `/assets/ui/*.{png,jpg,svg}` | CacheFirst | ui-assets | 30 Tage, max 60 |
+| `/assets/backgrounds/*.{png,jpg,svg}` | CacheFirst | background-images | 30 Tage, max 20 |
+| `/assets/characters/*.{png,jpg,svg}` | CacheFirst | character-images | 30 Tage, max 50 |
 | Google Fonts CSS | StaleWhileRevalidate | google-fonts-stylesheets | ∞ |
-| Google Fonts Dateien | CacheFirst | google-fonts-webfonts | 1 Jahr |
+| Google Fonts Dateien | CacheFirst | google-fonts-webfonts | 1 Jahr, max 20 |
 | SPA-Navigation | navigateFallback → `/index.html` | — | — |
 
-**Karten-Artworks** (3–4 MB pro Datei) werden **nicht** pre-gecacht, sondern beim ersten
-Abrufen im Browser in `card-images` gespeichert und danach offline verfügbar.
+**Karten-Artworks** werden **nicht** pre-gecacht (zu groß), sondern beim ersten
+Abrufen im Browser in `card-images` gespeichert (StaleWhileRevalidate → danach offline verfügbar).
+
+`title_bg.jpg` ist pre-gecacht, da es beim App-Start sofort sichtbar sein muss.
 
 ---
 
