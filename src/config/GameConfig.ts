@@ -21,6 +21,7 @@ export const HAND_LIMIT      = 5;        // max. Karten gleichzeitig in der Hand
 
 export const ENEMY_TURN_DELAY_MS = 800;  // Pause vor Gegnerzug (UX)
 export const ROUND_END_DELAY_MS  = 600;  // Pause nach Gegnerzug
+export const ACCOUNT_CONSOLATION_XP = 10; // Trost-XP bei Niederlage
 
 // ── Combo ─────────────────────────────────────────────────────
 

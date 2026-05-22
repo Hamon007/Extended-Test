@@ -8,7 +8,8 @@
 > - localStorage-Schlüssel korrigiert (waren `codex_*`, sind `ci_*`)  
 > - `BattleResult` als nicht-persistent dokumentiert  
 > - README_PWA Caching-Tabelle mit `vite.config.ts` synchronisiert (7 Regeln, `title_bg.jpg` Precache)  
-> - Gacha unverändert (Alpha/Testmodus bleibt)
+> - Gacha unverändert (Alpha/Testmodus bleibt)  
+> - Account-Level-System implementiert (`ci_account_state`, `AccountProgressionService`)
 
 ---
 
@@ -102,6 +103,7 @@
 | `ci_battle_energy` | EnergyState | `EnergyService` | ✅ |
 | `ci_daily_bonus_date` | string (YYYY-MM-DD) | `ProgressionService` | ✅ |
 | `ci_guild_state` | GuildState | `GuildService` | ✅ |
+| `ci_account_state` | AccountState | `SaveService` | ✅ |
 
 > `BattleResult` wird **nicht** in localStorage gespeichert — nur im React-State der Session.
 
@@ -137,6 +139,28 @@
 | Gacha-Modus | ✅ | Alpha/Test — keine Änderung ohne Playtest |
 | Pull-Kosten-Logik | ✅ | Unverändert |
 | Pity-System | ✅ | `PITY_THRESHOLD = 100` |
+
+---
+
+## Account-Level-System
+
+| Prüfung | Ergebnis | Details |
+|---|---|---|
+| Startzustand | ✅ | Level 1, 0 XP (Default via `createDefaultAccountState()`) |
+| Keine harte Obergrenze | ✅ | Formel-basiert: `100 × level^1.35 + level × 50` XP/Level |
+| Ausdauer-Max steigt | ✅ | `5 + floor((level-1) / 5)` — alle 5 Level +1 |
+| Mana-Max steigt | ✅ | `500 + (level-1) × 25` — jedes Level +25 |
+| Account-XP nach Sieg | ✅ | `result.rewardXp` via `ProgressionService.applyRewards` |
+| Account-XP nach Niederlage | ✅ | `ACCOUNT_CONSOLATION_XP = 10` (Trost-XP) |
+| Mehrfach-Level-Up | ✅ | `addAccountXp` loopt bis XP-Überschuss aufgebraucht |
+| Level-Up füllt Ressourcen | ✅ | Ausdauer + Mana auf neues Maximum aufgefüllt |
+| `ci_account_state` gespeichert | ✅ | Via `SaveService.saveAccountState` nach jedem Battle |
+| Karten-Level unverändert | ✅ | Separates System, keine Berührung |
+| Gacha unverändert | ✅ | Alpha/Testmodus bleibt |
+| EnergyService-Kopplung | ✅ | `EnergyService.getMax()` liest Account-Level dynamisch |
+| MainScreen-Anzeige | ✅ | Level, XP-Bar, Ausdauer, Mana, Tränke live |
+| VictoryScreen Account-XP | ✅ | `accountXpGained` + Level-Up-Block angezeigt |
+| DefeatScreen Trost-XP | ✅ | `accountXpGained` (10 XP) angezeigt |
 
 ---
 

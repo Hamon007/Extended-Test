@@ -40,13 +40,14 @@ Deployment: GitHub Pages (`/Extended-Test/`), HTTPS → PWA-Installation möglic
 Alle Spielstände werden im `localStorage` gespeichert (tatsächliche Keys aus dem Code):
 
 ```
-ci_gacha_state       → GachaState  (SaveService: Inventory, Crystals, PityCounter)
-ci_deck_main         → Deck        (SaveService: aktives Deck des Spielers)
-ci_settings          → Settings    (SaveService: App-Einstellungen)
-ci_last_login        → string      (SaveService: ISO-Datum letzter Login)
-ci_battle_energy     → EnergyState (EnergyService: Energie, Tränke, Regeneration)
-ci_daily_bonus_date  → string      (ProgressionService: Datum letzter Tagesbonus)
-ci_guild_state       → GuildState  (GuildService: Boss-HP, Angriffe, Level)
+ci_gacha_state       → GachaState    (SaveService: Inventory, Crystals, PityCounter)
+ci_deck_main         → Deck          (SaveService: aktives Deck des Spielers)
+ci_settings          → Settings      (SaveService: App-Einstellungen)
+ci_last_login        → string        (SaveService: ISO-Datum letzter Login)
+ci_battle_energy     → EnergyState   (EnergyService: Energie, Tränke, Regeneration)
+ci_daily_bonus_date  → string        (ProgressionService: Datum letzter Tagesbonus)
+ci_guild_state       → GuildState    (GuildService: Boss-HP, Angriffe, Level)
+ci_account_state     → AccountState  (SaveService: Account-Level, XP, Ausdauer-Max, Mana-Max)
 ```
 
 `BattleResult` (Kampf-Ergebnis) wird **nicht** persistiert — nur im React-State der laufenden Session.
@@ -65,6 +66,26 @@ Löschen via "App-Daten löschen" in den Browser-Einstellungen.
 
 Karten werden beim App-Start einmalig geladen und im Speicher gehalten.
 Kein dynamisches Nachladen, keine API-Calls.
+
+---
+
+## 4a. Account-Level-System
+
+Das Account-Level-System ist **getrennt** vom Karten-Level-System und läuft parallel dazu.
+
+| Eigenschaft | Details |
+|---|---|
+| Startwert | Level 1, 0 XP |
+| Keine harte Obergrenze | Level unbegrenzt (Formel: `100 × level^1.35 + level × 50` XP pro Level) |
+| Ausdauer-Maximum | `5 + floor((level - 1) / 5)` — steigt alle 5 Level um 1 |
+| Mana-Maximum | `500 + (level - 1) × 25` — steigt jedes Level um 25 |
+| XP-Quellen | Battle-Sieg (`rewardXp`), Niederlage (Trost: `ACCOUNT_CONSOLATION_XP = 10`) |
+| Level-Up-Effekt | Ausdauer und Mana werden auf neues Maximum aufgefüllt |
+| localStorage-Key | `ci_account_state` (via `SaveService.loadAccountState` / `saveAccountState`) |
+| Karten-Level | **Unabhängig** — bleibt unverändert, separates System |
+| Gacha | **Unverändert** — Alpha/Testmodus bleibt bestehen |
+
+MainScreen zeigt Account-Level, XP-Fortschrittsbalken, aktuelle Ausdauer und Mana live an.
 
 ---
 

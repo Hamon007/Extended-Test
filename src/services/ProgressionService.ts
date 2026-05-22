@@ -11,10 +11,11 @@ import type { BattleResult, EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import type { DailyBonusResult, RewardDetails } from '../types/ProgressionTypes';
 import { DAILY_BONUS_CRYSTALS, DEFEAT_CONSOLATION, POTION_DROP_CHANCE } from '../types/ProgressionTypes';
-import { CRYSTAL_CARD_DROP_CHANCE } from '../config/GameConfig';
+import { CRYSTAL_CARD_DROP_CHANCE, ACCOUNT_CONSOLATION_XP } from '../config/GameConfig';
 import { CardDatabase } from './CardDatabase';
 import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
+import { AccountProgressionService } from './AccountProgressionService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -92,17 +93,33 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
       });
     }
 
+    // Account-XP aus dem Battle-Sieg hinzufügen
+    const accountResult = AccountProgressionService.addAccountXp(
+      SaveService.loadAccountState(),
+      result.rewardXp,
+    );
+    SaveService.saveAccountState(accountResult.newState);
+
     console.log(
       `[Progression] Sieg: +${result.rewardCrystals} Kristalle,`,
-      `${newCards.length} neue Karte(n), ${potionsGained} Trank`,
+      `${newCards.length} neue Karte(n), ${potionsGained} Trank,`,
+      `+${result.rewardXp} Account-XP`,
+      accountResult.leveledUp ? `→ Level ${accountResult.newLevel}!` : '',
     );
 
     return {
-      isVictory:      true,
-      crystalsGained: result.rewardCrystals,
-      xpGained:       result.rewardXp,
+      isVictory:        true,
+      crystalsGained:   result.rewardCrystals,
+      xpGained:         result.rewardXp,
       newCards,
       potionsGained,
+      accountXpGained:  result.rewardXp,
+      accountLevelUp:   accountResult.leveledUp ? {
+        newLevel:      accountResult.newLevel,
+        levelsGained:  accountResult.levelsGained,
+        newMaxStamina: accountResult.newState.maxStamina,
+        newMaxMana:     accountResult.newState.maxMana,
+      } : null,
     };
   }
 
@@ -113,14 +130,28 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     };
     SaveService.saveGachaState(updatedState);
 
-    console.log(`[Progression] Niederlage: +${DEFEAT_CONSOLATION} Trost-Kristalle`);
+    // Trost-XP für Niederlage
+    const accountResult = AccountProgressionService.addAccountXp(
+      SaveService.loadAccountState(),
+      ACCOUNT_CONSOLATION_XP,
+    );
+    SaveService.saveAccountState(accountResult.newState);
+
+    console.log(`[Progression] Niederlage: +${DEFEAT_CONSOLATION} Trost-Kristalle, +${ACCOUNT_CONSOLATION_XP} Trost-XP`);
 
     return {
-      isVictory:     false,
-      crystalsGained: DEFEAT_CONSOLATION,
-      xpGained:       0,
-      newCards:       [],
-      defeatReason:   result.reason,
+      isVictory:       false,
+      crystalsGained:  DEFEAT_CONSOLATION,
+      xpGained:        0,
+      newCards:        [],
+      defeatReason:    result.reason,
+      accountXpGained: ACCOUNT_CONSOLATION_XP,
+      accountLevelUp:  accountResult.leveledUp ? {
+        newLevel:      accountResult.newLevel,
+        levelsGained:  accountResult.levelsGained,
+        newMaxStamina: accountResult.newState.maxStamina,
+        newMaxMana:     accountResult.newState.maxMana,
+      } : null,
     };
   }
 
