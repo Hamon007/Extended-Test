@@ -11,10 +11,12 @@ interface Props {
 
 const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
   const [imgError, setImgError] = useState(false);
+  const [artFull,  setArtFull]  = useState(false);
 
-  // Bild-Error zurücksetzen wenn neue Karte geöffnet wird
+  // Bild-Error und Vollansicht zurücksetzen wenn neue Karte geöffnet wird
   useEffect(() => {
     setImgError(false);
+    setArtFull(false);
   }, [card?.id]);
 
   // Tastatur-Escape schließt Modal
@@ -39,7 +41,10 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
       aria-modal="true"
       aria-label={`Kartendetail: ${card.name}`}
     >
-      <div className="detail-modal" style={{ '--rarity-color': rarityColor } as React.CSSProperties}>
+      <div
+        className={`detail-modal${artFull ? ' detail-modal--art-full' : ''}`}
+        style={{ '--rarity-color': rarityColor } as React.CSSProperties}
+      >
 
         {/* ── Schließen-Button ── */}
         <button className="detail-close" onClick={onClose} aria-label="Schließen">✕</button>
@@ -58,11 +63,20 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
               <p>{card.name}</p>
             </div>
           )}
-          <div className="detail-artwork__gradient" />
+          {!artFull && <div className="detail-artwork__gradient" />}
+
+          {/* Vollansicht-Toggle */}
+          <button
+            className="detail-art-toggle"
+            onClick={() => setArtFull(v => !v)}
+            aria-label={artFull ? 'Details anzeigen' : 'Vollansicht'}
+          >
+            {artFull ? '⊟ Details' : '⛶ Vollansicht'}
+          </button>
         </div>
 
-        {/* ── Scrollbarer Inhalt ── */}
-        <div className="detail-body">
+        {/* ── Scrollbarer Inhalt (versteckt in Vollansicht) ── */}
+        {!artFull && <div className="detail-body">
 
           {/* Kopfbereich */}
           <div className="detail-header">
@@ -202,7 +216,7 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
             )}
           </div>
 
-        </div>
+        </div>}
       </div>
     </div>
   );
