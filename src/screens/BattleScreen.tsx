@@ -176,8 +176,8 @@ interface BattleArenaProps {
 
 const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
   const combo  = useComboStore();
-  const [popups, setPopups]         = useState<DamagePopup[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [popups,      setPopups]      = useState<DamagePopup[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const popupId = React.useRef(0);
 
   const { player, enemy, round, phase, log, result, enemyData } = state;
@@ -186,7 +186,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
 
   // Auswahl zurücksetzen wenn Phase wechselt
   useEffect(() => {
-    setSelectedId(null);
+    setSelectedIds([]);
     if (phase !== 'player_turn') combo.reset();
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -197,39 +197,54 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
     setTimeout(() => setPopups(prev => prev.filter(p => p.id !== id)), 1400);
   }, []);
 
-  // Karte auswählen (erster Klick) oder abwählen
-  const handleSelectCard = useCallback((card: BattleCard) => {
+  // Karte in Auswahl ein-/ausschalten
+  const handleToggleCard = useCallback((card: BattleCard) => {
     if (!canPlay || card.played || card.destroyed || card.mpCost > player.mp) return;
-    setSelectedId(prev => prev === card.instanceId ? null : card.instanceId);
+    setSelectedIds(prev =>
+      prev.includes(card.instanceId)
+        ? prev.filter(id => id !== card.instanceId)
+        : [...prev, card.instanceId]
+    );
   }, [canPlay, player.mp]);
 
-  // Karte spielen (zweiter Klick oder Wisch nach oben)
-  const handlePlayCard = useCallback((card: BattleCard) => {
-    if (!canPlay) return;
+  // Alle ausgewählten Karten in Reihenfolge ausspielen
+  const handlePlaySelected = useCallback(() => {
+    if (!canPlay || selectedIds.length === 0) return;
 
-    const newCount = combo.isActive ? Math.min(5, combo.count + 1) : 1;
+    // Combo-Zähler lokal hochzählen (Refs in useComboStore immer aktuell)
+    let localComboCount = combo.isActive ? combo.count : 0;
+    let lastCard = combo.lastCard;
 
-    const calc = ComboSystem.calculate(
-      card.atk,
-      newCount,
-      combo.lastCard,
-      card,
-      enemyData.element,
-    );
+    for (const instanceId of selectedIds) {
+      const card = player.hand.find(c => c.instanceId === instanceId);
+      if (!card || card.played || card.destroyed) continue;
 
-    combo.onCardPlayed(card, calc.windowExtension);
-    battle.playCard(card.instanceId, calc.totalMultiplier);
-    setSelectedId(null);
+      localComboCount = Math.min(5, localComboCount + 1);
+      const calc = ComboSystem.calculate(
+        card.atk,
+        localComboCount,
+        lastCard,
+        card,
+        enemyData.element,
+      );
 
-    addPopup({
-      damage:     calc.finalDamage,
-      combo:      newCount,
-      multiplier: calc.totalMultiplier,
-      hasSynergy: calc.hasSynergy,
-      hasElement: calc.hasElementAdv,
-      xPct:       20 + Math.random() * 60,
-    });
-  }, [canPlay, combo, enemyData.element, battle, addPopup]);
+      combo.onCardPlayed(card, calc.windowExtension);
+      battle.playCard(card.instanceId, calc.totalMultiplier);
+
+      addPopup({
+        damage:     calc.finalDamage,
+        combo:      localComboCount,
+        multiplier: calc.totalMultiplier,
+        hasSynergy: calc.hasSynergy,
+        hasElement: calc.hasElementAdv,
+        xPct:       20 + Math.random() * 60,
+      });
+
+      lastCard = card;
+    }
+
+    setSelectedIds([]);
+  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, addPopup]);
 
   return (
     <div className="battle-arena">
@@ -298,18 +313,26 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
               card={card}
               canPlay={canPlay}
               playerMp={player.mp}
-              isSelected={selectedId === card.instanceId}
-              onSelect={() => handleSelectCard(card)}
-              onPlay={() => handlePlayCard(card)}
+              selectIndex={selectedIds.indexOf(card.instanceId)}
+              onToggle={() => handleToggleCard(card)}
             />
           ))}
         </div>
 
-        {/* Hinweis wenn Karte ausgewählt */}
-        {selectedId && canPlay && (
+        {/* Auswahl-Hinweis */}
+        {canPlay && !allPlayed && (
           <div className="arena-play-hint">
-            ↑ Wisch nach oben oder nochmal tippen zum Ausspielen
+            {selectedIds.length === 0
+              ? 'Karten antippen zum Auswählen'
+              : `${selectedIds.length} Karte(n) ausgewählt — spielen oder weitere wählen`}
           </div>
+        )}
+
+        {/* Ausgewählte spielen */}
+        {selectedIds.length > 0 && canPlay && (
+          <button className="arena-play-selected" onClick={handlePlaySelected}>
+            ⚔ {selectedIds.length} Karte{selectedIds.length > 1 ? 'n' : ''} ausspielen
+          </button>
         )}
 
         {/* End-Turn */}
@@ -358,31 +381,26 @@ const MpBar: React.FC<{ current: number; max: number }> = ({ current, max }) => 
 // ── Spieler-Hand-Karte ────────────────────────────────────────
 
 interface PlayerHandCardProps {
-  card:       BattleCard;
-  canPlay:    boolean;
-  playerMp:   number;
-  isSelected: boolean;
-  onSelect:   () => void;
-  onPlay:     () => void;
+  card:        BattleCard;
+  canPlay:     boolean;
+  playerMp:    number;
+  selectIndex: number;   // -1 = nicht ausgewählt, ≥0 = Spielreihenfolge
+  onToggle:    () => void;
 }
 
 const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
-  card, canPlay, playerMp, isSelected, onSelect, onPlay,
+  card, canPlay, playerMp, selectIndex, onToggle,
 }) => {
   const [imgErr, setImgErr] = useState(false);
   const touchStartY = useRef<number | null>(null);
 
-  const noMp    = card.mpCost > playerMp;
-  const blocked = card.played || card.destroyed || !canPlay || noMp;
-  const rc      = RARITY_COLOR[card.card?.rarity ?? 'N'] ?? '#8a6520';
+  const noMp       = card.mpCost > playerMp;
+  const blocked    = card.played || card.destroyed || !canPlay || noMp;
+  const isSelected = selectIndex >= 0;
+  const rc         = RARITY_COLOR[card.card?.rarity ?? 'N'] ?? '#8a6520';
 
   const handleClick = () => {
-    if (blocked) return;
-    if (isSelected) {
-      onPlay(); // zweiter Klick = ausspielen
-    } else {
-      onSelect();
-    }
+    if (!blocked) onToggle();
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -394,12 +412,9 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
     const deltaY = e.changedTouches[0].clientY - touchStartY.current;
     touchStartY.current = null;
 
-    if (isSelected && deltaY < -40) {
-      // Wisch nach oben auf ausgewählter Karte → spielen
-      onPlay();
-    } else if (!blocked && Math.abs(deltaY) < 10) {
-      // Kurzer Tap ohne Wisch → auswählen/abspielen
-      handleClick();
+    if (Math.abs(deltaY) < 15 && !blocked) {
+      e.preventDefault(); // verhindert nachfolgendes click-Event
+      onToggle();
     }
   };
 
@@ -429,7 +444,7 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
         💧{card.mpCost}
       </div>
       {isSelected && !card.played && (
-        <div className="hand-card__select-hint">▲</div>
+        <div className="hand-card__select-order">{selectIndex + 1}</div>
       )}
       <div className="hand-card__footer">
         <span className="hand-card__name">{card.name}</span>

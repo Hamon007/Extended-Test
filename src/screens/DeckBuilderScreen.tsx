@@ -369,7 +369,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
       )}
 
       {/* Block-Overlay */}
-      {blocked && !allInDeck && (
+      {blocked && (
         <div className="inv-card__block-overlay">
           <span>{blockTip}</span>
         </div>
