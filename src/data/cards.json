@@ -356,10 +356,10 @@
       "faction": "die_unmacht",
       "factionLabel": "Die Unmacht",
       "stats": {
-        "atk": 7800,
-        "def": 5400,
-        "hp": 18000,
-        "mpCost": 100,
+        "atk": 6200,
+        "def": 3800,
+        "hp": 13000,
+        "mpCost": 90,
         "crit": 25,
         "spd": 7
       },
@@ -419,9 +419,8 @@
       ],
       "image": "/assets/cards/azgaroth.png",
       "tradeable": false,
-      "globalLimit": 1000,
       "deckLimit": 1,
-      "gachaWeight": 5
+      "gachaWeight": 18
     },
     {
       "id": "jeanne_darc",
