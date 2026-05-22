@@ -297,6 +297,34 @@
   flex-shrink: 0;
 }
 
+.db-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.db-filter__chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  color: #c9a84c;
+  background: rgba(19, 13, 16, 0.6);
+  border: 1px solid #3a2030;
+  border-radius: 3px;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.db-filter__chip--active {
+  color: #f0d080;
+  border-color: #8a6520;
+  background: rgba(201, 168, 76, 0.12);
+}
+
 .db-inventory-grid {
   flex: 1;
   overflow-y: auto;
@@ -329,7 +357,11 @@
 }
 
 .inv-card--blocked  { opacity: 0.45; cursor: not-allowed; }
-.inv-card--in-deck  { opacity: 0.5; border-style: dashed; }
+.inv-card--in-deck  { opacity: 0.5; border-style: dashed; cursor: pointer; }
+.inv-card--in-deck:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--rc, #c9a84c) 40%, transparent);
+}
 
 .inv-card__art {
   position: absolute; inset: 0;
@@ -364,12 +396,6 @@
   background: rgba(255,152,0,0.85); color: #fff;
   font-family: 'Cinzel', serif; font-size: 6px; font-weight: 700;
   border-radius: 2px; padding: 1px 3px;
-}
-.inv-card__count {
-  position: absolute; bottom: 22px; right: 3px; z-index: 5;
-  background: rgba(0,0,0,.75); color: #c9a84c;
-  font-family: 'Cinzel', serif; font-size: 8px;
-  border-radius: 3px; padding: 1px 4px;
 }
 .inv-card__in-deck-badge {
   position: absolute; top: 3px; right: 3px; z-index: 5;

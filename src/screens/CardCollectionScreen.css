@@ -64,6 +64,38 @@
   flex-shrink: 0;
 }
 
+/* ── Seltenheits-Filter ──────────────────────────────────────── */
+
+.card-col-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.card-col-filter__chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: var(--gold-dark);
+  background: rgba(19, 13, 16, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-col-filter__chip--active {
+  color: var(--gold-bright);
+  border-color: var(--gold-dark);
+  background: rgba(201, 168, 76, 0.12);
+}
+
 /* ── Toast ───────────────────────────────────────────────────── */
 
 .card-col-toast {
@@ -325,210 +357,4 @@
   font-size: 0.6rem;
   font-weight: 700;
   flex-shrink: 0;
-}
-
-/* ── Kartendetail-Overlay ────────────────────────────────────── */
-
-.card-detail-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(8, 5, 10, 0.92);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px 16px 24px;
-}
-
-.card-detail {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-/* ── Kartenframe ── */
-
-.card-detail__frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border: 2px solid;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #0d0810;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8);
-}
-
-.card-detail__frame-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  background: #0d0810;
-}
-
-.card-detail__frame-number {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  color: rgba(240, 208, 128, 0.9);
-  text-shadow: 0 1px 4px #000;
-  z-index: 2;
-}
-
-.card-detail__frame-compass {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 1.1rem;
-  color: rgba(240, 208, 128, 0.7);
-  text-shadow: 0 1px 4px #000;
-  z-index: 2;
-}
-
-.card-detail__frame-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px 14px 14px;
-  background: linear-gradient(to top, rgba(8,5,10,0.95) 0%, rgba(8,5,10,0.6) 60%, transparent 100%);
-  z-index: 2;
-}
-
-.card-detail__frame-name {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 12px rgba(0,0,0,0.9);
-}
-
-.card-detail__frame-title {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  color: rgba(240,208,128,0.8);
-  margin-top: 2px;
-}
-
-.card-detail__frame-quote {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.65rem;
-  font-style: italic;
-  color: rgba(255,255,255,0.65);
-  margin-top: 5px;
-  line-height: 1.4;
-}
-
-/* ── Kein Bild ── */
-
-.card-detail__no-img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4rem;
-  background: rgba(42,26,34,0.4);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-/* ── Name & Titel ── */
-
-.card-detail__name {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 1.1rem;
-  color: var(--gold-bright);
-  letter-spacing: 0.15em;
-  text-align: center;
-  text-shadow: 0 0 16px rgba(240,208,128,0.3);
-}
-
-.card-detail__subtitle {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--gold-dark);
-  text-align: center;
-}
-
-/* ── Zitat ── */
-
-.card-detail__quote-box {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--text);
-  line-height: 1.5;
-  text-align: center;
-  padding: 10px 16px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: rgba(19,13,16,0.5);
-  width: 100%;
-}
-
-/* ── Stats ── */
-
-.card-detail__stats {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.card-detail__stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.card-detail__stat-row:last-child {
-  border-bottom: none;
-}
-
-.card-detail__stat-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.1em;
-}
-
-.card-detail__stat-value {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  color: var(--text);
-}
-
-/* ── Zurück-Button ── */
-
-.card-detail__back {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  color: var(--gold);
-  background: linear-gradient(135deg, #1a1205, #2d1f05);
-  border: 1px solid var(--gold-dark);
-  border-radius: 4px;
-  padding: 12px 40px;
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.15s;
-}
-
-.card-detail__back:active {
-  background: linear-gradient(135deg, #2d1f05, #3d2a08);
 }
