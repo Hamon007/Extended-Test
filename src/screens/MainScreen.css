@@ -374,7 +374,7 @@
   background: rgba(19, 13, 16, 0.6);
   border: 1px solid var(--border);
   border-radius: 4px;
-  min-height: 86px;
+  min-height: 50px;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
@@ -384,22 +384,22 @@
   font-family: 'EB Garamond', serif;
   font-size: 0.75rem;
   color: var(--text);
-  opacity: 0.85;
+  opacity: 0.8;
   flex: 1;
-  padding-right: 84px;
+  padding-right: 60px;
   line-height: 1.4;
 }
 
 .main-tip__npc {
   position: absolute;
-  right: -6px;
+  right: -8px;
   bottom: 0;
-  height: 104px;
+  height: 80px;
   width: auto;
   object-fit: contain;
-  object-position: bottom right;
+  object-position: bottom;
+  opacity: 0.5;
   pointer-events: none;
-  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
 }
 
 /* ── Trenner ─────────────────────────────────────────────────── */
