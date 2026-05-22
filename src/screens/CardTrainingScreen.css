@@ -584,7 +584,7 @@
 }
 .opfern-slot {
   position: relative;
-  aspect-ratio: 2 / 3;
+  width: 100%;
   border-radius: 5px;
   overflow: hidden;
   cursor: pointer;
@@ -592,18 +592,26 @@
   background: #0d0810;
   transition: transform 0.12s, border-color 0.12s;
 }
-.opfern-slot--empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px dashed #3a2030;
-}
+.opfern-slot::before { content: ''; display: block; padding-bottom: 150%; }
+
+.opfern-slot--empty { border: 1.5px dashed #3a2030; }
 .opfern-slot--empty:hover { border-color: #8a6520; }
-.opfern-slot--empty .opfern-plus { font-size: 1.2rem; }
+.opfern-slot--empty .opfern-plus {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+}
 
 .opfern-slot--filled { border: 2px solid var(--rc, #3a2030); }
 .opfern-slot--filled:active { transform: scale(0.94); }
-.opfern-slot--filled img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.opfern-slot--filled > img,
+.opfern-slot--filled > .opfern-art-ph {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+}
 
 .opfern-slot__lv {
   position: absolute;
@@ -644,7 +652,7 @@
 }
 .opfern-picker__sheet {
   width: 100%;
-  max-height: 80%;
+  height: 82%;          /* feste Höhe → Grid bekommt definierte Höhe (kein aspect-ratio-Kollaps) */
   display: flex;
   flex-direction: column;
   background: #0e0812;
@@ -675,10 +683,11 @@
 }
 .opfern-picker__grid {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   padding: 12px;
   align-content: start;
   scrollbar-width: thin;
@@ -686,6 +695,80 @@
 }
 .opfern-picker__grid::-webkit-scrollbar { width: 3px; }
 .opfern-picker__grid::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
+
+/* Picker-Karte — wie im Kartenkatalog, breitenbasierte Höhe (robust) */
+.opfern-pick {
+  position: relative;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #3a2030);
+  background: #0d0810;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.opfern-pick::before { content: ''; display: block; padding-bottom: 150%; }
+.opfern-pick:active { transform: scale(0.96); }
+.opfern-pick--selected {
+  border-color: #f0d080;
+  box-shadow: 0 0 0 2px rgba(240,208,128,0.5), 0 0 14px rgba(240,208,128,0.4);
+}
+
+.opfern-pick__art { position: absolute; inset: 0; }
+.opfern-pick__art img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+
+.opfern-pick__rarity {
+  position: absolute;
+  top: 4px; left: 4px;
+  z-index: 3;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: rgba(0,0,0,0.72);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.opfern-pick__check {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(201,168,76,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0,0,0,0.8);
+}
+
+.opfern-pick__footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 3;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 70%, transparent 100%);
+  padding: 14px 5px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.opfern-pick__name {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #f0d080;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.opfern-pick__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 7.5px;
+  color: #81c784;
+  text-align: center;
+}
 
 .opfern-picker__done {
   flex-shrink: 0;

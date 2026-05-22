@@ -417,20 +417,21 @@ const PickerOverlay: React.FC<{
               return (
                 <div
                   key={inst.uuid}
-                  className={`sacrifice-card ${selected ? 'sacrifice-card--selected' : ''}`}
+                  className={`opfern-pick ${selected ? 'opfern-pick--selected' : ''}`}
                   style={{ '--rc': rc } as React.CSSProperties}
                   onClick={() => mode === 'target' ? onChooseTarget(inst.uuid) : onToggleSacrifice(inst.uuid)}
                 >
-                  <div className="sacrifice-card__art">
+                  <div className="opfern-pick__art">
                     <CardArt card={card} />
-                    {selected && <div className="sacrifice-card__check">✓</div>}
                   </div>
-                  <div className="sacrifice-card__footer">
-                    <span className="sacrifice-card__name">{card?.name ?? inst.cardId}</span>
-                    <span className="sacrifice-card__xp">
+                  <div className="opfern-pick__rarity" style={{ color: rc }}>{inst.rarity}</div>
+                  {selected && <div className="opfern-pick__check">✓</div>}
+                  <div className="opfern-pick__footer">
+                    <span className="opfern-pick__name">{card?.name ?? inst.cardId}</span>
+                    <span className="opfern-pick__sub">
                       {mode === 'sacrifice'
-                        ? `+${LevelSystem.sacrificeXp(inst)} XP`
-                        : `Lv.${inst.level ?? 1} · ${inst.rarity}`}
+                        ? `Lv.${inst.level ?? 1} · +${LevelSystem.sacrificeXp(inst)} XP`
+                        : `Lv.${inst.level ?? 1}`}
                     </span>
                   </div>
                 </div>

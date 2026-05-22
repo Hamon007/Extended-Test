@@ -342,13 +342,15 @@
 /* Inventar-Karte */
 .inv-card {
   position: relative;
-  aspect-ratio: 2 / 3;
+  width: 100%;
   border-radius: 5px;
   overflow: hidden;
   border: 2px solid var(--rc, #8a6520);
   background: #0d0810;
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
 }
+/* Breitenbasierte Höhe (2:3) — robust auf allen Browsern, kein aspect-ratio */
+.inv-card::before { content: ''; display: block; padding-bottom: 150%; }
 
 .inv-card--available { cursor: pointer; }
 .inv-card--available:active {
