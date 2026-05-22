@@ -14,22 +14,10 @@ import MenuScreen                 from './screens/MenuScreen';
 import CardCollectionScreen       from './screens/CardCollectionScreen';
 import GuildScreen                from './screens/GuildScreen';
 import CardTrainingScreen         from './screens/CardTrainingScreen';
+import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
 
 // ── Screen-Typen ──────────────────────────────────────────────
-
-type Screen =
-  | 'title'
-  | 'main'
-  | 'gacha'
-  | 'deck'
-  | 'fusion'
-  | 'battle'
-  | 'collection'
-  | 'menu'
-  | 'cardCollection'
-  | 'guild'
-  | 'training';
 
 // Screens without bottom nav
 const NO_NAV_SCREENS: Screen[] = ['title'];
@@ -38,7 +26,9 @@ const NO_NAV_SCREENS: Screen[] = ['title'];
 
 const App: React.FC = () => {
   const [ready,            setReady]            = useState(false);
-  const [stack,            setStack]            = useState<Screen[]>(['title']);
+  const [stack,            setStack]            = useState<Screen[]>(
+    () => getInitialScreenStack(window.location.search),
+  );
   const [dailyToast,       setDailyToast]       = useState<number | null>(null);
 
   const screen = stack[stack.length - 1];
