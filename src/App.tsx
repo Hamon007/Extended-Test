@@ -13,6 +13,7 @@ import CollectionScreen           from './screens/CollectionScreen';
 import MenuScreen                 from './screens/MenuScreen';
 import CardCollectionScreen       from './screens/CardCollectionScreen';
 import GuildScreen                from './screens/GuildScreen';
+import CardTrainingScreen         from './screens/CardTrainingScreen';
 import './App.css';
 
 // ── Screen-Typen ──────────────────────────────────────────────
@@ -28,6 +29,7 @@ type Screen =
   | 'menu'
   | 'cardCollection'
   | 'guild'
+  | 'training'
   | 'placeholder';
 
 // Screens without bottom nav
@@ -131,6 +133,7 @@ const App: React.FC = () => {
     if (target === 'cardCollection') goTo('cardCollection');
     if (target === 'deck') goTo('deck');
     if (target === 'fusion') goTo('fusion');
+    if (target === 'training') goTo('training');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -165,6 +168,7 @@ const App: React.FC = () => {
         )}
         {screen === 'battle'     && <BattleScreen />}
         {screen === 'guild'      && <GuildScreen onBack={goBack} />}
+        {screen === 'training'   && <CardTrainingScreen onBack={goBack} />}
         {screen === 'collection' && <CollectionScreen />}
         {screen === 'menu' && (
           <MenuScreen onNav={handleMenuNav} onBack={goBack} />

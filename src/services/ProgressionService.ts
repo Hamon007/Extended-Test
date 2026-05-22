@@ -47,6 +47,8 @@ function rollRewardCards(enemy: EnemyData, totalPulls: number): CardInstance[] {
         pulledAt:  Date.now(),
         pullIndex: totalPulls + dropped.length + 1,
         isNew:     true,
+        level:     1,
+        xp:        0,
       });
     }
   }
@@ -79,6 +81,15 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     // Chance auf einen Ausdauertrank
     const potionsGained = Math.random() < POTION_DROP_CHANCE ? 1 : 0;
     if (potionsGained > 0) EnergyService.addPotions(potionsGained);
+
+    // 10 % Chance auf eine kleine Kristallkarte
+    if (Math.random() < 0.10) {
+      const gs2 = SaveService.loadGachaState();
+      SaveService.saveGachaState({
+        ...gs2,
+        crystalCards: { ...gs2.crystalCards, small: gs2.crystalCards.small + 1 },
+      });
+    }
 
     console.log(
       `[Progression] Sieg: +${result.rewardCrystals} Kristalle,`,
