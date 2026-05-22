@@ -87,9 +87,16 @@ ohne explizite Entscheidung nach dem Playtest.
 |---|---|---|
 | `DECK_SIZE` | `10` | Ein Deck besteht aus genau 10 Karten |
 | `MAX_DECK_COST` | `800` | Maximale Gesamt-MP aller Karten im Deck (Budget-Regel) |
+| `HAND_LIMIT` | `5` | Max. gleichzeitig sichtbare Karten in der Kampf-Hand |
 
 Das Deck-Budget (`MAX_DECK_COST`) begrenzt welche Karten-Kombinationen möglich sind —
 teure Karten (hohe `mpCost`) belegen mehr Budget.
+
+**Hand & Nachziehen im Kampf:** Von den 10 Deck-Karten sind zu Beginn nur die ersten
+`HAND_LIMIT` (5) in der Hand. Die übrigen liegen im Nachzieh-Stapel (chronologische
+Reihenfolge des Decks). Wird eine Karte gespielt, verlässt sie die Hand und die nächste
+Karte aus dem Stapel rückt nach, bis wieder 5 (oder weniger, falls Stapel leer) in der
+Hand sind. Konstante: `HAND_LIMIT` in `GameConfig.ts`.
 
 **Kein aktives MR/5-Karten-Limit:** Ein früheres Konzept sah vor, MR/LR-Karten auf 5 pro Deck
 zu begrenzen. Diese Regel ist im aktuellen Code **nicht aktiv** — alle Karten werden gleich

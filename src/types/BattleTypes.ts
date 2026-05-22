@@ -68,7 +68,8 @@ export interface BattleSide {
   mp:      number;
   mpMax:   number;
   mpRegen: number;     // MP-Regen pro Runde
-  hand:    BattleCard[];  // verfügbare Karten diese Runde
+  hand:    BattleCard[];  // sichtbare Karten (max. HAND_LIMIT)
+  deck:    BattleCard[];  // Nachzieh-Stapel (chronologisch); leer beim Gegner
 }
 
 /** Gesamter Battle-State */
@@ -115,4 +116,5 @@ export {
   PLAYER_MP_MAX,
   PLAYER_MP_REGEN,
   PLAYER_MP_START,
+  HAND_LIMIT,
 } from '../config/GameConfig';
