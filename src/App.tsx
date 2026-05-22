@@ -29,58 +29,16 @@ type Screen =
   | 'menu'
   | 'cardCollection'
   | 'guild'
-  | 'training'
-  | 'placeholder';
+  | 'training';
 
 // Screens without bottom nav
 const NO_NAV_SCREENS: Screen[] = ['title'];
-
-// ── Placeholder-Screen ────────────────────────────────────────
-
-interface PlaceholderProps {
-  label: string;
-  onBack: () => void;
-}
-
-const PlaceholderScreen: React.FC<PlaceholderProps> = ({ label, onBack }) => (
-  <div style={{
-    width: '100%', height: '100%',
-    display: 'flex', flexDirection: 'column',
-    alignItems: 'center', justifyContent: 'center',
-    background: 'var(--bg-deep)', color: 'var(--text)',
-    gap: '20px',
-  }}>
-    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '1rem', color: 'var(--gold)' }}>
-      {label}
-    </p>
-    <p style={{ fontFamily: "'EB Garamond', serif", fontSize: '0.85rem', opacity: 0.6 }}>
-      Kommt bald!
-    </p>
-    <button
-      onClick={onBack}
-      style={{
-        fontFamily: "'Cinzel', serif",
-        fontSize: '0.7rem',
-        letterSpacing: '0.1em',
-        color: 'var(--gold)',
-        background: 'transparent',
-        border: '1px solid var(--border)',
-        borderRadius: '2px',
-        padding: '8px 20px',
-        cursor: 'pointer',
-      }}
-    >
-      ← Zurück
-    </button>
-  </div>
-);
 
 // ── App ───────────────────────────────────────────────────────
 
 const App: React.FC = () => {
   const [ready,            setReady]            = useState(false);
   const [stack,            setStack]            = useState<Screen[]>(['title']);
-  const [placeholderLabel, setPlaceholderLabel] = useState('');
   const [dailyToast,       setDailyToast]       = useState<number | null>(null);
 
   const screen = stack[stack.length - 1];
@@ -125,7 +83,6 @@ const App: React.FC = () => {
       case 'menu':     goTo('menu'); break;
       case 'battle':   goTo('battle'); break;
       case 'guild':    goTo('guild'); break;
-      case 'sacrifice':setPlaceholderLabel('⚗️ Opfern'); goTo('placeholder'); break;
     }
   };
 
@@ -175,9 +132,6 @@ const App: React.FC = () => {
         )}
         {screen === 'cardCollection' && (
           <CardCollectionScreen onBack={goBack} />
-        )}
-        {screen === 'placeholder' && (
-          <PlaceholderScreen label={placeholderLabel} onBack={goBack} />
         )}
       </div>
 

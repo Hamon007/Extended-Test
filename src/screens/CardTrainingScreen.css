@@ -444,3 +444,259 @@
   text-align: center;
   letter-spacing: 0.5px;
 }
+
+/* ── Opfern: Body & Sektionen ──────────────────────────────── */
+.opfern-body {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.opfern-body::-webkit-scrollbar { width: 3px; }
+.opfern-body::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
+
+.opfern-section {
+  padding: 10px 12px;
+  border-bottom: 1px solid #2a1525;
+}
+
+/* ── Zielkarten-Feld ───────────────────────────────────────── */
+.opfern-target {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.opfern-target--levelup { animation: lvlup-flash 1.2s ease; border-radius: 6px; }
+
+.opfern-target__art {
+  width: 78px;
+  height: 117px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid #c9a84c;
+  background: #0d0810;
+  cursor: pointer;
+  position: relative;
+}
+.opfern-target__art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+.opfern-target__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 2px;
+  min-width: 0;
+}
+
+.opfern-change-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid #8a6520;
+  border-radius: 4px;
+  color: #c9a84c;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.opfern-change-btn:active { background: rgba(201,168,76,0.25); }
+
+/* Leeres Zielkarten-Feld */
+.opfern-empty-target {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 22px;
+  background: rgba(0,0,0,0.25);
+  border: 1.5px dashed #5a4030;
+  border-radius: 8px;
+  color: #8a6520;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.opfern-empty-target:hover { border-color: #c9a84c; color: #c9a84c; }
+
+.opfern-plus { font-size: 1.6rem; line-height: 1; color: #8a6520; }
+
+/* ── Auto-Auswahl ──────────────────────────────────────────── */
+.opfern-auto__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.opfern-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: #c9a84c;
+  background: rgba(19,13,16,0.6);
+  border: 1px solid #3a2030;
+  border-radius: 3px;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.opfern-chip--active {
+  color: #f0d080;
+  border-color: #8a6520;
+  background: rgba(201,168,76,0.12);
+}
+
+.opfern-auto__btns { display: flex; gap: 8px; }
+.opfern-auto-btn {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #1e0a30, #40187a);
+  border: 1px solid #9c27b0;
+  border-radius: 6px;
+  padding: 9px;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.opfern-auto-btn:active { box-shadow: 0 0 14px rgba(156,39,176,0.5); }
+.opfern-auto-btn--clear {
+  flex: 0 0 88px;
+  color: #c9a84c;
+  background: rgba(42,26,34,0.6);
+  border-color: #3a2030;
+}
+.opfern-auto-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── 10 Opfer-Felder ───────────────────────────────────────── */
+.opfern-slots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.opfern-slot {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: #0d0810;
+  transition: transform 0.12s, border-color 0.12s;
+}
+.opfern-slot--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed #3a2030;
+}
+.opfern-slot--empty:hover { border-color: #8a6520; }
+.opfern-slot--empty .opfern-plus { font-size: 1.2rem; }
+
+.opfern-slot--filled { border: 2px solid var(--rc, #3a2030); }
+.opfern-slot--filled:active { transform: scale(0.94); }
+.opfern-slot--filled img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+.opfern-slot__lv {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #f0d080;
+  background: rgba(0,0,0,0.78);
+  padding: 1px 0;
+}
+.opfern-slot__rm {
+  position: absolute;
+  top: 2px; right: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(192,57,43,0.9);
+  color: #fff;
+  font-size: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.opfern-art-ph {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  font-size: 1.4rem; opacity: 0.35;
+}
+
+/* ── Auswahl-Overlay ───────────────────────────────────────── */
+.opfern-picker {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.opfern-picker__sheet {
+  width: 100%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  background: #0e0812;
+  border-top: 2px solid #c9a84c;
+  border-radius: 14px 14px 0 0;
+  animation: tr-toast-in 0.22s ease;
+}
+.opfern-picker__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #2a1525;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.opfern-picker__close {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #3a2030;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  color: #c9a84c;
+  font-size: 12px;
+  cursor: pointer;
+}
+.opfern-picker__grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 12px;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.opfern-picker__grid::-webkit-scrollbar { width: 3px; }
+.opfern-picker__grid::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
+
+.opfern-picker__done {
+  flex-shrink: 0;
+  margin: 10px 12px 14px;
+  padding: 12px;
+  border-radius: 7px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #1e0a30, #40187a, #1e0a30);
+  border: 2px solid #9c27b0;
+  cursor: pointer;
+}

@@ -1,92 +1,130 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SaveService }   from '../services/SaveService';
 import { CardDatabase }  from '../services/CardDatabase';
 import { LevelSystem, CRYSTAL_CARD_XP, type CrystalCardSize } from '../services/LevelSystem';
 import type { CardInstance } from '../types/GachaTypes';
-import { RARITY_COLOR }  from '../types/Card';
+import type { Card, Rarity } from '../types/Card';
+import { RARITY_COLOR, RARITY_MAJORS, RARITY_ORDER, rarityMajor } from '../types/Card';
 import './CardTrainingScreen.css';
 
-// ── Tabs ──────────────────────────────────────────────────────
-type Tab = 'sacrifice' | 'crystal';
+const MAX_SACRIFICE = 10;
 
 // ── Haupt-Screen ──────────────────────────────────────────────
 
 const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const [gState,      setGState]      = useState(() => SaveService.loadGachaState());
-  const [targetUuid,  setTargetUuid]  = useState<string | null>(null);
-  const [sacrificeIds, setSacrificeIds] = useState<Set<string>>(new Set());
-  const [crystalQty,  setCrystalQty]  = useState<Record<CrystalCardSize, number>>({
+  const [gState,         setGState]         = useState(() => SaveService.loadGachaState());
+  const [targetUuid,     setTargetUuid]     = useState<string | null>(null);
+  const [sacrificeUuids, setSacrificeUuids] = useState<string[]>([]);
+  const [autoRarity,     setAutoRarity]     = useState<Rarity | ''>('');
+  const [picker,         setPicker]         = useState<'target' | 'sacrifice' | null>(null);
+  const [crystalQty,     setCrystalQty]     = useState<Record<CrystalCardSize, number>>({
     small: 0, medium: 0, large: 0,
   });
-  const [tab,         setTab]         = useState<Tab>('sacrifice');
-  const [toast,       setToast]       = useState<string | null>(null);
-  const [levelUpAnim, setLevelUpAnim] = useState(false);
+  const [toast,          setToast]          = useState<string | null>(null);
+  const [levelUpAnim,    setLevelUpAnim]    = useState(false);
 
   const inventory = gState.inventory;
 
-  const target = useMemo(
-    () => inventory.find(i => i.uuid === targetUuid) ?? null,
-    [inventory, targetUuid],
-  );
-
+  const target     = useMemo(() => inventory.find(i => i.uuid === targetUuid) ?? null, [inventory, targetUuid]);
   const targetCard = target ? CardDatabase.getById(target.cardId) : null;
   const cap        = target ? LevelSystem.levelCap(target.rarity) : 1;
   const atMax      = target ? (target.level ?? 1) >= cap : false;
 
-  // Gesamter XP-Gewinn aus gewählten Materialien
+  const sacrificeInsts = useMemo(
+    () => sacrificeUuids
+      .map(u => inventory.find(i => i.uuid === u))
+      .filter((x): x is CardInstance => !!x),
+    [sacrificeUuids, inventory],
+  );
+
+  // Gesamter XP-Gewinn aus Opfern + Kristallkarten
   const totalXpGain = useMemo(() => {
     let xp = 0;
-    for (const uuid of sacrificeIds) {
-      const inst = inventory.find(i => i.uuid === uuid);
-      if (inst) xp += LevelSystem.sacrificeXp(inst);
-    }
+    for (const inst of sacrificeInsts) xp += LevelSystem.sacrificeXp(inst);
     xp += (crystalQty.small  ?? 0) * CRYSTAL_CARD_XP.small;
     xp += (crystalQty.medium ?? 0) * CRYSTAL_CARD_XP.medium;
     xp += (crystalQty.large  ?? 0) * CRYSTAL_CARD_XP.large;
     return xp;
-  }, [sacrificeIds, crystalQty, inventory]);
+  }, [sacrificeInsts, crystalQty]);
 
-  // Ziel-Level-Vorschau
-  const preview = useMemo(() => {
-    if (!target || totalXpGain === 0) return null;
-    return LevelSystem.applyXp(target, totalXpGain);
-  }, [target, totalXpGain]);
+  const preview = useMemo(
+    () => (!target || totalXpGain === 0) ? null : LevelSystem.applyXp(target, totalXpGain),
+    [target, totalXpGain],
+  );
 
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   }
 
-  const toggleSacrifice = useCallback((uuid: string) => {
-    setSacrificeIds(prev => {
-      const next = new Set(prev);
-      next.has(uuid) ? next.delete(uuid) : next.add(uuid);
-      return next;
+  function chooseTarget(uuid: string) {
+    setTargetUuid(uuid);
+    setSacrificeUuids(prev => prev.filter(u => u !== uuid));
+    setPicker(null);
+  }
+
+  function toggleSacrifice(uuid: string) {
+    setSacrificeUuids(prev => {
+      if (prev.includes(uuid)) return prev.filter(u => u !== uuid);
+      if (prev.length >= MAX_SACRIFICE) {
+        showToast(`Maximal ${MAX_SACRIFICE} Opfer`);
+        return prev;
+      }
+      return [...prev, uuid];
     });
-  }, []);
+  }
+
+  function removeSlot(uuid: string) {
+    setSacrificeUuids(prev => prev.filter(u => u !== uuid));
+  }
+
+  // Auto-Auswahl: füllt freie Felder mit Karten der gewählten Seltenheit
+  function autoFill() {
+    const slotsLeft = MAX_SACRIFICE - sacrificeUuids.length;
+    if (slotsLeft <= 0) { showToast('Alle 10 Felder belegt'); return; }
+
+    const have = new Set(sacrificeUuids);
+    let cands = inventory.filter(i => i.uuid !== targetUuid && !have.has(i.uuid));
+    if (autoRarity) cands = cands.filter(i => rarityMajor(i.rarity) === autoRarity);
+
+    // Schwächste zuerst (niedrige Seltenheit, niedriges Level) als Futter
+    cands.sort((a, b) => {
+      const r = RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity);
+      return r !== 0 ? r : (a.level ?? 1) - (b.level ?? 1);
+    });
+
+    const add = cands.slice(0, slotsLeft).map(i => i.uuid);
+    if (add.length === 0) {
+      showToast(autoRarity ? `Keine ${autoRarity}-Karten frei` : 'Keine Karten frei');
+      return;
+    }
+    setSacrificeUuids(prev => [...prev, ...add]);
+  }
+
+  function clearAll() {
+    setSacrificeUuids([]);
+    setCrystalQty({ small: 0, medium: 0, large: 0 });
+  }
 
   const changeCrystal = (size: CrystalCardSize, delta: number) => {
     setCrystalQty(prev => {
       const available = gState.crystalCards[size];
-      const next      = Math.max(0, Math.min(available, (prev[size] ?? 0) + delta));
-      return { ...prev, [size]: next };
+      return { ...prev, [size]: Math.max(0, Math.min(available, (prev[size] ?? 0) + delta)) };
     });
   };
 
-  const handleTrain = () => {
+  function handleSacrifice() {
     if (!target || totalXpGain === 0) return;
 
-    const prevLevel = target.level ?? 1;
-    const updated   = LevelSystem.applyXp(target, totalXpGain);
+    const prevLevel  = target.level ?? 1;
+    const updated    = LevelSystem.applyXp(target, totalXpGain);
     const didLevelUp = updated.level > prevLevel;
 
-    // Inventar: Ziel updaten, geopferte entfernen
-    const removedUuids = new Set(sacrificeIds);
+    const removed = new Set(sacrificeUuids);
     const newInventory = inventory
-      .filter(i => !removedUuids.has(i.uuid))
+      .filter(i => !removed.has(i.uuid))
       .map(i => i.uuid === target.uuid ? updated : i);
 
-    // Kristallkarten abziehen
     const newCrystalCards = {
       small:  gState.crystalCards.small  - (crystalQty.small  ?? 0),
       medium: gState.crystalCards.medium - (crystalQty.medium ?? 0),
@@ -97,8 +135,7 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     SaveService.saveGachaState(newState);
     setGState(newState);
 
-    // Reset
-    setSacrificeIds(new Set());
+    setSacrificeUuids([]);
     setCrystalQty({ small: 0, medium: 0, large: 0 });
 
     if (didLevelUp) {
@@ -108,13 +145,7 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     } else {
       showToast(`+${totalXpGain.toLocaleString('de-DE')} XP erhalten`);
     }
-  };
-
-  // Karten die als Material wählbar sind (nicht das Ziel)
-  const materialCards = useMemo(
-    () => inventory.filter(i => i.uuid !== targetUuid),
-    [inventory, targetUuid],
-  );
+  }
 
   return (
     <div className="training-screen">
@@ -123,94 +154,116 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* Header */}
       <div className="training-header">
         <button className="training-back" onClick={onBack}>◀</button>
-        <span className="training-header__title">TRAINING</span>
+        <span className="training-header__title">OPFERN</span>
         <div style={{ width: 32 }} />
       </div>
 
-      {/* ── Zielkarte ── */}
-      <div className="training-target-section">
-        <div className="training-target-label">ZIELKARTE</div>
-        {inventory.length === 0 ? (
-          <div className="training-empty">Noch keine Karten im Inventar.</div>
-        ) : (
-          <div className="training-target-scroll">
-            {inventory.map(inst => (
-              <TargetCardThumb
-                key={inst.uuid}
-                inst={inst}
-                selected={inst.uuid === targetUuid}
-                onSelect={() => {
-                  setTargetUuid(inst.uuid);
-                  setSacrificeIds(new Set());
-                }}
-              />
-            ))}
-          </div>
-        )}
+      <div className="opfern-body">
 
-        {/* Zielkarte Detail */}
-        {target && targetCard && (
-          <div className={`training-target-detail ${levelUpAnim ? 'training-target-detail--levelup' : ''}`}>
-            <div className="training-target-detail__left">
-              <TargetCardArt inst={target} />
-            </div>
-            <div className="training-target-detail__right">
-              <div className="training-td__name">{targetCard.name}</div>
-              <div className="training-td__rarity" style={{ color: RARITY_COLOR[target.rarity] ?? '#9e9e9e' }}>
-                {target.rarity}
-              </div>
-              <div className="training-td__level">
-                Lv. <strong>{target.level ?? 1}</strong>
-                {atMax ? ' (MAX)' : ` / ${cap}`}
-              </div>
-              <XpBar inst={target} preview={preview} />
-              {preview && preview.level > (target.level ?? 1) && (
-                <div className="training-td__preview-level">
-                  → Lv. {preview.level}
+        {/* ── Zielkarte ── */}
+        <div className="opfern-section">
+          <div className="training-target-label">ZIELKARTE</div>
+          <div className={`opfern-target ${levelUpAnim ? 'opfern-target--levelup' : ''}`}>
+            {target && targetCard ? (
+              <>
+                <div className="opfern-target__art" onClick={() => setPicker('target')}>
+                  <CardArt card={targetCard} />
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Material-Tabs ── */}
-      {target && !atMax && (
-        <>
-          <div className="training-tabs">
-            <button
-              className={`training-tab ${tab === 'sacrifice' ? 'training-tab--active' : ''}`}
-              onClick={() => setTab('sacrifice')}
-            >
-              🗡 Opfern
-            </button>
-            <button
-              className={`training-tab ${tab === 'crystal' ? 'training-tab--active' : ''}`}
-              onClick={() => setTab('crystal')}
-            >
-              💠 Kristallkarten
-            </button>
-          </div>
-
-          <div className="training-material-area">
-            {tab === 'sacrifice' && (
-              <div className="training-sacrifice-grid">
-                {materialCards.length === 0 ? (
-                  <div className="training-empty">Keine weiteren Karten zum Opfern.</div>
-                ) : (
-                  materialCards.map(inst => (
-                    <SacrificeCard
-                      key={inst.uuid}
-                      inst={inst}
-                      selected={sacrificeIds.has(inst.uuid)}
-                      onToggle={() => toggleSacrifice(inst.uuid)}
-                    />
-                  ))
-                )}
-              </div>
+                <div className="opfern-target__info">
+                  <div className="training-td__name">{targetCard.name}</div>
+                  <div className="training-td__rarity" style={{ color: RARITY_COLOR[target.rarity] ?? '#9e9e9e' }}>
+                    {target.rarity}
+                  </div>
+                  <div className="training-td__level">
+                    Lv. <strong>{target.level ?? 1}</strong>{atMax ? ' (MAX)' : ` / ${cap}`}
+                  </div>
+                  <XpBar inst={target} preview={preview} />
+                  {preview && preview.level > (target.level ?? 1) && (
+                    <div className="training-td__preview-level">→ Lv. {preview.level}</div>
+                  )}
+                  <button className="opfern-change-btn" onClick={() => setPicker('target')}>Karte ändern</button>
+                </div>
+              </>
+            ) : (
+              <button className="opfern-empty-target" onClick={() => setPicker('target')}>
+                <span className="opfern-plus">+</span>
+                <span>Zielkarte wählen</span>
+              </button>
             )}
+          </div>
+        </div>
 
-            {tab === 'crystal' && (
+        {target && atMax && (
+          <div className="training-max-msg">✦ Diese Karte hat das maximale Level ({cap}) erreicht.</div>
+        )}
+
+        {target && !atMax && (
+          <>
+            {/* ── Auto-Auswahl nach Seltenheit ── */}
+            <div className="opfern-section">
+              <div className="training-target-label">OPFER · AUTO-AUSWAHL NACH SELTENHEIT</div>
+              <div className="opfern-auto__chips">
+                <button
+                  className={`opfern-chip ${autoRarity === '' ? 'opfern-chip--active' : ''}`}
+                  onClick={() => setAutoRarity('')}
+                >Alle</button>
+                {RARITY_MAJORS.map(r => (
+                  <button
+                    key={r}
+                    className={`opfern-chip ${autoRarity === r ? 'opfern-chip--active' : ''}`}
+                    style={autoRarity === r ? { color: RARITY_COLOR[r], borderColor: RARITY_COLOR[r] } : undefined}
+                    onClick={() => setAutoRarity(r)}
+                  >{r}</button>
+                ))}
+              </div>
+              <div className="opfern-auto__btns">
+                <button className="opfern-auto-btn" onClick={autoFill}>⚡ Auto-Füllen</button>
+                <button
+                  className="opfern-auto-btn opfern-auto-btn--clear"
+                  onClick={clearAll}
+                  disabled={sacrificeUuids.length === 0 && crystalQty.small + crystalQty.medium + crystalQty.large === 0}
+                >Leeren</button>
+              </div>
+            </div>
+
+            {/* ── 10 Opfer-Felder ── */}
+            <div className="opfern-section">
+              <div className="opfern-slots">
+                {Array.from({ length: MAX_SACRIFICE }).map((_, i) => {
+                  const inst = sacrificeInsts[i];
+                  if (inst) {
+                    const card = CardDatabase.getById(inst.cardId);
+                    const rc   = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
+                    return (
+                      <button
+                        key={inst.uuid}
+                        className="opfern-slot opfern-slot--filled"
+                        style={{ '--rc': rc } as React.CSSProperties}
+                        onClick={() => removeSlot(inst.uuid)}
+                        title="Entfernen"
+                      >
+                        <CardArt card={card} />
+                        <span className="opfern-slot__lv">Lv.{inst.level ?? 1}</span>
+                        <span className="opfern-slot__rm">✕</span>
+                      </button>
+                    );
+                  }
+                  return (
+                    <button
+                      key={`empty-${i}`}
+                      className="opfern-slot opfern-slot--empty"
+                      onClick={() => setPicker('sacrifice')}
+                    >
+                      <span className="opfern-plus">+</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Kristallkarten (Zusatz-XP) ── */}
+            <div className="opfern-section">
+              <div className="training-target-label">KRISTALLKARTEN</div>
               <div className="training-crystal-panel">
                 {(['small', 'medium', 'large'] as CrystalCardSize[]).map(size => (
                   <CrystalRow
@@ -222,75 +275,51 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   />
                 ))}
               </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {target && atMax && (
-        <div className="training-max-msg">✦ Diese Karte hat das maximale Level ({cap}) erreicht.</div>
-      )}
+            </div>
+          </>
+        )}
+      </div>
 
       {/* ── Bestätigen ── */}
       {target && !atMax && (
         <div className="training-footer">
           <div className="training-footer__xp">
             {totalXpGain > 0
-              ? `+${totalXpGain.toLocaleString('de-DE')} XP gewählt`
-              : 'Material wählen'}
+              ? `${sacrificeInsts.length}/${MAX_SACRIFICE} Opfer · +${totalXpGain.toLocaleString('de-DE')} XP`
+              : 'Opfer wählen'}
           </div>
           <button
             className={`training-confirm-btn ${totalXpGain === 0 ? 'training-confirm-btn--disabled' : ''}`}
             disabled={totalXpGain === 0}
-            onClick={handleTrain}
+            onClick={handleSacrifice}
           >
-            ⬆ Training starten
+            🗡 Opfern
           </button>
         </div>
+      )}
+
+      {/* ── Karten-Auswahl-Overlay ── */}
+      {picker && (
+        <PickerOverlay
+          mode={picker}
+          inventory={inventory}
+          targetUuid={targetUuid}
+          sacrificeUuids={sacrificeUuids}
+          onChooseTarget={chooseTarget}
+          onToggleSacrifice={toggleSacrifice}
+          onClose={() => setPicker(null)}
+        />
       )}
     </div>
   );
 };
 
-// ── Ziel-Karte Thumbnail ──────────────────────────────────────
+// ── Karten-Artwork (mit Fallback) ─────────────────────────────
 
-const TargetCardThumb: React.FC<{
-  inst: CardInstance; selected: boolean; onSelect: () => void;
-}> = ({ inst, selected, onSelect }) => {
-  const card = CardDatabase.getById(inst.cardId);
-  const rc   = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
+const CardArt: React.FC<{ card: Card | undefined | null }> = ({ card }) => {
   const [err, setErr] = useState(false);
-
-  return (
-    <div
-      className={`target-thumb ${selected ? 'target-thumb--selected' : ''}`}
-      style={{ '--rc': rc } as React.CSSProperties}
-      onClick={onSelect}
-    >
-      <div className="target-thumb__art">
-        {card && !err
-          ? <img src={card.image} alt={card.name} onError={() => setErr(true)} />
-          : <span>🌑</span>}
-      </div>
-      <div className="target-thumb__level">Lv.{inst.level ?? 1}</div>
-    </div>
-  );
-};
-
-// ── Ziel-Karte Artwork ────────────────────────────────────────
-
-const TargetCardArt: React.FC<{ inst: CardInstance }> = ({ inst }) => {
-  const card = CardDatabase.getById(inst.cardId);
-  const rc   = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
-  const [err, setErr] = useState(false);
-
-  return (
-    <div className="target-art" style={{ '--rc': rc } as React.CSSProperties}>
-      {card && !err
-        ? <img src={card.image} alt={card.name} onError={() => setErr(true)} />
-        : <span className="target-art__placeholder">🌑</span>}
-    </div>
-  );
+  if (!card || err) return <span className="opfern-art-ph">🌑</span>;
+  return <img src={card.image} alt={card.name} onError={() => setErr(true)} />;
 };
 
 // ── XP-Balken ─────────────────────────────────────────────────
@@ -317,36 +346,6 @@ const XpBar: React.FC<{ inst: CardInstance; preview: CardInstance | null }> = ({
         <div className="xp-bar__preview" style={{ width: `${prvPct}%` }} />
       )}
       <span className="xp-bar__label">{curXp} / {needed} XP</span>
-    </div>
-  );
-};
-
-// ── Opfer-Karte ───────────────────────────────────────────────
-
-const SacrificeCard: React.FC<{
-  inst: CardInstance; selected: boolean; onToggle: () => void;
-}> = ({ inst, selected, onToggle }) => {
-  const card = CardDatabase.getById(inst.cardId);
-  const rc   = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
-  const xp   = LevelSystem.sacrificeXp(inst);
-  const [err, setErr] = useState(false);
-
-  return (
-    <div
-      className={`sacrifice-card ${selected ? 'sacrifice-card--selected' : ''}`}
-      style={{ '--rc': rc } as React.CSSProperties}
-      onClick={onToggle}
-    >
-      <div className="sacrifice-card__art">
-        {card && !err
-          ? <img src={card.image} alt={card.name} onError={() => setErr(true)} />
-          : <span>🌑</span>}
-        {selected && <div className="sacrifice-card__check">✓</div>}
-      </div>
-      <div className="sacrifice-card__footer">
-        <span className="sacrifice-card__name">{card?.name ?? inst.cardId}</span>
-        <span className="sacrifice-card__xp">+{xp} XP</span>
-      </div>
     </div>
   );
 };
@@ -379,6 +378,70 @@ const CrystalRow: React.FC<{
         <button className="crystal-btn" disabled={qty === 0} onClick={() => onChange(-1)}>−</button>
         <span className="crystal-row__qty">{qty} / {available}</span>
         <button className="crystal-btn" disabled={qty >= available} onClick={() => onChange(1)}>+</button>
+      </div>
+    </div>
+  );
+};
+
+// ── Auswahl-Overlay ───────────────────────────────────────────
+
+const PickerOverlay: React.FC<{
+  mode: 'target' | 'sacrifice';
+  inventory: CardInstance[];
+  targetUuid: string | null;
+  sacrificeUuids: string[];
+  onChooseTarget: (uuid: string) => void;
+  onToggleSacrifice: (uuid: string) => void;
+  onClose: () => void;
+}> = ({ mode, inventory, targetUuid, sacrificeUuids, onChooseTarget, onToggleSacrifice, onClose }) => {
+  const list = mode === 'target'
+    ? inventory
+    : inventory.filter(i => i.uuid !== targetUuid);
+
+  return (
+    <div className="opfern-picker" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="opfern-picker__sheet">
+        <div className="opfern-picker__head">
+          <span>{mode === 'target' ? 'Zielkarte wählen' : `Opfer wählen (${sacrificeUuids.length}/${MAX_SACRIFICE})`}</span>
+          <button className="opfern-picker__close" onClick={onClose} aria-label="Schließen">✕</button>
+        </div>
+
+        <div className="opfern-picker__grid">
+          {list.length === 0 ? (
+            <div className="training-empty">Keine Karten verfügbar.</div>
+          ) : (
+            list.map(inst => {
+              const card     = CardDatabase.getById(inst.cardId);
+              const rc       = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
+              const selected = mode === 'sacrifice' && sacrificeUuids.includes(inst.uuid);
+              return (
+                <div
+                  key={inst.uuid}
+                  className={`sacrifice-card ${selected ? 'sacrifice-card--selected' : ''}`}
+                  style={{ '--rc': rc } as React.CSSProperties}
+                  onClick={() => mode === 'target' ? onChooseTarget(inst.uuid) : onToggleSacrifice(inst.uuid)}
+                >
+                  <div className="sacrifice-card__art">
+                    <CardArt card={card} />
+                    {selected && <div className="sacrifice-card__check">✓</div>}
+                  </div>
+                  <div className="sacrifice-card__footer">
+                    <span className="sacrifice-card__name">{card?.name ?? inst.cardId}</span>
+                    <span className="sacrifice-card__xp">
+                      {mode === 'sacrifice'
+                        ? `+${LevelSystem.sacrificeXp(inst)} XP`
+                        : `Lv.${inst.level ?? 1} · ${inst.rarity}`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {mode === 'sacrifice' && (
+          <button className="opfern-picker__done" onClick={onClose}>Fertig</button>
+        )}
       </div>
     </div>
   );
