@@ -1,4 +1,4 @@
-/* ── MainScreen ──────────────────────────────────────────────── */
+/* ── MainScreen (UI-Asset-Redesign) ──────────────────────────── */
 
 .main-screen {
   position: relative;
@@ -6,18 +6,20 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-deep);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(60, 20, 24, 0.35) 0%, transparent 60%),
+    var(--bg-deep);
   overflow: hidden;
   color: var(--text);
 }
 
-/* Scrollbarer Bereich zwischen Header und Nav */
 .main-body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  padding-bottom: 10px;
 }
 
 /* ── Top-Bar ─────────────────────────────────────────────────── */
@@ -26,464 +28,375 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
-  background: var(--bg-mid);
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  padding: 8px 10px 4px;
   flex-shrink: 0;
 }
 
-.main-topbar__back {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  color: var(--gold);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 5px 10px;
+/* Runde/rechteckige Icon-Buttons aus Asset-Frames */
+.ms-iconbtn {
+  flex-shrink: 0;
+  background: transparent center/contain no-repeat;
+  border: none;
   cursor: pointer;
-  white-space: nowrap;
-  transition: border-color 0.15s, color 0.15s;
+  padding: 0;
+  transition: transform 0.12s, filter 0.15s;
 }
+.ms-iconbtn:active { transform: scale(0.93); }
+.ms-iconbtn:hover  { filter: brightness(1.15); }
 
-.main-topbar__back:active {
-  color: var(--gold-bright);
-  border-color: var(--gold-dark);
-}
+.ms-iconbtn--back    { width: 58px; height: 30px; }
+.ms-iconbtn--refresh { width: 50px; height: 30px; }
 
-.main-topbar__countdown {
+/* Timer-Header */
+.ms-timer {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  background: transparent center/100% 100% no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  padding: 0 8px;
+  justify-content: center;
+  gap: 1px;
+  padding: 6px 14px 4px;
 }
 
-.main-topbar__countdown-label {
+.ms-timer__label {
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: var(--gold-dark);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.85;
 }
 
-.main-topbar__countdown-value {
+.ms-timer__value {
   font-family: 'Cinzel', serif;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--gold-bright);
   letter-spacing: 0.12em;
-  text-shadow: 0 0 10px rgba(240,208,128,0.4);
-}
-
-.main-topbar__refresh {
-  font-size: 1rem;
-  color: var(--gold-dark);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.15s;
-}
-
-.main-topbar__refresh:active {
-  color: var(--gold);
+  text-shadow: 0 0 10px rgba(240, 208, 128, 0.5);
 }
 
 /* ── Ressourcen-Balken ───────────────────────────────────────── */
 
-.main-resources {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.ms-bars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
   padding: 6px 10px;
-  background: rgba(19, 13, 16, 0.8);
-  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-.main-res-row {
-  display: flex;
-  gap: 8px;
+.ms-bar {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  background: transparent center/100% 100% no-repeat;
 }
 
-.main-res-item {
+/* Innerer Track (pro Variante per CSS-Variablen positioniert) */
+.ms-bar__track {
+  position: absolute;
+  left:   var(--tl);
+  right:  var(--tr);
+  top:    var(--tt);
+  bottom: var(--tb);
+  border-radius: 4px;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex: 1;
-  min-width: 0;
 }
 
-.main-res-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.main-res-bar {
-  flex: 1;
-  height: 6px;
-  background: rgba(42, 26, 34, 0.8);
-  border: 1px solid var(--border);
+.ms-bar__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
   border-radius: 3px;
-  overflow: hidden;
-  min-width: 0;
+  transition: width 0.35s ease;
+  opacity: 0.78;
 }
 
-.main-res-bar__fill {
-  height: 100%;
-  background: linear-gradient(90deg, #8a6520, var(--gold));
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.main-res-bar__fill--mp {
-  background: linear-gradient(90deg, #1a2a5a, #4a7aff);
-}
-
-.main-res-bar__fill--exp {
-  background: linear-gradient(90deg, #1a4a1a, #4aff7a);
-}
-
-.main-res-value {
+.ms-bar__text {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 0 7px;
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--text);
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
-.main-res-value--mana {
-  color: var(--gold);
+.ms-bar__label {
+  font-size: 0.46rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+.ms-bar__value {
+  font-size: 0.52rem;
+  font-weight: 600;
+}
+
+/* Track-Insets + Farben pro Balken (auf die Frame-Tracks abgestimmt) */
+.ms-bar--stamina { --tl: 27%; --tr: 5%; --tt: 32%; --tb: 33%; }
+.ms-bar--exp     { --tl: 28%; --tr: 5%; --tt: 28%; --tb: 30%; }
+.ms-bar--mana    { --tl: 27%; --tr: 5%; --tt: 28%; --tb: 30%; }
+.ms-bar--crystal { --tl: 31%; --tr: 6%; --tt: 32%; --tb: 40%; }
+
+.ms-bar--stamina .ms-bar__fill { background: linear-gradient(90deg, #8a1f1f, #e2574c); }
+.ms-bar--exp     .ms-bar__fill { background: linear-gradient(90deg, #5a2a7a, #b07aff); }
+.ms-bar--mana    .ms-bar__fill { background: linear-gradient(90deg, #1a3a7a, #4a9aff); }
+
+/* Helle Parchment-Frames → dunkler Text; dunkle Frames → heller Text */
+.ms-bar--stamina .ms-bar__text,
+.ms-bar--crystal .ms-bar__text {
+  color: #2a1208;
+  text-shadow: 0 1px 1px rgba(255, 240, 210, 0.4);
+}
+.ms-bar--exp .ms-bar__text,
+.ms-bar--mana .ms-bar__text {
+  color: #f0d080;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 /* ── Info-Banner ─────────────────────────────────────────────── */
 
-.main-infobanner {
+.ms-info {
+  margin: 2px 10px 4px;
+  height: 40px;
+  background: transparent center/100% 100% no-repeat;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  background: rgba(201, 168, 76, 0.06);
-  border-bottom: 1px solid var(--border);
+  padding: 0 16px 0 52px;   /* Platz für eingebrannte „i“-Plakette links */
   flex-shrink: 0;
 }
 
-.main-infobanner__icon {
-  color: var(--gold-dark);
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.main-infobanner__text {
+.ms-info__text {
   font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  color: var(--text);
-  opacity: 0.8;
+  font-size: 0.74rem;
+  color: #2a1208;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Hauptkarte ──────────────────────────────────────────────── */
 
-.main-card {
+.ms-maincard {
   display: flex;
-  gap: 0;
-  margin: 8px 10px;
-  background: var(--bg-mid);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
+  gap: 8px;
+  margin: 4px 10px 8px;
   flex-shrink: 0;
 }
 
-.main-card__profile {
-  flex: 0 0 44%;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  padding: 6px;
-  border-right: 1px solid var(--border);
-}
-
-.main-profile-frame {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-/* Card frame — full portrait, no height cap */
-.main-profile-frame__card {
+/* Spielerkarte (Frame-Asset mit eingesetztem Artwork) */
+.ms-player {
   position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  border: 2px solid var(--gold-dark);
-  border-radius: 6px;
+  flex: 0 0 44%;
+  aspect-ratio: 444 / 600;
+  background: transparent center/100% 100% no-repeat;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.ms-player:active { filter: brightness(1.1); }
+
+.ms-player__art {
+  position: absolute;
+  inset: 8.5% 9% 13% 9%;     /* Innenöffnung des Rahmens */
   overflow: hidden;
+  border-radius: 4px;
   background: #0d0810;
-  box-shadow: 0 0 16px rgba(0,0,0,0.6);
 }
 
-.main-profile-frame__img {
-  position: absolute;
-  inset: 0;
+.ms-player__art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  display: block;
 }
 
-.main-profile-frame__overlay {
+.ms-player__caption {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 24px 8px 8px;
-  background: linear-gradient(to top, rgba(8,5,10,0.95) 0%, transparent 100%);
-}
-
-.main-profile-frame__card-name {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 0.6rem;
-  color: var(--gold-bright);
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 8px rgba(0,0,0,0.9);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.main-profile-frame__card-title {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.5rem;
-  color: rgba(240,208,128,0.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.main-profile-frame__num {
-  position: absolute;
-  top: 5px; left: 7px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: rgba(240,208,128,0.85);
-  text-shadow: 0 1px 4px #000;
-}
-
-.main-profile-frame__compass {
-  position: absolute;
-  top: 4px; right: 7px;
-  font-size: 0.7rem;
-  color: rgba(240,208,128,0.6);
-}
-
-
-.main-card__right {
-  flex: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 7px 6px;
+  background: linear-gradient(to top, rgba(8, 5, 10, 0.95) 0%, transparent 100%);
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  gap: 6px;
 }
 
-.main-card__action-btn {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.06em;
-  color: var(--text);
-  background: rgba(42, 26, 34, 0.6);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 6px 8px;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.15s, background 0.15s;
+.ms-player__name {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ms-player__title {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.46rem;
+  color: rgba(240, 208, 128, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Rechte Seite: Aktionen + Status */
+.ms-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ms-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+.ms-rbtn {
   position: relative;
+  width: 48px;
+  height: 48px;
+  background: transparent center/contain no-repeat;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, filter 0.15s;
 }
+.ms-rbtn:active { transform: scale(0.92); }
+.ms-rbtn:hover  { filter: brightness(1.15); }
 
-.main-card__action-btn:active {
-  background: rgba(201, 168, 76, 0.1);
-  border-color: var(--gold-dark);
-}
-
-.main-card__badge {
+.ms-rbtn__badge {
   position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 50%;
   background: #c0392b;
   color: #fff;
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+  font-size: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 6px rgba(192, 57, 43, 0.7);
 }
 
-.main-card__divider {
-  height: 1px;
-  background: var(--border);
-  margin: 2px 0;
-}
-
-.main-card__status {
+/* Status-Block */
+.ms-status {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.main-card__status-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.main-card__status-row {
+.ms-status__head {
+  height: 26px;
+  background: transparent center/100% 100% no-repeat;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.main-card__status-label {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  color: var(--text);
-  opacity: 0.7;
-}
-
-.main-card__status-value {
+  justify-content: center;
   font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
   color: var(--gold-bright);
+  text-shadow: 0 0 8px rgba(240, 208, 128, 0.4);
 }
 
-/* ── Tipp-Bereich ────────────────────────────────────────────── */
-
-.main-tip {
+.ms-status__row {
+  height: 30px;
+  background: transparent center/100% 100% no-repeat;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin: 0 10px 4px;
-  padding: 6px 8px;
-  background: rgba(19, 13, 16, 0.6);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  min-height: 50px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 14px 0 0;
+}
+
+.ms-status__val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #2a1208;
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(255, 240, 210, 0.4);
+}
+
+/* ── Tipp-Bereich mit Begleiterin ────────────────────────────── */
+
+.ms-tip {
   position: relative;
-  overflow: hidden;
+  margin: 2px 10px 6px;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
 }
 
-.main-tip__text {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  color: var(--text);
-  opacity: 0.8;
+.ms-tip__box {
   flex: 1;
-  padding-right: 60px;
+  min-height: 64px;
+  background: transparent center/100% 100% no-repeat;
+  display: flex;
+  align-items: center;
+  padding: 10px 90px 10px 16px;   /* rechts Platz für Begleiterin */
+}
+
+.ms-tip__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: #e8d5b0;
   line-height: 1.4;
 }
 
-.main-tip__npc {
+.ms-tip__guide {
   position: absolute;
-  right: -8px;
+  right: -2px;
   bottom: 0;
-  height: 80px;
+  height: 104px;
   width: auto;
   object-fit: contain;
-  object-position: bottom;
-  opacity: 0.5;
+  object-position: bottom right;
   pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
 }
 
-/* ── Trenner ─────────────────────────────────────────────────── */
+/* ── Sektions-Banner ─────────────────────────────────────────── */
 
-.main-divider {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-dark);
-  text-align: center;
-  letter-spacing: 0.15em;
-  padding: 4px 0;
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-/* ── Bottom Navigation ───────────────────────────────────────── */
-
-.main-nav {
+.ms-banner {
+  margin: 4px auto 8px;
+  width: calc(100% - 40px);
+  max-width: 360px;
+  height: 42px;
+  background: transparent center/contain no-repeat;
   display: flex;
-  align-items: stretch;
-  border-top: 2px solid var(--gold-dark);
-  background: var(--bg-mid);
-  flex-shrink: 0;
-}
-
-.main-nav__btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 4px;
-  background: transparent;
-  border: none;
-  border-right: 1px solid var(--border);
-  cursor: pointer;
-  color: var(--text);
-  transition: background 0.15s;
-  position: relative;
+  flex-shrink: 0;
 }
 
-.main-nav__btn:last-child {
-  border-right: none;
-}
-
-.main-nav__btn:active {
-  background: rgba(201, 168, 76, 0.1);
-}
-
-.main-nav__btn--center {
-  background: rgba(201, 168, 76, 0.06);
-  flex: 1.3;
-}
-
-.main-nav__btn--center .main-nav__icon {
-  font-size: 1.3rem;
-}
-
-.main-nav__icon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.main-nav__label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  letter-spacing: 0.06em;
-  color: var(--gold-dark);
+.ms-banner__text {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #5a2418;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.main-nav__badge {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  background: #c0392b;
-  color: #fff;
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
