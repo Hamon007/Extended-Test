@@ -5,9 +5,18 @@ import { CardDatabase } from '../services/CardDatabase';
 import type { ResolvedSlot, Deck } from '../types/DeckTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
-import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor, ELEMENT_LABEL } from '../types/Card';
+import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
 import './DeckBuilderScreen.css';
+
+type SortKey = 'rarity' | 'name' | 'atk' | 'hp' | 'mp';
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'rarity', label: 'Seltenheit' },
+  { key: 'name',   label: 'Name' },
+  { key: 'atk',    label: 'ATK' },
+  { key: 'hp',     label: 'HP' },
+  { key: 'mp',     label: 'MP' },
+];
 
 // ── Fehlertext ────────────────────────────────────────────────
 
@@ -33,18 +42,30 @@ function buildInventoryEntries(
   const deckSet = new Set(deckUuids);
 
   // Eine Karte pro Instanz — nie gruppieren, damit jede Karte einzeln anklickbar ist.
-  return inventory
-    .map(inst => ({
-      uuid:   inst.uuid,
-      cardId: inst.cardId,
-      rarity: inst.rarity as Rarity,
-      inDeck: deckSet.has(inst.uuid),
-    }))
-    .sort((a, b) => {
-      // nach Seltenheit absteigend, dann nach Karten-ID stabil
-      const r = RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity);
-      return r !== 0 ? r : a.cardId.localeCompare(b.cardId);
-    });
+  return inventory.map(inst => ({
+    uuid:   inst.uuid,
+    cardId: inst.cardId,
+    rarity: inst.rarity as Rarity,
+    inDeck: deckSet.has(inst.uuid),
+  }));
+}
+
+function sortEntries(entries: InventoryEntry[], sort: SortKey): InventoryEntry[] {
+  return [...entries].sort((a, b) => {
+    const ca = CardDatabase.getById(a.cardId);
+    const cb = CardDatabase.getById(b.cardId);
+    switch (sort) {
+      case 'rarity': {
+        const r = RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity);
+        return r !== 0 ? r : a.cardId.localeCompare(b.cardId);
+      }
+      case 'name': return (ca?.name ?? a.cardId).localeCompare(cb?.name ?? b.cardId, 'de');
+      case 'atk':  return (cb?.stats.atk ?? 0) - (ca?.stats.atk ?? 0);
+      case 'hp':   return (cb?.stats.hp  ?? 0) - (ca?.stats.hp  ?? 0);
+      case 'mp':   return (ca?.stats.mpCost ?? 0) - (cb?.stats.mpCost ?? 0);
+      default:     return 0;
+    }
+  });
 }
 
 // ── Haupt-Screen ──────────────────────────────────────────────
@@ -57,18 +78,19 @@ const DeckBuilderScreen: React.FC = () => {
   const [nameInput,    setNameInput]    = useState(deck.name);
   const [toast,        setToast]        = useState<string | null>(null);
   const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
+  const [sortKey,      setSortKey]      = useState<SortKey>('rarity');
 
   const allEntries = useMemo(
     () => buildInventoryEntries(inventory, deck.uuids),
     [inventory, deck.uuids]
   );
 
-  const inventoryEntries = useMemo(
-    () => rarityFilter === ''
+  const inventoryEntries = useMemo(() => {
+    const filtered = rarityFilter === ''
       ? allEntries
-      : allEntries.filter(e => rarityMajor(e.rarity) === rarityFilter),
-    [allEntries, rarityFilter]
-  );
+      : allEntries.filter(e => rarityMajor(e.rarity) === rarityFilter);
+    return sortEntries(filtered, sortKey);
+  }, [allEntries, rarityFilter, sortKey]);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -183,6 +205,19 @@ const DeckBuilderScreen: React.FC = () => {
               onClick={() => setRarityFilter(r)}
             >
               {r}
+            </button>
+          ))}
+        </div>
+
+        {/* Sortierung */}
+        <div className="db-filter db-filter--sort">
+          {SORT_OPTIONS.map(({ key, label }) => (
+            <button
+              key={key}
+              className={`db-filter__chip ${sortKey === key ? 'db-filter__chip--active' : ''}`}
+              onClick={() => setSortKey(key)}
+            >
+              {label}
             </button>
           ))}
         </div>
@@ -312,7 +347,6 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const card = CardDatabase.getById(entry.cardId);
   const rc   = RARITY_COLOR[entry.rarity] ?? '#9e9e9e';
 
-  // Budget-/Voll-Prüfung nur für noch nicht eingesetzte Instanzen.
   let addBlocked = false;
   let blockTip   = '';
   if (!entry.inDeck) {
@@ -323,7 +357,6 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
     }
   }
 
-  // In-Deck-Karten sind immer anklickbar (zum Entfernen), freie nur wenn nicht blockiert.
   const clickable = entry.inDeck || !addBlocked;
 
   const handleClick = () => {
@@ -336,49 +369,30 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
       className={`inv-card ${entry.inDeck ? 'inv-card--in-deck' : addBlocked ? 'inv-card--blocked' : 'inv-card--available'}`}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={clickable ? handleClick : undefined}
-      title={entry.inDeck
-        ? `${card?.name ?? entry.cardId} — Tippen zum Entfernen`
-        : (blockTip || card?.name)}
     >
-      {/* Artwork */}
-      <div className="inv-card__art">
+      <div className="inv-card__img-wrap">
         {card && !imgErr ? (
           <img
+            className="inv-card__img"
             src={card.image}
             alt={card.name}
             onError={() => setImgErr(true)}
             loading="lazy"
           />
         ) : (
-          <div className="inv-card__placeholder">🌑</div>
+          <div className="inv-card__fallback">🌑</div>
         )}
-        <div className="inv-card__gradient" />
+        <div className="inv-card__rarity" style={{ color: rc }}>{entry.rarity}</div>
+        {entry.inDeck && <div className="inv-card__in-deck-badge">✓</div>}
+        {addBlocked && (
+          <div className="inv-card__block-overlay">
+            <span>{blockTip}</span>
+          </div>
+        )}
       </div>
-
-      {/* Rarity badge */}
-      <div className="inv-card__rarity" style={{ color: rc }}>
-        {entry.rarity}
-      </div>
-
-      {/* Im-Deck-Markierung */}
-      {entry.inDeck && (
-        <div className="inv-card__in-deck-badge">✓</div>
-      )}
-
-      {/* Block-Overlay (nur wenn Karte nicht hinzugefügt werden kann) */}
-      {addBlocked && (
-        <div className="inv-card__block-overlay">
-          <span>{blockTip}</span>
-        </div>
-      )}
-
-      {/* Footer */}
-      <div className="inv-card__footer">
-        <span className="inv-card__name">{card?.name ?? entry.cardId}</span>
-        <span className="inv-card__element">
-          {card ? ELEMENT_LABEL[card.element] : ''}
-        </span>
-        <span className="inv-card__mp">💧{card?.stats.mpCost ?? '?'}</span>
+      <div className="inv-card__info">
+        <div className="inv-card__name">{card?.name ?? entry.cardId}</div>
+        <div className="inv-card__sub">💧{card?.stats.mpCost ?? '?'}</div>
       </div>
     </div>
   );

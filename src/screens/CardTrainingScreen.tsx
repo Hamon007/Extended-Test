@@ -394,9 +394,15 @@ const PickerOverlay: React.FC<{
   onToggleSacrifice: (uuid: string) => void;
   onClose: () => void;
 }> = ({ mode, inventory, targetUuid, sacrificeUuids, onChooseTarget, onToggleSacrifice, onClose }) => {
-  const list = mode === 'target'
-    ? inventory
-    : inventory.filter(i => i.uuid !== targetUuid);
+  const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
+
+  const filteredList = useMemo(() => {
+    let list = mode === 'target'
+      ? inventory
+      : inventory.filter(i => i.uuid !== targetUuid);
+    if (rarityFilter) list = list.filter(i => rarityMajor(i.rarity) === rarityFilter);
+    return list;
+  }, [mode, inventory, targetUuid, rarityFilter]);
 
   return (
     <div className="opfern-picker" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -406,11 +412,26 @@ const PickerOverlay: React.FC<{
           <button className="opfern-picker__close" onClick={onClose} aria-label="Schließen">✕</button>
         </div>
 
+        <div className="opfern-picker__filter">
+          <button
+            className={`opfern-filter__chip ${rarityFilter === '' ? 'opfern-filter__chip--active' : ''}`}
+            onClick={() => setRarityFilter('')}
+          >Alle</button>
+          {RARITY_MAJORS.map(r => (
+            <button
+              key={r}
+              className={`opfern-filter__chip ${rarityFilter === r ? 'opfern-filter__chip--active' : ''}`}
+              style={rarityFilter === r ? { color: RARITY_COLOR[r], borderColor: RARITY_COLOR[r] } : undefined}
+              onClick={() => setRarityFilter(r)}
+            >{r}</button>
+          ))}
+        </div>
+
         <div className="opfern-picker__grid">
-          {list.length === 0 ? (
+          {filteredList.length === 0 ? (
             <div className="training-empty">Keine Karten verfügbar.</div>
           ) : (
-            list.map(inst => {
+            filteredList.map(inst => {
               const card     = CardDatabase.getById(inst.cardId);
               const rc       = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
               const selected = mode === 'sacrifice' && sacrificeUuids.includes(inst.uuid);
@@ -421,18 +442,27 @@ const PickerOverlay: React.FC<{
                   style={{ '--rc': rc } as React.CSSProperties}
                   onClick={() => mode === 'target' ? onChooseTarget(inst.uuid) : onToggleSacrifice(inst.uuid)}
                 >
-                  <div className="opfern-pick__art">
-                    <CardArt card={card} />
+                  <div className="opfern-pick__img-wrap">
+                    {card ? (
+                      <img
+                        src={card.image}
+                        alt={card.name}
+                        className="opfern-pick__img"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="opfern-pick__fallback">🌑</div>
+                    )}
+                    <div className="opfern-pick__rarity" style={{ color: rc }}>{inst.rarity}</div>
+                    {selected && <div className="opfern-pick__check">✓</div>}
                   </div>
-                  <div className="opfern-pick__rarity" style={{ color: rc }}>{inst.rarity}</div>
-                  {selected && <div className="opfern-pick__check">✓</div>}
-                  <div className="opfern-pick__footer">
-                    <span className="opfern-pick__name">{card?.name ?? inst.cardId}</span>
-                    <span className="opfern-pick__sub">
+                  <div className="opfern-pick__info">
+                    <div className="opfern-pick__name">{card?.name ?? inst.cardId}</div>
+                    <div className="opfern-pick__sub">
                       {mode === 'sacrifice'
                         ? `Lv.${inst.level ?? 1} · +${LevelSystem.sacrificeXp(inst)} XP`
                         : `Lv.${inst.level ?? 1}`}
-                    </span>
+                    </div>
                   </div>
                 </div>
               );

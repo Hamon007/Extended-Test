@@ -681,6 +681,32 @@
   font-size: 12px;
   cursor: pointer;
 }
+
+.opfern-picker__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #2a1525;
+  flex-shrink: 0;
+}
+
+.opfern-filter__chip {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  background: rgba(19,13,16,0.6);
+  border: 1px solid #3a2030;
+  border-radius: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.opfern-filter__chip--active {
+  color: #f0d080;
+  border-color: #8a6520;
+  background: rgba(201,168,76,0.12);
+}
 .opfern-picker__grid {
   flex: 1;
   min-height: 0;
@@ -696,77 +722,89 @@
 .opfern-picker__grid::-webkit-scrollbar { width: 3px; }
 .opfern-picker__grid::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
 
-/* Picker-Karte — wie im Kartenkatalog, breitenbasierte Höhe (robust) */
+/* Picker-Karte — wie Kartensammlung: flex-column + padding-bottom img-wrap */
 .opfern-pick {
-  position: relative;
-  width: 100%;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 2px solid var(--rc, #3a2030);
+  display: flex;
+  flex-direction: column;
   background: #0d0810;
+  border: 1px solid var(--rc, #3a2030);
+  border-radius: 4px;
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s;
+  -webkit-tap-highlight-color: transparent;
 }
-.opfern-pick::before { content: ''; display: block; padding-bottom: 150%; }
 .opfern-pick:active { transform: scale(0.96); }
 .opfern-pick--selected {
   border-color: #f0d080;
   box-shadow: 0 0 0 2px rgba(240,208,128,0.5), 0 0 14px rgba(240,208,128,0.4);
 }
 
-.opfern-pick__art { position: absolute; inset: 0; }
-.opfern-pick__art img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.opfern-pick__img-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 133%;
+  background: rgba(42, 26, 34, 0.5);
+  overflow: hidden;
+}
+
+.opfern-pick__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.opfern-pick__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  opacity: 0.3;
+  background: linear-gradient(160deg, #1a0d18, #0d0810);
+}
 
 .opfern-pick__rarity {
   position: absolute;
   top: 4px; left: 4px;
-  z-index: 3;
   font-family: 'Cinzel', serif;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 8px; font-weight: 700;
   background: rgba(0,0,0,0.72);
   border: 1px solid currentColor;
-  border-radius: 3px;
-  padding: 1px 4px;
+  border-radius: 3px; padding: 1px 4px;
 }
 
 .opfern-pick__check {
   position: absolute;
   inset: 0;
-  z-index: 4;
   background: rgba(201,168,76,0.45);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: #fff;
+  align-items: center; justify-content: center;
+  font-size: 2rem; color: #fff;
   text-shadow: 0 0 8px rgba(0,0,0,0.8);
 }
 
-.opfern-pick__footer {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  z-index: 3;
-  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 70%, transparent 100%);
-  padding: 14px 5px 5px;
+.opfern-pick__info {
+  padding: 4px 5px 5px;
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
+
 .opfern-pick__name {
   font-family: 'Cinzel', serif;
-  font-size: 9px;
-  color: #f0d080;
+  font-size: 9px; color: #f0d080;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
 .opfern-pick__sub {
   font-family: 'Cinzel', serif;
-  font-size: 7.5px;
-  color: #81c784;
+  font-size: 7.5px; color: #81c784;
   text-align: center;
 }
 
