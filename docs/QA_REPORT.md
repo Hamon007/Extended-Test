@@ -1,8 +1,14 @@
 # QA-Report — Codex Immortalis
 
-> Erstellt: 2026-05-22  
+> Erstellt: 2026-05-22 · Aktualisiert: 2026-05-22  
 > Branch: `claude/chat-access-check-2WFVw` (→ main nach Merge)  
-> Build: `tsc && vite build` ✅ (0 Fehler, 0 Warnungen)
+> Build: `tsc && vite build` ✅ (0 Fehler, 0 Warnungen)  
+>
+> **Änderungen (Update):**  
+> - localStorage-Schlüssel korrigiert (waren `codex_*`, sind `ci_*`)  
+> - `BattleResult` als nicht-persistent dokumentiert  
+> - README_PWA Caching-Tabelle mit `vite.config.ts` synchronisiert (7 Regeln, `title_bg.jpg` Precache)  
+> - Gacha unverändert (Alpha/Testmodus bleibt)
 
 ---
 
@@ -85,14 +91,19 @@
 
 ---
 
-## SaveService (localStorage)
+## localStorage-Schlüssel (tatsächliche Keys aus dem Code)
 
-| Schlüssel | Typ | Status |
-|---|---|---|
-| `codex_save` | GachaState | ✅ |
-| `codex_guild_save` | GuildState | ✅ |
-| `codex_energy_save` | EnergyState | ✅ |
-| `codex_battle_log` | BattleResult[] | ✅ |
+| Schlüssel | Typ | Service | Status |
+|---|---|---|---|
+| `ci_gacha_state` | GachaState | `SaveService` | ✅ |
+| `ci_deck_main` | Deck | `SaveService` | ✅ |
+| `ci_settings` | Settings | `SaveService` | ✅ |
+| `ci_last_login` | string (ISO-Datum) | `SaveService` | ✅ |
+| `ci_battle_energy` | EnergyState | `EnergyService` | ✅ |
+| `ci_daily_bonus_date` | string (YYYY-MM-DD) | `ProgressionService` | ✅ |
+| `ci_guild_state` | GuildState | `GuildService` | ✅ |
+
+> `BattleResult` wird **nicht** in localStorage gespeichert — nur im React-State der Session.
 
 ---
 

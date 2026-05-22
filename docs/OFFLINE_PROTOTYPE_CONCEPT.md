@@ -37,14 +37,19 @@ Deployment: GitHub Pages (`/Extended-Test/`), HTTPS → PWA-Installation möglic
 
 ## 3. Datenhaltung
 
-Alle Spielstände werden über `SaveService` im `localStorage` gespeichert:
+Alle Spielstände werden im `localStorage` gespeichert (tatsächliche Keys aus dem Code):
 
 ```
-codex_save           → GachaState (Inventory, Crystals, Deck, Tagesbonus)
-codex_guild_save     → GuildState (Boss-HP, Angriffe, Level, Schatz)
-codex_energy_save    → EnergyState (Energie, Tränke, letzte Regeneration)
-codex_battle_log     → BattleResult[] (letzte Kämpfe)
+ci_gacha_state       → GachaState  (SaveService: Inventory, Crystals, PityCounter)
+ci_deck_main         → Deck        (SaveService: aktives Deck des Spielers)
+ci_settings          → Settings    (SaveService: App-Einstellungen)
+ci_last_login        → string      (SaveService: ISO-Datum letzter Login)
+ci_battle_energy     → EnergyState (EnergyService: Energie, Tränke, Regeneration)
+ci_daily_bonus_date  → string      (ProgressionService: Datum letzter Tagesbonus)
+ci_guild_state       → GuildState  (GuildService: Boss-HP, Angriffe, Level)
 ```
+
+`BattleResult` (Kampf-Ergebnis) wird **nicht** persistiert — nur im React-State der laufenden Session.
 
 Keine Cloud-Synchronisation. Spielstand bleibt im Browser des Nutzers.
 Löschen via "App-Daten löschen" in den Browser-Einstellungen.
@@ -65,7 +70,9 @@ Kein dynamisches Nachladen, keine API-Calls.
 
 ## 5. Alpha-/Testmodus Gacha
 
-Der Gacha-Test-Modus ist bewusst aktiviert:
+Der Gacha-Test-Modus ist **bewusst aktiviert und bleibt unverändert** bis echte Balancing-Tests
+stattgefunden haben. Keine Änderungen an `GachaSystem`, `GachaTypes` oder `SaveService`
+ohne explizite Entscheidung nach dem Playtest.
 
 | Konstante | Wert | Zweck |
 |---|---|---|
@@ -74,8 +81,19 @@ Der Gacha-Test-Modus ist bewusst aktiviert:
 | `PULL_COST_MULTI` | `1_000` | Normal (10× Zug) |
 | `PITY_THRESHOLD` | `100` | Pity nach 100 Zügen ohne LR |
 
-Der Alpha-Modus **darf nicht geändert werden** bis echte Balancing-Tests stattgefunden haben.
-Änderungen nur nach expliziter Entscheidung im Playtest.
+## 5a. Decksystem (aktueller Stand)
+
+| Konstante | Wert | Bedeutung |
+|---|---|---|
+| `DECK_SIZE` | `10` | Ein Deck besteht aus genau 10 Karten |
+| `MAX_DECK_COST` | `800` | Maximale Gesamt-MP aller Karten im Deck (Budget-Regel) |
+
+Das Deck-Budget (`MAX_DECK_COST`) begrenzt welche Karten-Kombinationen möglich sind —
+teure Karten (hohe `mpCost`) belegen mehr Budget.
+
+**Kein aktives MR/5-Karten-Limit:** Ein früheres Konzept sah vor, MR/LR-Karten auf 5 pro Deck
+zu begrenzen. Diese Regel ist im aktuellen Code **nicht aktiv** — alle Karten werden gleich
+behandelt, einzig `DECK_SIZE = 10` und `MAX_DECK_COST = 800` gelten.
 
 ---
 
