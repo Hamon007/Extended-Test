@@ -343,7 +343,7 @@
 .inv-card {
   display: flex;
   flex-direction: column;
-  background: #0d0810;
+  background: var(--bg-mid);
   border: 1px solid var(--rc, #8a6520);
   border-radius: 4px;
   overflow: hidden;
@@ -363,7 +363,7 @@
 .inv-card__img-wrap {
   position: relative;
   width: 100%;
-  padding-bottom: 133%;
+  padding-bottom: 120%;
   background: rgba(42, 26, 34, 0.5);
   overflow: hidden;
 }
@@ -390,35 +390,25 @@
 
 .inv-card__rarity {
   position: absolute;
-  top: 3px; left: 3px;
+  top: 4px; right: 4px;
   font-family: 'Cinzel', serif;
-  font-size: 7px; font-weight: 700;
-  background: rgba(0,0,0,.75);
-  border: 1px solid currentColor;
-  border-radius: 2px; padding: 1px 3px;
-}
-
-.inv-card__count {
-  position: absolute;
-  top: 3px; right: 3px;
-  font-family: 'Cinzel', serif;
-  font-size: 7px;
-  color: #f0d080;
+  font-size: 0.5rem;
+  letter-spacing: 0.05em;
   background: rgba(8,5,10,0.85);
-  border: 1px solid #8a6520;
+  border: 1px solid currentColor;
   border-radius: 2px;
-  padding: 1px 3px;
+  padding: 1px 4px;
   line-height: 1.4;
 }
 
 .inv-card__in-deck-badge {
   position: absolute;
-  bottom: 30px; right: 3px;
+  bottom: 4px; left: 4px;
   background: rgba(76,175,80,0.9); color: #fff;
-  border-radius: 10px;
-  padding: 1px 5px;
+  border-radius: 2px;
+  padding: 1px 4px;
   font-family: 'Cinzel', serif;
-  font-size: 7px;
+  font-size: 0.5rem;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -436,18 +426,19 @@
 }
 
 .inv-card__info {
-  padding: 4px 5px 5px;
+  padding: 5px 5px 6px;
   display: flex; flex-direction: column; gap: 1px;
 }
 
 .inv-card__name {
-  font-family: 'Cinzel', serif; font-size: 7px;
-  color: #f0d080;
+  font-family: 'Cinzel', serif; font-size: 0.52rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .inv-card__sub {
-  font-family: 'Cinzel', serif; font-size: 6px; color: #90caf9;
+  font-family: 'Cinzel', serif; font-size: 0.5rem; color: #90caf9;
 }
 
 /* Sort-Filter */
