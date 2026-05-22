@@ -398,13 +398,29 @@
   border-radius: 2px; padding: 1px 3px;
 }
 
-.inv-card__in-deck-badge {
+.inv-card__count {
   position: absolute;
   top: 3px; right: 3px;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #f0d080;
+  background: rgba(8,5,10,0.85);
+  border: 1px solid #8a6520;
+  border-radius: 2px;
+  padding: 1px 3px;
+  line-height: 1.4;
+}
+
+.inv-card__in-deck-badge {
+  position: absolute;
+  bottom: 30px; right: 3px;
   background: rgba(76,175,80,0.9); color: #fff;
-  width: 14px; height: 14px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px;
+  border-radius: 10px;
+  padding: 1px 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .inv-card__block-overlay {

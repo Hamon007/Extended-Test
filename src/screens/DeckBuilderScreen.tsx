@@ -26,31 +26,49 @@ const RULE_LABEL: Record<string, string> = {
   ALREADY_IN_DECK: 'Diese Instanz ist bereits im Deck',
 };
 
-// ── Inventar: jede Karten-Instanz wird einzeln aufgeführt ─────
+// ── Inventar: nach Karten-ID gruppiert (wie Kartensammlung) ───
 
-interface InventoryEntry {
-  uuid:   string;
-  cardId: string;
-  rarity: Rarity;
-  inDeck: boolean;
+interface GroupedEntry {
+  cardId:            string;
+  rarity:            Rarity;
+  total:             number;        // Gesamtzahl eigener Instanzen
+  inDeck:            number;        // davon im Deck
+  nextAvailableUuid: string | null; // erste freie Instanz, null = alle im Deck
 }
 
-function buildInventoryEntries(
+function buildGroupedEntries(
   inventory: CardInstance[],
   deckUuids: string[],
-): InventoryEntry[] {
+): GroupedEntry[] {
   const deckSet = new Set(deckUuids);
+  const groups  = new Map<string, GroupedEntry>();
 
-  // Eine Karte pro Instanz — nie gruppieren, damit jede Karte einzeln anklickbar ist.
-  return inventory.map(inst => ({
-    uuid:   inst.uuid,
-    cardId: inst.cardId,
-    rarity: inst.rarity as Rarity,
-    inDeck: deckSet.has(inst.uuid),
-  }));
+  for (const inst of inventory) {
+    const inDeckThis = deckSet.has(inst.uuid);
+    const existing   = groups.get(inst.cardId);
+
+    if (!existing) {
+      groups.set(inst.cardId, {
+        cardId:            inst.cardId,
+        rarity:            inst.rarity as Rarity,
+        total:             1,
+        inDeck:            inDeckThis ? 1 : 0,
+        nextAvailableUuid: inDeckThis ? null : inst.uuid,
+      });
+    } else {
+      existing.total++;
+      if (inDeckThis) {
+        existing.inDeck++;
+      } else if (!existing.nextAvailableUuid) {
+        existing.nextAvailableUuid = inst.uuid;
+      }
+    }
+  }
+
+  return Array.from(groups.values());
 }
 
-function sortEntries(entries: InventoryEntry[], sort: SortKey): InventoryEntry[] {
+function sortGrouped(entries: GroupedEntry[], sort: SortKey): GroupedEntry[] {
   return [...entries].sort((a, b) => {
     const ca = CardDatabase.getById(a.cardId);
     const cb = CardDatabase.getById(b.cardId);
@@ -80,17 +98,17 @@ const DeckBuilderScreen: React.FC = () => {
   const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
   const [sortKey,      setSortKey]      = useState<SortKey>('rarity');
 
-  const allEntries = useMemo(
-    () => buildInventoryEntries(inventory, deck.uuids),
+  const allGrouped = useMemo(
+    () => buildGroupedEntries(inventory, deck.uuids),
     [inventory, deck.uuids]
   );
 
   const inventoryEntries = useMemo(() => {
     const filtered = rarityFilter === ''
-      ? allEntries
-      : allEntries.filter(e => rarityMajor(e.rarity) === rarityFilter);
-    return sortEntries(filtered, sortKey);
-  }, [allEntries, rarityFilter, sortKey]);
+      ? allGrouped
+      : allGrouped.filter(e => rarityMajor(e.rarity) === rarityFilter);
+    return sortGrouped(filtered, sortKey);
+  }, [allGrouped, rarityFilter, sortKey]);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -222,7 +240,7 @@ const DeckBuilderScreen: React.FC = () => {
           ))}
         </div>
 
-        {allEntries.length === 0 ? (
+        {allGrouped.length === 0 ? (
           <EmptyInventory />
         ) : inventoryEntries.length === 0 ? (
           <div className="db-empty">
@@ -233,12 +251,11 @@ const DeckBuilderScreen: React.FC = () => {
           <div className="db-inventory-grid">
             {inventoryEntries.map(entry => (
               <InventoryCard
-                key={entry.uuid}
+                key={entry.cardId}
                 entry={entry}
                 deck={deck}
                 inventory={inventory}
                 onAdd={handleAddCard}
-                onRemove={removeCard}
               />
             ))}
           </div>
@@ -333,42 +350,37 @@ const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onRemove }) => {
 // ── Inventar-Karte ────────────────────────────────────────────
 
 interface InventoryCardProps {
-  entry:     InventoryEntry;
+  entry:     GroupedEntry;
   deck:      Deck;
   inventory: CardInstance[];
   onAdd:     (uuid: string, cardId: string, rarity: Rarity) => void;
-  onRemove:  (uuid: string) => void;
 }
 
 const InventoryCard: React.FC<InventoryCardProps> = ({
-  entry, deck, inventory, onAdd, onRemove,
+  entry, deck, inventory, onAdd,
 }) => {
   const [imgErr, setImgErr] = useState(false);
-  const card = CardDatabase.getById(entry.cardId);
-  const rc   = RARITY_COLOR[entry.rarity] ?? '#9e9e9e';
+  const card    = CardDatabase.getById(entry.cardId);
+  const rc      = RARITY_COLOR[entry.rarity] ?? '#9e9e9e';
+  const allUsed = entry.nextAvailableUuid === null;
 
   let addBlocked = false;
   let blockTip   = '';
-  if (!entry.inDeck) {
-    const preview = DeckBuilder.previewAdd(entry.uuid, entry.cardId, entry.rarity, deck, inventory);
+  if (!allUsed) {
+    const preview = DeckBuilder.previewAdd(entry.nextAvailableUuid!, entry.cardId, entry.rarity, deck, inventory);
     if (preview.blocked) {
       addBlocked = true;
       blockTip   = RULE_LABEL[preview.reason ?? 'DECK_FULL'];
     }
   }
 
-  const clickable = entry.inDeck || !addBlocked;
-
-  const handleClick = () => {
-    if (entry.inDeck) onRemove(entry.uuid);
-    else if (!addBlocked) onAdd(entry.uuid, entry.cardId, entry.rarity);
-  };
+  const clickable = !allUsed && !addBlocked;
 
   return (
     <div
-      className={`inv-card ${entry.inDeck ? 'inv-card--in-deck' : addBlocked ? 'inv-card--blocked' : 'inv-card--available'}`}
+      className={`inv-card ${allUsed ? 'inv-card--in-deck' : addBlocked ? 'inv-card--blocked' : 'inv-card--available'}`}
       style={{ '--rc': rc } as React.CSSProperties}
-      onClick={clickable ? handleClick : undefined}
+      onClick={clickable ? () => onAdd(entry.nextAvailableUuid!, entry.cardId, entry.rarity) : undefined}
     >
       <div className="inv-card__img-wrap">
         {card && !imgErr ? (
@@ -383,7 +395,12 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           <div className="inv-card__fallback">🌑</div>
         )}
         <div className="inv-card__rarity" style={{ color: rc }}>{entry.rarity}</div>
-        {entry.inDeck && <div className="inv-card__in-deck-badge">✓</div>}
+        <div className="inv-card__count">×{entry.total}</div>
+        {entry.inDeck > 0 && (
+          <div className="inv-card__in-deck-badge">
+            ✓{entry.inDeck > 1 ? `×${entry.inDeck}` : ''}
+          </div>
+        )}
         {addBlocked && (
           <div className="inv-card__block-overlay">
             <span>{blockTip}</span>
