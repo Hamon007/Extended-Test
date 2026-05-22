@@ -228,11 +228,12 @@
       "faction": "herrschaft_der_hoelle",
       "factionLabel": "Herrschaft der Hölle",
       "stats": {
-        "atk": 3800,
-        "def": 3600,
-        "hp": 13500,
-        "mpCost": 80,
-        "crit": 12
+        "atk": 6500,
+        "def": 4200,
+        "hp": 15000,
+        "mpCost": 92,
+        "crit": 22,
+        "spd": 8
       },
       "skills": [
         {
@@ -278,7 +279,7 @@
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
-      "gachaWeight": 28
+      "gachaWeight": 18
     },
     {
       "id": "xal_zoth",
