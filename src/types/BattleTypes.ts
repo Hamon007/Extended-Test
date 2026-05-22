@@ -68,7 +68,8 @@ export interface BattleSide {
   mp:      number;
   mpMax:   number;
   mpRegen: number;     // MP-Regen pro Runde
-  hand:    BattleCard[];  // verfügbare Karten diese Runde
+  hand:    BattleCard[];  // sichtbare Karten (max. HAND_LIMIT)
+  deck:    BattleCard[];  // Nachzieh-Stapel (chronologisch); leer beim Gegner
 }
 
 /** Gesamter Battle-State */
@@ -107,10 +108,13 @@ export interface BattleLogEntry {
   text:      string;
 }
 
-// ── Konstanten ────────────────────────────────────────────────────────────────
+// ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────
 
-export const MAX_ROUNDS       = 10;
-export const PLAYER_HP_BASE   = 50000;   // Gesamt-HP des Spielers
-export const PLAYER_MP_MAX    = 100;
-export const PLAYER_MP_REGEN  = 30;      // MP-Regen pro Runde
-export const PLAYER_MP_START  = 100;     // MP zu Beginn des Kampfes
+export {
+  MAX_ROUNDS,
+  PLAYER_HP_BASE,
+  PLAYER_MP_MAX,
+  PLAYER_MP_REGEN,
+  PLAYER_MP_START,
+  HAND_LIMIT,
+} from '../config/GameConfig';

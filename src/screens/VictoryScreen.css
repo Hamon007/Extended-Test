@@ -128,6 +128,22 @@
 
 .reward-row--crystals { background: rgba(201,168,76,0.12); border: 1px solid #8a6520; animation-delay: 0.4s; }
 .reward-row--xp       { background: rgba(156,39,176,0.1);  border: 1px solid #6a1b9a; animation-delay: 0.5s; }
+.reward-row--levelup  {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  background: rgba(76,175,80,0.12);
+  border: 1px solid #2e7d32;
+  animation-delay: 0.6s;
+}
+.reward-levelup-details {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: #a5d6a7;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.5px;
+}
 
 @keyframes reward-slide-in {
   from { opacity: 0; transform: translateX(-12px); }

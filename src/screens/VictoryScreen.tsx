@@ -35,11 +35,23 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             <span className="reward-row__value">+{details.crystalsGained.toLocaleString('de-DE')}</span>
           </div>
 
-          {/* XP */}
-          {details.xpGained > 0 && (
+          {/* Account-XP */}
+          {(details.accountXpGained ?? 0) > 0 && (
             <div className="reward-row reward-row--xp">
-              <span className="reward-row__label">✦ Erfahrung</span>
-              <span className="reward-row__value">+{details.xpGained.toLocaleString('de-DE')}</span>
+              <span className="reward-row__label">✦ Account-XP</span>
+              <span className="reward-row__value">+{(details.accountXpGained ?? 0).toLocaleString('de-DE')}</span>
+            </div>
+          )}
+
+          {/* Level-Up */}
+          {details.accountLevelUp && (
+            <div className="reward-row reward-row--levelup">
+              <span className="reward-row__label">🎉 Level Up!</span>
+              <span className="reward-row__value">Account Lv. {details.accountLevelUp.newLevel}</span>
+              <div className="reward-levelup-details">
+                <span>Ausdauer: {details.accountLevelUp.newMaxStamina}</span>
+                <span>Mana: {details.accountLevelUp.newMaxMana.toLocaleString('de-DE')}</span>
+              </div>
             </div>
           )}
 

@@ -30,6 +30,7 @@ import {
   PLAYER_MP_MAX,
   PLAYER_MP_REGEN,
   PLAYER_MP_START,
+  HAND_LIMIT,
 } from '../types/BattleTypes';
 import { CardDatabase } from './CardDatabase';
 import { FusionSystem } from './FusionSystem';
@@ -80,7 +81,7 @@ function calcDamage(attackerAtk: number, defenderDef: number): number {
 function buildPlayerSide(
   instances: CardInstance[],
 ): BattleSide {
-  const hand: BattleCard[] = instances.map(inst => {
+  const cards: BattleCard[] = instances.map(inst => {
     const card: Card | undefined = CardDatabase.getById(inst.cardId);
     // Effektive Werte inkl. Fusion (Instanz-Rarität kann über Basis liegen).
     const stats = card ? FusionSystem.getEffectiveStats(card, inst.rarity) : undefined;
@@ -100,13 +101,15 @@ function buildPlayerSide(
     };
   });
 
+  // Hand zeigt nur HAND_LIMIT Karten; Rest wandert in den Nachzieh-Stapel.
   return {
     hp:      PLAYER_HP_BASE,
     hpMax:   PLAYER_HP_BASE,
     mp:      PLAYER_MP_START,
     mpMax:   PLAYER_MP_MAX,
     mpRegen: PLAYER_MP_REGEN,
-    hand,
+    hand:    cards.slice(0, HAND_LIMIT),
+    deck:    cards.slice(HAND_LIMIT),
   };
 }
 
@@ -134,6 +137,7 @@ function buildEnemySide(enemy: EnemyData): BattleSide {
     mpMax:   enemy.stats.mpMax,
     mpRegen: enemy.stats.mpRegen,
     hand,
+    deck:    [],   // Gegner zieht nicht nach
   };
 }
 
@@ -218,12 +222,15 @@ function playPlayerCard(
 
   const damage = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, damageMultiplier));
 
-  // Hand aktualisieren
-  const newHand = state.player.hand.map((c, i) =>
-    i === cardIdx ? { ...c, played: true } : c
-  );
+  // Gespielte Karte aus der Hand entfernen und aus dem Stapel nachziehen,
+  // bis die Hand wieder HAND_LIMIT Karten (oder weniger, falls Stapel leer) hat.
+  const handWithoutCard = state.player.hand.filter((_, i) => i !== cardIdx);
+  const drawCount       = Math.max(0, HAND_LIMIT - handWithoutCard.length);
+  const drawn           = state.player.deck.slice(0, drawCount);
+  const newHand         = [...handWithoutCard, ...drawn];
+  const newDeck         = state.player.deck.slice(drawCount);
 
-  const newPlayer = spendMP({ ...state.player, hand: newHand }, card.mpCost);
+  const newPlayer = spendMP({ ...state.player, hand: newHand, deck: newDeck }, card.mpCost);
   const newEnemy  = applyDamage(state.enemy, damage);
 
   const entry = log(

@@ -3,6 +3,14 @@
  * ─────────────────────────────────────────────────────────────
  * Reine Funktionen — kein State, kein React, kein Timer.
  * Berechnet Combo-Schaden, Synergy-Bonus und Element-Vorteil.
+ *
+ * ⚠ DESIGN-STATUS: MVP-Implementierung, eingefroren bis Playtest.
+ *   Die aktuelle `hasTagSynergy`-Logik behandelt alle Tags gleich
+ *   (Fraktions-Tags wie "Shadow" = Ketten-Tags wie "DARK_CHAIN").
+ *   Das ist bewusste Vereinfachung — nicht das Zieldesign.
+ *
+ *   Zieldesign (drei Stufen): → docs/combo-design.md
+ *   Nicht ändern bis erster Playtest abgeschlossen.
  * ─────────────────────────────────────────────────────────────
  */
 
@@ -43,15 +51,23 @@ function hasElementAdvantage(
 // ── Synergy-Tag-Check ─────────────────────────────────────────
 
 /**
- * Prüft ob die aktuelle Karte mindestens einen Combo-Tag
- * mit der vorherigen Karte teilt.
+ * MVP: prüft ob prevCard und currentCard irgendeinen gemeinsamen Tag teilen.
+ *
+ * BEKANNTE VEREINFACHUNG: Fraktions-Tags ("Shadow", "Beast" …) und
+ * gezielte Ketten-Tags ("DARK_CHAIN", "WARRIOR_SYNC" …) werden gleich
+ * behandelt. Das Zieldesign sieht unterschiedliche Boni vor.
+ * → Vollständige Spezifikation: docs/combo-design.md
+ *
+ * NICHT EINGEBAUT (noch): card.synergies — explizite Kartenpaare
+ * (z.B. Azazel + Satan = Hölleneid). Die Daten existieren in cards.json,
+ * werden aber hier nicht ausgewertet.
  */
 function hasTagSynergy(
   prevCard:    BattleCard | null,
   currentCard: BattleCard,
 ): boolean {
   if (!prevCard?.card || !currentCard.card) return false;
-  const prevTags    = new Set(prevCard.card.combos.map(c => c.tag));
+  const prevTags = new Set(prevCard.card.combos.map(c => c.tag));
   return currentCard.card.combos.some(c => prevTags.has(c.tag));
 }
 

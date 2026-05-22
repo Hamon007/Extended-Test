@@ -10,14 +10,21 @@ import type { GachaState } from '../types/GachaTypes';
 import { STARTING_CRYSTALS } from '../types/GachaTypes';
 import type { Deck } from '../types/DeckTypes';
 import { createEmptyDeck } from './DeckBuilderHelpers';
+import { STARTING_CRYSTAL_CARDS } from '../config/GameConfig';
+import type { AccountState } from '../types/AccountTypes';
+import {
+  createDefaultAccountState,
+  normalizeAccountState,
+} from './AccountProgressionService';
 
 // ── Storage-Schlüssel ─────────────────────────────────────────
 
 const KEYS = {
-  gacha:     'ci_gacha_state',
-  deck:      'ci_deck_main',
-  settings:  'ci_settings',
-  lastLogin: 'ci_last_login',
+  gacha:    'ci_gacha_state',
+  deck:     'ci_deck_main',
+  settings: 'ci_settings',
+  lastLogin:'ci_last_login',
+  account:  'ci_account_state',
 } as const;
 
 // ── Generische Helfer ─────────────────────────────────────────
@@ -45,10 +52,11 @@ function retrieve<T>(key: string): T | null {
 
 function defaultGachaState(): GachaState {
   return {
-    crystals:    STARTING_CRYSTALS,
-    pityCounter: 0,
-    totalPulls:  0,
-    inventory:   [],
+    crystals:     STARTING_CRYSTALS,
+    pityCounter:  0,
+    totalPulls:   0,
+    inventory:    [],
+    crystalCards: { ...STARTING_CRYSTAL_CARDS },
   };
 }
 
@@ -62,11 +70,20 @@ function loadGachaState(): GachaState {
     console.log('[SaveService] Neuen Gacha-State angelegt. Startkristalle:', STARTING_CRYSTALS);
     return fresh;
   }
+  const inventory = Array.isArray(saved.inventory)
+    ? saved.inventory.map(inst => ({
+        ...inst,
+        level: inst.level ?? 1,
+        xp:    inst.xp    ?? 0,
+      }))
+    : [];
+
   return {
-    crystals:    STARTING_CRYSTALS, // Alpha: immer volle Kristalle beim Laden
-    pityCounter: saved.pityCounter ?? 0,
-    totalPulls:  saved.totalPulls  ?? 0,
-    inventory:   Array.isArray(saved.inventory) ? saved.inventory : [],
+    crystals:     STARTING_CRYSTALS, // Alpha: immer volle Kristalle beim Laden
+    pityCounter:  saved.pityCounter ?? 0,
+    totalPulls:   saved.totalPulls  ?? 0,
+    inventory,
+    crystalCards: saved.crystalCards ?? { ...STARTING_CRYSTAL_CARDS },
   };
 }
 
@@ -84,7 +101,7 @@ function loadDeck(): Deck {
   return {
     id:      saved.id      ?? 'deck_main',
     name:    saved.name    ?? 'Mein Deck',
-    uuids:   Array.isArray(saved.uuids) ? saved.uuids.slice(0, 5) : [],
+    uuids:   Array.isArray(saved.uuids) ? saved.uuids.slice(0, 10) : [],
     savedAt: saved.savedAt ?? 0,
   };
 }
@@ -95,6 +112,27 @@ function saveDeck(deck: Deck): void {
 
 function deleteDeck(): void {
   localStorage.removeItem(KEYS.deck);
+}
+
+// ── Account-State API ─────────────────────────────────────────
+
+function loadAccountState(): AccountState {
+  try {
+    const raw = localStorage.getItem(KEYS.account);
+    if (!raw) {
+      const fresh = createDefaultAccountState();
+      persist(KEYS.account, fresh);
+      return fresh;
+    }
+    return normalizeAccountState(JSON.parse(raw) as Partial<AccountState>);
+  } catch (e) {
+    console.warn('[SaveService] Account-State Lesen fehlgeschlagen:', e);
+    return createDefaultAccountState();
+  }
+}
+
+function saveAccountState(state: AccountState): void {
+  persist(KEYS.account, state);
 }
 
 // ── Letzer Login ──────────────────────────────────────────────
@@ -118,6 +156,8 @@ export const SaveService = {
   loadDeck,
   saveDeck,
   deleteDeck,
+  loadAccountState,
+  saveAccountState,
   updateLastLogin,
   resetAll,
 };

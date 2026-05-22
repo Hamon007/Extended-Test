@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
+import { EnergyService } from '../services/EnergyService';
+import { AccountProgressionService } from '../services/AccountProgressionService';
+import type { AccountState } from '../types/AccountTypes';
 import { CardDatabase } from '../services/CardDatabase';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -72,6 +75,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [tipIndex,  setTipIndex]  = useState(0);
   const [npcIndex,  setNpcIndex]  = useState(0);
   const [deckStats, setDeckStats] = useState<{ atk: number; def: number } | null>(null);
+  const [account,   setAccount]   = useState<AccountState>(() => SaveService.loadAccountState());
+  const [energy,    setEnergy]    = useState(() => EnergyService.load());
+  const [energyMax, setEnergyMax] = useState(() => EnergyService.getMax());
 
   // Countdown-Tick
   useEffect(() => {
@@ -89,6 +95,18 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   useEffect(() => {
     const id = setInterval(() => setNpcIndex(i => (i + 1) % NPC_IMAGES.length), 5000);
     return () => clearInterval(id);
+  }, []);
+
+  // Account + Energy beim Erscheinen und bei Fokus-Rückkehr aktualisieren
+  useEffect(() => {
+    const refresh = () => {
+      setAccount(SaveService.loadAccountState());
+      setEnergy(EnergyService.load());
+      setEnergyMax(EnergyService.getMax());
+    };
+    refresh();
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
   }, []);
 
   // Deck-Stats laden
@@ -137,33 +155,59 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
       {/* ── Ressourcen-Balken ── */}
       <div className="main-resources">
         <div className="main-res-row">
+          {/* Ausdauer — aus EnergyService (dynamisches Max aus Account-Level) */}
           <div className="main-res-item">
             <span className="main-res-label">Ausdauer</span>
             <div className="main-res-bar">
-              <div className="main-res-bar__fill" style={{ width: '100%' }} />
+              <div
+                className="main-res-bar__fill"
+                style={{ width: `${energyMax > 0 ? (energy.energy / energyMax) * 100 : 0}%` }}
+              />
             </div>
-            <span className="main-res-value">100/100</span>
+            <span className="main-res-value">{energy.energy}/{energyMax}</span>
           </div>
+          {/* EXP — Account-XP-Fortschritt */}
           <div className="main-res-item">
-            <span className="main-res-label">EXP</span>
+            <span className="main-res-label">
+              Lv.{account.level} · EXP
+            </span>
             <div className="main-res-bar main-res-bar--exp">
-              <div className="main-res-bar__fill main-res-bar__fill--exp" style={{ width: '0%' }} />
+              <div
+                className="main-res-bar__fill main-res-bar__fill--exp"
+                style={{
+                  width: `${AccountProgressionService.xpToNextLevel(account.level) > 0
+                    ? (account.xp / AccountProgressionService.xpToNextLevel(account.level)) * 100
+                    : 0}%`,
+                }}
+              />
             </div>
-            <span className="main-res-value">0%</span>
+            <span className="main-res-value">
+              {account.xp.toLocaleString('de-DE')} / {AccountProgressionService.xpToNextLevel(account.level).toLocaleString('de-DE')}
+            </span>
           </div>
         </div>
         <div className="main-res-row">
-          <div className="main-res-item">
-            <span className="main-res-label">MP</span>
-            <div className="main-res-bar">
-              <div className="main-res-bar__fill main-res-bar__fill--mp" style={{ width: '100%' }} />
-            </div>
-            <span className="main-res-value">100/100</span>
-          </div>
+          {/* Mana — Account-Mana */}
           <div className="main-res-item">
             <span className="main-res-label">Mana</span>
-            <div className="main-res-bar main-res-bar--mana" />
-            <span className="main-res-value main-res-value--mana">500</span>
+            <div className="main-res-bar main-res-bar--mana">
+              <div
+                className="main-res-bar__fill main-res-bar__fill--mp"
+                style={{ width: `${account.maxMana > 0 ? (account.mana / account.maxMana) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="main-res-value">{account.mana.toLocaleString('de-DE')}/{account.maxMana.toLocaleString('de-DE')}</span>
+          </div>
+          {/* Tränke */}
+          <div className="main-res-item">
+            <span className="main-res-label">Tränke</span>
+            <div className="main-res-bar" style={{ background: 'none' }}>
+              <span style={{ fontSize: 18, letterSpacing: 4 }}>
+                {Array.from({ length: energy.potions }).map((_, i) => <span key={i}>🧪</span>)}
+                {energy.potions === 0 && <span style={{ fontSize: 11, color: '#666' }}>—</span>}
+              </span>
+            </div>
+            <span className="main-res-value">{energy.potions}×</span>
           </div>
         </div>
       </div>
@@ -199,8 +243,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
                 <div className="main-profile-frame__card-title">Richter der sterbenden Sonne</div>
               </div>
             </div>
-            <div className="main-profile-frame__stars">★★★★★</div>
-            <div className="main-profile-frame__name">Azazel</div>
           </div>
         </div>
 

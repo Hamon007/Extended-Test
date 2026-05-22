@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { CardDatabase } from '../services/CardDatabase';
 import { SaveService } from '../services/SaveService';
-import { RARITY_COLOR } from '../types/Card';
-import type { Card } from '../types/Card';
+import { RARITY_COLOR, RARITY_MAJORS, rarityMajor } from '../types/Card';
+import type { Card, Rarity } from '../types/Card';
+import CardDetailModal from '../components/CardDetailModal';
 import './CardCollectionScreen.css';
 
 interface CardCollectionScreenProps {
@@ -16,68 +17,11 @@ const TYPE_FALLBACK: Record<string, string> = {
   combo_builder:'🔗',
 };
 
-// ── Kartendetail-Overlay ──────────────────────────────────────
-
-const CardDetail: React.FC<{ card: Card; onClose: () => void }> = ({ card, onClose }) => {
-  const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
-  const stats = card.stats as { atk?: number; def?: number; mpCost?: number };
-
-  return (
-    <div className="card-detail-backdrop" onClick={onClose}>
-      <div className="card-detail" onClick={e => e.stopPropagation()}>
-
-        {card.image ? (
-          <div className="card-detail__frame" style={{ borderColor: rarityColor }}>
-            <div className="card-detail__frame-number">
-              {card.number ? `${card.number}.` : ''}
-            </div>
-            <div className="card-detail__frame-compass">✦</div>
-            <img className="card-detail__frame-img" src={card.image} alt={card.name} />
-          </div>
-        ) : (
-          <div className="card-detail__no-img">
-            <span>{TYPE_FALLBACK[card.type] ?? '⚔️'}</span>
-          </div>
-        )}
-
-        <div className="card-detail__name">{card.name.toUpperCase()}</div>
-        {(card as { title?: string }).title && (
-          <div className="card-detail__subtitle">{(card as { title?: string }).title}</div>
-        )}
-
-        {(card as { quote?: string }).quote && (
-          <div className="card-detail__quote-box">
-            „{(card as { quote?: string }).quote}"
-          </div>
-        )}
-
-        <div className="card-detail__stats">
-          {[
-            { label: 'Seltenheit', value: card.rarity, color: rarityColor },
-            { label: 'Nummer',     value: card.number ? `#${card.number}` : '—' },
-            { label: 'ATK',        value: stats.atk ? stats.atk.toLocaleString('de-DE') : '—' },
-            { label: 'DEF',        value: stats.def ? stats.def.toLocaleString('de-DE') : '—' },
-            { label: 'MP-Kosten',  value: stats.mpCost ?? '—' },
-          ].map(row => (
-            <div key={row.label} className="card-detail__stat-row">
-              <span className="card-detail__stat-label">{row.label.toUpperCase()}</span>
-              <span className="card-detail__stat-value" style={row.color ? { color: row.color } : undefined}>
-                {row.value}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <button className="card-detail__back" onClick={onClose}>◄ Zurück</button>
-      </div>
-    </div>
-  );
-};
-
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
 
   // Eigene Karten aus Inventar laden
   const ownedMap = useMemo(() => {
@@ -90,17 +34,18 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   }, []);
 
   const { withArtwork, withoutArtwork } = useMemo(() => {
-    const all = CardDatabase.getAll().slice().sort((a, b) =>
-      a.name.localeCompare(b.name, 'de')
-    );
+    const all = CardDatabase.getAll().slice()
+      .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter)
+      .sort((a, b) => a.name.localeCompare(b.name, 'de'));
     return {
       withArtwork:    all.filter(c => !!c.image),
       withoutArtwork: all.filter(c => !c.image),
     };
-  }, []);
+  }, [rarityFilter]);
 
-  const totalCards = withArtwork.length + withoutArtwork.length;
+  const totalCards = CardDatabase.count();
   const ownedUnique = ownedMap.size;
+  const visibleCount = withArtwork.length + withoutArtwork.length;
 
   return (
     <div className="card-col-screen">
@@ -112,8 +57,35 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
         <span className="card-col-header__count">{ownedUnique} / {totalCards}</span>
       </div>
 
+      {/* ── Seltenheits-Filter ── */}
+      <div className="card-col-filter">
+        <button
+          className={`card-col-filter__chip ${rarityFilter === '' ? 'card-col-filter__chip--active' : ''}`}
+          onClick={() => setRarityFilter('')}
+        >
+          Alle
+        </button>
+        {RARITY_MAJORS.map(r => (
+          <button
+            key={r}
+            className={`card-col-filter__chip ${rarityFilter === r ? 'card-col-filter__chip--active' : ''}`}
+            style={rarityFilter === r ? { color: RARITY_COLOR[r], borderColor: RARITY_COLOR[r] } : undefined}
+            onClick={() => setRarityFilter(r)}
+          >
+            {r}
+          </button>
+        ))}
+      </div>
+
       {/* ── Scrollbarer Bereich ── */}
       <div className="card-col-scroll">
+
+        {visibleCount === 0 && (
+          <div className="card-col-empty">
+            <span>🔍</span>
+            <p>Keine Karten in dieser Seltenheitsstufe.</p>
+          </div>
+        )}
 
         {withArtwork.length > 0 && (
           <div className="card-col-grid">
@@ -181,9 +153,8 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
 
       </div>
 
-      {selectedCard && (
-        <CardDetail card={selectedCard} onClose={() => setSelectedCard(null)} />
-      )}
+      {/* Vollständiges Kartendetail inkl. Fähigkeiten & Synergien */}
+      <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} />
     </div>
   );
 };

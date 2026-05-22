@@ -19,6 +19,7 @@ export default defineConfig({
         'icon-192.png',
         'icon-512.png',
         'icon-maskable-512.png',
+        'assets/title_bg.jpg',   // TitleScreen-Hintergrundbild
       ],
 
       manifest: {
@@ -81,30 +82,79 @@ export default defineConfig({
         skipWaiting:           true,
 
         runtimeCaching: [
+          // ── Kartenbilder ───────────────────────────────────────
+          // StaleWhileRevalidate: sofortige Antwort aus Cache, dann
+          // im Hintergrund aktualisieren (Karten können upgedatet werden).
           {
-            urlPattern: /\/assets\/cards\/.+\.png$/,
+            urlPattern: /\/assets\/cards\/.+\.(png|jpg|jpeg|webp)$/,
             handler:    'StaleWhileRevalidate',
             options: {
               cacheName: 'card-images',
               expiration: {
-                maxEntries:    30,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
+                maxEntries:    60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,   // 30 Tage
               },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+
+          // ── Gegnerbilder ───────────────────────────────────────
           {
-            urlPattern: /\/assets\/enemies\/.+\.png$/,
+            urlPattern: /\/assets\/enemies\/.+\.(png|jpg|jpeg|webp)$/,
             handler:    'CacheFirst',
             options: {
               cacheName: 'enemy-images',
               expiration: {
-                maxEntries:    20,
-                maxAgeSeconds: 60 * 60 * 24 * 7,
+                maxEntries:    30,
+                maxAgeSeconds: 60 * 60 * 24 * 7,    // 7 Tage
               },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+
+          // ── UI-Elemente (Buttons, Icons, Rahmen, Overlays) ────
+          {
+            urlPattern: /\/assets\/ui\/.+\.(png|jpg|jpeg|webp|svg)$/,
+            handler:    'CacheFirst',
+            options: {
+              cacheName: 'ui-assets',
+              expiration: {
+                maxEntries:    60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,   // 30 Tage
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+
+          // ── Hintergrundbilder ──────────────────────────────────
+          {
+            urlPattern: /\/assets\/backgrounds\/.+\.(png|jpg|jpeg|webp|svg)$/,
+            handler:    'CacheFirst',
+            options: {
+              cacheName: 'background-images',
+              expiration: {
+                maxEntries:    20,
+                maxAgeSeconds: 60 * 60 * 24 * 30,   // 30 Tage
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+
+          // ── Charakter-Artwork (Gilde, Profil, Story) ──────────
+          {
+            urlPattern: /\/assets\/characters\/.+\.(png|jpg|jpeg|webp|svg)$/,
+            handler:    'CacheFirst',
+            options: {
+              cacheName: 'character-images',
+              expiration: {
+                maxEntries:    50,
+                maxAgeSeconds: 60 * 60 * 24 * 30,   // 30 Tage
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+
+          // ── Google Fonts ───────────────────────────────────────
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler:    'StaleWhileRevalidate',
@@ -117,7 +167,7 @@ export default defineConfig({
               cacheName: 'google-fonts-webfonts',
               expiration: {
                 maxEntries:    20,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
+                maxAgeSeconds: 60 * 60 * 24 * 365,  // 1 Jahr
               },
               cacheableResponse: { statuses: [0, 200] },
             },

@@ -7,7 +7,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { EnergyService, type EnergyState, MAX_BATTLE_ENERGY } from '../services/EnergyService';
+import { EnergyService, type EnergyState } from '../services/EnergyService';
 
 export interface EnergyStore extends EnergyState {
   max:       number;
@@ -18,6 +18,7 @@ export interface EnergyStore extends EnergyState {
 
 export function useEnergyStore(): EnergyStore {
   const [state, setState] = useState<EnergyState>(() => EnergyService.load());
+  const [max,   setMax]   = useState<number>(() => EnergyService.getMax());
 
   const consume = useCallback(() => {
     const next = EnergyService.consume();
@@ -34,7 +35,8 @@ export function useEnergyStore(): EnergyStore {
 
   const refresh = useCallback(() => {
     setState(EnergyService.load());
+    setMax(EnergyService.getMax()); // aktualisiert max nach Level-Up
   }, []);
 
-  return { ...state, max: MAX_BATTLE_ENERGY, consume, usePotion, refresh };
+  return { ...state, max, consume, usePotion, refresh };
 }

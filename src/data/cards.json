@@ -83,7 +83,8 @@
         "def": 2200,
         "hp": 8600,
         "mpCost": 70,
-        "spd": 9
+        "spd": 9,
+        "crit": 16
       },
       "skills": [
         {
@@ -118,6 +119,10 @@
         {
           "cardId": "azgaroth",
           "description": "Schöpfer und Trickster: Azgaroths passive Kraft wird verdoppelt."
+        },
+        {
+          "cardId": "fenrir",
+          "description": "Vater der Bestie: Fenrir, Lokis Wolfssohn, kämpft an seiner Seite — beide erhalten +20% ATK."
         }
       ],
       "awakening": "loki_crowned",
@@ -199,6 +204,10 @@
         {
           "cardId": "azgaroth",
           "description": "Schöpfer und Gekrönter Trickster: Azgaroths passive Kraft wird verdreifacht."
+        },
+        {
+          "cardId": "hel",
+          "description": "Bande der Neun Welten: Loki und seine Tochter Hel teilen göttliches Blut — beide +18% ATK, Hels Wiederbelebung kostet 20 MP weniger."
         }
       ],
       "image": "/assets/cards/loki.png",
@@ -219,11 +228,12 @@
       "faction": "herrschaft_der_hoelle",
       "factionLabel": "Herrschaft der Hölle",
       "stats": {
-        "atk": 3800,
-        "def": 3600,
-        "hp": 13500,
-        "mpCost": 80,
-        "crit": 12
+        "atk": 6500,
+        "def": 4200,
+        "hp": 15000,
+        "mpCost": 92,
+        "crit": 22,
+        "spd": 8
       },
       "skills": [
         {
@@ -269,7 +279,7 @@
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
-      "gachaWeight": 28
+      "gachaWeight": 18
     },
     {
       "id": "xal_zoth",
@@ -323,6 +333,10 @@
         {
           "cardId": "azgaroth",
           "description": "Ursache und Nichts: Xal'Zoths Aura-Schaden erhöht sich um 50%."
+        },
+        {
+          "cardId": "tiamat",
+          "description": "Urtiefen-Pakt: Mit Tiamat, der Urmutter des Chaos, verstärkt sich Xal’Zoths Leere-Schaden um 25% gegen alle Feinde."
         }
       ],
       "image": "/assets/cards/xal_zoth.png",
@@ -337,16 +351,16 @@
       "name": "Azgaroth",
       "title": "Erster unter den Unmächten, Schöpfer der Finsternis",
       "quote": "Aus dem Nichts erschuf ich das Sein. Aus dem Licht gebar ich den Schatten. Ich bin der Anfang, und ich bin das Ende.",
-      "rarity": "LR",
+      "rarity": "MR",
       "element": "void",
       "type": "vanguard",
       "faction": "die_unmacht",
       "factionLabel": "Die Unmacht",
       "stats": {
-        "atk": 7800,
-        "def": 5400,
-        "hp": 18000,
-        "mpCost": 100,
+        "atk": 6200,
+        "def": 3800,
+        "hp": 13000,
+        "mpCost": 90,
         "crit": 25,
         "spd": 7
       },
@@ -406,9 +420,8 @@
       ],
       "image": "/assets/cards/azgaroth.png",
       "tradeable": false,
-      "globalLimit": 1000,
       "deckLimit": 1,
-      "gachaWeight": 5
+      "gachaWeight": 18
     },
     {
       "id": "jeanne_darc",
@@ -426,7 +439,8 @@
         "def": 4200,
         "hp": 14000,
         "mpCost": 75,
-        "spd": 8
+        "spd": 8,
+        "crit": 12
       },
       "skills": [
         {
@@ -462,6 +476,10 @@
         {
           "cardId": "leonidas",
           "description": "Geist der Krieger: Beide erhalten +30% DEF wenn gemeinsam im Feld."
+        },
+        {
+          "cardId": "valkyrie_eira",
+          "description": "Schwur der Schildmaiden: Jeanne und die Walküre Eira führen das Heer — alle Verbündeten erhalten 1 Runde Debuff-Immunität."
         }
       ],
       "image": "/assets/cards/jeanne_darc.png",
@@ -497,7 +515,7 @@
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
-          "damage": 3.0,
+          "damage": 3,
           "effectTag": "execute"
         }
       ],
@@ -523,6 +541,10 @@
         {
           "cardId": "jeanne_darc",
           "description": "Sonne und Flamme: Beide erhalten +20% ATK und +10% Krit-Rate."
+        },
+        {
+          "cardId": "thunder_bird",
+          "description": "Herr der Lüfte: Unter Garudas Schwingen greift der Donnervogel mit +30% Geschwindigkeit an."
         }
       ],
       "image": "/assets/cards/garuda.png",
@@ -547,7 +569,8 @@
         "def": 5200,
         "hp": 16000,
         "mpCost": 70,
-        "spd": 6
+        "spd": 6,
+        "crit": 14
       },
       "skills": [
         {
@@ -611,7 +634,8 @@
         "def": 3800,
         "hp": 12000,
         "mpCost": 72,
-        "spd": 7
+        "spd": 7,
+        "crit": 10
       },
       "skills": [
         {
@@ -646,6 +670,10 @@
         {
           "cardId": "baron_samedi",
           "description": "Todesherrscher: Beide erhalten +40% Effektstärke für Tod-Fähigkeiten."
+        },
+        {
+          "cardId": "loki",
+          "description": "Tochter des Tricksters: An Lokis Seite herrscht Hel über beide Welten — ihre Wiederbelebung wirkt zu 100% statt 50%."
         }
       ],
       "image": "/assets/cards/hel.png",
@@ -670,7 +698,8 @@
         "def": 3200,
         "hp": 11500,
         "mpCost": 68,
-        "spd": 8
+        "spd": 8,
+        "crit": 12
       },
       "skills": [
         {
@@ -707,6 +736,10 @@
         {
           "cardId": "hel",
           "description": "Stille Herrscher: Eingefrorene Feinde können auch nicht wiederbelebt werden."
+        },
+        {
+          "cardId": "koschei",
+          "description": "Frostgrab-Allianz: Yuki-Onna und Koschei lassen das Schlachtfeld erfrieren — gefrorene Feinde erleiden +20% Schaden."
         }
       ],
       "image": "/assets/cards/yuki_onna.png",
@@ -731,7 +764,8 @@
         "def": 3400,
         "hp": 11800,
         "mpCost": 72,
-        "spd": 9
+        "spd": 9,
+        "crit": 13
       },
       "skills": [
         {
@@ -766,6 +800,10 @@
         {
           "cardId": "hel",
           "description": "Todesherrscher: Beide erhalten +40% Effektstärke für Tod-Fähigkeiten."
+        },
+        {
+          "cardId": "bone_king",
+          "description": "Tanz der Gebeine: Der Knochenkönig erhebt sich auf Barons Ruf — beschworene Untote erhalten +25% ATK."
         }
       ],
       "image": "/assets/cards/baron_samedi.png",
@@ -790,7 +828,8 @@
         "def": 4800,
         "hp": 15500,
         "mpCost": 82,
-        "spd": 5
+        "spd": 5,
+        "crit": 15
       },
       "skills": [
         {
@@ -827,6 +866,10 @@
         {
           "cardId": "leonidas",
           "description": "Krieger-Rivalen: Beide erhalten +20% ATK, -10% DEF (Rivalen-Effekt)."
+        },
+        {
+          "cardId": "wendigo",
+          "description": "Blutmond-Jagd: Unter dem Blutmond jagt Gor’Thul mit dem Wendigo — beide heilen 10% HP pro besiegtem Feind."
         }
       ],
       "image": "/assets/cards/gor_thul.png",
@@ -889,6 +932,10 @@
         {
           "cardId": "garuda",
           "description": "Sturmherrscher: Gemeinsam erhöhen sich alle Blitz/Wind-Effekte um 35%."
+        },
+        {
+          "cardId": "raijin",
+          "description": "Sturmhimmel-Bund: Drachen-Shogun und Donnergott Raijin entfesseln einen Kettenblitz — Blitz-Schaden trifft alle Feinde."
         }
       ],
       "image": "/assets/cards/kaizen_ryujin.png",
@@ -948,6 +995,10 @@
         {
           "cardId": "leonidas",
           "description": "Gegner aus der Antike: Beide erhalten +25% ATK gegen mythologische Einheiten."
+        },
+        {
+          "cardId": "arachne",
+          "description": "Schwestern der Verfluchten: Medousa und Arachne, beide von Athena verflucht, verstärken Versteinerung und Netz-Effekte um 20%."
         }
       ],
       "image": "/assets/cards/medousa_basileia.png",
@@ -1047,7 +1098,7 @@
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
-          "damage": 3.0,
+          "damage": 3,
           "effectTag": "atk_boost"
         }
       ],
@@ -1073,6 +1124,10 @@
         {
           "cardId": "jeanne_darc",
           "description": "Licht-Allianz: Beide erhalten +25% ATK."
+        },
+        {
+          "cardId": "golden_phoenix",
+          "description": "Zyklus der Wiedergeburt: Khepri und der Goldene Phönix beleben einmal pro Kampf eine gefallene Karte mit 30% HP wieder."
         }
       ],
       "artwork_key": "khepri_base",
@@ -1134,6 +1189,10 @@
         {
           "cardId": "nergal",
           "description": "Himmel und Unterwelt: Gegensätzliche Kräfte — beide erhalten +20% ATK."
+        },
+        {
+          "cardId": "gilgamesh",
+          "description": "Zorn der Verschmähten: Ishtar und Gilgamesh — Liebe und Hochmut — ihr alter Konflikt entfesselt +20% Schaden, solange beide im Feld sind."
         }
       ],
       "artwork_key": "ishtar_base",
@@ -1195,6 +1254,10 @@
         {
           "cardId": "shuten_doji",
           "description": "Hungerfürsten: Beide erhalten +15% Lebenssauger-Effekt."
+        },
+        {
+          "cardId": "fenrir",
+          "description": "Verderber der Weltesche: Níðhöggr und Fenrir, beide Boten von Ragnarök, mehren ihren Schaden um 25% mit jeder besiegten Karte."
         }
       ],
       "artwork_key": "nidhoggr_base",
@@ -1220,7 +1283,8 @@
         "def": 4800,
         "hp": 15000,
         "mpCost": 80,
-        "spd": 5
+        "spd": 5,
+        "crit": 14
       },
       "skills": [
         {
@@ -1256,6 +1320,10 @@
         {
           "cardId": "nergal",
           "description": "Herrscher der Unterwelt: Beide erhalten +30% Schadensbonus gegen Licht-Einheiten."
+        },
+        {
+          "cardId": "hercules",
+          "description": "Zwölfte Aufgabe: Cerberus erkennt Herakles als seinen Bezwinger — kämpfen sie zusammen, kann kein Feind fliehen oder wiederbeleben."
         }
       ],
       "artwork_key": "cerberus_base",
@@ -1281,7 +1349,8 @@
         "def": 5200,
         "hp": 16000,
         "mpCost": 82,
-        "spd": 4
+        "spd": 4,
+        "crit": 15
       },
       "skills": [
         {
@@ -1318,6 +1387,10 @@
         {
           "cardId": "medousa_basileia",
           "description": "Labyrinth-Herrscher: Beide erhalten +25% ATK gegen humanoide Feinde."
+        },
+        {
+          "cardId": "scylla",
+          "description": "Ungeheuer von Hellas: Minotauros und Scylla, Schrecken der griechischen Sagen, erhöhen ihren Schaden gegen Helden-Karten um 25%."
         }
       ],
       "artwork_key": "minotauros_basileus_base",
@@ -1380,6 +1453,10 @@
         {
           "cardId": "garuda",
           "description": "Herrscher der Lüfte: Beide erhalten +30% Wind-Schaden."
+        },
+        {
+          "cardId": "tiamat",
+          "description": "Diebe des Schicksals: Anzu und Tiamat, Rebellen gegen die Götterordnung, stehlen pro Runde 15 MP vom Feind."
         }
       ],
       "artwork_key": "anzu_base",
@@ -1442,6 +1519,10 @@
         {
           "cardId": "pele",
           "description": "Vulkan-Allianz: Beide erhalten +25% Feuer-Schaden und +15% Krit-Chance."
+        },
+        {
+          "cardId": "flame_knight",
+          "description": "Lodernde Allianz: Kagutsuchi entfacht den Flammenritter — alle Brand-Effekte verursachen 30% mehr Schaden."
         }
       ],
       "artwork_key": "kagutsuchi_base",
@@ -1478,7 +1559,7 @@
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
-          "damage": 3.0,
+          "damage": 3,
           "effectTag": "stun"
         }
       ],
@@ -1505,6 +1586,10 @@
         {
           "cardId": "kaizen_ryujin",
           "description": "Sturmgötter vereint: Alle Blitz/Wind-Effekte +35%."
+        },
+        {
+          "cardId": "storm_herald",
+          "description": "Himmelstrommeln: Raijin und der Sturmherold lassen Gewitter niedergehen — die Betäubungs-Chance steigt um 20%."
         }
       ],
       "artwork_key": "raijin_base",
@@ -1530,7 +1615,8 @@
         "def": 4600,
         "hp": 14500,
         "mpCost": 82,
-        "spd": 4
+        "spd": 4,
+        "crit": 13
       },
       "skills": [
         {
@@ -1566,6 +1652,10 @@
         {
           "cardId": "scylla",
           "description": "Tiefseemächte: Beide erhalten +30% Wasser-Schaden und +20% DEF."
+        },
+        {
+          "cardId": "tide_caller",
+          "description": "Urmeer-Verschlinger: Cipactli und der Gezeitenrufer beherrschen die Tiefe — Wasser-Schaden ignoriert 30% DEF."
         }
       ],
       "artwork_key": "cipactli_base",
@@ -1656,7 +1746,8 @@
         "def": 5000,
         "hp": 16500,
         "mpCost": 80,
-        "spd": 5
+        "spd": 5,
+        "crit": 12
       },
       "skills": [
         {
@@ -1666,7 +1757,7 @@
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
-          "damage": 2.0,
+          "damage": 2,
           "effectTag": "freeze"
         }
       ],
@@ -1757,6 +1848,10 @@
         {
           "cardId": "nidhoggr",
           "description": "Weltenzerstörer: Beide erhalten +20% Schaden wenn Feind weniger als 30% HP hat."
+        },
+        {
+          "cardId": "morrigan",
+          "description": "Fomorischer Pakt: Balors vernichtendes Auge und Morrígans Kriegsgeschrei richten Feinde unter 30% HP sofort hin."
         }
       ],
       "artwork_key": "balor_base",
@@ -2772,7 +2867,7 @@
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
-          "damage": 3.0,
+          "damage": 3,
           "effectTag": "berserker"
         }
       ],
@@ -3382,7 +3477,7 @@
           "cooldown": 2,
           "targetType": "single",
           "trigger": "active",
-          "damage": 2.0,
+          "damage": 2,
           "effectTag": "first_strike"
         }
       ],

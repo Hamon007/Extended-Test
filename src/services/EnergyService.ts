@@ -9,12 +9,27 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-const ENERGY_KEY = 'ci_battle_energy';
+import {
+  MAX_BATTLE_ENERGY,
+  ENERGY_PER_BATTLE,
+  STARTING_POTIONS,
+  POTION_RESTORE,
+} from '../config/GameConfig';
+import { getMaxStamina } from './AccountProgressionService';
+import { SaveService } from './SaveService';
 
-export const MAX_BATTLE_ENERGY = 5;
-export const ENERGY_PER_BATTLE = 1;
-export const STARTING_POTIONS  = 3;
-export const POTION_RESTORE    = 1;
+export { MAX_BATTLE_ENERGY, ENERGY_PER_BATTLE, STARTING_POTIONS, POTION_RESTORE };
+
+/** Dynamisches Maximum — wächst mit dem Account-Level (min. MAX_BATTLE_ENERGY). */
+function getMax(): number {
+  try {
+    return getMaxStamina(SaveService.loadAccountState().level);
+  } catch {
+    return MAX_BATTLE_ENERGY;
+  }
+}
+
+const ENERGY_KEY = 'ci_battle_energy';
 
 export interface EnergyState {
   energy:   number;
@@ -24,7 +39,7 @@ export interface EnergyState {
 
 function defaultState(): EnergyState {
   return {
-    energy:   MAX_BATTLE_ENERGY,
+    energy:   getMax(),
     potions:  STARTING_POTIONS,
     lastDate: new Date().toDateString(),
   };
@@ -49,8 +64,9 @@ function load(): EnergyState {
       return fresh;
     }
     const parsed = JSON.parse(raw) as Partial<EnergyState>;
+    const max = getMax();
     st = {
-      energy:   typeof parsed.energy  === 'number' ? parsed.energy  : MAX_BATTLE_ENERGY,
+      energy:   typeof parsed.energy  === 'number' ? Math.min(parsed.energy, max) : max,
       potions:  typeof parsed.potions === 'number' ? parsed.potions : 0,
       lastDate: typeof parsed.lastDate === 'string' ? parsed.lastDate : '',
     };
@@ -62,7 +78,7 @@ function load(): EnergyState {
   // Tägliche Auffüllung
   const today = new Date().toDateString();
   if (st.lastDate !== today) {
-    st = { ...st, energy: MAX_BATTLE_ENERGY, lastDate: today };
+    st = { ...st, energy: getMax(), lastDate: today };
     write(st);
   }
   return st;
@@ -79,12 +95,13 @@ function consume(): EnergyState | null {
 
 /** Nutzt einen Ausdauertrank: +POTION_RESTORE Energie (bis Maximum). */
 function usePotion(): EnergyState {
-  const st = load();
-  if (st.potions <= 0 || st.energy >= MAX_BATTLE_ENERGY) return st;
+  const st  = load();
+  const max = getMax();
+  if (st.potions <= 0 || st.energy >= max) return st;
   const next = {
     ...st,
     potions: st.potions - 1,
-    energy:  Math.min(MAX_BATTLE_ENERGY, st.energy + POTION_RESTORE),
+    energy:  Math.min(max, st.energy + POTION_RESTORE),
   };
   write(next);
   return next;
@@ -103,5 +120,6 @@ export const EnergyService = {
   consume,
   usePotion,
   addPotions,
+  getMax,
   MAX_BATTLE_ENERGY,
 };
