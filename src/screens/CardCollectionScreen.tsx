@@ -33,19 +33,35 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
     return map;
   }, []);
 
-  const { withArtwork, withoutArtwork } = useMemo(() => {
-    const all = CardDatabase.getAll().slice()
+  // Flache sortierte Liste aller gefilterten Karten — Grundlage für Swipe-Navigation
+  const allCards = useMemo(() => {
+    const filtered = CardDatabase.getAll().slice()
       .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter)
       .sort((a, b) => a.name.localeCompare(b.name, 'de'));
-    return {
-      withArtwork:    all.filter(c => !!c.image),
-      withoutArtwork: all.filter(c => !c.image),
-    };
+    return [
+      ...filtered.filter(c => !!c.image),
+      ...filtered.filter(c => !c.image),
+    ];
   }, [rarityFilter]);
 
-  const totalCards = CardDatabase.count();
+  const withArtwork    = allCards.filter(c => !!c.image);
+  const withoutArtwork = allCards.filter(c => !c.image);
+
+  const selectedIndex = selectedCard
+    ? allCards.findIndex(c => c.id === selectedCard.id)
+    : -1;
+
+  const handlePrev = selectedIndex > 0
+    ? () => setSelectedCard(allCards[selectedIndex - 1])
+    : undefined;
+
+  const handleNext = selectedIndex < allCards.length - 1
+    ? () => setSelectedCard(allCards[selectedIndex + 1])
+    : undefined;
+
+  const totalCards  = CardDatabase.count();
   const ownedUnique = ownedMap.size;
-  const visibleCount = withArtwork.length + withoutArtwork.length;
+  const visibleCount = allCards.length;
 
   return (
     <div className="card-col-screen">
@@ -153,8 +169,13 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
 
       </div>
 
-      {/* Vollständiges Kartendetail inkl. Fähigkeiten & Synergien */}
-      <CardDetailModal card={selectedCard} onClose={() => setSelectedCard(null)} />
+      {/* Vollständiges Kartendetail inkl. Fähigkeiten & Synergien — Swipe-Navigation */}
+      <CardDetailModal
+        card={selectedCard}
+        onClose={() => setSelectedCard(null)}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
     </div>
   );
 };

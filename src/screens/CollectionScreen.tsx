@@ -62,6 +62,18 @@ const CollectionScreen: React.FC = () => {
     setSelectedCard(null);
   }, []);
 
+  const selectedIndex = selectedCard
+    ? visibleCards.findIndex(c => c.id === selectedCard.id)
+    : -1;
+
+  const handlePrev = selectedIndex > 0
+    ? () => setSelectedCard(visibleCards[selectedIndex - 1])
+    : undefined;
+
+  const handleNext = selectedIndex < visibleCards.length - 1
+    ? () => setSelectedCard(visibleCards[selectedIndex + 1])
+    : undefined;
+
   const resetFilters = () => setFilter(DEFAULT_FILTER);
 
   const activeFilterCount = [
@@ -223,7 +235,12 @@ const CollectionScreen: React.FC = () => {
 
       {/* ── Detailansicht ── */}
       {selectedCard && (
-        <CardDetailModal card={selectedCard} onClose={handleCloseDetail} />
+        <CardDetailModal
+          card={selectedCard}
+          onClose={handleCloseDetail}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Card } from '../types/Card';
 import { RARITY_COLOR, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
@@ -7,26 +7,41 @@ import './CardDetailModal.css';
 interface Props {
   card:    Card | null;
   onClose: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
-const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
+const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => {
   const [imgError, setImgError] = useState(false);
   const [artFull,  setArtFull]  = useState(false);
+  const touchStartX = useRef<number>(0);
 
-  // Bild-Error und Vollansicht zurücksetzen wenn neue Karte geöffnet wird
+  // Bild-Error zurücksetzen wenn neue Karte geöffnet wird (artFull bleibt — Galerie-Modus)
   useEffect(() => {
     setImgError(false);
-    setArtFull(false);
   }, [card?.id]);
 
-  // Tastatur-Escape schließt Modal
+  // Tastatur: Escape schließt, Pfeiltasten navigieren
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape')      onClose();
+      if (e.key === 'ArrowLeft'  && onPrev) onPrev();
+      if (e.key === 'ArrowRight' && onNext) onNext();
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, onPrev, onNext]);
+
+  // Touch-Swipe: links = nächste, rechts = vorherige Karte
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) < 50) return;
+    if (delta < 0 && onNext) onNext();
+    if (delta > 0 && onPrev) onPrev();
+  };
 
   if (!card) return null;
 
@@ -44,10 +59,20 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose }) => {
       <div
         className={`detail-modal${artFull ? ' detail-modal--art-full' : ''}`}
         style={{ '--rarity-color': rarityColor } as React.CSSProperties}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
 
         {/* ── Schließen-Button ── */}
         <button className="detail-close" onClick={onClose} aria-label="Schließen">✕</button>
+
+        {/* ── Navigations-Buttons ── */}
+        {onPrev && (
+          <button className="detail-nav detail-nav--prev" onClick={onPrev} aria-label="Vorherige Karte">‹</button>
+        )}
+        {onNext && (
+          <button className="detail-nav detail-nav--next" onClick={onNext} aria-label="Nächste Karte">›</button>
+        )}
 
         {/* ── Artwork ── */}
         <div className="detail-artwork">
