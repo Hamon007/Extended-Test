@@ -1,0 +1,22 @@
+01 - Back Button
+02 - Timer / Header Frame
+03 - Refresh Button
+04 - Bar Frame 1
+05 - Bar Frame 2
+06 - Bar Frame 3
+07 - Bar Frame 4
+08 - Info Panel
+09 - Empty Player Card Frame
+10 - Round Icon Button - Relics
+11 - Round Icon Button - Updates with Empty Badge
+12 - Status Header Frame
+13 - Status Row 1
+14 - Status Row 2
+15 - Message Box Frame
+16 - Section Banner Frame
+17 - Guide Character
+18 - Bottom Nav Icon 1
+19 - Bottom Nav Icon 2
+20 - Bottom Nav Icon 3
+21 - Bottom Nav Icon 4
+22 - Bottom Nav Icon 5

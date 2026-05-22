@@ -1,0 +1,12 @@
+Erstelle alle UI-Assets einzeln im dunklen Gold/Rot-Fantasy-Stil.
+
+Wichtige Vorgaben:
+- Keine Texte
+- Keine Zahlen
+- Keine Werte
+- Alle Rahmen und Balken leer lassen
+- Icons dürfen vorhanden sein
+- Füllstände der Balken nicht einbrennen, sondern nur leere Rahmen/Tracks liefern
+- Spielerkarte innen leer lassen
+- Badge-Kreise leer lassen
+- Texte und Werte werden später vom Spiel gerendert

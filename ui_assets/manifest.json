@@ -1,0 +1,324 @@
+{
+  "package": "ui_assets_for_claude_codex_unified_rgba",
+  "version": "B_unified_transparent_cropped",
+  "rules": [
+    "Keine Texte",
+    "Keine Zahlen",
+    "Keine Werte",
+    "Rahmen und Balken leer",
+    "Keine eingebrannten Füllstände",
+    "Spielerkarte innen leer",
+    "Badge-Kreise leer",
+    "Texte und Werte werden im Spiel gerendert"
+  ],
+  "assets": [
+    {
+      "file": "01_asset_back_button.png",
+      "original_size": [
+        1448,
+        1086
+      ],
+      "unified_rgba_size": [
+        1370,
+        659
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "02_asset_timer_header_frame.png",
+      "original_size": [
+        1448,
+        1086
+      ],
+      "unified_rgba_size": [
+        1408,
+        859
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "03_asset_refresh_button.png",
+      "original_size": [
+        1448,
+        1086
+      ],
+      "unified_rgba_size": [
+        1242,
+        622
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "04_asset_bar_frame_1.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "unified_rgba_size": [
+        1506,
+        446
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "05_asset_bar_frame_2.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "unified_rgba_size": [
+        1526,
+        430
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "06_asset_bar_frame_3.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "unified_rgba_size": [
+        1654,
+        462
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "07_asset_bar_frame_4.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "unified_rgba_size": [
+        1437,
+        559
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "08_asset_info_panel.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "unified_rgba_size": [
+        1632,
+        394
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "09_asset_player_card_frame_empty.png",
+      "original_size": [
+        1086,
+        1448
+      ],
+      "unified_rgba_size": [
+        1072,
+        1448
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "10_asset_round_icon_button_relics.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1111,
+        1153
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "11_asset_round_icon_button_updates_with_empty_badge.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1167,
+        1150
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "12_asset_status_header_frame.png",
+      "original_size": [
+        2172,
+        724
+      ],
+      "unified_rgba_size": [
+        2030,
+        471
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "13_asset_status_row_1.png",
+      "original_size": [
+        2172,
+        724
+      ],
+      "unified_rgba_size": [
+        2107,
+        570
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "14_asset_status_row_2.png",
+      "original_size": [
+        2172,
+        724
+      ],
+      "unified_rgba_size": [
+        2086,
+        577
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "15_asset_message_box_frame.png",
+      "original_size": [
+        2172,
+        724
+      ],
+      "unified_rgba_size": [
+        2091,
+        541
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "16_asset_section_banner_frame.png",
+      "original_size": [
+        2172,
+        724
+      ],
+      "unified_rgba_size": [
+        2172,
+        542
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "17_asset_guide_character.png",
+      "original_size": [
+        1086,
+        1448
+      ],
+      "unified_rgba_size": [
+        1086,
+        1389
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "18_asset_bottom_nav_icon_1.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        937,
+        919
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "19_asset_bottom_nav_icon_2.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1051,
+        1077
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "20_asset_bottom_nav_icon_3.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1168,
+        1172
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "21_asset_bottom_nav_icon_4.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1177,
+        1200
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    },
+    {
+      "file": "22_asset_bottom_nav_icon_5.png",
+      "original_size": [
+        1254,
+        1254
+      ],
+      "unified_rgba_size": [
+        1204,
+        1199
+      ],
+      "mode": "RGBA",
+      "background": "transparent outer background; enclosed dark UI surfaces preserved",
+      "status": "no embedded text/numbers intended"
+    }
+  ]
+}
