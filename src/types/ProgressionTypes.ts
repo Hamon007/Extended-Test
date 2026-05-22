@@ -14,13 +14,22 @@ export {
 
 // ── Belohnungs-Details (nach Battle) ─────────────────────────────────────────
 
+export interface AccountLevelUpInfo {
+  newLevel:     number;
+  levelsGained: number;
+  newMaxStamina: number;
+  newMaxMana:    number;
+}
+
 export interface RewardDetails {
-  isVictory:       boolean;
-  crystalsGained:  number;       // 0 wenn Niederlage (außer Trost)
-  xpGained:        number;
-  newCards:        CardInstance[]; // tatsächlich gedropte Karten
-  potionsGained?:  number;       // gedropte Ausdauertränke (Sieg)
-  defeatReason?:   'hp' | 'rounds';
+  isVictory:        boolean;
+  crystalsGained:   number;        // 0 wenn Niederlage (außer Trost)
+  xpGained:         number;        // Karten-XP (für Anzeige)
+  newCards:         CardInstance[]; // tatsächlich gedropte Karten
+  potionsGained?:   number;        // gedropte Ausdauertränke (Sieg)
+  defeatReason?:    'hp' | 'rounds';
+  accountXpGained?: number;        // Account-XP aus diesem Battle
+  accountLevelUp?:  AccountLevelUpInfo | null; // null = kein Level-Up
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

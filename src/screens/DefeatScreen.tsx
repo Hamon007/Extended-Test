@@ -32,6 +32,12 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect }) => {
             <span className="defeat-consolation__icon">💎</span>
             <span className="defeat-consolation__amount">+{DEFEAT_CONSOLATION}</span>
           </div>
+          {(details.accountXpGained ?? 0) > 0 && (
+            <div className="defeat-consolation__value">
+              <span className="defeat-consolation__icon">✦</span>
+              <span className="defeat-consolation__amount">+{details.accountXpGained} Account-XP</span>
+            </div>
+          )}
           <div className="defeat-consolation__note">
             Kämpfe weiter — der Sieg wartet.
           </div>

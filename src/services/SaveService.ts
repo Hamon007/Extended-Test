@@ -11,14 +11,20 @@ import { STARTING_CRYSTALS } from '../types/GachaTypes';
 import type { Deck } from '../types/DeckTypes';
 import { createEmptyDeck } from './DeckBuilderHelpers';
 import { STARTING_CRYSTAL_CARDS } from '../config/GameConfig';
+import type { AccountState } from '../types/AccountTypes';
+import {
+  createDefaultAccountState,
+  normalizeAccountState,
+} from './AccountProgressionService';
 
 // ── Storage-Schlüssel ─────────────────────────────────────────
 
 const KEYS = {
-  gacha:     'ci_gacha_state',
-  deck:      'ci_deck_main',
-  settings:  'ci_settings',
-  lastLogin: 'ci_last_login',
+  gacha:    'ci_gacha_state',
+  deck:     'ci_deck_main',
+  settings: 'ci_settings',
+  lastLogin:'ci_last_login',
+  account:  'ci_account_state',
 } as const;
 
 // ── Generische Helfer ─────────────────────────────────────────
@@ -108,6 +114,27 @@ function deleteDeck(): void {
   localStorage.removeItem(KEYS.deck);
 }
 
+// ── Account-State API ─────────────────────────────────────────
+
+function loadAccountState(): AccountState {
+  try {
+    const raw = localStorage.getItem(KEYS.account);
+    if (!raw) {
+      const fresh = createDefaultAccountState();
+      persist(KEYS.account, fresh);
+      return fresh;
+    }
+    return normalizeAccountState(JSON.parse(raw) as Partial<AccountState>);
+  } catch (e) {
+    console.warn('[SaveService] Account-State Lesen fehlgeschlagen:', e);
+    return createDefaultAccountState();
+  }
+}
+
+function saveAccountState(state: AccountState): void {
+  persist(KEYS.account, state);
+}
+
 // ── Letzer Login ──────────────────────────────────────────────
 
 function updateLastLogin(): void {
@@ -129,6 +156,8 @@ export const SaveService = {
   loadDeck,
   saveDeck,
   deleteDeck,
+  loadAccountState,
+  saveAccountState,
   updateLastLogin,
   resetAll,
 };
