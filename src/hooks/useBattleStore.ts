@@ -11,9 +11,7 @@ import type { BattleState } from '../types/BattleTypes';
 import type { EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import { BattleManager } from '../services/BattleManager';
-
-const ENEMY_TURN_DELAY_MS  = 800;   // kurze Pause vor Gegnerzug
-const ROUND_END_DELAY_MS   = 600;   // kurze Pause nach Gegnerzug
+import { ENEMY_TURN_DELAY_MS, ROUND_END_DELAY_MS } from '../config/GameConfig';
 
 export interface BattleStore {
   state:          BattleState | null;

@@ -21,28 +21,18 @@ import type { Card, CardStats, Rarity } from '../types/Card';
 import { RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
+import { levelMultiplier } from './LevelSystem';
+import {
+  DUPLICATES_PER_STEP,
+  STEP_CRYSTAL_COST,
+  FUSION_ATK_PER_RANK    as ATK_PER_RANK,
+  FUSION_DEF_PER_RANK    as DEF_PER_RANK,
+  FUSION_HP_PER_RANK     as HP_PER_RANK,
+  FUSION_MP_CUT_PER_RANK as MP_CUT_PER_RANK,
+  FUSION_CRIT_PER_RANK   as CRIT_PER_RANK,
+} from '../config/GameConfig';
 
-// ── Fusions-Kosten ────────────────────────────────────────────
-// Jeder Schritt kostet genau 1 Duplikat. Kristallkosten je Hauptstufe.
-
-export const DUPLICATES_PER_STEP = 1;
-
-const STEP_CRYSTAL_COST: Record<string, number> = {
-  N:   50,
-  R:   150,
-  SR:  400,
-  SSR: 1000,
-  MR:  3000,
-  LR:  8000,
-};
-
-// ── Stat-Skalierung pro Unterstufe über Basis ─────────────────
-
-const ATK_PER_RANK    = 0.12; // +12 % ATK je Unterstufe
-const DEF_PER_RANK    = 0.12; // +12 % DEF je Unterstufe
-const HP_PER_RANK     = 0.10; // +10 % HP  je Unterstufe
-const MP_CUT_PER_RANK = 0.06; // −6 % MP-Kosten je Unterstufe
-const CRIT_PER_RANK   = 1;    // +1 % Krit je Unterstufe (falls vorhanden)
+export { DUPLICATES_PER_STEP, STEP_CRYSTAL_COST };
 
 // ── Reine Helfer ──────────────────────────────────────────────
 
@@ -72,16 +62,20 @@ function ranksAboveBase(baseRarity: Rarity, currentRarity: Rarity): number {
   return Math.max(0, RARITY_ORDER.indexOf(currentRarity) - RARITY_ORDER.indexOf(baseRarity));
 }
 
-/** Effektive Stats einer Karteninstanz unter Berücksichtigung der Fusion. */
-function getEffectiveStats(card: Card, currentRarity: Rarity): CardStats {
+/** Effektive Stats einer Karteninstanz unter Berücksichtigung von Fusion + Level. */
+function getEffectiveStats(card: Card, currentRarity: Rarity, level = 1): CardStats {
   const ranks = ranksAboveBase(card.rarity, currentRarity);
-  const s = card.stats;
-  if (ranks === 0) return { ...s };
+  const s     = card.stats;
+  const lvl   = levelMultiplier(level);
+
+  const fusAtk = ranks === 0 ? s.atk : Math.round(s.atk * (1 + ATK_PER_RANK * ranks));
+  const fusDef = ranks === 0 ? s.def : Math.round(s.def * (1 + DEF_PER_RANK * ranks));
+  const fusHp  = ranks === 0 ? s.hp  : Math.round(s.hp  * (1 + HP_PER_RANK  * ranks));
 
   return {
-    atk:    Math.round(s.atk * (1 + ATK_PER_RANK * ranks)),
-    def:    Math.round(s.def * (1 + DEF_PER_RANK * ranks)),
-    hp:     Math.round(s.hp  * (1 + HP_PER_RANK  * ranks)),
+    atk:    Math.round(fusAtk * lvl.atk),
+    def:    Math.round(fusDef * lvl.def),
+    hp:     Math.round(fusHp  * lvl.hp),
     mpCost: Math.max(1, Math.round(s.mpCost * (1 - MP_CUT_PER_RANK * ranks))),
     spd:    s.spd,
     crit:   s.crit !== undefined ? s.crit + CRIT_PER_RANK * ranks : undefined,

@@ -5,27 +5,16 @@
 import type { Element } from './Card';
 import type { BattleCard } from './BattleTypes';
 
-// ── Konstanten ────────────────────────────────────────────────────────────────
+// ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────
 
-export const COMBO_WINDOW_MS   = 1500;  // Basis-Fenster in ms
-export const SYNERGY_BONUS_MS  = 300;   // Fenster-Verlängerung bei Synergy-Tag
-export const MAX_COMBO         = 5;
-
-/** Schaden-Multiplikatoren je Combo-Stufe (Index = Combo-Count) */
-export const COMBO_MULTIPLIERS: readonly number[] = [
-  0,    // Index 0 (ungenutzt)
-  1.0,  // Combo 1
-  1.3,  // Combo 2
-  1.7,  // Combo 3
-  2.2,  // Combo 4
-  3.0,  // Combo 5
-];
-
-/** Synergy-Schadens-Bonus (additiv auf Gesamtmultiplikator) */
-export const SYNERGY_DAMAGE_BONUS = 0.15;   // +15%
-
-/** Element-Vorteil-Bonus (additiv) */
-export const ELEMENT_ADV_BONUS    = 0.20;   // +20%
+export {
+  COMBO_WINDOW_MS,
+  SYNERGY_BONUS_MS,
+  MAX_COMBO,
+  COMBO_MULTIPLIERS,
+  SYNERGY_DAMAGE_BONUS,
+  ELEMENT_ADV_BONUS,
+} from '../config/GameConfig';
 
 // ── Element-Vorteil-Kette ─────────────────────────────────────────────────────
 // key schlägt value

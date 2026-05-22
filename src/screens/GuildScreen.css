@@ -1,0 +1,371 @@
+/* ── GuildScreen ──────────────────────────────────────────── */
+
+.guild-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #0d0810 0%, #08050a 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Toast */
+.guild-toast {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  background: rgba(14, 8, 16, 0.96);
+  border: 1px solid #c9a84c;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  animation: gt-in 0.2s ease;
+  pointer-events: none;
+}
+@keyframes gt-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.guild-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #1a0d20, #110a18);
+  border-bottom: 1px solid #8a6520;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.guild-back {
+  background: none;
+  border: 1px solid #3a2030;
+  border-radius: 4px;
+  color: #8a6520;
+  padding: 5px 9px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+.guild-back:hover { border-color: #c9a84c; color: #c9a84c; }
+
+.guild-header__center {
+  flex: 1;
+  text-align: center;
+}
+
+.guild-header__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 12px;
+  color: #f0d080;
+  letter-spacing: 1px;
+}
+
+.guild-header__level {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+  letter-spacing: 1px;
+}
+
+.guild-header__crystals {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  flex-shrink: 0;
+}
+
+/* ── Scrollbarer Inhalt ───────────────────────────────────── */
+.guild-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.guild-content::-webkit-scrollbar { width: 3px; }
+.guild-content::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
+
+/* ── Sektions-Karte ───────────────────────────────────────── */
+.guild-section {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #2a1525;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.guild-section__title {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+/* ── Fortschrittsbalken ───────────────────────────────────── */
+.guild-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.guild-progress-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+}
+
+.guild-progress-xp {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+}
+
+.guild-bar {
+  height: 8px;
+  background: #1a1018;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #2a1525;
+}
+.guild-bar--boss { height: 10px; }
+
+.guild-bar__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+.guild-bar__fill--xp   { background: linear-gradient(90deg, #6a3fa0, #9c27b0); }
+.guild-bar__fill--week { background: linear-gradient(90deg, #1565c0, #42a5f5); }
+.guild-bar__fill--boss { background: linear-gradient(90deg, #8b0000, #cc2200); }
+
+/* ── Boss-Karte ───────────────────────────────────────────── */
+.guild-boss-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px;
+  background: rgba(139, 0, 0, 0.08);
+  border: 1px solid #4a1515;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.guild-boss-card--cleared {
+  background: rgba(0, 0, 0, 0.15);
+  border-color: #2a1525;
+  opacity: 0.7;
+}
+
+.guild-boss-card--shake {
+  animation: boss-shake 0.5s ease;
+}
+@keyframes boss-shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.guild-boss__portrait {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.guild-boss__info { flex: 1; min-width: 0; }
+
+.guild-boss__name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  margin-bottom: 6px;
+}
+
+.guild-boss__hp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.guild-boss__hp-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #ef9a9a;
+}
+
+.guild-boss__attacks {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+}
+
+.guild-boss__last-hit {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #ff7043;
+  font-style: italic;
+  margin-top: 4px;
+  animation: hit-fade 0.3s ease;
+}
+@keyframes hit-fade { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+
+.guild-boss__clear-msg {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #81c784;
+  text-align: center;
+  padding: 8px;
+  background: rgba(76,175,80,0.08);
+  border: 1px solid #2e7d32;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.guild-boss__hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #5a4030;
+  font-style: italic;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* Angriff-Button */
+.guild-attack-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #3d0a0a, #6b0e0e, #3d0a0a);
+  border: 2px solid #8b1a1a;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  box-shadow: 0 0 12px rgba(139, 26, 26, 0.3);
+}
+.guild-attack-btn:not(.guild-attack-btn--disabled):hover {
+  box-shadow: 0 0 20px rgba(204, 34, 0, 0.5);
+}
+.guild-attack-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #1a0d10, #200f18);
+  border-color: #2a1525;
+  box-shadow: none;
+}
+
+/* ── Spenden ──────────────────────────────────────────────── */
+.guild-donate-info {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  margin-bottom: 10px;
+}
+
+.guild-donate-info strong {
+  color: #c9a84c;
+}
+
+.guild-donate-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.guild-donate-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid #8a6520;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+}
+.guild-donate-btn:not(.guild-donate-btn--disabled):active {
+  background: rgba(201, 168, 76, 0.25);
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.3);
+}
+.guild-donate-btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Mitglieder-Liste ─────────────────────────────────────── */
+.guild-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guild-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid #1a1020;
+}
+
+.guild-member--player {
+  background: rgba(201, 168, 76, 0.07);
+  border-color: #3a2a10;
+}
+
+.guild-member__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.guild-member__role {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+}
+
+.guild-member__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #e8d5b0;
+}
+
+.guild-member__you {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #c9a84c;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid #8a6520;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.guild-member__contrib {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+}

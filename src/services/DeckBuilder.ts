@@ -6,7 +6,6 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-import type { Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import type {
   AddCardResult,
@@ -15,16 +14,12 @@ import type {
   DeckValidation,
   ResolvedSlot,
 } from '../types/DeckTypes';
-import { DECK_SIZE, MAX_MR_PER_DECK, MR_TIER } from '../types/DeckTypes';
+import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
 import { CardDatabase } from './CardDatabase';
 import { FusionSystem } from './FusionSystem';
 import { createEmptyDeck } from './DeckBuilderHelpers';
 
 // ── Hilfsfunktionen (privat) ──────────────────────────────────
-
-function isMRTier(rarity: Rarity): boolean {
-  return (MR_TIER as readonly string[]).includes(rarity);
-}
 
 function buildInvMap(inventory: CardInstance[]): Map<string, CardInstance> {
   const m = new Map<string, CardInstance>();
@@ -32,17 +27,14 @@ function buildInvMap(inventory: CardInstance[]): Map<string, CardInstance> {
   return m;
 }
 
-function deckMRCount(uuids: string[], invMap: Map<string, CardInstance>): number {
-  return uuids.filter(u => {
-    const inst = invMap.get(u);
-    return inst ? isMRTier(inst.rarity) : false;
-  }).length;
-}
-
-function deckCardIds(uuids: string[], invMap: Map<string, CardInstance>): string[] {
-  return uuids
-    .map(u => invMap.get(u)?.cardId)
-    .filter((id): id is string => id !== undefined);
+function computeTotalMP(uuids: string[], invMap: Map<string, CardInstance>): number {
+  return uuids.reduce((sum, uuid) => {
+    const inst = invMap.get(uuid);
+    if (!inst) return sum;
+    const card = CardDatabase.getById(inst.cardId);
+    if (!card) return sum;
+    return sum + FusionSystem.getEffectiveStats(card, inst.rarity).mpCost;
+  }, 0);
 }
 
 // ── Öffentliche API ───────────────────────────────────────────
@@ -59,7 +51,7 @@ function resolveSlots(deck: Deck, inventory: CardInstance[]): ResolvedSlot[] {
 function canAdd(
   uuid:      string,
   cardId:    string,
-  rarity:    Rarity,
+  rarity:    import('../types/Card').Rarity,
   deck:      Deck,
   inventory: CardInstance[],
 ): AddCardResult {
@@ -68,12 +60,14 @@ function canAdd(
 
   const invMap = buildInvMap(inventory);
 
-  if (deckCardIds(deck.uuids, invMap).includes(cardId)) {
-    return { ok: false, error: 'DUPLICATE_CARD_ID' };
-  }
-
-  if (isMRTier(rarity) && deckMRCount(deck.uuids, invMap) >= MAX_MR_PER_DECK) {
-    return { ok: false, error: 'MR_LIMIT_EXCEEDED' };
+  // Kosten-Budget prüfen
+  const newCard = CardDatabase.getById(cardId);
+  if (newCard) {
+    const newCost      = FusionSystem.getEffectiveStats(newCard, rarity).mpCost;
+    const existingCost = computeTotalMP(deck.uuids, invMap);
+    if (existingCost + newCost > MAX_DECK_COST) {
+      return { ok: false, error: 'COST_EXCEEDED' };
+    }
   }
 
   return { ok: true, deck: { ...deck, uuids: [...deck.uuids, uuid] } };
@@ -84,37 +78,25 @@ function removeCard(uuid: string, deck: Deck): Deck {
 }
 
 function validateDeck(deck: Deck, inventory: CardInstance[]): DeckValidation {
-  const resolved    = resolveSlots(deck, inventory);
+  const resolved     = resolveSlots(deck, inventory);
   const missingCount = resolved.filter(s => s.missing).length;
-  const mrCount     = resolved.filter(s => s.instance && isMRTier(s.instance.rarity)).length;
-  const totalMP     = resolved.reduce((sum, s) => {
-    if (!s.card || !s.instance) return sum;
-    return sum + FusionSystem.getEffectiveStats(s.card, s.instance.rarity).mpCost;
-  }, 0);
-
-  // Duplikat-Prüfung
-  const seen = new Set<string>();
-  const hasDupes = resolved.some(s => {
-    if (!s.instance) return false;
-    if (seen.has(s.instance.cardId)) return true;
-    seen.add(s.instance.cardId);
-    return false;
-  });
+  const invMap       = buildInvMap(inventory);
+  const totalMP      = computeTotalMP(deck.uuids, invMap);
+  const isOverBudget = totalMP > MAX_DECK_COST;
 
   const errors: DeckRuleError[] = [];
-  if (hasDupes)                    errors.push('DUPLICATE_CARD_ID');
-  if (mrCount > MAX_MR_PER_DECK)   errors.push('MR_LIMIT_EXCEEDED');
+  if (isOverBudget) errors.push('COST_EXCEEDED');
 
   const isComplete = deck.uuids.length === DECK_SIZE;
   const isValid    = isComplete && missingCount === 0 && errors.length === 0;
 
-  return { isComplete, isValid, errors, missingCount, totalMP, mrCount };
+  return { isComplete, isValid, errors, missingCount, totalMP, isOverBudget };
 }
 
 function previewAdd(
   uuid:      string,
   cardId:    string,
-  rarity:    Rarity,
+  rarity:    import('../types/Card').Rarity,
   deck:      Deck,
   inventory: CardInstance[],
 ): { blocked: boolean; reason: DeckRuleError | null } {
@@ -129,5 +111,4 @@ export const DeckBuilder = {
   validateDeck,
   createEmptyDeck,
   previewAdd,
-  isMRTier,
 };

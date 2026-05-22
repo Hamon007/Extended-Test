@@ -1,0 +1,446 @@
+/* ── CardTrainingScreen ──────────────────────────────────────── */
+
+.training-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #0d0810 0%, #08050a 100%);
+  overflow: hidden;
+  position: relative;
+  color: #e8d5b0;
+}
+
+/* Toast */
+.training-toast {
+  position: absolute;
+  top: 54px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  background: rgba(14,8,16,0.97);
+  border: 1px solid #c9a84c;
+  border-radius: 20px;
+  padding: 8px 22px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: tr-toast-in 0.2s ease;
+}
+@keyframes tr-toast-in {
+  from { opacity:0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity:1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.training-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #1a0d20, #110a18);
+  border-bottom: 1px solid #8a6520;
+  flex-shrink: 0;
+}
+
+.training-back {
+  background: none;
+  border: 1px solid #3a2030;
+  border-radius: 4px;
+  color: #8a6520;
+  padding: 5px 9px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.training-back:hover { border-color: #c9a84c; color: #c9a84c; }
+
+.training-header__title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px;
+  color: #f0d080;
+  letter-spacing: 2px;
+}
+
+/* ── Zielkarte Sektion ────────────────────────────────────── */
+.training-target-section {
+  flex-shrink: 0;
+  padding: 10px 12px 0;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid #2a1525;
+}
+
+.training-target-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.training-target-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.training-target-scroll::-webkit-scrollbar { display: none; }
+
+/* Thumbnail */
+.target-thumb {
+  position: relative;
+  width: 52px;
+  height: 78px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #3a2030);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.target-thumb--selected {
+  border-color: #f0d080;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(240,208,128,0.4);
+}
+.target-thumb__art {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.target-thumb__art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+}
+.target-thumb__level {
+  position: absolute;
+  bottom: 2px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  color: #f0d080;
+  background: rgba(0,0,0,0.7);
+  padding: 1px 0;
+}
+
+/* Zielkarte Detail */
+.training-target-detail {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  align-items: flex-start;
+}
+.training-target-detail--levelup {
+  animation: lvlup-flash 1.2s ease;
+}
+@keyframes lvlup-flash {
+  0%,100% { background: transparent; }
+  25%,75% { background: rgba(201,168,76,0.18); border-radius: 6px; }
+}
+
+.training-target-detail__left { flex-shrink: 0; }
+
+.target-art {
+  width: 72px;
+  height: 108px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #8a6520);
+  background: #0d0810;
+  position: relative;
+}
+.target-art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+}
+.target-art__placeholder {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  font-size: 1.5rem; opacity: 0.3;
+}
+
+.training-target-detail__right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+.training-td__name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f0d080;
+  line-height: 1.2;
+}
+.training-td__rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+}
+.training-td__level {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+}
+.training-td__level strong { color: #f0d080; font-size: 14px; }
+
+.training-td__preview-level {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #81c784;
+  animation: preview-in 0.2s ease;
+}
+@keyframes preview-in { from{opacity:0;transform:translateY(-3px);} to{opacity:1;transform:none;} }
+
+/* XP-Balken */
+.xp-bar {
+  position: relative;
+  height: 10px;
+  background: #1a1018;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #2a1525;
+  margin-top: 4px;
+}
+.xp-bar__fill {
+  position: absolute; inset-block: 0; left: 0;
+  background: linear-gradient(90deg, #6a3fa0, #c9a84c);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+.xp-bar__fill--max {
+  background: linear-gradient(90deg, #c9a84c, #f0d080);
+}
+.xp-bar__preview {
+  position: absolute; inset-block: 0; left: 0;
+  background: rgba(201,168,76,0.3);
+  border-radius: 5px;
+}
+.xp-bar__label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 6.5px;
+  color: rgba(255,255,255,0.85);
+  pointer-events: none;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────── */
+.training-tabs {
+  display: flex;
+  border-bottom: 1px solid #2a1525;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.2);
+}
+.training-tab {
+  flex: 1;
+  padding: 9px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.training-tab--active {
+  color: #f0d080;
+  border-bottom-color: #c9a84c;
+}
+
+/* ── Material-Bereich ──────────────────────────────────────── */
+.training-material-area {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a2030 transparent;
+}
+.training-material-area::-webkit-scrollbar { width: 3px; }
+.training-material-area::-webkit-scrollbar-thumb { background: #3a2030; border-radius: 2px; }
+
+/* Opfer-Grid */
+.training-sacrifice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px 12px;
+  align-content: start;
+}
+
+.sacrifice-card {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 2px solid var(--rc, #3a2030);
+  background: #0d0810;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+}
+.sacrifice-card--selected {
+  border-color: #f0d080;
+  transform: scale(0.95);
+}
+.sacrifice-card__art {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.sacrifice-card__art img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+}
+.sacrifice-card__check {
+  position: absolute; inset: 0;
+  background: rgba(201,168,76,0.55);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: #fff;
+}
+.sacrifice-card__footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.85);
+  padding: 3px 4px 2px;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.sacrifice-card__name {
+  font-family: 'Cinzel', serif;
+  font-size: 6.5px; color: #f0d080;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sacrifice-card__xp {
+  font-family: 'Cinzel', serif;
+  font-size: 6.5px; color: #81c784;
+}
+
+/* Kristallkarten-Panel */
+.training-crystal-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.crystal-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+}
+.crystal-row--empty { opacity: 0.4; }
+
+.crystal-row__icon { font-size: 1.4rem; flex-shrink: 0; }
+
+.crystal-row__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.crystal-row__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+}
+.crystal-row__xp {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #81c784;
+}
+
+.crystal-row__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crystal-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid #8a6520;
+  color: #c9a84c;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.crystal-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.crystal-btn:not(:disabled):active { background: rgba(201,168,76,0.3); }
+
+.crystal-row__qty {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  min-width: 36px;
+  text-align: center;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.training-footer {
+  flex-shrink: 0;
+  padding: 10px 12px 14px;
+  background: rgba(0,0,0,0.4);
+  border-top: 1px solid #2a1525;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.training-footer__xp {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.training-confirm-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 7px;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #1e0a30, #40187a, #1e0a30);
+  border: 2px solid #9c27b0;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  box-shadow: 0 0 16px rgba(156,39,176,0.3);
+}
+.training-confirm-btn:not(.training-confirm-btn--disabled):hover {
+  box-shadow: 0 0 28px rgba(156,39,176,0.55);
+}
+.training-confirm-btn--disabled {
+  opacity: 0.4; cursor: not-allowed;
+  background: linear-gradient(135deg, #1a0d15, #200f18);
+  border-color: #2a1525;
+  box-shadow: none;
+}
+
+/* ── Sonstige ──────────────────────────────────────────────── */
+.training-empty {
+  font-family: 'EB Garamond', serif;
+  font-size: 13px;
+  color: #5a4030;
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
+}
+
+.training-max-msg {
+  margin: 12px;
+  padding: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #c9a84c;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid #8a6520;
+  border-radius: 6px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}

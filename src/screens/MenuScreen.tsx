@@ -14,6 +14,7 @@ const MENU_ITEMS: { icon: string; label: string; target: string | null }[] = [
   { icon: '🃏', label: 'Kartensammlung',     target: 'cardCollection' },
   { icon: '📋', label: 'Deck bauen',         target: 'deck' },
   { icon: '🔮', label: 'Fusion & Awakening', target: 'fusion' },
+  { icon: '⬆️', label: 'Training',           target: 'training' },
   { icon: '⚙️', label: 'Einstellungen',      target: null },
   { icon: 'ℹ️', label: 'Über das Spiel',     target: null },
   { icon: '🔄', label: 'Daten zurücksetzen', target: null },

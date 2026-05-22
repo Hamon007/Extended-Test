@@ -113,6 +113,8 @@ function executeSinglePull(state: GachaState): {
     pulledAt:  Date.now(),
     pullIndex: newTotal,
     isNew:     true,
+    level:     1,
+    xp:        0,
   };
 
   const result: PullResult = {

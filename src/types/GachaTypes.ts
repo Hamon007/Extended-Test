@@ -17,6 +17,8 @@ export interface CardInstance {
   pulledAt:  number;   // Unix-Timestamp (Date.now())
   pullIndex: number;   // Gesamtzähler aller Pulls dieses Accounts
   isNew:     boolean;  // für "NEU"-Badge nach Pull — wird vom Screen gesetzt
+  level:     number;   // aktuelles Kartenlevel (1 = Basis)
+  xp:        number;   // XP auf das nächste Level
 }
 
 // ── Ergebnis eines einzelnen Pulls ────────────────────────────────────────────
@@ -37,11 +39,18 @@ export interface MultiPullResult {
 
 // ── Persistierter Gacha-State (wird in localStorage gespeichert) ──────────────
 
+export interface CrystalCardStock {
+  small:  number;   // 500 XP pro Stück
+  medium: number;   // 2.000 XP pro Stück
+  large:  number;   // 5.000 XP pro Stück
+}
+
 export interface GachaState {
   crystals:     number;          // aktuelle Kristalle des Spielers
   pityCounter:  number;          // Pulls seit letztem SSR/MR (0–99)
   totalPulls:   number;          // Gesamtanzahl aller Pulls
   inventory:    CardInstance[];  // alle gezogenen Karten-Instanzen
+  crystalCards: CrystalCardStock;
 }
 
 // ── Drop-Rate-Tabelle (Referenz) ──────────────────────────────────────────────
@@ -60,10 +69,12 @@ export const DROP_RATES: DropRateEntry[] = [
   { rarity: 'MR',  rate:  1, cumulative: 100 },
 ];
 
-// ── Kosten ────────────────────────────────────────────────────────────────────
+// ── Kosten (Werte zentral in GameConfig.ts) ───────────────────────────────────
 
-export const PULL_COST_SINGLE = 100;
-export const PULL_COST_MULTI  = 1000;
-export const MULTI_PULL_COUNT = 10;
-export const PITY_THRESHOLD   = 100;      // bei Pull 100 garantierter SSR
-export const STARTING_CRYSTALS = 999_999; // Alpha: unbegrenzt
+export {
+  PULL_COST_SINGLE,
+  PULL_COST_MULTI,
+  MULTI_PULL_COUNT,
+  PITY_THRESHOLD,
+  STARTING_CRYSTALS,
+} from '../config/GameConfig';

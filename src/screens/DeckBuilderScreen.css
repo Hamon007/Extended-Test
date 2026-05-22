@@ -164,6 +164,12 @@
   border: 1px solid #1565c0;
   border-radius: 10px;
   padding: 2px 8px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.db-mp-total--over {
+  color: #ff7043;
+  background: rgba(255,112,67,0.12);
+  border-color: #bf360c;
 }
 
 /* Deck-Slots horizontal scrollbar */

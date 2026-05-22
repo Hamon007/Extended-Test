@@ -9,12 +9,16 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-const ENERGY_KEY = 'ci_battle_energy';
+import {
+  MAX_BATTLE_ENERGY,
+  ENERGY_PER_BATTLE,
+  STARTING_POTIONS,
+  POTION_RESTORE,
+} from '../config/GameConfig';
 
-export const MAX_BATTLE_ENERGY = 5;
-export const ENERGY_PER_BATTLE = 1;
-export const STARTING_POTIONS  = 3;
-export const POTION_RESTORE    = 1;
+export { MAX_BATTLE_ENERGY, ENERGY_PER_BATTLE, STARTING_POTIONS, POTION_RESTORE };
+
+const ENERGY_KEY = 'ci_battle_energy';
 
 export interface EnergyState {
   energy:   number;

@@ -199,8 +199,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
                 <div className="main-profile-frame__card-title">Richter der sterbenden Sonne</div>
               </div>
             </div>
-            <div className="main-profile-frame__stars">★★★★★</div>
-            <div className="main-profile-frame__name">Azazel</div>
           </div>
         </div>
 
