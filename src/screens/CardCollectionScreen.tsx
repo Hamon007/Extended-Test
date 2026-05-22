@@ -17,11 +17,35 @@ const TYPE_FALLBACK: Record<string, string> = {
   combo_builder:'🔗',
 };
 
+type SortKey = 'name' | 'rarity' | 'atk' | 'def' | 'hp';
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'name',   label: 'Name' },
+  { key: 'rarity', label: 'Seltenheit' },
+  { key: 'atk',    label: 'ATK' },
+  { key: 'def',    label: 'DEF' },
+  { key: 'hp',     label: 'HP' },
+];
+
+function sortCards(cards: Card[], sort: SortKey): Card[] {
+  return [...cards].sort((a, b) => {
+    switch (sort) {
+      case 'name':   return a.name.localeCompare(b.name, 'de');
+      case 'rarity': return RARITY_MAJORS.indexOf(rarityMajor(b.rarity)) - RARITY_MAJORS.indexOf(rarityMajor(a.rarity));
+      case 'atk':    return b.stats.atk - a.stats.atk;
+      case 'def':    return b.stats.def - a.stats.def;
+      case 'hp':     return b.stats.hp  - a.stats.hp;
+      default:       return 0;
+    }
+  });
+}
+
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
+  const [sortKey,      setSortKey]      = useState<SortKey>('name');
 
   // Eigene Karten aus Inventar laden
   const ownedMap = useMemo(() => {
@@ -35,14 +59,14 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
 
   // Flache sortierte Liste aller gefilterten Karten — Grundlage für Swipe-Navigation
   const allCards = useMemo(() => {
-    const filtered = CardDatabase.getAll().slice()
-      .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter)
-      .sort((a, b) => a.name.localeCompare(b.name, 'de'));
+    const filtered = CardDatabase.getAll()
+      .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter);
+    const sorted = sortCards(filtered, sortKey);
     return [
-      ...filtered.filter(c => !!c.image),
-      ...filtered.filter(c => !c.image),
+      ...sorted.filter(c => !!c.image),
+      ...sorted.filter(c => !c.image),
     ];
-  }, [rarityFilter]);
+  }, [rarityFilter, sortKey]);
 
   const withArtwork    = allCards.filter(c => !!c.image);
   const withoutArtwork = allCards.filter(c => !c.image);
@@ -73,8 +97,9 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
         <span className="card-col-header__count">{ownedUnique} / {totalCards}</span>
       </div>
 
-      {/* ── Seltenheits-Filter ── */}
+      {/* ── Filter & Sortierung ── */}
       <div className="card-col-filter">
+        <span className="card-col-filter__label">SELTENHEIT</span>
         <button
           className={`card-col-filter__chip ${rarityFilter === '' ? 'card-col-filter__chip--active' : ''}`}
           onClick={() => setRarityFilter('')}
@@ -89,6 +114,18 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
             onClick={() => setRarityFilter(r)}
           >
             {r}
+          </button>
+        ))}
+      </div>
+      <div className="card-col-filter card-col-filter--sort">
+        <span className="card-col-filter__label">SORTIERUNG</span>
+        {SORT_OPTIONS.map(({ key, label }) => (
+          <button
+            key={key}
+            className={`card-col-filter__chip ${sortKey === key ? 'card-col-filter__chip--active' : ''}`}
+            onClick={() => setSortKey(key)}
+          >
+            {label}
           </button>
         ))}
       </div>

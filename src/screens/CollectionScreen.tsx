@@ -13,7 +13,7 @@ interface FilterState {
   element: Element | '';
   type:    CardType| '';
   search:  string;
-  sort:    'number' | 'name' | 'rarity' | 'atk' | 'hp';
+  sort:    'number' | 'name' | 'rarity' | 'atk' | 'def' | 'hp';
 }
 
 const DEFAULT_FILTER: FilterState = {
@@ -30,6 +30,7 @@ function sortCards(cards: Card[], sort: FilterState['sort']): Card[] {
       case 'rarity':
         return RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity);
       case 'atk': return b.stats.atk - a.stats.atk;
+      case 'def': return b.stats.def - a.stats.def;
       case 'hp':  return b.stats.hp  - a.stats.hp;
       default:    return 0;
     }
@@ -187,10 +188,11 @@ const CollectionScreen: React.FC = () => {
             <div className="filter-chips">
               {([
                 ['number', 'Nummer'],
-                ['rarity',  'Seltenheit'],
-                ['name',    'Name'],
-                ['atk',     'ATK'],
-                ['hp',      'HP'],
+                ['rarity', 'Seltenheit'],
+                ['name',   'Name'],
+                ['atk',    'ATK'],
+                ['def',    'DEF'],
+                ['hp',     'HP'],
               ] as [FilterState['sort'], string][]).map(([val, label]) => (
                 <button
                   key={val}

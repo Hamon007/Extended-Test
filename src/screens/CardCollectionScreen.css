@@ -76,6 +76,21 @@
   flex-shrink: 0;
 }
 
+.card-col-filter--sort {
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.card-col-filter__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-dark);
+  opacity: 0.6;
+  align-self: center;
+  flex-shrink: 0;
+}
+
 .card-col-filter__chip {
   font-family: 'Cinzel', serif;
   font-size: 0.62rem;
