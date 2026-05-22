@@ -24,8 +24,7 @@ const TIPS = [
   'Tipp: MR-Karten dürfen nur einmal pro Deck verwendet werden.',
 ];
 
-const B  = import.meta.env.BASE_URL;
-const UI = `${B}assets/ui/`;
+const B = import.meta.env.BASE_URL;
 
 const BATTLE_HOURS = [0, 7, 14, 21];
 
@@ -33,6 +32,7 @@ const BATTLE_HOURS = [0, 7, 14, 21];
 
 function nextBattleMs(): number {
   const now = new Date();
+  // nächste UTC-Stunde in [0,7,14,21]
   const h = now.getUTCHours();
   const m = now.getUTCMinutes();
   const s = now.getUTCSeconds();
@@ -46,6 +46,7 @@ function nextBattleMs(): number {
       return (diff * 3600 - elapsedInHour) * 1000;
     }
   }
+  // wrap um Mitternacht
   const firstHour = BATTLE_HOURS[0];
   const hoursUntil = (firstHour + 24 - h + 24) % 24 || 24;
   return (hoursUntil * 3600 - elapsedInHour) * 1000;
@@ -59,37 +60,6 @@ function formatCountdown(ms: number): string {
   const ss = totalSec % 60;
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
 }
-
-function pct(value: number, max: number): number {
-  if (max <= 0) return 0;
-  return Math.min(100, Math.max(0, (value / max) * 100));
-}
-
-// ── Ressourcen-Balken ─────────────────────────────────────────
-
-interface ResBarProps {
-  variant: 'stamina' | 'exp' | 'mana' | 'crystal';
-  label:   string;
-  value:   string;
-  fill?:   number;   // Füllstand in % (entfällt bei reinem Zähler)
-}
-
-const ResBar: React.FC<ResBarProps> = ({ variant, label, value, fill }) => (
-  <div
-    className={`ms-bar ms-bar--${variant}`}
-    style={{ backgroundImage: `url(${UI}bar_${variant}.webp)` }}
-  >
-    <div className="ms-bar__track">
-      {fill !== undefined && (
-        <div className="ms-bar__fill" style={{ width: `${fill}%` }} />
-      )}
-      <span className="ms-bar__text">
-        <span className="ms-bar__label">{label}</span>
-        <span className="ms-bar__value">{value}</span>
-      </span>
-    </div>
-  </div>
-);
 
 // ── Haupt-Komponente ──────────────────────────────────────────
 
@@ -156,133 +126,153 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     setCountdown(nextBattleMs());
   }, []);
 
-  const xpNext = AccountProgressionService.xpToNextLevel(account.level);
-
   return (
     <div className="main-screen">
 
       {/* ── Top-Bar ── */}
       <div className="main-topbar">
-        <button
-          className="ms-iconbtn ms-iconbtn--back"
-          style={{ backgroundImage: `url(${UI}back_button.webp)` }}
-          onClick={onBack}
-          aria-label="Zurück"
-        />
-        <div className="ms-timer" style={{ backgroundImage: `url(${UI}timer_header.webp)` }}>
-          <span className="ms-timer__label">Bis zur nächsten Schlacht</span>
-          <span className="ms-timer__value">{formatCountdown(countdown)}</span>
+        <button className="main-topbar__back" onClick={onBack}>← Zurück</button>
+        <div className="main-topbar__countdown">
+          <span className="main-topbar__countdown-label">Bis zur nächsten Schlacht</span>
+          <span className="main-topbar__countdown-value">{formatCountdown(countdown)}</span>
         </div>
-        <button
-          className="ms-iconbtn ms-iconbtn--refresh"
-          style={{ backgroundImage: `url(${UI}refresh_button.webp)` }}
-          onClick={handleRefresh}
-          aria-label="Aktualisieren"
-        />
+        <button className="main-topbar__refresh" onClick={handleRefresh} aria-label="Aktualisieren">↺</button>
+      </div>
+
+      {/* ── Ressourcen-Balken ── */}
+      <div className="main-resources">
+        <div className="main-res-row">
+          {/* Ausdauer — aus EnergyService (dynamisches Max aus Account-Level) */}
+          <div className="main-res-item">
+            <span className="main-res-label">Ausdauer</span>
+            <div className="main-res-bar">
+              <div
+                className="main-res-bar__fill"
+                style={{ width: `${energyMax > 0 ? (energy.energy / energyMax) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="main-res-value">{energy.energy}/{energyMax}</span>
+          </div>
+          {/* EXP — Account-XP-Fortschritt */}
+          <div className="main-res-item">
+            <span className="main-res-label">
+              Lv.{account.level} · EXP
+            </span>
+            <div className="main-res-bar main-res-bar--exp">
+              <div
+                className="main-res-bar__fill main-res-bar__fill--exp"
+                style={{
+                  width: `${AccountProgressionService.xpToNextLevel(account.level) > 0
+                    ? (account.xp / AccountProgressionService.xpToNextLevel(account.level)) * 100
+                    : 0}%`,
+                }}
+              />
+            </div>
+            <span className="main-res-value">
+              {account.xp.toLocaleString('de-DE')} / {AccountProgressionService.xpToNextLevel(account.level).toLocaleString('de-DE')}
+            </span>
+          </div>
+        </div>
+        <div className="main-res-row">
+          {/* Mana — Account-Mana */}
+          <div className="main-res-item">
+            <span className="main-res-label">Mana</span>
+            <div className="main-res-bar main-res-bar--mana">
+              <div
+                className="main-res-bar__fill main-res-bar__fill--mp"
+                style={{ width: `${account.maxMana > 0 ? (account.mana / account.maxMana) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="main-res-value">{account.mana.toLocaleString('de-DE')}/{account.maxMana.toLocaleString('de-DE')}</span>
+          </div>
+          {/* Tränke */}
+          <div className="main-res-item">
+            <span className="main-res-label">Tränke</span>
+            <div className="main-res-bar" style={{ background: 'none' }}>
+              <span style={{ fontSize: 18, letterSpacing: 4 }}>
+                {Array.from({ length: energy.potions }).map((_, i) => <span key={i}>🧪</span>)}
+                {energy.potions === 0 && <span style={{ fontSize: 11, color: '#666' }}>—</span>}
+              </span>
+            </div>
+            <span className="main-res-value">{energy.potions}×</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Info-Banner ── */}
+      <div className="main-infobanner">
+        <span className="main-infobanner__icon">ⓘ</span>
+        <span className="main-infobanner__text">Willkommen bei Codex Immortalis!</span>
       </div>
 
       {/* ── Scrollbarer Inhaltsbereich ── */}
       <div className="main-body">
 
-        {/* ── Ressourcen-Balken ── */}
-        <div className="ms-bars">
-          <ResBar
-            variant="stamina"
-            label="Ausdauer"
-            value={`${energy.energy}/${energyMax}`}
-            fill={pct(energy.energy, energyMax)}
-          />
-          <ResBar
-            variant="exp"
-            label={`Lv.${account.level}`}
-            value={`${account.xp.toLocaleString('de-DE')}/${xpNext.toLocaleString('de-DE')}`}
-            fill={pct(account.xp, xpNext)}
-          />
-          <ResBar
-            variant="mana"
-            label="Mana"
-            value={`${account.mana.toLocaleString('de-DE')}/${account.maxMana.toLocaleString('de-DE')}`}
-            fill={pct(account.mana, account.maxMana)}
-          />
-          <ResBar
-            variant="crystal"
-            label="Tränke"
-            value={`×${energy.potions}`}
-          />
-        </div>
-
-        {/* ── Info-Banner ── */}
-        <div className="ms-info" style={{ backgroundImage: `url(${UI}info_panel.webp)` }}>
-          <span className="ms-info__text">Willkommen bei Codex Immortalis!</span>
-        </div>
-
-        {/* ── Hauptkarte: Spielerkarte + Aktionen/Status ── */}
-        <div className="ms-maincard">
-
-          {/* Spielerkarte */}
-          <div
-            className="ms-player"
-            style={{ backgroundImage: `url(${UI}player_frame.webp)` }}
-            onClick={() => setDetailCard(CardDatabase.getById('azazel') ?? null)}
-          >
-            <div className="ms-player__art">
-              <img src={`${B}assets/cards/azazel.png`} alt="Azazel" />
-              <div className="ms-player__caption">
-                <span className="ms-player__name">Azazel</span>
-                <span className="ms-player__title">Richter der sterbenden Sonne</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Aktionen + Status */}
-          <div className="ms-side">
-            <div className="ms-actions">
-              <button
-                className="ms-rbtn"
-                style={{ backgroundImage: `url(${UI}btn_relics.webp)` }}
-                onClick={() => {}}
-                aria-label="Relics kaufen"
+      {/* ── Hauptkarte ── */}
+      <div className="main-card">
+        {/* Profil-Seite */}
+        <div className="main-card__profile">
+          <div className="main-profile-frame">
+            <div
+              className="main-profile-frame__card"
+              onClick={() => setDetailCard(CardDatabase.getById('azazel') ?? null)}
+              style={{ cursor: 'pointer' }}
+            >
+              <img
+                className="main-profile-frame__img"
+                src={`${B}assets/cards/azazel.png`}
+                alt="Azazel"
               />
-              <button
-                className="ms-rbtn"
-                style={{ backgroundImage: `url(${UI}btn_updates.webp)` }}
-                onClick={() => {}}
-                aria-label="Updates"
-              >
-                <span className="ms-rbtn__badge">3</span>
-              </button>
-            </div>
-
-            <div className="ms-status">
-              <div className="ms-status__head" style={{ backgroundImage: `url(${UI}status_header.webp)` }}>
-                STATUS
-              </div>
-              <div className="ms-status__row" style={{ backgroundImage: `url(${UI}status_atk.webp)` }}>
-                <span className="ms-status__val">
-                  {deckStats ? deckStats.atk.toLocaleString('de-DE') : '—'}
-                </span>
-              </div>
-              <div className="ms-status__row" style={{ backgroundImage: `url(${UI}status_def.webp)` }}>
-                <span className="ms-status__val">
-                  {deckStats ? deckStats.def.toLocaleString('de-DE') : '—'}
-                </span>
+              <div className="main-profile-frame__num">006.</div>
+              <div className="main-profile-frame__compass">✦</div>
+              <div className="main-profile-frame__overlay">
+                <div className="main-profile-frame__card-name">Azazel,</div>
+                <div className="main-profile-frame__card-title">Richter der sterbenden Sonne</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Tipp-Bereich mit Begleiterin ── */}
-        <div className="ms-tip">
-          <div className="ms-tip__box" style={{ backgroundImage: `url(${UI}message_box.webp)` }}>
-            <span className="ms-tip__text">{TIPS[tipIndex]}</span>
+        {/* Rechte Seite */}
+        <div className="main-card__right">
+          <button className="main-card__action-btn" onClick={() => {}}>
+            💎 Relics kaufen
+          </button>
+          <button className="main-card__action-btn" onClick={() => {}}>
+            📜 Updates <span className="main-card__badge">③</span>
+          </button>
+          <div className="main-card__divider" />
+          <div className="main-card__status">
+            <div className="main-card__status-title">Status</div>
+            <div className="main-card__status-row">
+              <span className="main-card__status-label">Gesamt ATK:</span>
+              <span className="main-card__status-value">
+                {deckStats ? deckStats.atk.toLocaleString('de-DE') : '—'}
+              </span>
+            </div>
+            <div className="main-card__status-row">
+              <span className="main-card__status-label">Gesamt DEF:</span>
+              <span className="main-card__status-value">
+                {deckStats ? deckStats.def.toLocaleString('de-DE') : '—'}
+              </span>
+            </div>
           </div>
-          <img className="ms-tip__guide" src={`${UI}guide_character.webp`} alt="" aria-hidden="true" />
         </div>
+      </div>
 
-        {/* ── Sektions-Banner ── */}
-        <div className="ms-banner" style={{ backgroundImage: `url(${UI}section_banner.webp)` }}>
-          <span className="ms-banner__text">Mobile Ignite</span>
-        </div>
+      {/* ── Tipp-Bereich mit Begleiterin ── */}
+      <div className="main-tip">
+        <span className="main-tip__text">{TIPS[tipIndex]}</span>
+        <img
+          className="main-tip__npc"
+          src={`${B}assets/ui/guide_character.webp`}
+          alt=""
+          aria-hidden="true"
+        />
+      </div>
+
+      {/* ── Trenner ── */}
+      <div className="main-divider">─────── ✦ Mobile Ignite ✦ ───────</div>
 
       </div>{/* end main-body */}
 
