@@ -10,9 +10,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { BattleCard } from '../types/BattleTypes';
 import type { ComboState } from '../types/ComboTypes';
 import { COMBO_WINDOW_MS, MAX_COMBO } from '../types/ComboTypes';
-
-const TICK_MS      = 50;    // Timer-Auflösung in ms
-const BREAK_DUR_MS = 700;   // Dauer der Break-Animation
+import { COMBO_TICK_MS as TICK_MS, COMBO_BREAK_DUR_MS as BREAK_DUR_MS } from '../config/GameConfig';
 
 export interface ComboStore extends ComboState {
   /** Aufruf direkt vor battle.playCard(). windowExtension in ms. */

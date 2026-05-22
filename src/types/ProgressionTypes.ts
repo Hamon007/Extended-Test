@@ -4,11 +4,13 @@
 
 import type { CardInstance } from './GachaTypes';
 
-// ── Konstanten ────────────────────────────────────────────────────────────────
+// ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────
 
-export const DEFEAT_CONSOLATION  = 10;   // Kristalle bei Niederlage
-export const DAILY_BONUS_CRYSTALS = 200; // Tages-Login-Bonus
-export const POTION_DROP_CHANCE = 0.35;  // Chance auf einen Ausdauertrank bei Sieg
+export {
+  DEFEAT_CONSOLATION,
+  DAILY_BONUS_CRYSTALS,
+  POTION_DROP_CHANCE,
+} from '../config/GameConfig';
 
 // ── Belohnungs-Details (nach Battle) ─────────────────────────────────────────
 

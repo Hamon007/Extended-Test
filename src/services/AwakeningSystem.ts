@@ -13,8 +13,9 @@ import type { Card } from '../types/Card';
 import { rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
+import { AWAKENING_CRYSTAL_COST } from '../config/GameConfig';
 
-export const AWAKENING_CRYSTAL_COST = 25_000;
+export { AWAKENING_CRYSTAL_COST };
 
 export type AwakenBlockReason = 'NOT_LR' | 'NO_AWAKENING' | 'TARGET_MISSING';
 

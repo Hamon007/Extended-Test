@@ -12,16 +12,28 @@ import { CardDatabase } from './CardDatabase';
 import { FusionSystem } from './FusionSystem';
 import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
+import {
+  GUILD_NAME,
+  GUILD_BOSS_MAX_HP,
+  GUILD_BOSS_ATTACKS,
+  GUILD_BOSS_REWARD_CRYSTALS,
+  GUILD_BOSS_REWARD_POTIONS,
+  GUILD_XP_PER_CRYSTAL,
+  GUILD_LEVEL_THRESHOLDS,
+  GUILD_BOSS_BASE_DAMAGE,
+  GUILD_BOSS_ATK_FACTOR_MIN,
+  GUILD_BOSS_ATK_FACTOR_VARIANCE,
+} from '../config/GameConfig';
 
-// ── Konstanten ────────────────────────────────────────────────
-
-export const GUILD_NAME             = 'Codex Immortalis';
-export const GUILD_BOSS_MAX_HP      = 30_000;
-export const GUILD_BOSS_ATTACKS     = 5;          // Angriffe pro Woche
-export const GUILD_BOSS_REWARD_CRYSTALS = 2_000;
-export const GUILD_BOSS_REWARD_POTIONS  = 2;
-export const GUILD_XP_PER_CRYSTAL   = 1;          // 1 gespendeter Kristall = 1 Gildenpunkt
-export const GUILD_LEVEL_THRESHOLDS = [0, 5_000, 15_000, 40_000, 100_000]; // XP für Level 1–5
+export {
+  GUILD_NAME,
+  GUILD_BOSS_MAX_HP,
+  GUILD_BOSS_ATTACKS,
+  GUILD_BOSS_REWARD_CRYSTALS,
+  GUILD_BOSS_REWARD_POTIONS,
+  GUILD_XP_PER_CRYSTAL,
+  GUILD_LEVEL_THRESHOLDS,
+};
 
 const STORAGE_KEY = 'ci_guild_state';
 
@@ -160,7 +172,7 @@ export function attackBoss(deckUuids: string[], inventory: CardInstance[]): Boss
   }
 
   const dmg = Math.round(
-    2_000 + totalAtk * (0.08 + Math.random() * 0.06),
+    GUILD_BOSS_BASE_DAMAGE + totalAtk * (GUILD_BOSS_ATK_FACTOR_MIN + Math.random() * GUILD_BOSS_ATK_FACTOR_VARIANCE),
   );
 
   const hpAfter  = Math.max(0, st.bossCurrentHp - dmg);

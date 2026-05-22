@@ -69,10 +69,12 @@ export const DROP_RATES: DropRateEntry[] = [
   { rarity: 'MR',  rate:  1, cumulative: 100 },
 ];
 
-// ── Kosten ────────────────────────────────────────────────────────────────────
+// ── Kosten (Werte zentral in GameConfig.ts) ───────────────────────────────────
 
-export const PULL_COST_SINGLE = 100;
-export const PULL_COST_MULTI  = 1000;
-export const MULTI_PULL_COUNT = 10;
-export const PITY_THRESHOLD   = 100;      // bei Pull 100 garantierter SSR
-export const STARTING_CRYSTALS = 999_999; // Alpha: unbegrenzt
+export {
+  PULL_COST_SINGLE,
+  PULL_COST_MULTI,
+  MULTI_PULL_COUNT,
+  PITY_THRESHOLD,
+  STARTING_CRYSTALS,
+} from '../config/GameConfig';

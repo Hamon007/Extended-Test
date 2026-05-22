@@ -22,28 +22,17 @@ import { RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
 import { levelMultiplier } from './LevelSystem';
+import {
+  DUPLICATES_PER_STEP,
+  STEP_CRYSTAL_COST,
+  FUSION_ATK_PER_RANK    as ATK_PER_RANK,
+  FUSION_DEF_PER_RANK    as DEF_PER_RANK,
+  FUSION_HP_PER_RANK     as HP_PER_RANK,
+  FUSION_MP_CUT_PER_RANK as MP_CUT_PER_RANK,
+  FUSION_CRIT_PER_RANK   as CRIT_PER_RANK,
+} from '../config/GameConfig';
 
-// ── Fusions-Kosten ────────────────────────────────────────────
-// Jeder Schritt kostet genau 1 Duplikat. Kristallkosten je Hauptstufe.
-
-export const DUPLICATES_PER_STEP = 1;
-
-const STEP_CRYSTAL_COST: Record<string, number> = {
-  N:   50,
-  R:   150,
-  SR:  400,
-  SSR: 1000,
-  MR:  3000,
-  LR:  8000,
-};
-
-// ── Stat-Skalierung pro Unterstufe über Basis ─────────────────
-
-const ATK_PER_RANK    = 0.12; // +12 % ATK je Unterstufe
-const DEF_PER_RANK    = 0.12; // +12 % DEF je Unterstufe
-const HP_PER_RANK     = 0.10; // +10 % HP  je Unterstufe
-const MP_CUT_PER_RANK = 0.06; // −6 % MP-Kosten je Unterstufe
-const CRIT_PER_RANK   = 1;    // +1 % Krit je Unterstufe (falls vorhanden)
+export { DUPLICATES_PER_STEP, STEP_CRYSTAL_COST };
 
 // ── Reine Helfer ──────────────────────────────────────────────
 

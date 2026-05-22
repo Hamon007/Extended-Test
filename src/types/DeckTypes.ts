@@ -5,10 +5,9 @@
 import type { Card } from './Card';
 import type { CardInstance } from './GachaTypes';
 
-// ── Konstanten ────────────────────────────────────────────────────────────────
+// ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────
 
-export const DECK_SIZE     = 10;
-export const MAX_DECK_COST = 800;  // max. Gesamt-MP im Deck
+export { DECK_SIZE, MAX_DECK_COST } from '../config/GameConfig';
 
 // ── Deck-Struktur ─────────────────────────────────────────────────────────────
 

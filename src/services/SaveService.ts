@@ -10,6 +10,7 @@ import type { GachaState } from '../types/GachaTypes';
 import { STARTING_CRYSTALS } from '../types/GachaTypes';
 import type { Deck } from '../types/DeckTypes';
 import { createEmptyDeck } from './DeckBuilderHelpers';
+import { STARTING_CRYSTAL_CARDS } from '../config/GameConfig';
 
 // ── Storage-Schlüssel ─────────────────────────────────────────
 
@@ -49,7 +50,7 @@ function defaultGachaState(): GachaState {
     pityCounter:  0,
     totalPulls:   0,
     inventory:    [],
-    crystalCards: { small: 3, medium: 1, large: 0 },
+    crystalCards: { ...STARTING_CRYSTAL_CARDS },
   };
 }
 
@@ -76,7 +77,7 @@ function loadGachaState(): GachaState {
     pityCounter:  saved.pityCounter ?? 0,
     totalPulls:   saved.totalPulls  ?? 0,
     inventory,
-    crystalCards: saved.crystalCards ?? { small: 3, medium: 1, large: 0 },
+    crystalCards: saved.crystalCards ?? { ...STARTING_CRYSTAL_CARDS },
   };
 }
 

@@ -9,20 +9,18 @@
 import type { Rarity } from '../types/Card';
 import { rarityMajor } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
+import {
+  LEVEL_CAP_BY_MAJOR,
+  CRYSTAL_CARD_XP,
+  XP_PER_LEVEL_FACTOR,
+  LEVEL_ATK_BONUS_PER_LV,
+  LEVEL_DEF_BONUS_PER_LV,
+  LEVEL_HP_BONUS_PER_LV,
+  SACRIFICE_XP_BASE,
+  SACRIFICE_XP_PER_LEVEL,
+} from '../config/GameConfig';
 
-// ── Level-Obergrenzen ─────────────────────────────────────────
-
-export const LEVEL_CAP_BY_MAJOR: Record<string, number> = {
-  N: 20, R: 30, SR: 40, SSR: 50, MR: 60, LR: 70,
-};
-
-// ── Kristallkarten ────────────────────────────────────────────
-
-export const CRYSTAL_CARD_XP = {
-  small:  500,
-  medium: 2_000,
-  large:  5_000,
-} as const;
+export { LEVEL_CAP_BY_MAJOR, CRYSTAL_CARD_XP };
 
 export type CrystalCardSize = keyof typeof CRYSTAL_CARD_XP;
 
@@ -34,7 +32,7 @@ export function levelCap(rarity: Rarity): number {
 
 /** XP-Kosten von Level L auf L+1 */
 export function xpToNext(level: number): number {
-  return level * 100;
+  return level * XP_PER_LEVEL_FACTOR;
 }
 
 /** Gesamt-XP um Level `target` zu erreichen (ab Level 1) */
@@ -48,24 +46,16 @@ export function totalXpForLevel(target: number): number {
 export function levelMultiplier(level: number): { atk: number; def: number; hp: number } {
   const bonus = level - 1;
   return {
-    atk: 1 + bonus * 0.005,  // +0,5 % je Level über 1
-    def: 1 + bonus * 0.005,
-    hp:  1 + bonus * 0.003,  // +0,3 % je Level über 1
+    atk: 1 + bonus * LEVEL_ATK_BONUS_PER_LV,
+    def: 1 + bonus * LEVEL_DEF_BONUS_PER_LV,
+    hp:  1 + bonus * LEVEL_HP_BONUS_PER_LV,
   };
 }
 
 /** XP-Wert einer geopferten Karten-Instanz */
 export function sacrificeXp(inst: CardInstance): number {
-  const BASE: Record<string, number> = {
-    N:   300,
-    R:   600,
-    SR:  1_200,
-    SSR: 2_500,
-    MR:  5_000,
-    LR:  10_000,
-  };
-  const base     = BASE[rarityMajor(inst.rarity)] ?? 300;
-  const lvlBonus = ((inst.level ?? 1) - 1) * 50;
+  const base     = SACRIFICE_XP_BASE[rarityMajor(inst.rarity)] ?? SACRIFICE_XP_BASE['N'];
+  const lvlBonus = ((inst.level ?? 1) - 1) * SACRIFICE_XP_PER_LEVEL;
   return base + lvlBonus;
 }
 

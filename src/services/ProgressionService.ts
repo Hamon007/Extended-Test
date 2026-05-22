@@ -11,6 +11,7 @@ import type { BattleResult, EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import type { DailyBonusResult, RewardDetails } from '../types/ProgressionTypes';
 import { DAILY_BONUS_CRYSTALS, DEFEAT_CONSOLATION, POTION_DROP_CHANCE } from '../types/ProgressionTypes';
+import { CRYSTAL_CARD_DROP_CHANCE } from '../config/GameConfig';
 import { CardDatabase } from './CardDatabase';
 import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
@@ -82,8 +83,8 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     const potionsGained = Math.random() < POTION_DROP_CHANCE ? 1 : 0;
     if (potionsGained > 0) EnergyService.addPotions(potionsGained);
 
-    // 10 % Chance auf eine kleine Kristallkarte
-    if (Math.random() < 0.10) {
+    // Chance auf eine kleine Kristallkarte (→ GameConfig.CRYSTAL_CARD_DROP_CHANCE)
+    if (Math.random() < CRYSTAL_CARD_DROP_CHANCE) {
       const gs2 = SaveService.loadGachaState();
       SaveService.saveGachaState({
         ...gs2,
