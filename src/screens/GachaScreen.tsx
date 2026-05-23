@@ -242,6 +242,7 @@ const SingleResult: React.FC<SingleResultProps> = ({
         </div>
 
         {wasPity && <div className="result-badge result-badge--pity">PITY</div>}
+        {instance.isNew && <div className="result-badge result-badge--new">NEU</div>}
         <div className="result-badge result-badge--rarity" style={{ color: rarityColor }}>
           {instance.rarity}
         </div>
@@ -386,6 +387,9 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, onCardClick 
 
           {wasPity && (
             <div className="multi-card__pity-badge">P</div>
+          )}
+          {instance.isNew && (
+            <div className="multi-card__new-badge">NEU</div>
           )}
 
           <div className="multi-card__footer">

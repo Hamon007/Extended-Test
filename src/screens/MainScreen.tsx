@@ -72,18 +72,19 @@ function formatCountdown(ms: number): string {
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
-  const [detailCard,   setDetailCard]   = useState<Card | null>(null);
-  const [countdown,    setCountdown]    = useState(() => nextBattleMs());
-  const [tipIndex,     setTipIndex]     = useState(0);
-  const [npcIndex,     setNpcIndex]     = useState(0);
-  const [deckStats,    setDeckStats]    = useState<{ atk: number; def: number } | null>(null);
-  const [account,      setAccount]      = useState<AccountState>(() => SaveService.loadAccountState());
-  const [energy,       setEnergy]       = useState(() => EnergyService.load());
-  const [energyMax,    setEnergyMax]    = useState(() => EnergyService.getMax());
-  const [feedEvents,   setFeedEvents]   = useState<FeedEvent[]>([]);
-  const [feedIndex,    setFeedIndex]    = useState(0);
+  const [detailCard,    setDetailCard]    = useState<Card | null>(null);
+  const [countdown,     setCountdown]     = useState(() => nextBattleMs());
+  const [tipIndex,      setTipIndex]      = useState(0);
+  const [npcIndex,      setNpcIndex]      = useState(0);
+  const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
+  const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
+  const [energy,        setEnergy]        = useState(() => EnergyService.load());
+  const [energyMax,     setEnergyMax]     = useState(() => EnergyService.getMax());
+  const [feedEvents,    setFeedEvents]    = useState<FeedEvent[]>([]);
+  const [feedIndex,     setFeedIndex]     = useState(0);
+  const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
   // Track auth state reactively so feed loads after async AuthService.init()
-  const [loggedIn,     setLoggedIn]     = useState(AuthService.isLoggedIn);
+  const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
   // Countdown-Tick
   useEffect(() => {
@@ -132,6 +133,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
       setAccount(SaveService.loadAccountState());
       setEnergy(EnergyService.load());
       setEnergyMax(EnergyService.getMax());
+      setProfileCardId(localStorage.getItem('ci_profile_card_id') ?? 'azazel');
     };
     refresh();
     window.addEventListener('focus', refresh);
@@ -271,23 +273,28 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         {/* Profil-Seite */}
         <div className="main-card__profile">
           <div className="main-profile-frame">
-            <div
-              className="main-profile-frame__card"
-              onClick={() => setDetailCard(CardDatabase.getById('azazel') ?? null)}
-              style={{ cursor: 'pointer' }}
-            >
-              <img
-                className="main-profile-frame__img"
-                src={`${B}assets/cards/azazel.webp`}
-                alt="Azazel"
-              />
-              <div className="main-profile-frame__num">006.</div>
-              <div className="main-profile-frame__compass">✦</div>
-              <div className="main-profile-frame__overlay">
-                <div className="main-profile-frame__card-name">Azazel,</div>
-                <div className="main-profile-frame__card-title">Richter der sterbenden Sonne</div>
-              </div>
-            </div>
+            {(() => {
+              const profileCard = CardDatabase.getById(profileCardId);
+              return (
+                <div
+                  className="main-profile-frame__card"
+                  onClick={() => setDetailCard(profileCard ?? CardDatabase.getById('azazel') ?? null)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img
+                    className="main-profile-frame__img"
+                    src={profileCard?.image ?? `${B}assets/cards/azazel.webp`}
+                    alt={profileCard?.name ?? 'Azazel'}
+                  />
+                  <div className="main-profile-frame__num">006.</div>
+                  <div className="main-profile-frame__compass">✦</div>
+                  <div className="main-profile-frame__overlay">
+                    <div className="main-profile-frame__card-name">{profileCard?.name ?? 'Azazel'},</div>
+                    <div className="main-profile-frame__card-title">{profileCard?.title ?? 'Richter der sterbenden Sonne'}</div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
 

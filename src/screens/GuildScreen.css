@@ -369,3 +369,399 @@
   font-size: 10px;
   color: #8a6520;
 }
+
+/* ── Tab-Leiste ───────────────────────────────────────────── */
+.guild-tab-bar {
+  display: flex;
+  flex-shrink: 0;
+  border-bottom: 1px solid #2a1525;
+  background: rgba(0,0,0,0.25);
+}
+
+.guild-tab-btn {
+  flex: 1;
+  padding: 9px 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #8a6520;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.guild-tab-btn--active {
+  color: #f0d080;
+  border-bottom-color: #c9a84c;
+}
+
+.guild-tab-btn:hover:not(.guild-tab-btn--active) {
+  color: #c9a84c;
+}
+
+/* ── Login-Hinweis ────────────────────────────────────────── */
+.guild-login-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  color: rgba(232,213,176,0.5);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.guild-login-hint span { font-size: 2rem; }
+
+.guild-loading {
+  text-align: center;
+  padding: 40px;
+  color: #8a6520;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+}
+
+/* ── Suche ────────────────────────────────────────────────── */
+.guild-search-bar {
+  flex-shrink: 0;
+}
+
+.guild-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #3a2030;
+  border-radius: 6px;
+  color: #e8d5b0;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.guild-search-input:focus { border-color: #8a6520; }
+.guild-search-input::placeholder { color: #3a2030; }
+
+/* ── Gildenliste ──────────────────────────────────────────── */
+.guild-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guild-list-empty {
+  text-align: center;
+  padding: 20px;
+  color: #3a2030;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+}
+
+.guild-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a1525;
+  border-radius: 6px;
+}
+
+.guild-list-row__emblem {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+
+.guild-list-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.guild-list-row__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.guild-list-row__tag {
+  color: #8a6520;
+  font-size: 10px;
+}
+
+.guild-list-row__meta {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+}
+
+.guild-list-row__apply-btn {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #f0d080;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid #8a6520;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.guild-list-row__apply-btn:hover:not(:disabled) {
+  background: rgba(201,168,76,0.25);
+}
+
+.guild-list-row__apply-btn--applied {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.guild-list-row__closed {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #3a2030;
+  flex-shrink: 0;
+}
+
+/* ── Gründen-Button ──────────────────────────────────────── */
+.guild-create-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #c9a84c;
+  background: rgba(201,168,76,0.08);
+  border: 1px dashed #8a6520;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.guild-create-btn:hover { background: rgba(201,168,76,0.16); }
+
+/* ── Gründen-Formular ────────────────────────────────────── */
+.guild-create-form {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid #3a2030;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guild-create-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #3a2030;
+  border-radius: 6px;
+  color: #e8d5b0;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.guild-create-input:focus { border-color: #8a6520; }
+
+.guild-create-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #3a2030;
+  border-radius: 6px;
+  color: #e8d5b0;
+  font-family: 'EB Garamond', serif;
+  font-size: 12px;
+  padding: 8px 10px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+
+.guild-create-textarea:focus { border-color: #8a6520; }
+
+.guild-create-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  cursor: pointer;
+}
+
+.guild-create-error {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #ef9a9a;
+  text-align: center;
+}
+
+.guild-create-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.guild-create-cancel {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+  background: transparent;
+  border: 1px solid #3a2030;
+  cursor: pointer;
+}
+
+.guild-create-submit {
+  flex: 2;
+  padding: 9px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #f0d080;
+  background: linear-gradient(135deg, #3d2a08, #6b4a10);
+  border: 1px solid #8a6520;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.guild-create-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Eigene Gilde Info ────────────────────────────────────── */
+.guild-my-info {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #3a2030;
+  border-radius: 8px;
+}
+
+.guild-my-info__emblem {
+  font-size: 2.4rem;
+  flex-shrink: 0;
+}
+
+.guild-my-info__details { flex: 1; min-width: 0; }
+
+.guild-my-info__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 12px;
+  color: #f0d080;
+  margin-bottom: 4px;
+}
+
+.guild-my-info__tag {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #8a6520;
+}
+
+.guild-my-info__meta {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+  margin-bottom: 4px;
+}
+
+.guild-my-info__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: rgba(232,213,176,0.6);
+  font-style: italic;
+}
+
+/* ── Verlassen-Button ─────────────────────────────────────── */
+.guild-leave-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #ef9a9a;
+  background: rgba(139,26,26,0.12);
+  border: 1px solid #4a1515;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.guild-leave-btn:hover { background: rgba(139,26,26,0.25); }
+
+/* ── Bewerbungen (Leader) ─────────────────────────────────── */
+.guild-apps-section {
+  border-color: #3a1a10;
+}
+
+.guild-app-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid #2a1015;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.guild-app-row__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #e8d5b0;
+}
+
+.guild-app-row__msg {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: rgba(232,213,176,0.5);
+  font-style: italic;
+}
+
+.guild-app-row__btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.guild-app-row__accept {
+  flex: 1;
+  padding: 6px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #81c784;
+  background: rgba(76,175,80,0.1);
+  border: 1px solid #2e7d32;
+  cursor: pointer;
+}
+
+.guild-app-row__reject {
+  flex: 1;
+  padding: 6px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #ef9a9a;
+  background: rgba(139,26,26,0.1);
+  border: 1px solid #4a1515;
+  cursor: pointer;
+}

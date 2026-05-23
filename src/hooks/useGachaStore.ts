@@ -44,12 +44,16 @@ export function useGachaStore(): GachaStore {
 
     // Kurzes Delay für UX-Feedback
     setTimeout(() => {
+      const prevInventory = state.inventory;
+      const prevCardIds = new Set(prevInventory.map(i => i.cardId));
       const outcome = GachaSystem.singlePull(state);
       if (outcome.ok) {
-        setLastSingle(outcome.result);
+        const instance = outcome.result.instance;
+        instance.isNew = !prevCardIds.has(instance.cardId);
+        setLastSingle({ ...outcome.result, instance });
         setLastMulti(null);
         persist(outcome.nextState);
-        const r = outcome.result.instance;
+        const r = instance;
         if (r.rarity === 'SSR' || r.rarity === 'MR') {
           const card = CardDatabase.getById(r.cardId);
           ActivityFeedService.post(r.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.cardId });
@@ -67,12 +71,20 @@ export function useGachaStore(): GachaStore {
     setError(null);
 
     setTimeout(() => {
+      const prevInventory = state.inventory;
+      const prevCardIds = new Set(prevInventory.map(i => i.cardId));
       const outcome = GachaSystem.multiPull(state);
       if (outcome.ok) {
-        setLastMulti(outcome.result);
+        const seenInBatch = new Set<string>();
+        const updatedResults = outcome.result.results.map(pr => {
+          const isNew = !prevCardIds.has(pr.instance.cardId) && !seenInBatch.has(pr.instance.cardId);
+          seenInBatch.add(pr.instance.cardId);
+          return { ...pr, instance: { ...pr.instance, isNew } };
+        });
+        setLastMulti({ ...outcome.result, results: updatedResults });
         setLastSingle(null);
         persist(outcome.nextState);
-        for (const r of outcome.result.results) {
+        for (const r of updatedResults) {
           if (r.instance.rarity === 'SSR' || r.instance.rarity === 'MR') {
             const card = CardDatabase.getById(r.instance.cardId);
             ActivityFeedService.post(r.instance.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.instance.cardId });

@@ -4,6 +4,7 @@ import { ProfileService, type Profile, canChangeUsername, nextChangeDate } from 
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
+import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
 
 interface ProfileScreenProps {
@@ -13,13 +14,14 @@ interface ProfileScreenProps {
 const RARITY_MAJORS = ['N', 'R', 'SR', 'SSR', 'MR', 'LR'] as const;
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
-  const [profile,     setProfile]     = useState<Profile | null>(null);
-  const [loading,     setLoading]     = useState(true);
-  const [editing,     setEditing]     = useState(false);
-  const [nameInput,   setNameInput]   = useState('');
-  const [nameError,   setNameError]   = useState('');
-  const [nameSaving,  setNameSaving]  = useState(false);
-  const [copied,      setCopied]      = useState(false);
+  const [profile,        setProfile]        = useState<Profile | null>(null);
+  const [loading,        setLoading]        = useState(true);
+  const [editing,        setEditing]        = useState(false);
+  const [nameInput,      setNameInput]      = useState('');
+  const [nameError,      setNameError]      = useState('');
+  const [nameSaving,     setNameSaving]     = useState(false);
+  const [copied,         setCopied]         = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? '');
 
   const isLoggedIn = AuthService.isLoggedIn;
 
@@ -37,6 +39,16 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
       counts[major] = (counts[major] ?? 0) + 1;
     }
     return counts;
+  }, [gacha]);
+
+  const uniqueCardInstances = useMemo(() => {
+    const seen = new Map<string, CardInstance>();
+    for (const inst of gacha.inventory) {
+      if (!seen.has(inst.cardId)) {
+        seen.set(inst.cardId, inst);
+      }
+    }
+    return Array.from(seen.values());
   }, [gacha]);
 
   useEffect(() => {
@@ -184,6 +196,40 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                 );
               })}
             </div>
+
+            {/* ── Profilkarte Auswahl ── */}
+            {uniqueCardInstances.length > 0 && (
+              <div className="profile-card-section">
+                <div className="profile-section-title">Profilkarte</div>
+                <div className="profile-card-grid">
+                  {uniqueCardInstances.map(inst => {
+                    const card = CardDatabase.getById(inst.cardId);
+                    const rarityColor = RARITY_COLOR[inst.rarity as Rarity];
+                    const isSelected = inst.cardId === selectedCardId;
+                    return (
+                      <button
+                        key={inst.cardId}
+                        className={`profile-card-chip${isSelected ? ' profile-card-chip--selected' : ''}`}
+                        onClick={() => {
+                          localStorage.setItem('ci_profile_card_id', inst.cardId);
+                          setSelectedCardId(inst.cardId);
+                        }}
+                      >
+                        {card?.image ? (
+                          <img className="profile-card-chip__img" src={card.image} alt={card.name} />
+                        ) : (
+                          <div className="profile-card-chip__placeholder">🌑</div>
+                        )}
+                        <span className="profile-card-chip__rarity" style={{ color: rarityColor }}>
+                          {inst.rarity}
+                        </span>
+                        <span className="profile-card-chip__name">{card?.name ?? inst.cardId}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
