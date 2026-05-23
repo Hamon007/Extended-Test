@@ -9,7 +9,8 @@ export type Screen =
   | 'menu'
   | 'cardCollection'
   | 'guild'
-  | 'training';
+  | 'training'
+  | 'profile';
 
 const shortcutScreens: Record<string, Screen> = {
   gacha:  'gacha',
