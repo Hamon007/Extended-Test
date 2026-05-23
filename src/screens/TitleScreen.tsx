@@ -42,7 +42,7 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter, onAccountPress }) =>
       <div className="title-screen__bottom-left" onClick={e => e.stopPropagation()}>
         <button className="title-screen__meta-btn">
           <span className="title-screen__meta-icon">📖</span>
-          <span className="title-screen__meta-label">Konto</span>
+          <span className="title-screen__meta-label">Chronik</span>
         </button>
         <button className="title-screen__meta-btn">
           <span className="title-screen__meta-icon">⚙️</span>
