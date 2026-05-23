@@ -249,6 +249,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const tactical = useTacticalStore(tacticalConfig ?? null);
   const [popups,      setPopups]      = useState<DamagePopup[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [synergyToast, setSynergyToast] = useState<{ a: string; b: string } | null>(null);
   const popupId = React.useRef(0);
 
   const { player, enemy, round, phase, log, result, enemyData } = state;
@@ -317,6 +318,11 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         xPct:       20 + Math.random() * 60,
       });
 
+      if (calc.hasSynergy && lastCard) {
+        setSynergyToast({ a: lastCard.name, b: card.name });
+        setTimeout(() => setSynergyToast(null), 2200);
+      }
+
       lastCard = card;
     }
 
@@ -337,6 +343,15 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         </span>
         <button className="arena-flee-btn" onClick={battle.resetBattle}>✕</button>
       </div>
+
+      {/* Synergie-Toast */}
+      {synergyToast && (
+        <div className="arena-synergy-toast">
+          <span className="arena-synergy-toast__icon">⭐</span>
+          <span className="arena-synergy-toast__text">SYNERGIE</span>
+          <span className="arena-synergy-toast__cards">{synergyToast.a} + {synergyToast.b}</span>
+        </div>
+      )}
 
       {/* Gegner oben */}
       <div className="arena-enemy-zone">

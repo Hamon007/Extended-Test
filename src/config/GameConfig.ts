@@ -14,9 +14,9 @@
 
 export const MAX_ROUNDS      = 10;
 export const PLAYER_HP_BASE  = 50_000;   // Gesamt-HP des Spielers
-export const PLAYER_MP_MAX   = 100;
-export const PLAYER_MP_REGEN = 30;       // MP-Regen pro Runde
-export const PLAYER_MP_START = 100;      // MP zu Beginn des Kampfes
+export const PLAYER_MP_MAX   = 120;
+export const PLAYER_MP_REGEN = 45;       // MP-Regen pro Runde
+export const PLAYER_MP_START = 120;      // MP zu Beginn des Kampfes
 export const HAND_LIMIT      = 5;        // max. Karten gleichzeitig in der Hand (Rest wird nachgezogen)
 
 export const ENEMY_TURN_DELAY_MS = 800;  // Pause vor Gegnerzug (UX)

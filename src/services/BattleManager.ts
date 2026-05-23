@@ -320,10 +320,20 @@ function resolveRoundEnd(state: BattleState): BattleState {
     return { ...state, phase: 'ended', result, log: [...state.log, entry] };
   }
 
-  // MP regenerieren + played zurücksetzen
+  // Karten nachziehen: Deck + verbliebene Hand mischen, dann neue Hand ziehen
+  const recycled = [...state.player.deck, ...state.player.hand.map(c => ({ ...c, played: false }))];
+  // Fisher-Yates shuffle
+  for (let i = recycled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [recycled[i], recycled[j]] = [recycled[j], recycled[i]];
+  }
+  const newHand = recycled.slice(0, HAND_LIMIT);
+  const newDeck = recycled.slice(HAND_LIMIT);
+
   const newPlayer: BattleSide = {
     ...regenMP(state.player),
-    hand: state.player.hand.map(c => ({ ...c, played: false })),
+    hand: newHand,
+    deck: newDeck,
   };
   const newEnemy: BattleSide = {
     ...regenMP(state.enemy),
@@ -331,7 +341,7 @@ function resolveRoundEnd(state: BattleState): BattleState {
   };
 
   const entry = log(nextRound, 'system', '', 0, 0,
-    `Runde ${nextRound} beginnt. MP regeneriert.`);
+    `Runde ${nextRound} beginnt. Neue Karten gezogen.`);
 
   return {
     ...state,

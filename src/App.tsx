@@ -19,6 +19,7 @@ import CardTrainingScreen         from './screens/CardTrainingScreen';
 import ProfileScreen              from './screens/ProfileScreen';
 import TradeScreen               from './screens/TradeScreen';
 import FriendsScreen             from './screens/FriendsScreen';
+import InventoryScreen           from './screens/InventoryScreen';
 import { TradeService }          from './services/TradeService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
@@ -100,8 +101,9 @@ const App: React.FC = () => {
     if (target === 'fusion') goTo('fusion');
     if (target === 'training') goTo('training');
     if (target === 'profile') goTo('profile');
-    if (target === 'trade')   goTo('trade');
-    if (target === 'friends') goTo('friends');
+    if (target === 'trade')     goTo('trade');
+    if (target === 'friends')   goTo('friends');
+    if (target === 'inventory') goTo('inventory');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -154,6 +156,9 @@ const App: React.FC = () => {
         )}
         {screen === 'friends' && (
           <FriendsScreen onBack={goBack} />
+        )}
+        {screen === 'inventory' && (
+          <InventoryScreen onBack={goBack} />
         )}
       </div>
 

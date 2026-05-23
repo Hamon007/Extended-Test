@@ -17,14 +17,14 @@
         "atk": 4200,
         "def": 2400,
         "hp": 9800,
-        "mpCost": 75,
+        "mpCost": 25,
         "crit": 18
       },
       "skills": [
         {
           "name": "Urteil der sterbenden Sonne",
           "description": "Verursacht 280% ATK als Dunklen Schaden an einem Feind. Hat 30% Chance, den Feind für 2 Runden zu blenden.",
-          "mpCost": 60,
+          "mpCost": 20,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -82,7 +82,7 @@
         "atk": 3100,
         "def": 2200,
         "hp": 8600,
-        "mpCost": 70,
+        "mpCost": 24,
         "spd": 9,
         "crit": 16
       },
@@ -90,7 +90,7 @@
         {
           "name": "Tausend Gesichter",
           "description": "Kopiert die Fähigkeit der zuletzt gespielten Karte und setzt sie sofort ein. Gibt 30 MP zurück.",
-          "mpCost": 55,
+          "mpCost": 19,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -147,7 +147,7 @@
         "atk": 6800,
         "def": 4600,
         "hp": 16000,
-        "mpCost": 60,
+        "mpCost": 20,
         "spd": 11,
         "crit": 18
       },
@@ -155,7 +155,7 @@
         {
           "name": "Tausend Gesichter",
           "description": "Kopiert die Fähigkeit der zuletzt gespielten Karte und setzt sie sofort ein. Gibt 40 MP zurück.",
-          "mpCost": 45,
+          "mpCost": 15,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -164,7 +164,7 @@
         {
           "name": "Krone der Lügen",
           "description": "Verursacht 280% ATK als Chaos-Schaden und stiehlt einer Combo-Kette einen Multiplikator-Schritt für sich.",
-          "mpCost": 70,
+          "mpCost": 24,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -231,7 +231,7 @@
         "atk": 6500,
         "def": 4200,
         "hp": 15000,
-        "mpCost": 92,
+        "mpCost": 31,
         "crit": 22,
         "spd": 8
       },
@@ -239,7 +239,7 @@
         {
           "name": "Edikt des Abgrunds",
           "description": "Verursacht 220% ATK als Dunklen Schaden an allen Feinden. Reduziert ihren DEF um 30% für 3 Runden.",
-          "mpCost": 75,
+          "mpCost": 25,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -296,14 +296,14 @@
         "atk": 5100,
         "def": 1800,
         "hp": 10200,
-        "mpCost": 85,
+        "mpCost": 29,
         "crit": 22
       },
       "skills": [
         {
           "name": "Verschlingung der Ewigkeit",
           "description": "Verursacht 350% ATK als Leere-Schaden an einem Feind. Ignoriert 40% DEF. Hat 20% Chance auf sofortiges Eliminieren.",
-          "mpCost": 80,
+          "mpCost": 27,
           "cooldown": 5,
           "targetType": "single",
           "trigger": "active",
@@ -360,7 +360,7 @@
         "atk": 6200,
         "def": 3800,
         "hp": 13000,
-        "mpCost": 90,
+        "mpCost": 30,
         "crit": 25,
         "spd": 7
       },
@@ -368,7 +368,7 @@
         {
           "name": "Schöpfung der Finsternis",
           "description": "Verursacht 450% ATK als Leere-Schaden an allen Feinden. Setzt ihren MP-Stand auf 0 zurück. Nicht blockierbar.",
-          "mpCost": 90,
+          "mpCost": 30,
           "cooldown": 6,
           "targetType": "all",
           "trigger": "active",
@@ -438,7 +438,7 @@
         "atk": 3600,
         "def": 4200,
         "hp": 14000,
-        "mpCost": 75,
+        "mpCost": 25,
         "spd": 8,
         "crit": 12
       },
@@ -446,7 +446,7 @@
         {
           "name": "Bannière de la Sainte",
           "description": "Erhöht ATK aller verbündeten Einheiten um 35% und gewährt ihnen für 3 Runden Immunität gegen Debuffs.",
-          "mpCost": 65,
+          "mpCost": 22,
           "cooldown": 4,
           "targetType": "all_allies",
           "trigger": "active",
@@ -503,7 +503,7 @@
         "atk": 4800,
         "def": 2600,
         "hp": 10500,
-        "mpCost": 80,
+        "mpCost": 27,
         "spd": 10,
         "crit": 20
       },
@@ -511,7 +511,7 @@
         {
           "name": "Sturmhimmel-Schlag",
           "description": "Taucht aus dem Sturm herab und trifft alle Feinde mit 300% ATK als Wind/Licht-Schaden. Feinde mit weniger als 30% HP werden sofort eliminiert.",
-          "mpCost": 75,
+          "mpCost": 25,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -568,7 +568,7 @@
         "atk": 3400,
         "def": 5200,
         "hp": 16000,
-        "mpCost": 70,
+        "mpCost": 24,
         "spd": 6,
         "crit": 14
       },
@@ -576,7 +576,7 @@
         {
           "name": "Thermopylen-Stand",
           "description": "Für 3 Runden kann kein verbündeter Charakter sterben (HP bleibt bei 1). Leonidas erhält 50% mehr Schaden dafür.",
-          "mpCost": 60,
+          "mpCost": 20,
           "cooldown": 6,
           "targetType": "all_allies",
           "trigger": "active",
@@ -633,7 +633,7 @@
         "atk": 2800,
         "def": 3800,
         "hp": 12000,
-        "mpCost": 72,
+        "mpCost": 24,
         "spd": 7,
         "crit": 10
       },
@@ -641,7 +641,7 @@
         {
           "name": "Stimme beider Welten",
           "description": "Belebt eine gefallene Verbündete Karte mit 50% HP wieder. Diese Karte erhält für 2 Runden Immunität gegen Sterblichkeit.",
-          "mpCost": 70,
+          "mpCost": 24,
           "cooldown": 5,
           "targetType": "ally",
           "trigger": "active",
@@ -697,7 +697,7 @@
         "atk": 2600,
         "def": 3200,
         "hp": 11500,
-        "mpCost": 68,
+        "mpCost": 23,
         "spd": 8,
         "crit": 12
       },
@@ -705,7 +705,7 @@
         {
           "name": "Stiller Schneesturm",
           "description": "Friert alle Feinde für 2 Runden ein (können nicht angreifen). Verursacht 180% ATK als Eis-Schaden pro Runde an eingefrorenen Feinden.",
-          "mpCost": 65,
+          "mpCost": 22,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -763,7 +763,7 @@
         "atk": 2900,
         "def": 3400,
         "hp": 11800,
-        "mpCost": 72,
+        "mpCost": 24,
         "spd": 9,
         "crit": 13
       },
@@ -771,7 +771,7 @@
         {
           "name": "Schwarzes Grab",
           "description": "Belegt einen Feind mit dem 'Fluch des Sarges': Nach 3 Runden stirbt er sofort unabhängig von HP. Kann mit Gegenwirkung entfernt werden.",
-          "mpCost": 68,
+          "mpCost": 23,
           "cooldown": 5,
           "targetType": "single",
           "trigger": "active",
@@ -827,7 +827,7 @@
         "atk": 4500,
         "def": 4800,
         "hp": 15500,
-        "mpCost": 82,
+        "mpCost": 28,
         "spd": 5,
         "crit": 15
       },
@@ -835,7 +835,7 @@
         {
           "name": "Weltenbrecherramme",
           "description": "Verursacht 260% ATK als Erde-Schaden an allen Feinden. Reduziert deren Geschwindigkeit für 3 Runden um 40%.",
-          "mpCost": 75,
+          "mpCost": 25,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -893,7 +893,7 @@
         "atk": 5200,
         "def": 2800,
         "hp": 11000,
-        "mpCost": 85,
+        "mpCost": 29,
         "crit": 25,
         "spd": 9
       },
@@ -901,7 +901,7 @@
         {
           "name": "Drachen-Donner-Sturmklinge",
           "description": "Verursacht 320% ATK als Blitz-Schaden an einem Feind und 160% an allen anderen. Betäubt das Hauptziel für 1 Runde.",
-          "mpCost": 80,
+          "mpCost": 27,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -959,14 +959,14 @@
         "atk": 4600,
         "def": 2900,
         "hp": 10800,
-        "mpCost": 78,
+        "mpCost": 26,
         "crit": 19
       },
       "skills": [
         {
           "name": "Königlicher Steinblick",
           "description": "Versteinert einen Feind für 2 Runden (komplett handlungsunfähig). Versteinerte Feinde nehmen 50% mehr Schaden.",
-          "mpCost": 72,
+          "mpCost": 24,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1022,7 +1022,7 @@
         "atk": 5400,
         "def": 2200,
         "hp": 10500,
-        "mpCost": 88,
+        "mpCost": 30,
         "crit": 28,
         "spd": 8
       },
@@ -1030,7 +1030,7 @@
         {
           "name": "Blut-Sake-Rausch",
           "description": "Verursacht 380% ATK als Dunklen Schaden an einem Feind. Heilt Shuten Dōji um 40% des verursachten Schadens. Im Rausch-Zustand: Schaden ×1.5.",
-          "mpCost": 85,
+          "mpCost": 29,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1087,14 +1087,14 @@
         "atk": 4800,
         "def": 3200,
         "hp": 11500,
-        "mpCost": 80,
+        "mpCost": 27,
         "crit": 20
       },
       "skills": [
         {
           "name": "Sonnenaufgang",
           "description": "Verursacht 300% ATK als Licht-Schaden an allen Feinden. Erhöht eigene ATK für 3 Runden um 25%.",
-          "mpCost": 75,
+          "mpCost": 25,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -1152,14 +1152,14 @@
         "atk": 4600,
         "def": 2800,
         "hp": 10800,
-        "mpCost": 78,
+        "mpCost": 26,
         "crit": 22
       },
       "skills": [
         {
           "name": "Speer des Morgenlichts",
           "description": "Durchbohrt einen Feind mit 340% ATK als Licht-Schaden. Hat 35% Chance, Feind zu betäuben.",
-          "mpCost": 72,
+          "mpCost": 24,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1217,14 +1217,14 @@
         "atk": 5200,
         "def": 2600,
         "hp": 11200,
-        "mpCost": 85,
+        "mpCost": 29,
         "crit": 18
       },
       "skills": [
         {
           "name": "Weltenwurzel-Biss",
           "description": "Nagt an einem Feind: 360% ATK Dunkel-Schaden. Verringert Feind-DEF dauerhaft um 20% (stapelbar bis 3×).",
-          "mpCost": 80,
+          "mpCost": 27,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1282,7 +1282,7 @@
         "atk": 3800,
         "def": 4800,
         "hp": 15000,
-        "mpCost": 80,
+        "mpCost": 27,
         "spd": 5,
         "crit": 14
       },
@@ -1290,7 +1290,7 @@
         {
           "name": "Dreifachbiss",
           "description": "Greift alle Feinde mit 240% ATK als Todesschaden an. Alle Feinde erleiden für 2 Runden Furcht (-30% ATK).",
-          "mpCost": 75,
+          "mpCost": 25,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -1348,7 +1348,7 @@
         "atk": 4500,
         "def": 5200,
         "hp": 16000,
-        "mpCost": 82,
+        "mpCost": 28,
         "spd": 4,
         "crit": 15
       },
@@ -1356,7 +1356,7 @@
         {
           "name": "Labyrinth-Stampede",
           "description": "Stampft auf alle Feinde: 260% ATK als Erde-Schaden. Feinde können für 2 Runden keine Karten von der Hand spielen (Labyrinth-Verwirrung).",
-          "mpCost": 78,
+          "mpCost": 26,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -1415,7 +1415,7 @@
         "atk": 5000,
         "def": 2400,
         "hp": 10500,
-        "mpCost": 82,
+        "mpCost": 28,
         "spd": 9,
         "crit": 20
       },
@@ -1423,7 +1423,7 @@
         {
           "name": "Sturm des Schicksals",
           "description": "Raubt dem Feind Kraft: 320% ATK als Wind-Schaden und kopiert eine zufällige Fähigkeit des Feindes für diese Runde.",
-          "mpCost": 78,
+          "mpCost": 26,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1481,7 +1481,7 @@
         "atk": 5400,
         "def": 2200,
         "hp": 10500,
-        "mpCost": 86,
+        "mpCost": 29,
         "crit": 25,
         "spd": 8
       },
@@ -1489,7 +1489,7 @@
         {
           "name": "Katastrophenfeuer",
           "description": "Entfacht einen unkontrollierbaren Brand: 380% ATK Feuer-Schaden an einem Feind. Verbreitet sich auf benachbarte Feinde (50% Schaden).",
-          "mpCost": 82,
+          "mpCost": 28,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -1547,7 +1547,7 @@
         "atk": 5000,
         "def": 2600,
         "hp": 11000,
-        "mpCost": 80,
+        "mpCost": 27,
         "crit": 22,
         "spd": 9
       },
@@ -1555,7 +1555,7 @@
         {
           "name": "Donnerwalze",
           "description": "Entfesselt massiven Donnerschlag auf alle Feinde: 300% ATK Blitz-Schaden. Betäubt zufälligen Feind für 1 Runde.",
-          "mpCost": 76,
+          "mpCost": 26,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -1614,7 +1614,7 @@
         "atk": 4200,
         "def": 4600,
         "hp": 14500,
-        "mpCost": 82,
+        "mpCost": 28,
         "spd": 4,
         "crit": 13
       },
@@ -1622,7 +1622,7 @@
         {
           "name": "Abyssaler Schlund",
           "description": "Verschlingt alle Feinde: 250% ATK Wasser-Schaden. Saugt 40 MP aus jedem Feind.",
-          "mpCost": 78,
+          "mpCost": 26,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -1680,14 +1680,14 @@
         "atk": 4800,
         "def": 3400,
         "hp": 12500,
-        "mpCost": 82,
+        "mpCost": 28,
         "crit": 15
       },
       "skills": [
         {
           "name": "Pest des Abgrunds",
           "description": "Belegt alle Feinde mit Pestfluch: 220% ATK Dunkel-Schaden sofort + 15% HP pro Runde über 3 Runden (ignoriert DEF).",
-          "mpCost": 78,
+          "mpCost": 26,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -1745,7 +1745,7 @@
         "atk": 3900,
         "def": 5000,
         "hp": 16500,
-        "mpCost": 80,
+        "mpCost": 27,
         "spd": 5,
         "crit": 12
       },
@@ -1753,7 +1753,7 @@
         {
           "name": "Unsterblicher Frost",
           "description": "Gefriert alle Feinde für 2 Runden und verursacht 200% ATK Eis-Schaden. Koschei regeneriert 20% seiner HP.",
-          "mpCost": 76,
+          "mpCost": 26,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -1811,14 +1811,14 @@
         "atk": 6000,
         "def": 2000,
         "hp": 11500,
-        "mpCost": 85,
+        "mpCost": 29,
         "crit": 20
       },
       "skills": [
         {
           "name": "Vernichtendes Auge",
           "description": "Öffnet das tödliche Auge: 450% ATK Dunkel-Schaden an einem Feind. Hat 25% Chance auf sofortige Eliminierung.",
-          "mpCost": 82,
+          "mpCost": 28,
           "cooldown": 5,
           "targetType": "single",
           "trigger": "active",
@@ -1883,7 +1883,7 @@
         {
           "name": "Jahres-Schrecken",
           "description": "Verursacht 280% ATK Feuer-Schaden. Feinde mit Lärm-Immun-Effekt erleiden doppelten Schaden.",
-          "mpCost": 45,
+          "mpCost": 15,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -1944,7 +1944,7 @@
         {
           "name": "Eisiger Hunger",
           "description": "Verursacht 260% ATK Eis-Schaden an einem Feind und heilt Wendigo um 50% des Schadens. Ziel ist für 1 Runde eingefroren.",
-          "mpCost": 42,
+          "mpCost": 14,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -2005,7 +2005,7 @@
         {
           "name": "Blutmond-Klinge",
           "description": "Springt auf den stärksten Feind und verursacht 310% ATK Dunkel-Schaden. Bei Krit: Schaden ×2.",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2067,7 +2067,7 @@
         {
           "name": "Sechsfacher Schlund",
           "description": "Greift mit sechs Köpfen an — trifft zufällig 6 Mal je 60% ATK (kann denselben Feind mehrfach treffen). Typ: Wasser.",
-          "mpCost": 44,
+          "mpCost": 15,
           "cooldown": 4,
           "targetType": "random",
           "trigger": "active",
@@ -2121,14 +2121,14 @@
         "atk": 780,
         "def": 860,
         "hp": 2300,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 8
       },
       "skills": [
         {
           "name": "Schicksalsnetz",
           "description": "Wirft ein Netz über alle Feinde: Reduziert ihre SPD um 50% und ATK um 20% für 3 Runden. Verursacht 120% ATK Dunkel-Schaden.",
-          "mpCost": 40,
+          "mpCost": 14,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -2189,7 +2189,7 @@
         {
           "name": "Seuchenwind",
           "description": "Entfesselt verdorbene Winde auf alle Feinde: 240% ATK Wind-Schaden + Seuchenfluch (verliert 10% HP pro Runde für 3 Runden).",
-          "mpCost": 46,
+          "mpCost": 16,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -2250,7 +2250,7 @@
         {
           "name": "Nachteklipse",
           "description": "Verursacht 290% ATK Dunkel-Schaden an einem Feind. Gibt 30 MP zurück wenn der Feind danach stirbt.",
-          "mpCost": 44,
+          "mpCost": 15,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -2311,7 +2311,7 @@
         {
           "name": "Vulkanausbruch",
           "description": "Lässt einen Vulkan ausbrechen: 310% ATK Feuer-Schaden an allen Feinden. Der Boden brennt für 2 Runden (15% HP/Runde).",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -2373,7 +2373,7 @@
         {
           "name": "Schatz des Königs",
           "description": "Feuert goldene Waffen aus dem Schatzhaus ab: 320% ATK Erde-Schaden. +10% Schaden für jede Runde die seit Kampfbeginn vergangen ist.",
-          "mpCost": 50,
+          "mpCost": 17,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2434,7 +2434,7 @@
         {
           "name": "Zwölf-Arbeiten-Kraft",
           "description": "Entfesselt die Kraft aller zwölf Arbeiten: 280% ATK Erde-Schaden an einem Feind. Ignoriert 50% DEF. Stunnt Feind für 1 Runde.",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2495,7 +2495,7 @@
         {
           "name": "Mjölnir-Schlag",
           "description": "Schleudert Mjölnir: 330% ATK Blitz-Schaden an einem Feind und 165% an allen anderen. Kehrt zurück für weiteren Treffer nächste Runde (50%).",
-          "mpCost": 50,
+          "mpCost": 17,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2556,7 +2556,7 @@
         {
           "name": "Kettenbrecher",
           "description": "Bricht alle Fesseln: +50% ATK und SPD für 3 Runden. Danach: 280% ATK Dunkel-Schaden an allen Feinden.",
-          "mpCost": 46,
+          "mpCost": 16,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -2618,7 +2618,7 @@
         {
           "name": "Ursalzflut",
           "description": "Entfesselt die Urflut: 290% ATK Wasser-Schaden an allen Feinden. Setzt ihren MP-Stand um 30 zurück.",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -2672,14 +2672,14 @@
         "atk": 840,
         "def": 820,
         "hp": 2200,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 9
       },
       "skills": [
         {
           "name": "Schicksalskrähe",
           "description": "Markiert einen Feind zum Tod: Nächste Karte verursacht +100% Schaden gegen diesen Feind. Verursacht 160% ATK Dunkel-Schaden.",
-          "mpCost": 38,
+          "mpCost": 13,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -2734,14 +2734,14 @@
         "atk": 780,
         "def": 760,
         "hp": 2100,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 7
       },
       "skills": [
         {
           "name": "Weissagung",
           "description": "Sieht in die nächste Runde: Verdoppelt den Combo-Multiplikator der nächsten gespielten Karte. Verursacht 150% ATK Leere-Schaden.",
-          "mpCost": 36,
+          "mpCost": 12,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -2802,7 +2802,7 @@
         {
           "name": "Monstervater-Zorn",
           "description": "Entfesselt hundert Drachenstürme: 310% ATK Wind-Schaden an allen Feinden. Alle Feinde haben für 2 Runden -20% auf alle Werte.",
-          "mpCost": 50,
+          "mpCost": 17,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",
@@ -2863,7 +2863,7 @@
         {
           "name": "Ríastrad — Kriegerverzerrung",
           "description": "Tritt in den Beserker-Zustand ein: 300% ATK Licht-Schaden an einem Feind. ATK verdoppelt sich für 2 Runden, DEF auf 0 gesetzt.",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2918,13 +2918,13 @@
         "atk": 720,
         "def": 580,
         "hp": 1700,
-        "mpCost": 4
+        "mpCost": 5
       },
       "skills": [
         {
           "name": "Herzenwägung",
           "description": "Verursacht 230% ATK Todesschaden. Feinde mit weniger als 30% HP werden sofort eliminiert.",
-          "mpCost": 36,
+          "mpCost": 12,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -2979,14 +2979,14 @@
         "atk": 640,
         "def": 720,
         "hp": 1750,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 6
       },
       "skills": [
         {
           "name": "Hühnerbein-Verwandlung",
           "description": "Verwandelt einen Feind in eine harmlose Kreatur für 2 Runden (kann nicht angreifen, DEF auf 10% reduziert). Verursacht 140% ATK Chaos-Schaden.",
-          "mpCost": 34,
+          "mpCost": 12,
           "cooldown": 4,
           "targetType": "single",
           "trigger": "active",
@@ -3040,14 +3040,14 @@
         "atk": 620,
         "def": 780,
         "hp": 1800,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 8
       },
       "skills": [
         {
           "name": "Aschen-Wiedergeburt",
           "description": "Belebt eine zerstörte Verbündete Karte mit 40% HP wieder. Heilt alle Verbündeten um 20% HP.",
-          "mpCost": 40,
+          "mpCost": 14,
           "cooldown": 5,
           "targetType": "ally",
           "trigger": "active",
@@ -3100,14 +3100,14 @@
         "atk": 680,
         "def": 920,
         "hp": 1800,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 4
       },
       "skills": [
         {
           "name": "Knochenwand",
           "description": "Errichtet eine Knochenwand: Alle Verbündeten erhalten 30% Schadensreduktion für 2 Runden. Verursacht 180% ATK Todesschaden an allen Feinden.",
-          "mpCost": 38,
+          "mpCost": 13,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -3161,14 +3161,14 @@
         "atk": 740,
         "def": 640,
         "hp": 1650,
-        "mpCost": 4,
+        "mpCost": 5,
         "crit": 18
       },
       "skills": [
         {
           "name": "Feuerstoß",
           "description": "Sturmangriff mit brennender Klinge: 250% ATK Feuer-Schaden. Setzt Feind in Brand für 2 Runden (10% HP/Runde).",
-          "mpCost": 36,
+          "mpCost": 12,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -3222,14 +3222,14 @@
         "atk": 600,
         "def": 760,
         "hp": 1800,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 7
       },
       "skills": [
         {
           "name": "Gezeitenruf",
           "description": "Ruft eine Flutwelle: Alle Feinde -20% ATK und -20% SPD für 3 Runden. Heilt alle Verbündeten um 15% HP.",
-          "mpCost": 36,
+          "mpCost": 12,
           "cooldown": 4,
           "targetType": "all",
           "trigger": "active",
@@ -3282,7 +3282,7 @@
         "atk": 730,
         "def": 600,
         "hp": 1680,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 9,
         "crit": 16
       },
@@ -3290,7 +3290,7 @@
         {
           "name": "Orkan-Vorläufer",
           "description": "Entfesselt einen Mini-Orkan: 240% ATK Wind-Schaden an allen Feinden. Erhöht SPD aller Verbündeten für 2 Runden um 30%.",
-          "mpCost": 38,
+          "mpCost": 13,
           "cooldown": 3,
           "targetType": "all",
           "trigger": "active",
@@ -3344,14 +3344,14 @@
         "atk": 660,
         "def": 700,
         "hp": 1750,
-        "mpCost": 4,
+        "mpCost": 5,
         "spd": 8
       },
       "skills": [
         {
           "name": "Leeres Gewebe",
           "description": "Webt ein unsichtbares Netz: Nächste gespielte Karte im Verbund erhält +50% Schaden. Verursacht 140% ATK Leere-Schaden.",
-          "mpCost": 32,
+          "mpCost": 11,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -3405,13 +3405,13 @@
         "atk": 420,
         "def": 320,
         "hp": 1100,
-        "mpCost": 3
+        "mpCost": 5
       },
       "skills": [
         {
           "name": "Tiefenzug",
           "description": "Reißt Feind in die Tiefe: 190% ATK Wasser-Schaden. Feind verliert 15 MP.",
-          "mpCost": 25,
+          "mpCost": 9,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -3465,7 +3465,7 @@
         "atk": 440,
         "def": 280,
         "hp": 1000,
-        "mpCost": 3,
+        "mpCost": 5,
         "spd": 8,
         "crit": 15
       },
@@ -3473,7 +3473,7 @@
         {
           "name": "Sturzflug",
           "description": "Taucht aus dem Sturmhimmel: 200% ATK Wind-Schaden. Trifft zuerst unabhängig von SPD.",
-          "mpCost": 22,
+          "mpCost": 8,
           "cooldown": 2,
           "targetType": "single",
           "trigger": "active",
@@ -3527,14 +3527,14 @@
         "atk": 460,
         "def": 260,
         "hp": 980,
-        "mpCost": 2,
+        "mpCost": 5,
         "crit": 20
       },
       "skills": [
         {
           "name": "Schattenreißer",
           "description": "Springt aus dem Dunkel: 180% ATK Dunkel-Schaden. Feind mit aktiven Buffs: +40% Schaden.",
-          "mpCost": 20,
+          "mpCost": 7,
           "cooldown": 2,
           "targetType": "single",
           "trigger": "active",
@@ -3588,14 +3588,14 @@
         "atk": 450,
         "def": 300,
         "hp": 1050,
-        "mpCost": 3,
+        "mpCost": 5,
         "crit": 14
       },
       "skills": [
         {
           "name": "Donnerflügel",
           "description": "Schlägt mit Donnerflügeln zu: 195% ATK Blitz-Schaden an einem Feind. Nebenfeinde erhalten 80% Schaden (Kettenblitz).",
-          "mpCost": 24,
+          "mpCost": 8,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -3649,14 +3649,14 @@
         "atk": 320,
         "def": 480,
         "hp": 1300,
-        "mpCost": 2,
+        "mpCost": 5,
         "spd": 4
       },
       "skills": [
         {
           "name": "Wurzelwall",
           "description": "Errichtet eine Wurzelwand: Verursacht 160% ATK Erde-Schaden an einem Feind. Alle Verbündeten erhalten 20% Schadensreduktion für 1 Runde.",
-          "mpCost": 22,
+          "mpCost": 8,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -3710,14 +3710,14 @@
         "atk": 350,
         "def": 420,
         "hp": 1200,
-        "mpCost": 3,
+        "mpCost": 5,
         "spd": 6
       },
       "skills": [
         {
           "name": "Eissturm",
           "description": "Sendet einen Eissturm: Alle Feinde verlieren 20% SPD und erhalten 170% ATK Eis-Schaden.",
-          "mpCost": 24,
+          "mpCost": 8,
           "cooldown": 3,
           "targetType": "all",
           "trigger": "active",
@@ -3771,14 +3771,14 @@
         "atk": 340,
         "def": 460,
         "hp": 1280,
-        "mpCost": 3,
+        "mpCost": 5,
         "spd": 7
       },
       "skills": [
         {
           "name": "Schlachtensegen",
           "description": "Segnet alle Verbündeten: +15% ATK und +15% DEF für 2 Runden. Heilt 10% HP.",
-          "mpCost": 26,
+          "mpCost": 9,
           "cooldown": 3,
           "targetType": "all_allies",
           "trigger": "active",
@@ -3832,13 +3832,13 @@
         "atk": 180,
         "def": 120,
         "hp": 520,
-        "mpCost": 1
+        "mpCost": 5
       },
       "skills": [
         {
           "name": "Hinterhaltsangriff",
           "description": "Springt aus dem Gebüsch: 140% ATK Erde-Schaden. Trifft zuerst in dieser Runde.",
-          "mpCost": 10,
+          "mpCost": 5,
           "cooldown": 2,
           "targetType": "single",
           "trigger": "active",
@@ -3888,14 +3888,14 @@
         "atk": 140,
         "def": 100,
         "hp": 460,
-        "mpCost": 1,
+        "mpCost": 5,
         "spd": 8
       },
       "skills": [
         {
           "name": "Funkeln",
           "description": "Verursacht 120% ATK Feuer-Schaden. Gibt Verbündetem 5 MP zurück.",
-          "mpCost": 8,
+          "mpCost": 5,
           "cooldown": 1,
           "targetType": "single",
           "trigger": "active",
@@ -3944,14 +3944,14 @@
         "atk": 140,
         "def": 300,
         "hp": 700,
-        "mpCost": 2,
+        "mpCost": 5,
         "spd": 2
       },
       "skills": [
         {
           "name": "Felsenwurf",
           "description": "Wirft einen Felsbrocken: 150% ATK Erde-Schaden. Betäubt Feind für 1 Runde.",
-          "mpCost": 14,
+          "mpCost": 5,
           "cooldown": 3,
           "targetType": "single",
           "trigger": "active",
@@ -4000,14 +4000,14 @@
         "atk": 120,
         "def": 90,
         "hp": 440,
-        "mpCost": 1,
+        "mpCost": 5,
         "spd": 9
       },
       "skills": [
         {
           "name": "Irrlicht",
           "description": "Verwirrt einen Feind für 1 Runde (25% Chance Angriff verfehlt). Gibt 5 MP zurück.",
-          "mpCost": 8,
+          "mpCost": 5,
           "cooldown": 2,
           "targetType": "single",
           "trigger": "active",
@@ -4055,14 +4055,14 @@
         "atk": 130,
         "def": 160,
         "hp": 560,
-        "mpCost": 1,
+        "mpCost": 5,
         "spd": 6
       },
       "skills": [
         {
           "name": "Heilwasser",
           "description": "Heilt einen Verbündeten um 15% HP und gibt 8 MP zurück.",
-          "mpCost": 10,
+          "mpCost": 5,
           "cooldown": 2,
           "targetType": "ally",
           "trigger": "active",
@@ -4117,7 +4117,7 @@
         {
           "name": "Excalibur-Strahl",
           "description": "Entfesselt Excaliburs Lichtstrahl: 280% ATK Licht-Schaden an allen Feinden. Heilt alle Verbündeten um 15% HP.",
-          "mpCost": 48,
+          "mpCost": 16,
           "cooldown": 5,
           "targetType": "all",
           "trigger": "active",

@@ -1,0 +1,137 @@
+.inv-screen {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  background: var(--bg-deep); color: var(--text);
+  overflow-y: auto;
+}
+
+.inv-toast {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  background: rgba(42,160,100,0.92); color: #fff;
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  padding: 8px 18px; border-radius: 20px;
+  z-index: 999; pointer-events: none;
+  animation: inv-toast-in 0.2s ease;
+}
+@keyframes inv-toast-in { from { opacity:0; transform:translateX(-50%) translateY(-6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+
+/* Header */
+.inv-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--bg-mid);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.inv-header__back {
+  font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.08em;
+  color: var(--gold); background: transparent; border: 1px solid var(--border);
+  border-radius: 2px; padding: 5px 10px; cursor: pointer;
+}
+.inv-header__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: 1rem;
+  color: var(--gold-bright); letter-spacing: 0.12em;
+}
+.inv-header__count {
+  font-family: 'Cinzel', serif; font-size: 0.65rem; color: var(--gold-dark);
+}
+
+/* Section */
+.inv-section { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.inv-section__title {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.12em;
+  color: var(--gold-dark); text-transform: uppercase; margin-bottom: 8px;
+}
+
+/* Consumables */
+.inv-consumables { display: flex; flex-direction: column; gap: 6px; }
+.inv-consumable {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-mid); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px;
+}
+.inv-consumable__icon { font-size: 1.4rem; flex-shrink: 0; }
+.inv-consumable__info { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.inv-consumable__name { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--gold-bright); }
+.inv-consumable__desc { font-family: 'EB Garamond', serif; font-size: 0.7rem; color: var(--text); opacity: 0.6; }
+.inv-consumable__count { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold-dark); }
+.inv-consumable__right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.inv-consumable__energy { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold); }
+
+.inv-use-btn {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.06em;
+  color: var(--gold); background: rgba(201,168,76,0.12);
+  border: 1px solid var(--gold-dark); border-radius: 4px;
+  padding: 4px 10px; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+}
+.inv-use-btn:active { background: rgba(201,168,76,0.22); }
+.inv-use-btn--disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Filters */
+.inv-filters { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.inv-search {
+  width: 100%; box-sizing: border-box;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  font-family: 'EB Garamond', serif; font-size: 0.9rem;
+  padding: 6px 10px; outline: none;
+}
+.inv-search::placeholder { color: rgba(232,213,176,0.3); }
+.inv-search:focus { border-color: var(--gold-dark); }
+
+.inv-rarity-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.inv-rarity-btn {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; padding: 3px 7px;
+  border-radius: 4px; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04); color: var(--gold-dark);
+  cursor: pointer; transition: background 0.12s;
+}
+.inv-rarity-btn--active { background: rgba(201,168,76,0.15); border-color: var(--gold-dark); color: var(--gold-bright); }
+
+.inv-sort-row { display: flex; gap: 4px; }
+.inv-sort-btn {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; padding: 3px 9px;
+  border-radius: 4px; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04); color: var(--gold-dark); cursor: pointer;
+}
+.inv-sort-btn--active { background: rgba(201,168,76,0.15); border-color: var(--gold-dark); color: var(--gold-bright); }
+
+/* Card grid */
+.inv-card-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.inv-empty { color: var(--gold-dark); font-family: 'Cinzel', serif; font-size: 0.72rem; grid-column: 1/-1; text-align: center; padding: 20px 0; }
+.inv-card-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--bg-mid); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 4px; cursor: pointer;
+  transition: border-color 0.12s;
+}
+.inv-card-chip:active { border-color: var(--gold-dark); }
+.inv-card-chip__img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; }
+.inv-card-chip__rarity { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: bold; }
+.inv-card-chip__name { font-family: 'EB Garamond', serif; font-size: 0.65rem; text-align: center; line-height: 1.2; }
+
+/* Detail overlay */
+.inv-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 16px;
+}
+.inv-overlay__box {
+  background: var(--bg-mid); border: 1px solid var(--gold-dark);
+  border-radius: 10px; padding: 16px; max-width: 340px; width: 100%;
+  display: flex; gap: 14px; position: relative;
+}
+.inv-overlay__img { width: 100px; aspect-ratio: 2/3; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+.inv-overlay__info { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.inv-overlay__name { font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: 0.8rem; font-weight: bold; }
+.inv-overlay__title { font-family: 'EB Garamond', serif; font-size: 0.72rem; opacity: 0.7; }
+.inv-overlay__rarity { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold-dark); }
+.inv-overlay__stats { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.inv-overlay__stats span { font-family: 'Cinzel', serif; font-size: 0.62rem; color: var(--gold-bright); }
+.inv-overlay__close {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: none; color: var(--gold-dark);
+  font-size: 1rem; cursor: pointer;
+}

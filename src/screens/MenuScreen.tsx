@@ -15,6 +15,7 @@ const MENU_ITEMS: { icon: string; label: string; target: string | null }[] = [
   { icon: '📋', label: 'Deck bauen',         target: 'deck' },
   { icon: '🔮', label: 'Fusion & Awakening', target: 'fusion' },
   { icon: '🗡️', label: 'Opfern',             target: 'training' },
+  { icon: '🎒', label: 'Inventar',            target: 'inventory' },
   { icon: '👤', label: 'Mein Profil',        target: 'profile' },
   { icon: '👥', label: 'Freunde',            target: 'friends' },
   { icon: '🔀', label: 'Handel',             target: 'trade' },
