@@ -221,7 +221,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const tactical = useTacticalStore(tacticalConfig ?? null);
   const [popups,      setPopups]      = useState<DamagePopup[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [synergyToast, setSynergyToast] = useState<{ a: string; b: string } | null>(null);
+  const [synergyToast, setSynergyToast] = useState<{ a: string; b: string; count: number } | null>(null);
   const popupId = React.useRef(0);
 
   const { player, enemy, round, phase, log, result, enemyData } = state;
@@ -255,9 +255,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const handlePlaySelected = useCallback(() => {
     if (!canPlay || selectedIds.length === 0) return;
 
-    // Combo-Zähler lokal hochzählen (Refs in useComboStore immer aktuell)
     let localComboCount = combo.isActive ? combo.count : 0;
-    let lastCard = combo.lastCard;
+    // Synergy only fires within the same batch — start fresh each play action
+    let lastCard: BattleCard | null = null;
+    const synergyPairs: Array<{ a: string; b: string }> = [];
 
     for (const instanceId of selectedIds) {
       const card = player.hand.find(c => c.instanceId === instanceId);
@@ -275,29 +276,41 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       combo.onCardPlayed(card, calc.windowExtension);
       if (localComboCount >= 2) QuestService.recordEvent('play_combos');
 
-      if (tacticalConfig && tactical.tactical) {
-        // Tactical mode: use playTacticalCard which applies tactical multiplier
-        tactical.playTacticalCard(card, localComboCount);
-      } else {
-        battle.playCard(card.instanceId, calc.totalMultiplier);
-      }
+      // Tactical mode: get multiplier from tactical layer; always use battle prop for damage
+      const damageMultiplier = (tacticalConfig && tactical.tactical)
+        ? tactical.playTacticalCard(card, localComboCount)
+        : calc.totalMultiplier;
+
+      battle.playCard(card.instanceId, damageMultiplier);
 
       addPopup({
-        damage:     calc.finalDamage,
+        damage:     Math.max(1, Math.round(card.atk * damageMultiplier)),
         combo:      localComboCount,
-        multiplier: calc.totalMultiplier,
+        multiplier: damageMultiplier,
         hasSynergy: calc.hasSynergy,
         hasElement: calc.hasElementAdv,
         xPct:       20 + Math.random() * 60,
       });
 
       if (calc.hasSynergy && lastCard) {
-        setSynergyToast({ a: lastCard.name, b: card.name });
-        setTimeout(() => setSynergyToast(null), 2200);
-        QuestService.recordEvent('use_synergy');
+        synergyPairs.push({ a: lastCard.name, b: card.name });
       }
 
       lastCard = card;
+    }
+
+    // Show synergy toast after all cards are processed
+    if (synergyPairs.length > 0) {
+      const count = synergyPairs.length;
+      const first = synergyPairs[0];
+      const last  = synergyPairs[count - 1];
+      setSynergyToast({
+        a:     count === 1 ? first.a : first.a,
+        b:     count === 1 ? first.b : last.b,
+        count,
+      });
+      setTimeout(() => setSynergyToast(null), 2400);
+      QuestService.recordEvent('use_synergy', synergyPairs.length);
     }
 
     setSelectedIds([]);
@@ -321,8 +334,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       {/* Synergie-Toast */}
       {synergyToast && (
         <div className="arena-synergy-toast">
-          <span className="arena-synergy-toast__icon">⭐</span>
-          <span className="arena-synergy-toast__text">SYNERGIE</span>
+          <span className="arena-synergy-toast__icon">{synergyToast.count > 1 ? '✨' : '⭐'}</span>
+          <span className="arena-synergy-toast__text">
+            {synergyToast.count > 1 ? `×${synergyToast.count} SYNERGIE` : 'SYNERGIE'}
+          </span>
           <span className="arena-synergy-toast__cards">{synergyToast.a} + {synergyToast.b}</span>
         </div>
       )}
