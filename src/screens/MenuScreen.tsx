@@ -11,6 +11,7 @@ interface MenuScreenProps {
 // ── Menüpunkte ────────────────────────────────────────────────
 
 const MENU_ITEMS: { icon: string; label: string; target: string | null }[] = [
+  { icon: '📜', label: 'Aufgaben',            target: 'quests' },
   { icon: '🃏', label: 'Kartensammlung',     target: 'cardCollection' },
   { icon: '📋', label: 'Deck bauen',         target: 'deck' },
   { icon: '🔮', label: 'Fusion & Awakening', target: 'fusion' },

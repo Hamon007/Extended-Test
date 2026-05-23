@@ -6,7 +6,8 @@
   flex-direction: column;
   height: 100%;
   background: radial-gradient(ellipse at top, #1a0812 0%, #08050a 70%);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .battle-select-header {
@@ -208,22 +209,23 @@
 /* ── Topbar ───────────────────────────────────────────────── */
 /* ── Synergie-Toast ── */
 .arena-synergy-toast {
-  position: absolute;
-  top: 48px;
+  position: fixed;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  background: rgba(255,200,50,0.15);
-  border: 1px solid rgba(255,200,50,0.5);
+  background: rgba(20,12,0,0.92);
+  border: 1px solid rgba(255,200,50,0.7);
   border-radius: 8px;
-  padding: 6px 14px;
-  z-index: 50;
+  padding: 8px 18px;
+  z-index: 300;
   pointer-events: none;
   animation: synergy-pop 0.25s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 20px rgba(255,200,50,0.35);
 }
 @keyframes synergy-pop {
   from { opacity: 0; transform: translateX(-50%) scale(0.85); }
@@ -444,6 +446,7 @@
   background: rgba(0,0,0,0.5);
   border-top: 1px solid #2a1525;
   padding: 8px 10px 4px;
+  overflow: visible;
 }
 
 .arena-player-stats {
@@ -467,6 +470,8 @@
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  overflow-y: visible;
+  padding-top: 24px;
   padding-bottom: 6px;
   scrollbar-width: none;
   margin-bottom: 8px;
@@ -731,63 +736,96 @@
    TURM DER PRÜFUNG — Tower-Modus Section
    ══════════════════════════════════════════════════════════════ */
 
-.battle-tower-section {
-  margin: 0 12px 12px;
-  padding: 12px 14px;
-  border-top: 1px solid #2a1525;
-  border: 1px solid #3a1540;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #140820, #1a0c2a);
+/* Floor Banner */
+.battle-tower-floor-banner {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 10px 12px 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #12082a, #1e0d3a, #12082a);
+  border: 1px solid #4a1a70;
+  box-shadow: 0 0 20px rgba(100,40,180,0.2);
   flex-shrink: 0;
 }
 
-.battle-tower-header {
+.battle-tower-floor-banner__floor {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 6px;
+  min-width: 54px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #4a1a70;
+  border-radius: 8px;
+  padding: 8px 10px;
 }
 
-.battle-tower-title {
+.battle-tower-floor-banner__num {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 26px;
+  color: #e8c0ff;
+  line-height: 1;
+}
+
+.battle-tower-floor-banner__label {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 7px;
+  color: #8a6520;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+.battle-tower-floor-banner__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.battle-tower-floor-banner__type {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
   color: #f0d080;
   letter-spacing: 1px;
 }
 
-.battle-tower-floor {
+.battle-tower-floor-banner__highest {
   font-family: 'Cinzel', serif;
-  font-size: 9px;
+  font-size: 8px;
   color: #8a6520;
   letter-spacing: 0.5px;
 }
 
-.battle-tower-hint {
+.battle-tower-floor-banner__hint {
   font-family: 'EB Garamond', serif;
   font-size: 11px;
   color: #c9a84c;
-  opacity: 0.7;
-  margin: 0 0 10px;
+  opacity: 0.75;
   font-style: italic;
 }
 
+.battle-tower-spacer { flex: 1; min-height: 12px; }
+
 .battle-tower-btn {
-  width: 100%;
-  padding: 12px;
+  margin: 0 12px 16px;
+  width: calc(100% - 24px);
+  padding: 16px;
   border-radius: 8px;
   font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 1.5px;
+  font-size: 12px;
+  letter-spacing: 2px;
   color: #e8c0ff;
   background: linear-gradient(135deg, #1e0d35, #3a1060, #1e0d35);
   border: 2px solid #7b2fbe;
   cursor: pointer;
+  flex-shrink: 0;
   transition: box-shadow 0.15s;
   box-shadow: 0 0 14px rgba(123,47,190,0.3);
 }
 
 .battle-tower-btn:not(.battle-start-btn--disabled):hover {
-  box-shadow: 0 0 22px rgba(123,47,190,0.55);
+  box-shadow: 0 0 28px rgba(123,47,190,0.65);
 }
 
 /* ══════════════════════════════════════════════════════════════

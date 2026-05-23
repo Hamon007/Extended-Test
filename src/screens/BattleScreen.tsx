@@ -9,6 +9,7 @@ import { TowerService }         from '../services/TowerService';
 import { SaveService }          from '../services/SaveService';
 import { ComboSystem }          from '../services/ComboSystem';
 import { ProgressionService }   from '../services/ProgressionService';
+import { QuestService }         from '../services/QuestService';
 import ComboDisplay             from '../components/ComboDisplay';
 import VictoryScreen            from './VictoryScreen';
 import DefeatScreen             from './DefeatScreen';
@@ -28,14 +29,13 @@ const BattleScreen: React.FC = () => {
   const deck   = useDeckStore();
   const energy = useEnergyStore();
 
-  const [selectedEnemy,  setSelectedEnemy]  = useState<EnemyData | null>(null);
   const [rewardDetails,  setRewardDetails]  = useState<RewardDetails | null>(null);
   const [tacticalConfig, setTacticalConfig] = useState<TacticalEnemyConfig | null>(null);
+  const [isTowerMode,    setIsTowerMode]    = useState(false);
   const [towerFloor,     setTowerFloor]     = useState(() => TowerService.getFloor());
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied = useRef(false);
 
-  const enemies       = EnemyDatabase.getAll();
   const inventory     = useMemo(() => SaveService.loadGachaState().inventory, []);
   const deckInstances = useMemo(() => {
     const invMap = new Map(inventory.map(i => [i.uuid, i]));
@@ -55,11 +55,22 @@ const BattleScreen: React.FC = () => {
       battle.state.enemyData,
     );
     setRewardDetails(details);
+
+    // Aufgaben-Fortschritt
+    if (battle.state.result.outcome === 'victory') {
+      QuestService.recordEvent('win_battles');
+      if (isTowerMode) {
+        QuestService.recordEvent('reach_floor', 1, { floor: towerFloor });
+        if (tacticalConfig) {
+          if (TowerService.isBossFloor(towerFloor)) QuestService.recordEvent('defeat_boss');
+          else QuestService.recordEvent('defeat_elite');
+        }
+      }
+    }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {
-    // Advance tower floor on victory
-    if (rewardDetails?.isVictory && tacticalConfig) {
+    if (rewardDetails?.isVictory && isTowerMode) {
       const next = TowerService.advanceFloor();
       TowerService.updateHighestFloor(next);
       setTowerFloor(next);
@@ -67,9 +78,10 @@ const BattleScreen: React.FC = () => {
     battle.resetBattle();
     setRewardDetails(null);
     setTacticalConfig(null);
+    setIsTowerMode(false);
     rewardApplied.current = false;
     energy.refresh();
-  }, [battle, energy, rewardDetails, tacticalConfig]);
+  }, [battle, energy, rewardDetails, isTowerMode]);
 
   // ── Victory / Defeat Screens ──────────────────────────────
   if (rewardDetails) {
@@ -85,25 +97,17 @@ const BattleScreen: React.FC = () => {
     return <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />;
   }
 
-  // ── Gegner-Auswahl ────────────────────────────────────────
+  // ── Turm-Start ────────────────────────────────────────────
   const noEnergy = energy.energy < 1;
-  const canStart = deckComplete && !!selectedEnemy && !noEnergy;
-
-  const handleStart = () => {
-    if (!selectedEnemy || !deckComplete) return;
-    if (!energy.consume()) return;
-    setTacticalConfig(null);
-    battle.startBattle(deckInstances, selectedEnemy);
-  };
 
   const handleTowerStart = () => {
     if (!deckComplete) return;
     if (!energy.consume()) return;
+    setIsTowerMode(true);
 
     const tactEnemy = TowerService.getFloorEnemy(towerFloor);
     if (tactEnemy) {
       setTacticalConfig(tactEnemy);
-      // Scale a base enemy's stats by floor
       const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0];
       if (!base) return;
       const scaledEnemy: EnemyData = {
@@ -125,7 +129,6 @@ const BattleScreen: React.FC = () => {
       };
       battle.startBattle(deckInstances, scaledEnemy);
     } else {
-      // Normal floor — random enemy, no tactical overlay
       setTacticalConfig(null);
       const all = EnemyDatabase.getAll();
       const random = all[Math.floor(Math.random() * all.length)];
@@ -133,10 +136,31 @@ const BattleScreen: React.FC = () => {
     }
   };
 
+  const isBoss = TowerService.isBossFloor(towerFloor);
+
   return (
     <div className="battle-screen--select">
       <div className="battle-select-header">
-        <h1 className="battle-select-title">◆ KAMPF ◆</h1>
+        <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
+      </div>
+
+      {/* Etagen-Info */}
+      <div className="battle-tower-floor-banner">
+        <div className="battle-tower-floor-banner__floor">
+          <span className="battle-tower-floor-banner__num">{towerFloor}</span>
+          <span className="battle-tower-floor-banner__label">ETAGE</span>
+        </div>
+        <div className="battle-tower-floor-banner__info">
+          <div className="battle-tower-floor-banner__type">
+            {isBoss ? '⚔ BOSS-ETAGE' : towerFloor % 5 === 0 ? '⚡ ELITE-ETAGE' : '◆ NORMAL-ETAGE'}
+          </div>
+          <div className="battle-tower-floor-banner__highest">Höchste erreicht: {highestFloor}</div>
+          <div className="battle-tower-floor-banner__hint">
+            {isBoss
+              ? 'Ein mächtiger Wächter versperrt den Weg. Taktik ist alles.'
+              : 'Steige höher. Werde stärker. Bezwinge den Turm.'}
+          </div>
+        </div>
       </div>
 
       {/* Energie / Ausdauertränke */}
@@ -167,74 +191,22 @@ const BattleScreen: React.FC = () => {
           : `⚠ Deck unvollständig (${deckInstances.length}/${DECK_SIZE}) — Deckbuilder öffnen`}
       </div>
 
-      <div className="battle-enemy-list">
-        {enemies.map(enemy => (
-          <EnemySelectCard
-            key={enemy.id}
-            enemy={enemy}
-            selected={selectedEnemy?.id === enemy.id}
-            onSelect={() => setSelectedEnemy(
-              selectedEnemy?.id === enemy.id ? null : enemy
-            )}
-          />
-        ))}
-      </div>
+      <div className="battle-tower-spacer" />
 
       <button
-        className={`battle-start-btn ${!canStart ? 'battle-start-btn--disabled' : ''}`}
-        disabled={!canStart}
-        onClick={handleStart}
+        className={`battle-tower-btn ${!deckComplete || noEnergy ? 'battle-start-btn--disabled' : ''}`}
+        disabled={!deckComplete || noEnergy}
+        onClick={handleTowerStart}
       >
-        {!deckComplete ? 'Deck unvollständig'
-          : noEnergy ? 'Keine Energie — Trank nutzen oder morgen wiederkommen'
-          : !selectedEnemy ? 'Gegner wählen'
-          : `⚔ Kampf starten → ${selectedEnemy.name}`}
-      </button>
-
-      {/* ── Tower-Modus ── */}
-      <div className="battle-tower-section">
-        <div className="battle-tower-header">
-          <span className="battle-tower-title">🗼 Turm der Prüfung</span>
-          <span className="battle-tower-floor">Etage {towerFloor} · Höchste: {highestFloor}</span>
-        </div>
-        <p className="battle-tower-hint">Mechanikbasierte Elite- und Boss-Kämpfe. Power hilft — Taktik entscheidet.</p>
-        <button
-          className={`battle-tower-btn ${!deckComplete || noEnergy ? 'battle-start-btn--disabled' : ''}`}
-          disabled={!deckComplete || noEnergy}
-          onClick={handleTowerStart}
-        >
-          {TowerService.isBossFloor(towerFloor)
-            ? `⚔ Boss-Kampf — Etage ${towerFloor}`
+        {!deckComplete ? '⚠ Deck unvollständig'
+          : noEnergy ? '⚡ Keine Energie'
+          : isBoss
+            ? `⚔ Boss-Kampf — Etage ${towerFloor} betreten`
             : `▶ Etage ${towerFloor} betreten`}
-        </button>
-      </div>
+      </button>
     </div>
   );
 };
-
-// ── Gegner-Auswahl-Karte ──────────────────────────────────────
-
-interface EnemySelectCardProps {
-  enemy: EnemyData; selected: boolean; onSelect: () => void;
-}
-const EnemySelectCard: React.FC<EnemySelectCardProps> = ({ enemy, selected, onSelect }) => (
-  <div
-    className={`enemy-select-card ${selected ? 'enemy-select-card--selected' : ''}`}
-    onClick={onSelect}
-  >
-    <div className="enemy-select-card__tier">Tier {enemy.tier}</div>
-    <div className="enemy-select-card__info">
-      <div className="enemy-select-card__name">{enemy.name}</div>
-      <div className="enemy-select-card__title">{enemy.title}</div>
-      <div className="enemy-select-card__element">{enemy.element}</div>
-    </div>
-    <div className="enemy-select-card__stats">
-      <span>❤ {enemy.stats.hp.toLocaleString('de-DE')}</span>
-      <span>🃏 {enemy.cards.length} Karten</span>
-      <span>💎 {enemy.rewardCrystals}</span>
-    </div>
-  </div>
-);
 
 // ── Battle-Arena ──────────────────────────────────────────────
 
@@ -301,6 +273,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       );
 
       combo.onCardPlayed(card, calc.windowExtension);
+      if (localComboCount >= 2) QuestService.recordEvent('play_combos');
 
       if (tacticalConfig && tactical.tactical) {
         // Tactical mode: use playTacticalCard which applies tactical multiplier
@@ -321,6 +294,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       if (calc.hasSynergy && lastCard) {
         setSynergyToast({ a: lastCard.name, b: card.name });
         setTimeout(() => setSynergyToast(null), 2200);
+        QuestService.recordEvent('use_synergy');
       }
 
       lastCard = card;
