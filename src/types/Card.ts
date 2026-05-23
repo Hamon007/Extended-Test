@@ -124,7 +124,7 @@ export interface Card {
   maxLevel?:  number;      // Standard: 100
 
   // ── Asset ─────────────────────────────────────────────────────────────────
-  image: string;           // Pfad relativ zu /public (z.B. '/assets/cards/azazel.png')
+  image: string;           // Pfad relativ zu /public (z.B. '/assets/cards/azazel.webp')
   artwork_key?: string;    // Stabiler Schlüssel → ArtworkMapper.ts; wird bei leerem image aufgelöst
 
   // ── Ökonomie / Handelssystem ───────────────────────────────────────────────

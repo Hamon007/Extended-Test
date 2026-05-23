@@ -61,7 +61,7 @@
           "description": "Ursprung der Finsternis: Azazels Krit-Rate steigt um 15%."
         }
       ],
-      "image": "/assets/cards/azazel.png",
+      "image": "/assets/cards/azazel.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -126,7 +126,7 @@
         }
       ],
       "awakening": "loki_crowned",
-      "image": "/assets/cards/loki.png",
+      "image": "/assets/cards/loki.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -210,7 +210,7 @@
           "description": "Bande der Neun Welten: Loki und seine Tochter Hel teilen göttliches Blut — beide +18% ATK, Hels Wiederbelebung kostet 20 MP weniger."
         }
       ],
-      "image": "/assets/cards/loki.png",
+      "image": "/assets/cards/loki.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -275,7 +275,7 @@
           "description": "Erste Finsternis: Satan erhält +500 DEF."
         }
       ],
-      "image": "/assets/cards/satan.png",
+      "image": "/assets/cards/satan.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -339,7 +339,7 @@
           "description": "Urtiefen-Pakt: Mit Tiamat, der Urmutter des Chaos, verstärkt sich Xal’Zoths Leere-Schaden um 25% gegen alle Feinde."
         }
       ],
-      "image": "/assets/cards/xal_zoth.png",
+      "image": "/assets/cards/xal_zoth.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -418,7 +418,7 @@
           "description": "Ursache und Nichts: Xal'Zoths Aura-Schaden erhöht sich um 50%."
         }
       ],
-      "image": "/assets/cards/azgaroth.png",
+      "image": "/assets/cards/azgaroth.webp",
       "tradeable": false,
       "deckLimit": 1,
       "gachaWeight": 18
@@ -482,7 +482,7 @@
           "description": "Schwur der Schildmaiden: Jeanne und die Walküre Eira führen das Heer — alle Verbündeten erhalten 1 Runde Debuff-Immunität."
         }
       ],
-      "image": "/assets/cards/jeanne_darc.png",
+      "image": "/assets/cards/jeanne_darc.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -547,7 +547,7 @@
           "description": "Herr der Lüfte: Unter Garudas Schwingen greift der Donnervogel mit +30% Geschwindigkeit an."
         }
       ],
-      "image": "/assets/cards/garuda.png",
+      "image": "/assets/cards/garuda.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -612,7 +612,7 @@
           "description": "Krieger-Rivalen: Beide erhalten +20% ATK, -10% DEF (Rivalen-Effekt)."
         }
       ],
-      "image": "/assets/cards/leonidas.png",
+      "image": "/assets/cards/leonidas.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -676,7 +676,7 @@
           "description": "Tochter des Tricksters: An Lokis Seite herrscht Hel über beide Welten — ihre Wiederbelebung wirkt zu 100% statt 50%."
         }
       ],
-      "image": "/assets/cards/hel.png",
+      "image": "/assets/cards/hel.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -742,7 +742,7 @@
           "description": "Frostgrab-Allianz: Yuki-Onna und Koschei lassen das Schlachtfeld erfrieren — gefrorene Feinde erleiden +20% Schaden."
         }
       ],
-      "image": "/assets/cards/yuki_onna.png",
+      "image": "/assets/cards/yuki_onna.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -806,7 +806,7 @@
           "description": "Tanz der Gebeine: Der Knochenkönig erhebt sich auf Barons Ruf — beschworene Untote erhalten +25% ATK."
         }
       ],
-      "image": "/assets/cards/baron_samedi.png",
+      "image": "/assets/cards/baron_samedi.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -872,7 +872,7 @@
           "description": "Blutmond-Jagd: Unter dem Blutmond jagt Gor’Thul mit dem Wendigo — beide heilen 10% HP pro besiegtem Feind."
         }
       ],
-      "image": "/assets/cards/gor_thul.png",
+      "image": "/assets/cards/gor_thul.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -938,7 +938,7 @@
           "description": "Sturmhimmel-Bund: Drachen-Shogun und Donnergott Raijin entfesseln einen Kettenblitz — Blitz-Schaden trifft alle Feinde."
         }
       ],
-      "image": "/assets/cards/kaizen_ryujin.png",
+      "image": "/assets/cards/kaizen_ryujin.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1001,7 +1001,7 @@
           "description": "Schwestern der Verfluchten: Medousa und Arachne, beide von Athena verflucht, verstärken Versteinerung und Netz-Effekte um 20%."
         }
       ],
-      "image": "/assets/cards/medousa_basileia.png",
+      "image": "/assets/cards/medousa_basileia.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1066,7 +1066,7 @@
           "description": "Feuer und Eis: Gegensätzliche Kräfte – beide erhalten +15% Krit-Chance."
         }
       ],
-      "image": "/assets/cards/shuten_doji.png",
+      "image": "/assets/cards/shuten_doji.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1131,7 +1131,7 @@
         }
       ],
       "artwork_key": "khepri_base",
-      "image": "/assets/cards/khepri.png",
+      "image": "/assets/cards/khepri.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1196,7 +1196,7 @@
         }
       ],
       "artwork_key": "ishtar_base",
-      "image": "/assets/cards/ishtar.png",
+      "image": "/assets/cards/ishtar.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1261,7 +1261,7 @@
         }
       ],
       "artwork_key": "nidhoggr_base",
-      "image": "/assets/cards/nidhoggr.png",
+      "image": "/assets/cards/nidhoggr.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1327,7 +1327,7 @@
         }
       ],
       "artwork_key": "cerberus_base",
-      "image": "/assets/cards/cerberus.png",
+      "image": "/assets/cards/cerberus.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1394,7 +1394,7 @@
         }
       ],
       "artwork_key": "minotauros_basileus_base",
-      "image": "/assets/cards/minotauros_basileus.png",
+      "image": "/assets/cards/minotauros_basileus.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1460,7 +1460,7 @@
         }
       ],
       "artwork_key": "anzu_base",
-      "image": "/assets/cards/anzu.png",
+      "image": "/assets/cards/anzu.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1526,7 +1526,7 @@
         }
       ],
       "artwork_key": "kagutsuchi_base",
-      "image": "/assets/cards/kagutsuchi.png",
+      "image": "/assets/cards/kagutsuchi.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1593,7 +1593,7 @@
         }
       ],
       "artwork_key": "raijin_base",
-      "image": "/assets/cards/raijin.png",
+      "image": "/assets/cards/raijin.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1659,7 +1659,7 @@
         }
       ],
       "artwork_key": "cipactli_base",
-      "image": "/assets/cards/cipactli.png",
+      "image": "/assets/cards/cipactli.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1724,7 +1724,7 @@
         }
       ],
       "artwork_key": "nergal_base",
-      "image": "/assets/cards/nergal.png",
+      "image": "/assets/cards/nergal.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1790,7 +1790,7 @@
         }
       ],
       "artwork_key": "koschei_base",
-      "image": "/assets/cards/koschei.png",
+      "image": "/assets/cards/koschei.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1855,7 +1855,7 @@
         }
       ],
       "artwork_key": "balor_base",
-      "image": "/assets/cards/balor.png",
+      "image": "/assets/cards/balor.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1916,7 +1916,7 @@
         }
       ],
       "artwork_key": "nian_base",
-      "image": "/assets/cards/nian.png",
+      "image": "/assets/cards/nian.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -1977,7 +1977,7 @@
         }
       ],
       "artwork_key": "wendigo_base",
-      "image": "/assets/cards/wendigo.png",
+      "image": "/assets/cards/wendigo.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2039,7 +2039,7 @@
         }
       ],
       "artwork_key": "tomoe_gozen_base",
-      "image": "/assets/cards/tomoe_gozen.png",
+      "image": "/assets/cards/tomoe_gozen.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2100,7 +2100,7 @@
         }
       ],
       "artwork_key": "scylla_base",
-      "image": "/assets/cards/scylla.png",
+      "image": "/assets/cards/scylla.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2161,7 +2161,7 @@
         }
       ],
       "artwork_key": "arachne_base",
-      "image": "/assets/cards/arachne.png",
+      "image": "/assets/cards/arachne.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2222,7 +2222,7 @@
         }
       ],
       "artwork_key": "pazuzu_base",
-      "image": "/assets/cards/pazuzu.png",
+      "image": "/assets/cards/pazuzu.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2283,7 +2283,7 @@
         }
       ],
       "artwork_key": "camazotz_base",
-      "image": "/assets/cards/camazotz.png",
+      "image": "/assets/cards/camazotz.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,
@@ -2345,7 +2345,7 @@
         }
       ],
       "artwork_key": "pele_base",
-      "image": "/assets/cards/pele.png",
+      "image": "/assets/cards/pele.webp",
       "tradeable": false,
       "globalLimit": null,
       "deckLimit": 1,

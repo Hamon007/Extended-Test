@@ -27,9 +27,9 @@ const TIPS = [
 const B = import.meta.env.BASE_URL;
 
 const NPC_IMAGES = [
-  `${B}assets/cards/azazel.png`,
-  `${B}assets/cards/azgaroth.png`,
-  `${B}assets/cards/satan.png`,
+  `${B}assets/cards/azazel.webp`,
+  `${B}assets/cards/azgaroth.webp`,
+  `${B}assets/cards/satan.webp`,
 ];
 
 const BATTLE_HOURS = [0, 7, 14, 21];
@@ -233,7 +233,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
             >
               <img
                 className="main-profile-frame__img"
-                src={`${B}assets/cards/azazel.png`}
+                src={`${B}assets/cards/azazel.webp`}
                 alt="Azazel"
               />
               <div className="main-profile-frame__num">006.</div>

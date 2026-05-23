@@ -73,7 +73,7 @@ export default defineConfig({
         navigateFallback:         `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
 
-        globPatterns: ['**/*.{js,css,html}'],
+        globPatterns: ['**/*.{js,css,html,webp}'],
 
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
 

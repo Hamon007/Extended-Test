@@ -61,7 +61,7 @@ class CardDatabaseService {
         if (card.artwork_key) {
           card.image = resolveArtwork(card.artwork_key);
         } else if (card.image && card.image.startsWith('/') && !card.image.startsWith(base)) {
-          // Fix hardcoded absolute paths from cards.json (e.g. /assets/cards/azazel.png)
+          // Fix hardcoded absolute paths from cards.json (e.g. /assets/cards/azazel.webp)
           card.image = base + card.image.replace(/^\//, '');
         }
         valid.push(card);
