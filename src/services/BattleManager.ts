@@ -34,8 +34,24 @@ import {
 } from '../types/BattleTypes';
 import { CardDatabase } from './CardDatabase';
 import { FusionSystem } from './FusionSystem';
+import { LeaderService, type LeaderBonus }     from './LeaderService';
+import { FormationService, type FormationResult } from './FormationService';
+import { AwakeningService }                    from './AwakeningService';
+import type { DailyModifier }                  from './DailyTrialService';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
+
+function applyDailyDamageMod(
+  cardElement: string | undefined,
+  mod: DailyModifier | null,
+): number {
+  if (!mod) return 1.0;
+  if (mod.kind === 'element_curse') {
+    return cardElement === mod.element ? 1.0 : 0.4;
+  }
+  return 1.0;
+}
+
 
 let logIdCounter = 0;
 
@@ -176,7 +192,8 @@ function checkResult(state: BattleState): BattleResult | null {
   if (state.player.hp <= 0) {
     return { outcome: 'defeat', reason: 'hp' };
   }
-  if (state.round > MAX_ROUNDS) {
+  const maxR = state.maxRounds ?? MAX_ROUNDS;
+  if (state.round > maxR) {
     return { outcome: 'defeat', reason: 'rounds' };
   }
   return null;
@@ -184,22 +201,86 @@ function checkResult(state: BattleState): BattleResult | null {
 
 // ── Öffentliche API ───────────────────────────────────────────
 
+export interface BattleMeta {
+  leaderBonus?:    LeaderBonus | null;
+  formation?:      FormationResult | null;
+  dailyModifier?:  DailyModifier | null;
+  maxRounds?:      number;
+}
+
 /** Erstellt einen frischen BattleState. */
 function initBattle(
   playerInstances: CardInstance[],
   enemy:           EnemyData,
+  meta:            BattleMeta = {},
 ): BattleState {
   logIdCounter = 0;
+  let player = buildPlayerSide(playerInstances);
+  let enemySide = buildEnemySide(enemy);
+
+  // Leader-Bonus: zusätzliche Start-MP
+  if (meta.leaderBonus?.startMpBonus) {
+    player = { ...player, mp: Math.min(player.mpMax, player.mp + meta.leaderBonus.startMpBonus) };
+  }
+
+  // Berserker: ATK ×2, HP ×0.5 (Spieler + Gegner)
+  if (meta.dailyModifier?.kind === 'berserker') {
+    player = {
+      ...player,
+      hp:    Math.round(player.hp * 0.5),
+      hpMax: Math.round(player.hpMax * 0.5),
+      hand:  player.hand.map(c => ({ ...c, atk: Math.round(c.atk * 2) })),
+      deck:  player.deck.map(c => ({ ...c, atk: Math.round(c.atk * 2) })),
+    };
+    enemySide = {
+      ...enemySide,
+      hp:    Math.round(enemySide.hp * 0.5),
+      hpMax: Math.round(enemySide.hpMax * 0.5),
+      hand:  enemySide.hand.map(c => ({ ...c, atk: Math.round(c.atk * 2) })),
+    };
+  }
+
+  const initialLog: BattleLogEntry[] = [log(0, 'system', '', 0, 0, `Battle gegen ${enemy.name} beginnt! Runde 1`)];
+  if (meta.leaderBonus) {
+    initialLog.push(log(0, 'system', '', 0, 0,
+      `👑 ${meta.leaderBonus.leaderName} führt das Team an (${meta.leaderBonus.element}: +${Math.round(meta.leaderBonus.elementDamageBoost * 100)}%)`));
+  }
+  if (meta.formation?.bonuses.length) {
+    for (const f of meta.formation.bonuses) {
+      initialLog.push(log(0, 'system', '', 0, 0,
+        `✦ ${f.label} (${f.count}×): +${Math.round(f.damageBoost * 100)}% Schaden`));
+    }
+  }
+  if (meta.dailyModifier) {
+    initialLog.push(log(0, 'system', '', 0, 0,
+      `⚠ Tagesprüfung aktiv: ${describeDailyModifier(meta.dailyModifier)}`));
+  }
+
   const state: BattleState = {
-    phase:     'player_turn',
-    round:     1,
-    player:    buildPlayerSide(playerInstances),
-    enemy:     buildEnemySide(enemy),
-    log:       [log(0, 'system', '', 0, 0, `Battle gegen ${enemy.name} beginnt! Runde 1`)],
-    result:    null,
-    enemyData: enemy,
+    phase:         'player_turn',
+    round:         1,
+    player,
+    enemy:         enemySide,
+    log:           initialLog,
+    result:        null,
+    enemyData:     enemy,
+    leaderBonus:   meta.leaderBonus   ?? null,
+    formation:     meta.formation     ?? null,
+    dailyModifier: meta.dailyModifier ?? null,
+    maxRounds:     meta.maxRounds,
+    awakenedIds:   [],
   };
   return state;
+}
+
+function describeDailyModifier(m: DailyModifier): string {
+  switch (m.kind) {
+    case 'time_trial':    return `Max ${m.maxRounds} Runden`;
+    case 'element_curse': return `Element-Fluch (${m.element})`;
+    case 'mirror':        return 'Spiegel — 40% Rückschlag';
+    case 'silence':       return 'Stille — keine MP-Regen für 2 Runden';
+    case 'berserker':     return 'Berserker — ATK ×2 / HP ×0,5';
+  }
 }
 
 /**
@@ -220,29 +301,68 @@ function playPlayerCard(
   if (card.played || card.destroyed)            return state;
   if (state.player.mp < card.mpCost)            return state;
 
-  const damage = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, damageMultiplier));
+  // Meta-Multiplikatoren anwenden: Leader + Formation + Daily + Awakening
+  const leaderMult    = LeaderService.damageMultiplier(state.leaderBonus ?? null, card.card?.element);
+  const formationMult = FormationService.damageMultiplier(state.formation ?? null, card.card);
+  const dailyMult     = applyDailyDamageMod(card.card?.element, state.dailyModifier ?? null);
 
-  // Gespielte Karte aus der Hand entfernen und aus dem Stapel nachziehen,
-  // bis die Hand wieder HAND_LIMIT Karten (oder weniger, falls Stapel leer) hat.
+  // Awakening-Check: nach Combo + HPs entscheidet das Profil
+  let awakeningMult  = 1.0;
+  let newlyAwakened  = false;
+  if (card.card) {
+    const playerHpPct = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
+    const enemyHpPct  = state.enemy.hpMax  > 0 ? state.enemy.hp  / state.enemy.hpMax  : 1;
+    // Note: comboCount comes via damageMultiplier — we approximate from the existing awakened list.
+    // The combo trigger is checked from the multiplier path; here we just check HP and persistence.
+    const wasAwakened = state.awakenedIds?.includes(card.sourceId) ?? false;
+    const profile = AwakeningService.getAwakeningProfile(card.card);
+    if (profile) {
+      const isAwakened = wasAwakened || AwakeningService.checkAwakened(card.card, {
+        comboCount:  Math.round(damageMultiplier),  // proxy — caller passes high mult for high combo
+        playerHpPct,
+        enemyHpPct,
+      });
+      if (isAwakened) {
+        awakeningMult = 1.0 + profile.damageBoost;
+        if (!wasAwakened) newlyAwakened = true;
+      }
+    }
+  }
+
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * awakeningMult;
+  const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
+
   const handWithoutCard = state.player.hand.filter((_, i) => i !== cardIdx);
   const drawCount       = Math.max(0, HAND_LIMIT - handWithoutCard.length);
   const drawn           = state.player.deck.slice(0, drawCount);
   const newHand         = [...handWithoutCard, ...drawn];
   const newDeck         = state.player.deck.slice(drawCount);
 
-  const newPlayer = spendMP({ ...state.player, hand: newHand, deck: newDeck }, card.mpCost);
-  const newEnemy  = applyDamage(state.enemy, damage);
+  let newPlayer = spendMP({ ...state.player, hand: newHand, deck: newDeck }, card.mpCost);
+  let newEnemy  = applyDamage(state.enemy, damage);
 
-  const entry = log(
-    state.round, 'player', card.name, damage, card.mpCost,
-    `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`
-  );
+  // Mirror-Modus: 40% Rückschlag auf den Spieler
+  if (state.dailyModifier?.kind === 'mirror') {
+    const recoil = Math.round(damage * 0.4);
+    newPlayer = applyDamage(newPlayer, recoil);
+  }
+
+  const logText = newlyAwakened
+    ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden`
+    : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
+
+  const entry = log(state.round, 'player', card.name, damage, card.mpCost, logText);
+
+  const awakenedIds = newlyAwakened
+    ? [...(state.awakenedIds ?? []), card.sourceId]
+    : state.awakenedIds;
 
   const newState: BattleState = {
     ...state,
     player: newPlayer,
     enemy:  newEnemy,
     log:    [...state.log, entry],
+    awakenedIds,
   };
 
   // Sofortiger Sieg-Check
@@ -311,18 +431,18 @@ function resolveRoundEnd(state: BattleState): BattleState {
   if (state.phase !== 'round_end' || state.result) return state;
 
   const nextRound = state.round + 1;
+  const maxR      = state.maxRounds ?? MAX_ROUNDS;
 
   // Runden-Limit prüfen
-  if (nextRound > MAX_ROUNDS) {
+  if (nextRound > maxR) {
     const result: BattleResult = { outcome: 'defeat', reason: 'rounds' };
     const entry = log(state.round, 'system', '', 0, 0,
-      `Maximale Rundenzahl (${MAX_ROUNDS}) erreicht. Niederlage!`);
+      `Maximale Rundenzahl (${maxR}) erreicht. Niederlage!`);
     return { ...state, phase: 'ended', result, log: [...state.log, entry] };
   }
 
   // Karten nachziehen: Deck + verbliebene Hand mischen, dann neue Hand ziehen
   const recycled = [...state.player.deck, ...state.player.hand.map(c => ({ ...c, played: false }))];
-  // Fisher-Yates shuffle
   for (let i = recycled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [recycled[i], recycled[j]] = [recycled[j], recycled[i]];
@@ -330,8 +450,11 @@ function resolveRoundEnd(state: BattleState): BattleState {
   const newHand = recycled.slice(0, HAND_LIMIT);
   const newDeck = recycled.slice(HAND_LIMIT);
 
+  // Silence-Modus: in den ersten 2 Runden keine MP-Regen für den Spieler
+  const skipPlayerRegen = state.dailyModifier?.kind === 'silence' && nextRound <= 3;
+
   const newPlayer: BattleSide = {
-    ...regenMP(state.player),
+    ...(skipPlayerRegen ? state.player : regenMP(state.player)),
     hand: newHand,
     deck: newDeck,
   };

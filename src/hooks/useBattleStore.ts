@@ -10,13 +10,13 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { BattleState } from '../types/BattleTypes';
 import type { EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
-import { BattleManager } from '../services/BattleManager';
+import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { ENEMY_TURN_DELAY_MS, ROUND_END_DELAY_MS } from '../config/GameConfig';
 
 export interface BattleStore {
   state:          BattleState | null;
   isEnemyActing:  boolean;
-  startBattle:    (instances: CardInstance[], enemy: EnemyData) => void;
+  startBattle:    (instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => void;
   playCard:       (instanceId: string, damageMultiplier?: number) => void;
   endTurn:        () => void;
   resetBattle:    () => void;
@@ -55,9 +55,9 @@ export function useBattleStore(): BattleStore {
     }
   }, [state?.phase, state?.round]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const startBattle = useCallback((instances: CardInstance[], enemy: EnemyData) => {
+  const startBattle = useCallback((instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    setState(BattleManager.initBattle(instances, enemy));
+    setState(BattleManager.initBattle(instances, enemy, meta));
     setIsEnemyActing(false);
   }, []);
 

@@ -10,6 +10,13 @@ import { SaveService }          from '../services/SaveService';
 import { ComboSystem }          from '../services/ComboSystem';
 import { ProgressionService }   from '../services/ProgressionService';
 import { QuestService }         from '../services/QuestService';
+import { LeaderService }        from '../services/LeaderService';
+import { FormationService }     from '../services/FormationService';
+import { DailyTrialService } from '../services/DailyTrialService';
+import { CardDatabase }         from '../services/CardDatabase';
+import { TowerLore }            from '../data/towerLore';
+import type { BattleMeta }      from '../services/BattleManager';
+import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
 import VictoryScreen            from './VictoryScreen';
 import DefeatScreen             from './DefeatScreen';
@@ -33,6 +40,8 @@ const BattleScreen: React.FC = () => {
   const [tacticalConfig, setTacticalConfig] = useState<TacticalEnemyConfig | null>(null);
   const [isTowerMode,    setIsTowerMode]    = useState(false);
   const [towerFloor,     setTowerFloor]     = useState(() => TowerService.getFloor());
+  const [loreOverlay,    setLoreOverlay]    = useState<{ floor: number; type: 'normal'|'elite'|'boss' } | null>(null);
+  const [pendingMeta,    setPendingMeta]    = useState<{ enemy: EnemyData; meta: BattleMeta; tact: TacticalEnemyConfig | null } | null>(null);
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied = useRef(false);
 
@@ -45,6 +54,21 @@ const BattleScreen: React.FC = () => {
   }, [deck.deck.uuids, inventory]);
 
   const deckComplete = deckInstances.length === DECK_SIZE;
+
+  // Deck-Karten als Card-Objekte (für Leader/Formation)
+  const deckCards: Card[] = useMemo(
+    () => deckInstances
+      .map(inst => CardDatabase.getById(inst.cardId))
+      .filter((c): c is Card => !!c),
+    [deckInstances],
+  );
+
+  const leaderBonus = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
+  const formation   = useMemo(() => FormationService.compute(deckCards), [deckCards]);
+
+  // Tagesprüfung
+  const dailyTrial = useMemo(() => DailyTrialService.today(), []);
+  const dailyDone  = DailyTrialService.isCompleted();
 
   // Belohnungen einmalig anwenden wenn Battle endet
   useEffect(() => {
@@ -100,17 +124,19 @@ const BattleScreen: React.FC = () => {
   // ── Turm-Start ────────────────────────────────────────────
   const noEnergy = energy.energy < 1;
 
+  const isBoss = TowerService.isBossFloor(towerFloor);
+
   const handleTowerStart = () => {
     if (!deckComplete) return;
     if (!energy.consume()) return;
     setIsTowerMode(true);
 
     const tactEnemy = TowerService.getFloorEnemy(towerFloor);
+    let enemy: EnemyData;
     if (tactEnemy) {
-      setTacticalConfig(tactEnemy);
       const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0];
       if (!base) return;
-      const scaledEnemy: EnemyData = {
+      enemy = {
         ...base,
         id:    tactEnemy.id,
         name:  tactEnemy.name,
@@ -120,23 +146,78 @@ const BattleScreen: React.FC = () => {
           mpMax:   base.stats.mpMax,
           mpRegen: base.stats.mpRegen,
         },
-        cards: base.cards.map(c => ({
-          ...c,
-          atk: Math.round(c.atk * (1 + towerFloor * 0.1)),
-        })),
+        cards: base.cards.map(c => ({ ...c, atk: Math.round(c.atk * (1 + towerFloor * 0.1)) })),
         rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2)),
         rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2)),
       };
-      battle.startBattle(deckInstances, scaledEnemy);
     } else {
-      setTacticalConfig(null);
       const all = EnemyDatabase.getAll();
       const random = all[Math.floor(Math.random() * all.length)];
-      if (random) battle.startBattle(deckInstances, random);
+      if (!random) return;
+      enemy = random;
     }
+
+    const meta: BattleMeta = {
+      leaderBonus,
+      formation,
+    };
+    const type = isBoss ? 'boss' : tactEnemy ? 'elite' : 'normal';
+    setPendingMeta({ enemy, meta, tact: tactEnemy });
+    setLoreOverlay({ floor: towerFloor, type });
   };
 
-  const isBoss = TowerService.isBossFloor(towerFloor);
+  const handleDailyTrialStart = () => {
+    if (!deckComplete) return;
+    if (dailyDone) return;
+    if (!energy.consume()) return;
+    setIsTowerMode(false);
+    setTacticalConfig(null);
+
+    const all = EnemyDatabase.getAll();
+    let enemy = all[Math.floor(Math.random() * all.length)];
+    if (!enemy) return;
+
+    // Boost rewards for the daily trial
+    enemy = {
+      ...enemy,
+      rewardXp:       Math.round(enemy.rewardXp       + dailyTrial.rewardXp),
+      rewardCrystals: Math.round(enemy.rewardCrystals + dailyTrial.rewardCrystals),
+    };
+
+    const meta: BattleMeta = {
+      leaderBonus,
+      formation,
+      dailyModifier: dailyTrial.modifier,
+      maxRounds:     dailyTrial.modifier.kind === 'time_trial' ? dailyTrial.modifier.maxRounds : undefined,
+    };
+    battle.startBattle(deckInstances, enemy, meta);
+    DailyTrialService.markCompleted();
+  };
+
+  const confirmLore = () => {
+    if (!pendingMeta) return;
+    setTacticalConfig(pendingMeta.tact);
+    battle.startBattle(deckInstances, pendingMeta.enemy, pendingMeta.meta);
+    setLoreOverlay(null);
+    setPendingMeta(null);
+  };
+
+  // ── Lore-Overlay ──
+  if (loreOverlay) {
+    const lore = TowerLore.forFloor(loreOverlay.floor, loreOverlay.type);
+    return (
+      <div className="lore-overlay">
+        <div className="lore-overlay__box">
+          <div className="lore-overlay__floor">ETAGE {loreOverlay.floor}</div>
+          <h2 className="lore-overlay__subtitle">{lore.subtitle}</h2>
+          <p className="lore-overlay__text">{lore.text}</p>
+          <button className="lore-overlay__btn" onClick={confirmLore}>
+            ▶ Etage betreten
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="battle-screen--select">
@@ -161,6 +242,50 @@ const BattleScreen: React.FC = () => {
               : 'Steige höher. Werde stärker. Bezwinge den Turm.'}
           </div>
         </div>
+      </div>
+
+      {/* Leader-Karte + Formation */}
+      {leaderBonus && (
+        <div className="battle-meta-box">
+          <div className="battle-meta-box__title">⚜ Anführer & Formation</div>
+          <div className="battle-meta-box__row">
+            <span className="battle-meta-box__icon">👑</span>
+            <span className="battle-meta-box__main">{leaderBonus.leaderName}</span>
+            <span className="battle-meta-box__bonus">
+              +{Math.round(leaderBonus.elementDamageBoost * 100)}% {leaderBonus.element}
+            </span>
+          </div>
+          {formation.bonuses.length === 0 && (
+            <div className="battle-meta-box__hint">Mind. 3 Karten mit gleichem Tag für eine Formation</div>
+          )}
+          {formation.bonuses.map(f => (
+            <div key={f.tag} className="battle-meta-box__row">
+              <span className="battle-meta-box__icon">✦</span>
+              <span className="battle-meta-box__main">{f.label} ({f.count}×)</span>
+              <span className="battle-meta-box__bonus">+{Math.round(f.damageBoost * 100)}% Schaden</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Tages-Prüfung */}
+      <div className={`battle-daily-trial ${dailyDone ? 'battle-daily-trial--done' : ''}`}>
+        <div className="battle-daily-trial__header">
+          <span className="battle-daily-trial__icon">☀️</span>
+          <span className="battle-daily-trial__title">TAGESPRÜFUNG · {dailyTrial.title}</span>
+          {dailyDone && <span className="battle-daily-trial__done-tag">✓</span>}
+        </div>
+        <div className="battle-daily-trial__desc">{dailyTrial.description}</div>
+        <div className="battle-daily-trial__rewards">
+          💎 +{dailyTrial.rewardCrystals} · ✦ +{dailyTrial.rewardXp} XP
+        </div>
+        <button
+          className={`battle-daily-trial__btn ${dailyDone || !deckComplete || noEnergy ? 'battle-start-btn--disabled' : ''}`}
+          disabled={dailyDone || !deckComplete || noEnergy}
+          onClick={handleDailyTrialStart}
+        >
+          {dailyDone ? 'Heute bereits absolviert' : '⚔ Prüfung starten'}
+        </button>
       </div>
 
       {/* Energie / Ausdauertränke */}
@@ -222,7 +347,23 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [popups,      setPopups]      = useState<DamagePopup[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [synergyToast, setSynergyToast] = useState<{ a: string; b: string; count: number } | null>(null);
+  const [awakeningToast, setAwakeningToast] = useState<string | null>(null);
+  const lastAwakenedCount = useRef(0);
   const popupId = React.useRef(0);
+
+  // Awakening-Toast wenn neue Karte erwacht
+  useEffect(() => {
+    const current = state.awakenedIds?.length ?? 0;
+    if (current > lastAwakenedCount.current) {
+      const newestId = state.awakenedIds?.[current - 1];
+      const card = newestId ? state.player.hand.concat(state.player.deck).find(c => c.sourceId === newestId)?.card : null;
+      if (card) {
+        setAwakeningToast(`${card.name} ERWACHT!`);
+        setTimeout(() => setAwakeningToast(null), 2400);
+      }
+    }
+    lastAwakenedCount.current = current;
+  }, [state.awakenedIds?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { player, enemy, round, phase, log, result, enemyData } = state;
   const canPlay   = phase === 'player_turn' && !result;
@@ -339,6 +480,14 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             {synergyToast.count > 1 ? `×${synergyToast.count} SYNERGIE` : 'SYNERGIE'}
           </span>
           <span className="arena-synergy-toast__cards">{synergyToast.a} + {synergyToast.b}</span>
+        </div>
+      )}
+
+      {/* Awakening-Toast */}
+      {awakeningToast && (
+        <div className="arena-awakening-toast">
+          <span className="arena-awakening-toast__icon">🔥</span>
+          <span className="arena-awakening-toast__text">{awakeningToast}</span>
         </div>
       )}
 
