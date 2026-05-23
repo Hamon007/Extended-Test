@@ -16,6 +16,7 @@ const MENU_ITEMS: { icon: string; label: string; target: string | null }[] = [
   { icon: '🔮', label: 'Fusion & Awakening', target: 'fusion' },
   { icon: '🗡️', label: 'Opfern',             target: 'training' },
   { icon: '👤', label: 'Mein Profil',        target: 'profile' },
+  { icon: '🔀', label: 'Handel',             target: 'trade' },
   { icon: '⚙️', label: 'Einstellungen',      target: null },
   { icon: 'ℹ️', label: 'Über das Spiel',     target: null },
   { icon: '🔄', label: 'Daten zurücksetzen', target: null },
