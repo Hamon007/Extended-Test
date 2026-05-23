@@ -118,6 +118,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     return () => clearInterval(refreshId);
   }, [loggedIn]);
 
+  // Combine live events + tips; banner always cycles through something
   useEffect(() => {
     if (feedEvents.length < 2) return;
     const id = setInterval(() => setFeedIndex(i => (i + 1) % feedEvents.length), 5000);
@@ -239,7 +240,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         </div>
       </div>
 
-      {/* ── Live-Feed Banner ── */}
+      {/* ── Info-Banner: cyclt durch Live-Events oder Tips ── */}
       {feedEvents.length > 0 ? (
         <div className="main-infobanner main-infobanner--live">
           <span className="main-infobanner__live-dot" />
@@ -248,9 +249,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
           </span>
         </div>
       ) : (
-        <div className="main-infobanner">
+        <div className="main-infobanner main-infobanner--tip">
           <span className="main-infobanner__icon">ⓘ</span>
-          <span className="main-infobanner__text">Willkommen bei Codex Immortalis!</span>
+          <span className="main-infobanner__text">{TIPS[tipIndex]}</span>
         </div>
       )}
 
