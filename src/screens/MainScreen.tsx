@@ -82,6 +82,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [energyMax,    setEnergyMax]    = useState(() => EnergyService.getMax());
   const [feedEvents,   setFeedEvents]   = useState<FeedEvent[]>([]);
   const [feedIndex,    setFeedIndex]    = useState(0);
+  // Track auth state reactively so feed loads after async AuthService.init()
+  const [loggedIn,     setLoggedIn]     = useState(AuthService.isLoggedIn);
 
   // Countdown-Tick
   useEffect(() => {
@@ -101,14 +103,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     return () => clearInterval(id);
   }, []);
 
-  // Live activity feed — load on mount, refresh every 60s, cycle entry every 5s
+  // Subscribe to auth changes so feed loads even if init() finishes after mount
   useEffect(() => {
-    if (!AuthService.isLoggedIn) return;
+    setLoggedIn(AuthService.isLoggedIn);
+    return AuthService.subscribe(user => setLoggedIn(user !== null));
+  }, []);
+
+  // Live activity feed — load when logged in, refresh every 60s
+  useEffect(() => {
+    if (!loggedIn) return;
     const load = () => ActivityFeedService.getRecent(15).then(setFeedEvents);
     load();
     const refreshId = setInterval(load, 60_000);
     return () => clearInterval(refreshId);
-  }, []);
+  }, [loggedIn]);
 
   useEffect(() => {
     if (feedEvents.length < 2) return;
