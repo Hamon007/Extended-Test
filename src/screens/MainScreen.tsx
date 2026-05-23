@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
 import { EnergyService } from '../services/EnergyService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
-import { ActivityFeedService, formatEvent, type FeedEvent } from '../services/ActivityFeedService';
+import { ActivityFeedService, type FeedEvent } from '../services/ActivityFeedService';
 import { AuthService } from '../services/AuthService';
 import type { AccountState } from '../types/AccountTypes';
 import { CardDatabase } from '../services/CardDatabase';
@@ -103,22 +103,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     return () => clearInterval(id);
   }, []);
 
-  // Subscribe to auth changes so feed loads even if init() finishes after mount
+  // Track auth state reactively
   useEffect(() => {
     setLoggedIn(AuthService.isLoggedIn);
     return AuthService.subscribe(user => setLoggedIn(user !== null));
   }, []);
 
-  // Live activity feed — load when logged in, refresh every 60s
+  // Live feed: load + Realtime subscription for instant updates + 60s polling backup
   useEffect(() => {
     if (!loggedIn) return;
     const load = () => ActivityFeedService.getRecent(15).then(setFeedEvents);
     load();
-    const refreshId = setInterval(load, 60_000);
-    return () => clearInterval(refreshId);
+    const unsubRealtime = ActivityFeedService.subscribeToNew(load);
+    const pollId = setInterval(load, 60_000);
+    return () => { unsubRealtime(); clearInterval(pollId); };
   }, [loggedIn]);
 
-  // Combine live events + tips; banner always cycles through something
+  // Cycle through feed events every 5s
   useEffect(() => {
     if (feedEvents.length < 2) return;
     const id = setInterval(() => setFeedIndex(i => (i + 1) % feedEvents.length), 5000);
@@ -240,20 +241,22 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         </div>
       </div>
 
-      {/* ── Info-Banner: cyclt durch Live-Events oder Tips ── */}
-      {feedEvents.length > 0 ? (
-        <div className="main-infobanner main-infobanner--live">
-          <span className="main-infobanner__live-dot" />
-          <span className="main-infobanner__text">
-            {formatEvent(feedEvents[feedIndex % feedEvents.length])}
-          </span>
-        </div>
-      ) : (
-        <div className="main-infobanner main-infobanner--tip">
-          <span className="main-infobanner__icon">ⓘ</span>
-          <span className="main-infobanner__text">{TIPS[tipIndex]}</span>
-        </div>
-      )}
+      {/* ── Live-Ereignisse Banner ── */}
+      <div className={`main-infobanner${feedEvents.length > 0 ? ' main-infobanner--live' : ''}`}>
+        {feedEvents.length > 0 ? (
+          <>
+            <span className="main-infobanner__live-dot" />
+            <span className="main-infobanner__text" key={feedIndex}>
+              {ActivityFeedService.formatEvent(feedEvents[feedIndex % feedEvents.length])}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="main-infobanner__icon">📡</span>
+            <span className="main-infobanner__text">Keine Ereignisse — ziehe SSR/MR oder fusioniere zu LR!</span>
+          </>
+        )}
+      </div>
 
       {/* ── Scrollbarer Inhaltsbereich ── */}
       <div className="main-body">
