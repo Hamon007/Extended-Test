@@ -16,6 +16,15 @@ import {
   createDefaultAccountState,
   normalizeAccountState,
 } from './AccountProgressionService';
+import { supabase } from '../lib/supabase';
+import { AuthService } from './AuthService';
+
+interface CloudSave {
+  gacha:   GachaState;
+  deck:    Deck;
+  account: AccountState;
+  savedAt: number;
+}
 
 // ── Storage-Schlüssel ─────────────────────────────────────────
 
@@ -25,6 +34,7 @@ const KEYS = {
   settings: 'ci_settings',
   lastLogin:'ci_last_login',
   account:  'ci_account_state',
+  savedAt:  'ci_save_timestamp',
 } as const;
 
 // ── Generische Helfer ─────────────────────────────────────────
@@ -89,6 +99,8 @@ function loadGachaState(): GachaState {
 
 function saveGachaState(state: GachaState): void {
   persist(KEYS.gacha, state);
+  persist(KEYS.savedAt, Date.now());
+  void uploadSave();
 }
 
 // ── Deck API ──────────────────────────────────────────────────
@@ -108,6 +120,8 @@ function loadDeck(): Deck {
 
 function saveDeck(deck: Deck): void {
   persist(KEYS.deck, { ...deck, savedAt: Date.now() });
+  persist(KEYS.savedAt, Date.now());
+  void uploadSave();
 }
 
 function deleteDeck(): void {
@@ -133,12 +147,60 @@ function loadAccountState(): AccountState {
 
 function saveAccountState(state: AccountState): void {
   persist(KEYS.account, state);
+  persist(KEYS.savedAt, Date.now());
+  void uploadSave();
 }
 
 // ── Letzer Login ──────────────────────────────────────────────
 
 function updateLastLogin(): void {
   persist(KEYS.lastLogin, Date.now());
+}
+
+// ── Cloud-Sync ────────────────────────────────────────────────
+
+async function uploadSave(): Promise<void> {
+  if (!supabase || !AuthService.isLoggedIn) return;
+  const userId = AuthService.user!.id;
+  const data: CloudSave = {
+    gacha:   retrieve<GachaState>(KEYS.gacha)     ?? defaultGachaState(),
+    deck:    retrieve<Deck>(KEYS.deck)             ?? createEmptyDeck(),
+    account: retrieve<AccountState>(KEYS.account) ?? createDefaultAccountState(),
+    savedAt: Date.now(),
+  };
+  const { error } = await supabase
+    .from('saves')
+    .upsert({ user_id: userId, data, updated_at: new Date().toISOString() });
+  if (error) console.warn('[SaveService] Cloud-Upload fehlgeschlagen:', error.message);
+}
+
+/** Returns true if cloud data was newer and applied (page reload needed). */
+async function downloadSave(): Promise<boolean> {
+  if (!supabase || !AuthService.isLoggedIn) return false;
+  const userId = AuthService.user!.id;
+  const { data: row, error } = await supabase
+    .from('saves')
+    .select('data')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error || !row?.data) {
+    // No cloud save yet — upload local data
+    await uploadSave();
+    return false;
+  }
+  const cloud = row.data as CloudSave;
+  const localTs = retrieve<number>(KEYS.savedAt) ?? 0;
+  if (cloud.savedAt > localTs) {
+    if (cloud.gacha)   persist(KEYS.gacha, cloud.gacha);
+    if (cloud.deck)    persist(KEYS.deck, cloud.deck);
+    if (cloud.account) persist(KEYS.account, cloud.account);
+    persist(KEYS.savedAt, cloud.savedAt);
+    console.log('[SaveService] Cloud-Spielstand geladen (neuer als lokal).');
+    return true;
+  }
+  // Local is newer or same — push to cloud
+  await uploadSave();
+  return false;
 }
 
 // ── Debug: kompletten State zurücksetzen ──────────────────────
@@ -160,4 +222,6 @@ export const SaveService = {
   saveAccountState,
   updateLastLogin,
   resetAll,
+  uploadSave,
+  downloadSave,
 };

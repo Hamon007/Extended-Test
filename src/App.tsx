@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { CardDatabase }           from './services/CardDatabase';
 import { EnemyDatabase }          from './services/EnemyDatabase';
 import { SaveService }            from './services/SaveService';
+import { AuthService }            from './services/AuthService';
 import { ProgressionService }     from './services/ProgressionService';
+import AuthModal                  from './components/AuthModal';
 import TitleScreen                from './screens/TitleScreen';
 import MainScreen                 from './screens/MainScreen';
 import GachaScreen                from './screens/GachaScreen';
@@ -40,6 +42,7 @@ const App: React.FC = () => {
   const [ready,            setReady]            = useState(false);
   const [stack,            setStack]            = useState<Screen[]>(['title']);
   const [dailyToast,       setDailyToast]       = useState<number | null>(null);
+  const [authOpen,         setAuthOpen]         = useState(false);
 
   const screen = stack[stack.length - 1];
   const showNav = !NO_NAV_SCREENS.includes(screen);
@@ -48,6 +51,7 @@ const App: React.FC = () => {
     CardDatabase.init();
     EnemyDatabase.init();
     SaveService.updateLastLogin();
+    void AuthService.init();
 
     const bonus = ProgressionService.checkAndApplyDailyBonus();
     if (bonus.granted) {
@@ -103,9 +107,11 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+
       <div className="app-content">
         {screen === 'title' && (
-          <TitleScreen onEnter={() => goTo('main')} />
+          <TitleScreen onEnter={() => goTo('main')} onAccountPress={() => setAuthOpen(true)} />
         )}
         {screen === 'main' && (
           <MainScreen onBack={goBack} />
