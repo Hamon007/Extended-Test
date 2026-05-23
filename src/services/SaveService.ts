@@ -170,7 +170,10 @@ async function uploadSave(): Promise<void> {
   };
   const { error } = await supabase
     .from('saves')
-    .upsert({ user_id: userId, data, updated_at: new Date().toISOString() });
+    .upsert(
+      { user_id: userId, data, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    );
   if (error) console.warn('[SaveService] Cloud-Upload fehlgeschlagen:', error.message);
 }
 
