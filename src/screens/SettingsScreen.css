@@ -1,0 +1,116 @@
+.settings-screen {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  background: var(--bg-deep); color: var(--text);
+  overflow-y: auto;
+}
+
+.settings-toast {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  background: rgba(42,100,160,0.92); color: #a0cfff;
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  padding: 8px 18px; border-radius: 20px;
+  z-index: 999; pointer-events: none;
+  animation: settings-toast-in 0.2s ease;
+}
+@keyframes settings-toast-in {
+  from { opacity:0; transform:translateX(-50%) translateY(-6px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+
+/* Header */
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--bg-mid);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.settings-header__back {
+  font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.08em;
+  color: var(--gold); background: transparent; border: 1px solid var(--border);
+  border-radius: 2px; padding: 5px 10px; cursor: pointer;
+}
+.settings-header__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: 1rem;
+  color: var(--gold-bright); letter-spacing: 0.12em;
+}
+
+/* Body */
+.settings-body { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 16px; }
+
+/* Section */
+.settings-section { display: flex; flex-direction: column; gap: 10px; }
+.settings-section__title {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.12em;
+  color: var(--gold-dark); text-transform: uppercase;
+}
+
+/* Dev card */
+.settings-dev-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--bg-mid); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 12px;
+}
+.settings-dev-card__left {
+  display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+}
+.settings-dev-card__icon { font-size: 1.4rem; flex-shrink: 0; }
+.settings-dev-card__info { flex: 1; min-width: 0; }
+.settings-dev-card__name {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--gold-bright);
+}
+.settings-dev-card__desc {
+  font-family: 'EB Garamond', serif; font-size: 0.72rem; color: var(--text); opacity: 0.65;
+  margin-top: 2px;
+}
+
+.settings-dev-badge {
+  font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: bold;
+  color: #1a0d12; background: #f0d080;
+  border-radius: 3px; padding: 2px 6px; flex-shrink: 0;
+  letter-spacing: 0.08em;
+}
+
+.settings-dev-btn {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.06em;
+  color: var(--gold); background: rgba(201,168,76,0.1);
+  border: 1px solid var(--gold-dark); border-radius: 4px;
+  padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.settings-dev-btn:active { background: rgba(201,168,76,0.22); }
+.settings-dev-btn--off {
+  color: #ef9a9a; background: rgba(139,26,26,0.12);
+  border-color: #5a2020;
+}
+.settings-dev-btn--off:active { background: rgba(139,26,26,0.25); }
+
+/* Password row */
+.settings-password-row {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 0 2px;
+}
+.settings-password-input {
+  flex: 1; min-width: 0;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  font-family: 'EB Garamond', serif; font-size: 0.95rem;
+  padding: 8px 12px; outline: none;
+}
+.settings-password-input::placeholder { color: rgba(232,213,176,0.3); }
+.settings-password-input:focus { border-color: var(--gold-dark); }
+.settings-password-input--error { border-color: #8b1a1a; }
+
+.settings-password-confirm {
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  color: #1a0d12; background: linear-gradient(135deg, #c9a84c, #f0d080);
+  border: none; border-radius: 6px; padding: 8px 14px;
+  cursor: pointer; font-weight: 700;
+}
+.settings-password-confirm:active { opacity: 0.8; }
+
+.settings-password-error {
+  width: 100%;
+  font-family: 'Cinzel', serif; font-size: 0.6rem;
+  color: #ef9a9a; letter-spacing: 0.05em;
+}

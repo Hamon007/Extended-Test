@@ -14,7 +14,8 @@ export type Screen =
   | 'trade'
   | 'friends'
   | 'inventory'
-  | 'quests';
+  | 'quests'
+  | 'settings';
 
 const shortcutScreens: Record<string, Screen> = {
   gacha:  'gacha',

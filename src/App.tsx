@@ -21,6 +21,8 @@ import TradeScreen               from './screens/TradeScreen';
 import FriendsScreen             from './screens/FriendsScreen';
 import InventoryScreen           from './screens/InventoryScreen';
 import QuestScreen               from './screens/QuestScreen';
+import SettingsScreen            from './screens/SettingsScreen';
+import { DevModeService }        from './services/DevModeService';
 import { TradeService }          from './services/TradeService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
@@ -106,6 +108,7 @@ const App: React.FC = () => {
     if (target === 'friends')   goTo('friends');
     if (target === 'inventory') goTo('inventory');
     if (target === 'quests')    goTo('quests');
+    if (target === 'settings')  goTo('settings');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -165,7 +168,15 @@ const App: React.FC = () => {
         {screen === 'quests' && (
           <QuestScreen onBack={goBack} />
         )}
+        {screen === 'settings' && (
+          <SettingsScreen onBack={goBack} />
+        )}
       </div>
+
+      {/* ── Dev-Modus-Badge ── */}
+      {DevModeService.isEnabled() && (
+        <div className="app-dev-badge">DEV</div>
+      )}
 
       {/* ── Globale Bottom-Navigation ── */}
       {showNav && (

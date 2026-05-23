@@ -17,6 +17,7 @@ import {
 } from '../config/GameConfig';
 import { getMaxStamina } from './AccountProgressionService';
 import { SaveService } from './SaveService';
+import { DevModeService } from './DevModeService';
 
 export { MAX_BATTLE_ENERGY, ENERGY_PER_BATTLE, STARTING_POTIONS, POTION_RESTORE };
 
@@ -81,11 +82,17 @@ function load(): EnergyState {
     st = { ...st, energy: getMax(), lastDate: today };
     write(st);
   }
+
+  // Dev-Modus: unbegrenzte Energie und Tränke
+  if (DevModeService.isEnabled()) {
+    return { ...st, energy: getMax(), potions: 99 };
+  }
   return st;
 }
 
 /** Verbraucht Energie für einen Kampf. Gibt neuen State zurück oder null wenn leer. */
 function consume(): EnergyState | null {
+  if (DevModeService.isEnabled()) return load(); // kein Verbrauch im Dev-Modus
   const st = load();
   if (st.energy < ENERGY_PER_BATTLE) return null;
   const next = { ...st, energy: st.energy - ENERGY_PER_BATTLE };

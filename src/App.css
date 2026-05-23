@@ -121,3 +121,21 @@
   color: #8a6520;
   letter-spacing: 3px;
 }
+
+/* Dev-Modus-Badge */
+.app-dev-badge {
+  position: fixed;
+  top: 6px;
+  right: 8px;
+  z-index: 9999;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: #1a0d12;
+  background: #f0d080;
+  border-radius: 3px;
+  padding: 2px 7px;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(240,208,128,0.5);
+}
