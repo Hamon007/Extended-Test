@@ -85,8 +85,14 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <div className="guild-header">
         <button className="guild-back" onClick={onBack}>◀</button>
         <div className="guild-header__center">
-          <div className="guild-header__name">{GUILD_NAME}</div>
-          <div className="guild-header__level">Stufe {lvl}</div>
+          {activeTab === 'kampf' ? (
+            <>
+              <div className="guild-header__name">{GUILD_NAME}</div>
+              <div className="guild-header__level">Stufe {lvl}</div>
+            </>
+          ) : (
+            <div className="guild-header__name">Online-Gilden</div>
+          )}
         </div>
         <div className="guild-header__crystals">💎 {crystals.toLocaleString('de-DE')}</div>
       </div>
@@ -458,7 +464,7 @@ const GildeTab: React.FC<GildeTabProps> = ({ showToast }) => {
                 {g.name} <span className="guild-list-row__tag">[{g.tag}]</span>
               </div>
               <div className="guild-list-row__meta">
-                {g.member_count ?? 0}/{g.max_members} Mitglieder
+                {g.member_count ?? 0} Mitglieder
                 {!g.is_open && ' · Geschlossen'}
               </div>
             </div>

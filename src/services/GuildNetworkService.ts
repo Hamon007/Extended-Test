@@ -7,10 +7,9 @@ export interface RealGuild {
   tag: string;
   emblem: string;
   description: string;
-  leader_user_id: string;
+  leader_id: string;
   leader_username?: string;
   is_open: boolean;
-  max_members: number;
   member_count?: number;
   created_at: string;
 }
@@ -49,16 +48,18 @@ export const GuildNetworkService = {
   async getGuildById(id: string): Promise<RealGuild | null> {
     if (!supabase) return null;
     const { data } = await supabase
-      .from('guilds_with_stats')
+      .from('guilds')
       .select('*')
       .eq('id', id)
       .maybeSingle();
-    return data ?? null;
+    if (!data) return null;
+    const { count } = await supabase.from('guild_members').select('*', { count: 'exact', head: true }).eq('guild_id', id);
+    return { ...data, member_count: count ?? 0 } as RealGuild;
   },
 
   async searchGuilds(query: string): Promise<RealGuild[]> {
     if (!supabase) return [];
-    let q = supabase.from('guilds_with_stats').select('*').order('member_count', { ascending: false }).limit(30);
+    let q = supabase.from('guilds').select('*').limit(30);
     if (query.trim()) q = q.or(`name.ilike.%${query.trim()}%,tag.ilike.%${query.trim()}%`);
     const { data } = await q;
     return (data ?? []) as RealGuild[];
@@ -67,9 +68,12 @@ export const GuildNetworkService = {
   async createGuild(name: string, tag: string, emblem: string, description: string, isOpen: boolean): Promise<string | null> {
     const userId = AuthService.user?.id;
     if (!supabase || !userId) return 'Nicht eingeloggt.';
+    // Block if already in a guild
+    const existing = await GuildNetworkService.getMyMembership();
+    if (existing) return 'Du bist bereits Mitglied einer Gilde.';
     const { data, error } = await supabase.from('guilds').insert({
       name: name.trim(), tag: tag.trim().toUpperCase(), emblem, description: description.trim(),
-      leader_user_id: userId, is_open: isOpen,
+      leader_id: userId, is_open: isOpen,
     }).select('id').single();
     if (error) return error.message;
     await supabase.from('guild_members').insert({ guild_id: data.id, user_id: userId, role: 'leader' });
@@ -79,6 +83,8 @@ export const GuildNetworkService = {
   async applyToGuild(guildId: string, message: string): Promise<string | null> {
     const userId = AuthService.user?.id;
     if (!supabase || !userId) return 'Nicht eingeloggt.';
+    const existing = await GuildNetworkService.getMyMembership();
+    if (existing) return 'Du bist bereits Mitglied einer Gilde.';
     const { error } = await supabase.from('guild_applications').insert({
       guild_id: guildId, user_id: userId, message: message.trim(),
     });
