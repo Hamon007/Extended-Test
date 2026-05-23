@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AuthService } from '../services/AuthService';
 import { TradeService, type Trade, type TradeOffer } from '../services/TradeService';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import type { CardInstance } from '../types/GachaTypes';
-import type { Card } from '../types/Card';
+import type { Card, Rarity } from '../types/Card';
 import { RARITY_COLOR, rarityMajor } from '../types/Card';
 import './TradeScreen.css';
 
@@ -28,6 +28,10 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
   const [allowOffers,  setAllowOffers]  = useState(false);
   const [submitting,   setSubmitting]   = useState(false);
 
+  // Picker filter state
+  const [pickerSearch,  setPickerSearch]  = useState('');
+  const [pickerRarity,  setPickerRarity]  = useState<Rarity | 'ALL'>('ALL');
+
   // Accept overlay
   const [acceptTrade,  setAcceptTrade]  = useState<Trade | null>(null);
   const [acceptCard,   setAcceptCard]   = useState<CardInstance | null>(null);
@@ -42,6 +46,29 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
   const myInventory = gachaState.inventory;
   const allCards    = CardDatabase.getAll();
   const isLoggedIn  = AuthService.isLoggedIn;
+
+  const RARITY_FILTERS: (Rarity | 'ALL')[] = ['ALL', 'N', 'R', 'SR', 'SSR', 'MR', 'LR'];
+
+  const filteredInventory = useMemo(() => {
+    const q = pickerSearch.trim().toLowerCase();
+    return myInventory.filter(inst => {
+      const card = CardDatabase.getById(inst.cardId);
+      const nameMatch = !q || (card?.name ?? inst.cardId).toLowerCase().includes(q);
+      const rarityMatch = pickerRarity === 'ALL' || rarityMajor(inst.rarity) === pickerRarity;
+      return nameMatch && rarityMatch;
+    });
+  }, [myInventory, pickerSearch, pickerRarity]);
+
+  const filteredCatalog = useMemo(() => {
+    const q = pickerSearch.trim().toLowerCase();
+    return allCards.filter(card => {
+      const nameMatch = !q || card.name.toLowerCase().includes(q);
+      const rarityMatch = pickerRarity === 'ALL' || rarityMajor(card.rarity) === pickerRarity;
+      return nameMatch && rarityMatch;
+    });
+  }, [allCards, pickerSearch, pickerRarity]);
+
+  const resetPickerFilters = () => { setPickerSearch(''); setPickerRarity('ALL'); };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -64,6 +91,7 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
     setOfferCard(null);
     setWantCard(null);
     setAllowOffers(false);
+    resetPickerFilters();
   };
 
   const handleSubmit = async () => {
@@ -308,30 +336,75 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
         step === 'new-offer' ? (
           <div className="trade-form">
             <p className="trade-form__label">Welche Karte bietest du an?</p>
-            <p className="trade-form__sublabel">Wähle aus deinem Inventar:</p>
+            <div className="trade-picker-filters">
+              <input
+                className="trade-picker-search"
+                type="text"
+                placeholder="Karte suchen …"
+                value={pickerSearch}
+                onChange={e => setPickerSearch(e.target.value)}
+              />
+              <div className="trade-picker-rarity-row">
+                {RARITY_FILTERS.map(r => (
+                  <button
+                    key={r}
+                    className={`trade-picker-rarity-btn${pickerRarity === r ? ' trade-picker-rarity-btn--active' : ''}`}
+                    style={r !== 'ALL' ? { color: RARITY_COLOR[r as Rarity] } : undefined}
+                    onClick={() => setPickerRarity(r)}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="trade-picker-grid">
-              {myInventory.length === 0 && (
+              {filteredInventory.length === 0 && (
                 <p style={{ color: 'var(--gold-dark)', gridColumn: '1/-1', textAlign: 'center' }}>
-                  Keine Karten im Inventar.
+                  Keine Karten gefunden.
                 </p>
               )}
-              {myInventory.map(i => (
+              {filteredInventory.map(i => (
                 <CardChip key={i.uuid} inst={i}
                   selected={offerCard?.uuid === i.uuid}
                   onClick={() => setOfferCard(i)} />
               ))}
             </div>
             <button className="trade-btn" disabled={!offerCard}
-              onClick={() => setStep('new-want')}>
+              onClick={() => { resetPickerFilters(); setStep('new-want'); }}>
               Weiter →
             </button>
           </div>
         ) : step === 'new-want' ? (
           <div className="trade-form">
             <p className="trade-form__label">Was möchtest du im Tausch?</p>
-            <p className="trade-form__sublabel">Wähle aus dem gesamten Katalog:</p>
+            <div className="trade-picker-filters">
+              <input
+                className="trade-picker-search"
+                type="text"
+                placeholder="Karte suchen …"
+                value={pickerSearch}
+                onChange={e => setPickerSearch(e.target.value)}
+              />
+              <div className="trade-picker-rarity-row">
+                {RARITY_FILTERS.map(r => (
+                  <button
+                    key={r}
+                    className={`trade-picker-rarity-btn${pickerRarity === r ? ' trade-picker-rarity-btn--active' : ''}`}
+                    style={r !== 'ALL' ? { color: RARITY_COLOR[r as Rarity] } : undefined}
+                    onClick={() => setPickerRarity(r)}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="trade-picker-grid">
-              {allCards.map(c => (
+              {filteredCatalog.length === 0 && (
+                <p style={{ color: 'var(--gold-dark)', gridColumn: '1/-1', textAlign: 'center' }}>
+                  Keine Karten gefunden.
+                </p>
+              )}
+              {filteredCatalog.map(c => (
                 <CatalogChip key={c.id} card={c}
                   selected={wantCard?.id === c.id}
                   onClick={() => setWantCard(c)} />
