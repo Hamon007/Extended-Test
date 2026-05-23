@@ -41,7 +41,14 @@ const App: React.FC = () => {
     CardDatabase.init();
     EnemyDatabase.init();
     SaveService.updateLastLogin();
-    void AuthService.init();
+
+    // Init auth, then sync cloud save if already logged in
+    AuthService.init().then(async () => {
+      if (AuthService.isLoggedIn) {
+        const wasNewer = await SaveService.downloadSave();
+        if (wasNewer) { window.location.reload(); return; }
+      }
+    });
 
     const bonus = ProgressionService.checkAndApplyDailyBonus();
     if (bonus.granted) {

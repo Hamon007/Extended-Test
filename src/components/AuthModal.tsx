@@ -42,13 +42,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     // Sync cloud save after login
     setInfo('Synchronisiere …');
-    const wasNewer = await SaveService.downloadSave();
-    if (wasNewer) {
-      setInfo('Cloud-Spielstand geladen! Lade Spiel neu …');
-      setTimeout(() => window.location.reload(), 1200);
-    } else {
-      setInfo('Spielstand synchronisiert.');
-      setTimeout(() => setInfo(''), 2000);
+    try {
+      const wasNewer = await SaveService.downloadSave();
+      if (wasNewer) {
+        setInfo('Cloud-Spielstand geladen! Lade Spiel neu …');
+        setTimeout(() => window.location.reload(), 1200);
+      } else {
+        setInfo('Spielstand gespeichert ✓');
+        setTimeout(() => { setInfo(''); onClose(); }, 1500);
+      }
+    } catch (e) {
+      setError('Sync fehlgeschlagen – bitte erneut versuchen.');
     }
   };
 
