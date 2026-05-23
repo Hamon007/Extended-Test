@@ -16,6 +16,7 @@ import { CardDatabase } from './CardDatabase';
 import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
 import { AccountProgressionService } from './AccountProgressionService';
+import { ActivityFeedService } from './ActivityFeedService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -100,6 +101,13 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     );
     SaveService.saveAccountState(accountResult.newState);
 
+    // Post level milestone events (every 10 levels)
+    if (accountResult.leveledUp) {
+      for (let lv = accountResult.oldLevel + 1; lv <= accountResult.newLevel; lv++) {
+        if (lv % 10 === 0) ActivityFeedService.post('level_cap', { level: lv });
+      }
+    }
+
     console.log(
       `[Progression] Sieg: +${result.rewardCrystals} Kristalle,`,
       `${newCards.length} neue Karte(n), ${potionsGained} Trank,`,
@@ -136,6 +144,12 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
       ACCOUNT_CONSOLATION_XP,
     );
     SaveService.saveAccountState(accountResult.newState);
+
+    if (accountResult.leveledUp) {
+      for (let lv = accountResult.oldLevel + 1; lv <= accountResult.newLevel; lv++) {
+        if (lv % 10 === 0) ActivityFeedService.post('level_cap', { level: lv });
+      }
+    }
 
     console.log(`[Progression] Niederlage: +${DEFEAT_CONSOLATION} Trost-Kristalle, +${ACCOUNT_CONSOLATION_XP} Trost-XP`);
 

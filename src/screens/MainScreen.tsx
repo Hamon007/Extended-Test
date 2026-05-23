@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
 import { EnergyService } from '../services/EnergyService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
+import { ActivityFeedService, formatEvent, type FeedEvent } from '../services/ActivityFeedService';
+import { AuthService } from '../services/AuthService';
 import type { AccountState } from '../types/AccountTypes';
 import { CardDatabase } from '../services/CardDatabase';
 import type { Card } from '../types/Card';
@@ -70,14 +72,16 @@ function formatCountdown(ms: number): string {
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
-  const [detailCard, setDetailCard] = useState<Card | null>(null);
-  const [countdown, setCountdown] = useState(() => nextBattleMs());
-  const [tipIndex,  setTipIndex]  = useState(0);
-  const [npcIndex,  setNpcIndex]  = useState(0);
-  const [deckStats, setDeckStats] = useState<{ atk: number; def: number } | null>(null);
-  const [account,   setAccount]   = useState<AccountState>(() => SaveService.loadAccountState());
-  const [energy,    setEnergy]    = useState(() => EnergyService.load());
-  const [energyMax, setEnergyMax] = useState(() => EnergyService.getMax());
+  const [detailCard,   setDetailCard]   = useState<Card | null>(null);
+  const [countdown,    setCountdown]    = useState(() => nextBattleMs());
+  const [tipIndex,     setTipIndex]     = useState(0);
+  const [npcIndex,     setNpcIndex]     = useState(0);
+  const [deckStats,    setDeckStats]    = useState<{ atk: number; def: number } | null>(null);
+  const [account,      setAccount]      = useState<AccountState>(() => SaveService.loadAccountState());
+  const [energy,       setEnergy]       = useState(() => EnergyService.load());
+  const [energyMax,    setEnergyMax]    = useState(() => EnergyService.getMax());
+  const [feedEvents,   setFeedEvents]   = useState<FeedEvent[]>([]);
+  const [feedIndex,    setFeedIndex]    = useState(0);
 
   // Countdown-Tick
   useEffect(() => {
@@ -96,6 +100,21 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     const id = setInterval(() => setNpcIndex(i => (i + 1) % NPC_IMAGES.length), 5000);
     return () => clearInterval(id);
   }, []);
+
+  // Live activity feed — load on mount, refresh every 60s, cycle entry every 5s
+  useEffect(() => {
+    if (!AuthService.isLoggedIn) return;
+    const load = () => ActivityFeedService.getRecent(15).then(setFeedEvents);
+    load();
+    const refreshId = setInterval(load, 60_000);
+    return () => clearInterval(refreshId);
+  }, []);
+
+  useEffect(() => {
+    if (feedEvents.length < 2) return;
+    const id = setInterval(() => setFeedIndex(i => (i + 1) % feedEvents.length), 5000);
+    return () => clearInterval(id);
+  }, [feedEvents.length]);
 
   // Account + Energy beim Erscheinen und bei Fokus-Rückkehr aktualisieren
   useEffect(() => {
@@ -212,11 +231,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         </div>
       </div>
 
-      {/* ── Info-Banner ── */}
-      <div className="main-infobanner">
-        <span className="main-infobanner__icon">ⓘ</span>
-        <span className="main-infobanner__text">Willkommen bei Codex Immortalis!</span>
-      </div>
+      {/* ── Live-Feed Banner ── */}
+      {feedEvents.length > 0 ? (
+        <div className="main-infobanner main-infobanner--live">
+          <span className="main-infobanner__live-dot" />
+          <span className="main-infobanner__text">
+            {formatEvent(feedEvents[feedIndex % feedEvents.length])}
+          </span>
+        </div>
+      ) : (
+        <div className="main-infobanner">
+          <span className="main-infobanner__icon">ⓘ</span>
+          <span className="main-infobanner__text">Willkommen bei Codex Immortalis!</span>
+        </div>
+      )}
 
       {/* ── Scrollbarer Inhaltsbereich ── */}
       <div className="main-body">

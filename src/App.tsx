@@ -18,6 +18,7 @@ import GuildScreen                from './screens/GuildScreen';
 import CardTrainingScreen         from './screens/CardTrainingScreen';
 import ProfileScreen              from './screens/ProfileScreen';
 import TradeScreen               from './screens/TradeScreen';
+import FriendsScreen             from './screens/FriendsScreen';
 import { TradeService }          from './services/TradeService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
@@ -100,6 +101,7 @@ const App: React.FC = () => {
     if (target === 'training') goTo('training');
     if (target === 'profile') goTo('profile');
     if (target === 'trade')   goTo('trade');
+    if (target === 'friends') goTo('friends');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -149,6 +151,9 @@ const App: React.FC = () => {
         )}
         {screen === 'trade' && (
           <TradeScreen onBack={goBack} />
+        )}
+        {screen === 'friends' && (
+          <FriendsScreen onBack={goBack} />
         )}
       </div>
 

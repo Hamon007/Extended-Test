@@ -10,6 +10,8 @@ import { useState, useCallback } from 'react';
 import type { GachaState, PullResult, MultiPullResult } from '../types/GachaTypes';
 import { GachaSystem, type PullError } from '../services/GachaSystem';
 import { SaveService } from '../services/SaveService';
+import { CardDatabase } from '../services/CardDatabase';
+import { ActivityFeedService } from '../services/ActivityFeedService';
 
 export interface GachaStore {
   state:       GachaState;
@@ -47,6 +49,11 @@ export function useGachaStore(): GachaStore {
         setLastSingle(outcome.result);
         setLastMulti(null);
         persist(outcome.nextState);
+        const r = outcome.result.instance;
+        if (r.rarity === 'SSR' || r.rarity === 'MR') {
+          const card = CardDatabase.getById(r.cardId);
+          ActivityFeedService.post(r.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.cardId });
+        }
       } else {
         setError(outcome.error);
       }
@@ -65,6 +72,12 @@ export function useGachaStore(): GachaStore {
         setLastMulti(outcome.result);
         setLastSingle(null);
         persist(outcome.nextState);
+        for (const r of outcome.result.results) {
+          if (r.instance.rarity === 'SSR' || r.instance.rarity === 'MR') {
+            const card = CardDatabase.getById(r.instance.cardId);
+            ActivityFeedService.post(r.instance.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.instance.cardId });
+          }
+        }
       } else {
         setError(outcome.error);
       }

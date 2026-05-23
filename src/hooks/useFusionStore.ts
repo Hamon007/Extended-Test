@@ -11,8 +11,10 @@ import { useState, useCallback, useMemo } from 'react';
 import type { Rarity } from '../types/Card';
 import type { GachaState } from '../types/GachaTypes';
 import { SaveService } from '../services/SaveService';
+import { CardDatabase } from '../services/CardDatabase';
 import { FusionSystem, type FusionGroup, type FusionError } from '../services/FusionSystem';
 import { AwakeningSystem, type AwakenError } from '../services/AwakeningSystem';
+import { ActivityFeedService } from '../services/ActivityFeedService';
 
 export interface LastFusion {
   cardId: string;
@@ -54,6 +56,10 @@ export function useFusionStore(): FusionStore {
     SaveService.saveGachaState(outcome.nextState);
     setState(outcome.nextState);
     setLastFusion({ cardId, from: outcome.fromRarity, to: outcome.toRarity });
+    if (outcome.toRarity === 'LR') {
+      const card = CardDatabase.getById(cardId);
+      ActivityFeedService.post('fusion_lr', { cardName: card?.name ?? cardId });
+    }
   }, [state]);
 
   const awaken = useCallback((uuid: string) => {
@@ -66,6 +72,7 @@ export function useFusionStore(): FusionStore {
     SaveService.saveGachaState(outcome.nextState);
     setState(outcome.nextState);
     setLastAwakening({ fromName: outcome.fromName, toName: outcome.awakenedCard.name });
+    ActivityFeedService.post('awaken', { fromName: outcome.fromName, toName: outcome.awakenedCard.name });
   }, [state]);
 
   const clearLast = useCallback(() => {

@@ -130,3 +130,73 @@ from public.trade_offers o
 left join public.profiles p on p.user_id = o.from_user_id;
 
 alter view public.trade_offers_with_profiles set (security_invoker = true);
+
+-- ── Activity Feed ────────────────────────────────────────────────
+
+create table public.activity_feed (
+  id         uuid        primary key default gen_random_uuid(),
+  user_id    uuid        references auth.users(id) on delete cascade not null,
+  type       text        not null,
+  payload    jsonb       not null default '{}',
+  created_at timestamptz default now() not null
+);
+
+alter table public.activity_feed enable row level security;
+
+create policy "View feed"
+  on public.activity_feed for select
+  to authenticated
+  using (true);
+
+create policy "Post own event"
+  on public.activity_feed for insert
+  with check (auth.uid() = user_id);
+
+create view public.activity_feed_with_profiles as
+select a.*, p.username
+from public.activity_feed a
+left join public.profiles p on p.user_id = a.user_id;
+
+alter view public.activity_feed_with_profiles set (security_invoker = true);
+
+-- ── Friendships ──────────────────────────────────────────────────
+
+create table public.friendships (
+  id           uuid        primary key default gen_random_uuid(),
+  requester_id uuid        references auth.users(id) on delete cascade not null,
+  addressee_id uuid        references auth.users(id) on delete cascade not null,
+  status       text        not null default 'pending',
+  created_at   timestamptz default now() not null,
+  unique (requester_id, addressee_id)
+);
+
+alter table public.friendships enable row level security;
+
+create policy "View own friendships"
+  on public.friendships for select
+  using (auth.uid() = requester_id or auth.uid() = addressee_id);
+
+create policy "Send friend request"
+  on public.friendships for insert
+  with check (auth.uid() = requester_id);
+
+create policy "Accept or decline"
+  on public.friendships for update
+  using (auth.uid() = addressee_id or auth.uid() = requester_id);
+
+create policy "Remove friendship"
+  on public.friendships for delete
+  using (auth.uid() = requester_id or auth.uid() = addressee_id);
+
+create view public.friendships_with_profiles as
+select
+  f.*,
+  rp.username   as requester_username,
+  rp.friend_code as requester_friend_code,
+  ap.username   as addressee_username,
+  ap.friend_code as addressee_friend_code
+from public.friendships f
+left join public.profiles rp on rp.user_id = f.requester_id
+left join public.profiles ap on ap.user_id = f.addressee_id;
+
+alter view public.friendships_with_profiles set (security_invoker = true);

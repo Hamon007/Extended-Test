@@ -1,0 +1,275 @@
+.friends-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-y: auto;
+}
+
+/* ── Header ── */
+.friends-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.friends-header__back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.friends-header__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.15em;
+  text-align: center;
+  flex: 1;
+}
+
+.friends-header__spacer { width: 70px; }
+
+/* ── Login hint ── */
+.friends-login-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 24px;
+  text-align: center;
+  color: rgba(232,213,176,0.5);
+  font-size: 0.9rem;
+}
+
+/* ── Add friend ── */
+.friends-add {
+  padding: 14px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friends-add__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.08em;
+}
+
+.friends-add__row {
+  display: flex;
+  gap: 8px;
+}
+
+.friends-add__input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--gold-dark);
+  border-radius: 8px;
+  color: var(--gold-bright);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  padding: 8px 12px;
+  text-align: center;
+  outline: none;
+}
+
+.friends-add__btn {
+  background: linear-gradient(135deg, rgba(124,77,255,0.3), rgba(92,53,200,0.3));
+  border: 1px solid rgba(124,77,255,0.5);
+  border-radius: 8px;
+  color: #a88aff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.friends-add__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.friends-add__error {
+  font-size: 0.75rem;
+  color: #ff7070;
+  margin: 0;
+}
+
+.friends-add__success {
+  font-size: 0.75rem;
+  color: #7be0a8;
+  margin: 0;
+}
+
+/* ── Tabs ── */
+.friends-tabs {
+  display: flex;
+  margin: 12px 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.friends-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(232,213,176,0.45);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.friends-tab--active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.friends-tab__count {
+  font-size: 0.68rem;
+  color: var(--gold-dark);
+  font-family: sans-serif;
+}
+
+.friends-tab__badge {
+  background: #7c4dff;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  font-family: sans-serif;
+}
+
+/* ── Loading / Empty ── */
+.friends-loading, .friends-empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--gold-dark);
+  font-size: 0.82rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+}
+
+.friends-empty__hint {
+  font-size: 0.72rem;
+  color: rgba(232,213,176,0.4);
+  margin-top: 8px;
+  font-family: 'EB Garamond', serif;
+  letter-spacing: 0;
+}
+
+/* ── Friend row ── */
+.friends-list {
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friends-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.friends-row__avatar {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201,168,76,0.08);
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.friends-row__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.friends-row__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.06em;
+}
+
+.friends-row__code {
+  font-size: 0.68rem;
+  color: rgba(232,213,176,0.4);
+  letter-spacing: 0.12em;
+  font-family: monospace;
+}
+
+.friends-row__remove {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: rgba(232,213,176,0.35);
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.friends-row__remove:hover {
+  color: #ff7070;
+  border-color: rgba(255,112,112,0.4);
+}
+
+.friends-row__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.friends-row__accept {
+  background: rgba(123,224,168,0.15);
+  border: 1px solid rgba(123,224,168,0.35);
+  border-radius: 4px;
+  color: #7be0a8;
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.friends-row__decline {
+  background: rgba(255,112,112,0.12);
+  border: 1px solid rgba(255,112,112,0.3);
+  border-radius: 4px;
+  color: #ff7070;
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  cursor: pointer;
+}

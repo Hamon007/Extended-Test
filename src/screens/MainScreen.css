@@ -185,6 +185,25 @@
   opacity: 0.8;
 }
 
+.main-infobanner--live {
+  background: rgba(124,77,255,0.07);
+  border-bottom-color: rgba(124,77,255,0.25);
+}
+
+.main-infobanner__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a88aff;
+  flex-shrink: 0;
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
 /* ── Hauptkarte ──────────────────────────────────────────────── */
 
 .main-card {
