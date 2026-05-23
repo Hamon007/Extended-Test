@@ -189,7 +189,16 @@ async function downloadSave(): Promise<boolean> {
     return false;
   }
   const cloud = row.data as CloudSave;
-  const localTs = retrieve<number>(KEYS.savedAt) ?? 0;
+  const localTs   = retrieve<number>(KEYS.savedAt) ?? 0;
+  const localCards = retrieve<GachaState>(KEYS.gacha)?.inventory?.length ?? 0;
+  const cloudCards = cloud.gacha?.inventory?.length ?? 0;
+
+  // Local has real cards but cloud is empty → always prefer local
+  if (localCards > 0 && cloudCards === 0) {
+    await uploadSave();
+    return false;
+  }
+
   if (cloud.savedAt > localTs) {
     if (cloud.gacha)   persist(KEYS.gacha, cloud.gacha);
     if (cloud.deck)    persist(KEYS.deck, cloud.deck);
