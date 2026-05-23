@@ -202,11 +202,101 @@
   letter-spacing: 0.06em;
 }
 
+.trade-row__status--open       { color: var(--gold); }
 .trade-row__status--pending    { color: var(--gold); }
 .trade-row__status--accepted   { color: #7be0a8; }
 .trade-row__status--completed  { color: #7be0a8; }
 .trade-row__status--rejected,
 .trade-row__status--cancelled  { color: #ff7070; }
+
+.trade-row__allow-badge {
+  font-size: 0.65rem;
+  color: #a88aff;
+  border: 1px solid rgba(124,77,255,0.4);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-family: 'Cinzel', serif;
+}
+
+.trade-row__no-action {
+  font-size: 0.72rem;
+  color: rgba(232,213,176,0.35);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+  padding: 4px 0;
+}
+
+/* Counter-offer button */
+.trade-row__btn--offer {
+  background: rgba(124,77,255,0.15);
+  color: #a88aff;
+  border: 1px solid rgba(124,77,255,0.35);
+}
+
+/* ── Gegenangebote section ── */
+.trade-offers-section {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trade-offers-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.trade-offer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.trade-offer-row__img {
+  width: 36px;
+  height: 54px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.trade-offer-row__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trade-offer-row__name {
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.trade-offer-row__by {
+  font-size: 0.68rem;
+  color: rgba(232,213,176,0.5);
+}
+
+.trade-offer-row__btns {
+  display: flex;
+  gap: 4px;
+}
+
+.trade-offer-row__btns .trade-row__btn {
+  flex: none;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
 
 .trade-row__actions {
   display: flex;
@@ -434,4 +524,61 @@
 .trade-overlay__btns {
   display: flex;
   gap: 8px;
+}
+
+/* ── Toggle ── */
+.trade-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.trade-toggle__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.08em;
+}
+
+.trade-toggle__hint {
+  font-size: 0.72rem;
+  color: rgba(232,213,176,0.5);
+  margin-bottom: 8px;
+}
+
+.trade-toggle__switch {
+  width: 48px;
+  height: 26px;
+  border-radius: 13px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.trade-toggle__switch--on {
+  background: rgba(124,77,255,0.5);
+  border-color: #7c4dff;
+}
+
+.trade-toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(232,213,176,0.6);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.trade-toggle__switch--on .trade-toggle__knob {
+  transform: translateX(22px);
+  background: #a88aff;
 }

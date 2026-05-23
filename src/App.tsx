@@ -18,6 +18,7 @@ import GuildScreen                from './screens/GuildScreen';
 import CardTrainingScreen         from './screens/CardTrainingScreen';
 import ProfileScreen              from './screens/ProfileScreen';
 import TradeScreen               from './screens/TradeScreen';
+import { TradeService }          from './services/TradeService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
 
@@ -44,11 +45,14 @@ const App: React.FC = () => {
     EnemyDatabase.init();
     SaveService.updateLastLogin();
 
-    // Init auth, then sync cloud save if already logged in
+    // Init auth, sync cloud save, then apply pending trade card swaps
     AuthService.init().then(async () => {
       if (AuthService.isLoggedIn) {
         const wasNewer = await SaveService.downloadSave();
         if (wasNewer) { window.location.reload(); return; }
+        const gs = SaveService.loadGachaState();
+        const { state, processed } = await TradeService.processCompletedListings(gs);
+        if (processed > 0) SaveService.saveGachaState(state);
       }
     });
 
