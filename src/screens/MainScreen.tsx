@@ -250,6 +250,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
               {ActivityFeedService.formatEvent(feedEvents[feedIndex % feedEvents.length])}
             </span>
           </>
+        ) : !loggedIn ? (
+          <>
+            <span className="main-infobanner__icon">🔒</span>
+            <span className="main-infobanner__text">Anmelden für Live-Ereignisse</span>
+          </>
         ) : (
           <>
             <span className="main-infobanner__icon">📡</span>

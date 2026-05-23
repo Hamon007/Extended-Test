@@ -15,8 +15,16 @@ export interface FeedEvent {
 /** Fire-and-forget: post a global activity event. No-op if not logged in. */
 function post(type: FeedEventType, payload: Record<string, unknown>): void {
   const userId = AuthService.user?.id;
-  if (!supabase || !userId) return;
-  void supabase.from('activity_feed').insert({ user_id: userId, type, payload });
+  if (!supabase || !userId) {
+    console.warn('[ActivityFeed] post() skipped: not logged in or supabase missing');
+    return;
+  }
+  supabase
+    .from('activity_feed')
+    .insert({ user_id: userId, type, payload })
+    .then(({ error }) => {
+      if (error) console.error('[ActivityFeed] insert failed:', error.message, error.code);
+    });
 }
 
 /**
