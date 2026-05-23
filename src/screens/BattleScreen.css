@@ -689,3 +689,233 @@
   margin-top: 4px;
 }
 .battle-result-btn:hover { border-color: #c9a84c; }
+
+/* ══════════════════════════════════════════════════════════════
+   TURM DER PRÜFUNG — Tower-Modus Section
+   ══════════════════════════════════════════════════════════════ */
+
+.battle-tower-section {
+  margin: 0 12px 12px;
+  padding: 12px 14px;
+  border-top: 1px solid #2a1525;
+  border: 1px solid #3a1540;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #140820, #1a0c2a);
+  flex-shrink: 0;
+}
+
+.battle-tower-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.battle-tower-title {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #f0d080;
+  letter-spacing: 1px;
+}
+
+.battle-tower-floor {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6520;
+  letter-spacing: 0.5px;
+}
+
+.battle-tower-hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  opacity: 0.7;
+  margin: 0 0 10px;
+  font-style: italic;
+}
+
+.battle-tower-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #e8c0ff;
+  background: linear-gradient(135deg, #1e0d35, #3a1060, #1e0d35);
+  border: 2px solid #7b2fbe;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  box-shadow: 0 0 14px rgba(123,47,190,0.3);
+}
+
+.battle-tower-btn:not(.battle-start-btn--disabled):hover {
+  box-shadow: 0 0 22px rgba(123,47,190,0.55);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TAKTISCHES OVERLAY
+   ══════════════════════════════════════════════════════════════ */
+
+.tactical-overlay {
+  background: rgba(10, 5, 20, 0.85);
+  border: 1px solid #3a1855;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Break Bar */
+.tactical-break-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tactical-break-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #8a6520;
+  letter-spacing: 1px;
+}
+
+.tactical-break-track {
+  height: 8px;
+  background: #1a1025;
+  border: 1px solid #2a1530;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tactical-break-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a84c, #f0d080);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.tactical-break-fill--broken {
+  background: linear-gradient(90deg, #00e5ff, #80ffff, #ffffff);
+  animation: break-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes break-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50%       { opacity: 0.7; filter: brightness(1.4); }
+}
+
+.tactical-break-broken-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #00e5ff;
+  letter-spacing: 0.5px;
+  animation: break-pulse 0.8s ease-in-out infinite;
+}
+
+/* Stance */
+.tactical-stance {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #8a6520;
+}
+
+/* Heat */
+.tactical-heat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ff9800;
+}
+
+/* Seal */
+.tactical-seal {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #f06292;
+}
+
+/* Intent */
+.tactical-intent {
+  background: rgba(123, 47, 190, 0.1);
+  border: 1px solid rgba(123, 47, 190, 0.3);
+  border-radius: 4px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tactical-intent-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: #e8c0ff;
+}
+
+.tactical-intent-counter {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #8a6520;
+  display: block;
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TAKTISCHE AKTIONEN (Guard / Focus / Cleanse)
+   ══════════════════════════════════════════════════════════════ */
+
+.tactical-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid #2a1525;
+  margin-bottom: 6px;
+}
+
+.tactical-action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.5px;
+  color: #c9a84c;
+  border: 1px solid #2a1525;
+  border-radius: 4px;
+  cursor: pointer;
+  background: rgba(10, 5, 14, 0.7);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tactical-action-btn:hover:not(:disabled) {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: #8a6520;
+}
+
+.tactical-action-btn:active:not(:disabled) {
+  background: rgba(201, 168, 76, 0.15);
+}
+
+.tactical-action-btn--active {
+  background: rgba(201, 168, 76, 0.15);
+  border-color: #c9a84c;
+  color: #f0d080;
+}
+
+.tactical-action-btn--disabled,
+.tactical-action-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tactical-action-hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.5rem;
+  opacity: 0.6;
+  margin-top: 2px;
+  text-align: center;
+}

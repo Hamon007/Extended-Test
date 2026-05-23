@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useBattleStore }       from '../hooks/useBattleStore';
+import { useTacticalStore }     from '../hooks/useTacticalStore';
 import { useComboStore }        from '../hooks/useComboStore';
 import { useDeckStore }         from '../hooks/useDeckStore';
 import { useEnergyStore }       from '../hooks/useEnergyStore';
 import { EnemyDatabase }        from '../services/EnemyDatabase';
+import { TowerService }         from '../services/TowerService';
 import { SaveService }          from '../services/SaveService';
 import { ComboSystem }          from '../services/ComboSystem';
 import { ProgressionService }   from '../services/ProgressionService';
@@ -13,6 +15,7 @@ import DefeatScreen             from './DefeatScreen';
 import type { BattleCard, BattleState, EnemyData } from '../types/BattleTypes';
 import type { DamagePopup }     from '../types/ComboTypes';
 import type { RewardDetails }   from '../types/ProgressionTypes';
+import type { TacticalBattleState, TacticalEnemyConfig } from '../types/TacticalBattleTypes';
 import { MAX_ROUNDS }           from '../types/BattleTypes';
 import { DECK_SIZE }            from '../types/DeckTypes';
 import { RARITY_COLOR }         from '../types/Card';
@@ -25,8 +28,11 @@ const BattleScreen: React.FC = () => {
   const deck   = useDeckStore();
   const energy = useEnergyStore();
 
-  const [selectedEnemy, setSelectedEnemy] = useState<EnemyData | null>(null);
-  const [rewardDetails, setRewardDetails] = useState<RewardDetails | null>(null);
+  const [selectedEnemy,  setSelectedEnemy]  = useState<EnemyData | null>(null);
+  const [rewardDetails,  setRewardDetails]  = useState<RewardDetails | null>(null);
+  const [tacticalConfig, setTacticalConfig] = useState<TacticalEnemyConfig | null>(null);
+  const [towerFloor,     setTowerFloor]     = useState(() => TowerService.getFloor());
+  const highestFloor = TowerService.getHighestFloor();
   const rewardApplied = useRef(false);
 
   const enemies       = EnemyDatabase.getAll();
@@ -52,11 +58,18 @@ const BattleScreen: React.FC = () => {
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {
+    // Advance tower floor on victory
+    if (rewardDetails?.isVictory && tacticalConfig) {
+      const next = TowerService.advanceFloor();
+      TowerService.updateHighestFloor(next);
+      setTowerFloor(next);
+    }
     battle.resetBattle();
     setRewardDetails(null);
+    setTacticalConfig(null);
     rewardApplied.current = false;
     energy.refresh();
-  }, [battle, energy]);
+  }, [battle, energy, rewardDetails, tacticalConfig]);
 
   // ── Victory / Defeat Screens ──────────────────────────────
   if (rewardDetails) {
@@ -69,7 +82,7 @@ const BattleScreen: React.FC = () => {
 
   // ── Laufender Kampf ───────────────────────────────────────
   if (battle.state) {
-    return <BattleArena state={battle.state} battle={battle} />;
+    return <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />;
   }
 
   // ── Gegner-Auswahl ────────────────────────────────────────
@@ -79,7 +92,45 @@ const BattleScreen: React.FC = () => {
   const handleStart = () => {
     if (!selectedEnemy || !deckComplete) return;
     if (!energy.consume()) return;
+    setTacticalConfig(null);
     battle.startBattle(deckInstances, selectedEnemy);
+  };
+
+  const handleTowerStart = () => {
+    if (!deckComplete) return;
+    if (!energy.consume()) return;
+
+    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
+    if (tactEnemy) {
+      setTacticalConfig(tactEnemy);
+      // Scale a base enemy's stats by floor
+      const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0];
+      if (!base) return;
+      const scaledEnemy: EnemyData = {
+        ...base,
+        id:    tactEnemy.id,
+        name:  tactEnemy.name,
+        title: tactEnemy.title,
+        stats: {
+          hp:      Math.round(base.stats.hp      * (1 + towerFloor * 0.15)),
+          mpMax:   base.stats.mpMax,
+          mpRegen: base.stats.mpRegen,
+        },
+        cards: base.cards.map(c => ({
+          ...c,
+          atk: Math.round(c.atk * (1 + towerFloor * 0.1)),
+        })),
+        rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2)),
+        rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2)),
+      };
+      battle.startBattle(deckInstances, scaledEnemy);
+    } else {
+      // Normal floor — random enemy, no tactical overlay
+      setTacticalConfig(null);
+      const all = EnemyDatabase.getAll();
+      const random = all[Math.floor(Math.random() * all.length)];
+      if (random) battle.startBattle(deckInstances, random);
+    }
   };
 
   return (
@@ -139,6 +190,24 @@ const BattleScreen: React.FC = () => {
           : !selectedEnemy ? 'Gegner wählen'
           : `⚔ Kampf starten → ${selectedEnemy.name}`}
       </button>
+
+      {/* ── Tower-Modus ── */}
+      <div className="battle-tower-section">
+        <div className="battle-tower-header">
+          <span className="battle-tower-title">🗼 Turm der Prüfung</span>
+          <span className="battle-tower-floor">Etage {towerFloor} · Höchste: {highestFloor}</span>
+        </div>
+        <p className="battle-tower-hint">Mechanikbasierte Elite- und Boss-Kämpfe. Power hilft — Taktik entscheidet.</p>
+        <button
+          className={`battle-tower-btn ${!deckComplete || noEnergy ? 'battle-start-btn--disabled' : ''}`}
+          disabled={!deckComplete || noEnergy}
+          onClick={handleTowerStart}
+        >
+          {TowerService.isBossFloor(towerFloor)
+            ? `⚔ Boss-Kampf — Etage ${towerFloor}`
+            : `▶ Etage ${towerFloor} betreten`}
+        </button>
+      </div>
     </div>
   );
 };
@@ -170,12 +239,14 @@ const EnemySelectCard: React.FC<EnemySelectCardProps> = ({ enemy, selected, onSe
 // ── Battle-Arena ──────────────────────────────────────────────
 
 interface BattleArenaProps {
-  state:  BattleState;
-  battle: ReturnType<typeof useBattleStore>;
+  state:         BattleState;
+  battle:        ReturnType<typeof useBattleStore>;
+  tacticalConfig?: TacticalEnemyConfig | null;
 }
 
-const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
-  const combo  = useComboStore();
+const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig }) => {
+  const combo    = useComboStore();
+  const tactical = useTacticalStore(tacticalConfig ?? null);
   const [popups,      setPopups]      = useState<DamagePopup[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const popupId = React.useRef(0);
@@ -229,7 +300,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
       );
 
       combo.onCardPlayed(card, calc.windowExtension);
-      battle.playCard(card.instanceId, calc.totalMultiplier);
+
+      if (tacticalConfig && tactical.tactical) {
+        // Tactical mode: use playTacticalCard which applies tactical multiplier
+        tactical.playTacticalCard(card, localComboCount);
+      } else {
+        battle.playCard(card.instanceId, calc.totalMultiplier);
+      }
 
       addPopup({
         damage:     calc.finalDamage,
@@ -244,7 +321,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
     }
 
     setSelectedIds([]);
-  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, addPopup]);
+  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup]);
 
   return (
     <div className="battle-arena">
@@ -271,6 +348,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
           <div className="arena-enemy-cards-row">
             {enemy.hand.map(c => <EnemyCardMini key={c.instanceId} card={c} />)}
           </div>
+          {/* Tactical Overlay */}
+          {tactical.tactical && (
+            <TacticalOverlay tacticalState={tactical.tactical} />
+          )}
         </div>
       </div>
 
@@ -333,6 +414,36 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle }) => {
           <button className="arena-play-selected" onClick={handlePlaySelected}>
             ⚔ {selectedIds.length} Karte{selectedIds.length > 1 ? 'n' : ''} ausspielen
           </button>
+        )}
+
+        {/* Taktische Aktionen (nur im Tower-Modus) */}
+        {tactical.tactical && (
+          <div className="tactical-actions">
+            <button
+              className={`tactical-action-btn ${tactical.guardActive ? 'tactical-action-btn--active' : ''}`}
+              onClick={tactical.useGuard}
+              disabled={!canPlay}
+            >
+              🛡 Guard
+              <span className="tactical-action-hint">-50% Schaden · +15 MP</span>
+            </button>
+            <button
+              className={`tactical-action-btn ${tactical.focusActive ? 'tactical-action-btn--active' : ''}`}
+              onClick={tactical.useFocus}
+              disabled={!canPlay}
+            >
+              🎯 Focus
+              <span className="tactical-action-hint">+2 Break nächste Karte</span>
+            </button>
+            <button
+              className={`tactical-action-btn ${tactical.cleanseUsed >= 2 ? 'tactical-action-btn--disabled' : ''}`}
+              onClick={tactical.useCleanse}
+              disabled={tactical.cleanseUsed >= 2 || !canPlay}
+            >
+              ✨ Cleanse
+              <span className="tactical-action-hint">{tactical.cleanseUsed}/2 · Flüche entfernen</span>
+            </button>
+          </div>
         )}
 
         {/* End-Turn */}
@@ -492,5 +603,61 @@ const BattleLog: React.FC<{ entries: BattleState['log'] }> = ({ entries }) => {
   );
 };
 
+
+// ── Taktisches Overlay ────────────────────────────────────────
+
+const TacticalOverlay: React.FC<{ tacticalState: TacticalBattleState }> = ({ tacticalState }) => (
+  <div className="tactical-overlay">
+    {/* Break Bar */}
+    <div className="tactical-break-bar">
+      <span className="tactical-break-label">
+        BREAK {tacticalState.breakState.current}/{tacticalState.breakState.max}
+      </span>
+      <div className="tactical-break-track">
+        <div
+          className={`tactical-break-fill ${tacticalState.breakState.isBroken ? 'tactical-break-fill--broken' : ''}`}
+          style={{
+            width: `${(tacticalState.breakState.current / tacticalState.breakState.max) * 100}%`,
+          }}
+        />
+      </div>
+      {tacticalState.breakState.isBroken && (
+        <span className="tactical-break-broken-label">⚡ GEBROCHEN! +50% Schaden</span>
+      )}
+    </div>
+
+    {/* Stance */}
+    {tacticalState.stance.current && (
+      <div className="tactical-stance">
+        Haltung: <strong>{tacticalState.stance.current.toUpperCase()}</strong>
+        {tacticalState.stance.weakTo.length > 0 && (
+          <> · Schwach gegen: {tacticalState.stance.weakTo.join(', ')}</>
+        )}
+      </div>
+    )}
+
+    {/* Heat */}
+    {tacticalState.heat.active && (
+      <div className="tactical-heat">
+        🔥 Aether-Hitze: {tacticalState.heat.current}/{tacticalState.heat.threshold}
+      </div>
+    )}
+
+    {/* Seal */}
+    {tacticalState.seal.sealedRarity && (
+      <div className="tactical-seal">
+        🔒 {tacticalState.seal.sealedRarity} gesperrt ({tacticalState.seal.roundsLeft} Runden)
+      </div>
+    )}
+
+    {/* Intent */}
+    {tacticalState.intent && (
+      <div className="tactical-intent">
+        <span className="tactical-intent-label">⚠ {tacticalState.intent.label}</span>
+        <span className="tactical-intent-counter">Konter: {tacticalState.intent.counter}</span>
+      </div>
+    )}
+  </div>
+);
 
 export default BattleScreen;
