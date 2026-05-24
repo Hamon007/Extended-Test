@@ -19,10 +19,20 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
+  width: 100%;
+  height: 100%;
+  /* kein overflow:hidden auf html — iOS Safari verankert sonst
+     position:fixed relativ zum html-Box statt zum Viewport */
+  overscroll-behavior: none;
+  background: #08050a;
+}
+
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #08050a;
   color: #e8d5b0;
 
