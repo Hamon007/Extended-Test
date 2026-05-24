@@ -109,6 +109,24 @@ const SettingsScreen: React.FC<Props> = ({ onBack }) => {
               >
                 🃏 Alle Karten freischalten
               </button>
+              <button
+                className="settings-dev-action-btn"
+                onClick={() => {
+                  const n = DevModeService.maxLevelAllCards();
+                  showToast(n > 0 ? `${n} Karten auf Lvl 60 gesetzt!` : 'Alle Karten bereits Lvl 60.');
+                }}
+              >
+                ⬆️ Alle Karten → Lvl 60
+              </button>
+              <button
+                className="settings-dev-action-btn"
+                onClick={() => {
+                  const n = DevModeService.ensureFourDupes();
+                  showToast(n > 0 ? `${n} Duplikate hinzugefügt!` : 'Alle Karten haben bereits 4 Kopien.');
+                }}
+              >
+                📋 4 Dupes pro Karte
+              </button>
             </div>
           )}
         </section>

@@ -47,4 +47,51 @@ export const DevModeService = {
     if (added > 0) SaveService.saveGachaState(state);
     return added;
   },
+
+  /** Sets every owned card to level 60. Dev mode only. */
+  maxLevelAllCards(): number {
+    if (!DevModeService.isEnabled()) return 0;
+    const state = SaveService.loadGachaState();
+    let changed = 0;
+    for (const inst of state.inventory) {
+      if (inst.level < 60) {
+        inst.level = 60;
+        inst.xp    = 0;
+        changed++;
+      }
+    }
+    if (changed > 0) SaveService.saveGachaState(state);
+    return changed;
+  },
+
+  /** Ensures every unique card has at least 4 copies. Dev mode only. */
+  ensureFourDupes(): number {
+    if (!DevModeService.isEnabled()) return 0;
+    const state   = SaveService.loadGachaState();
+    const counts  = new Map<string, number>();
+    for (const inst of state.inventory) {
+      counts.set(inst.cardId, (counts.get(inst.cardId) ?? 0) + 1);
+    }
+    let added = 0;
+    for (const [cardId, count] of counts) {
+      const missing = 4 - count;
+      if (missing <= 0) continue;
+      const template = state.inventory.find(i => i.cardId === cardId)!;
+      for (let i = 0; i < missing; i++) {
+        state.inventory.push({
+          uuid:      crypto.randomUUID(),
+          cardId:    template.cardId,
+          rarity:    template.rarity,
+          pulledAt:  Date.now(),
+          pullIndex: state.totalPulls + added,
+          isNew:     false,
+          level:     template.level,
+          xp:        template.xp,
+        });
+        added++;
+      }
+    }
+    if (added > 0) SaveService.saveGachaState(state);
+    return added;
+  },
 };
