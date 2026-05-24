@@ -28,9 +28,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
   // Stats from local save
   const gacha   = useMemo(() => SaveService.loadGachaState(),  []);
   const account = useMemo(() => SaveService.loadAccountState(), []);
-  const totalCards   = CardDatabase.count();
-  const ownedCards   = gacha.inventory.length;
-  const uniqueOwned  = new Set(gacha.inventory.map(i => i.cardId)).size;
+  const totalCards  = CardDatabase.count();
+  const uniqueOwned = new Set(gacha.inventory.map(i => i.cardId)).size;
 
   const rarityCount = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -164,12 +163,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                 <span className="profile-stat__label">Gesamtzüge</span>
               </div>
               <div className="profile-stat">
-                <span className="profile-stat__val">{ownedCards}</span>
-                <span className="profile-stat__label">Karten besessen</span>
-              </div>
-              <div className="profile-stat">
                 <span className="profile-stat__val">{uniqueOwned}<span className="profile-stat__sub">/{totalCards}</span></span>
-                <span className="profile-stat__label">Einzigartige</span>
+                <span className="profile-stat__label">Karten</span>
               </div>
             </div>
 
@@ -186,7 +181,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                       <div
                         className="profile-rarity__bar"
                         style={{
-                          width: ownedCards > 0 ? `${(count / ownedCards) * 100}%` : '0%',
+                          width: gacha.inventory.length > 0 ? `${(count / gacha.inventory.length) * 100}%` : '0%',
                           background: color,
                         }}
                       />
