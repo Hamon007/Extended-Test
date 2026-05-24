@@ -49,6 +49,7 @@ function defaultState(): EnergyState {
 function write(st: EnergyState): void {
   try {
     localStorage.setItem(ENERGY_KEY, JSON.stringify(st));
+    void SaveService.uploadSave();
   } catch (e) {
     console.warn('[EnergyService] Schreiben fehlgeschlagen:', e);
   }

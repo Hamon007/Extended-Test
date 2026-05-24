@@ -1,5 +1,7 @@
 // Win-Streak: zählt Siege in Folge. Niederlagen setzen zurück.
 
+import { SaveService } from './SaveService';
+
 const KEY = 'ci_win_streak';
 
 export interface StreakReward {
@@ -15,11 +17,13 @@ export const WinStreakService = {
   incrementOnVictory(): number {
     const next = WinStreakService.get() + 1;
     localStorage.setItem(KEY, String(next));
+    void SaveService.uploadSave();
     return next;
   },
 
   resetOnDefeat(): void {
     localStorage.removeItem(KEY);
+    void SaveService.uploadSave();
   },
 
   /** Belohnungs-Multiplikator basierend auf aktueller Streak-Stufe. */

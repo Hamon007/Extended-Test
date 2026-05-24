@@ -20,21 +20,35 @@ import { supabase } from '../lib/supabase';
 import { AuthService } from './AuthService';
 
 interface CloudSave {
-  gacha:   GachaState;
-  deck:    Deck;
-  account: AccountState;
-  savedAt: number;
+  gacha:          GachaState;
+  deck:           Deck;
+  account:        AccountState;
+  savedAt:        number;
+  // Extended cross-device sync fields
+  guild?:         unknown;
+  energy?:        unknown;
+  quests?:        unknown;
+  tower?:         { floor: number; highestFloor: number };
+  winStreak?:     number;
+  profileCardId?: string;
 }
 
 // ── Storage-Schlüssel ─────────────────────────────────────────
 
 const KEYS = {
-  gacha:    'ci_gacha_state',
-  deck:     'ci_deck_main',
-  settings: 'ci_settings',
-  lastLogin:'ci_last_login',
-  account:  'ci_account_state',
-  savedAt:  'ci_save_timestamp',
+  gacha:         'ci_gacha_state',
+  deck:          'ci_deck_main',
+  settings:      'ci_settings',
+  lastLogin:     'ci_last_login',
+  account:       'ci_account_state',
+  savedAt:       'ci_save_timestamp',
+  guild:         'ci_guild_state',
+  energy:        'ci_battle_energy',
+  quests:        'ci_quest_state',
+  towerFloor:    'ci_tower_floor',
+  towerHighest:  'ci_tower_highest_floor',
+  winStreak:     'ci_win_streak',
+  profileCardId: 'ci_profile_card_id',
 } as const;
 
 // ── Generische Helfer ─────────────────────────────────────────
@@ -162,11 +176,20 @@ function updateLastLogin(): void {
 async function uploadSave(): Promise<void> {
   if (!supabase || !AuthService.isLoggedIn) return;
   const userId = AuthService.user!.id;
+  const towerFloor    = parseInt(localStorage.getItem(KEYS.towerFloor)   ?? '1', 10);
+  const towerHighest  = parseInt(localStorage.getItem(KEYS.towerHighest) ?? '1', 10);
+  const winStreak     = parseInt(localStorage.getItem(KEYS.winStreak)    ?? '0', 10);
   const data: CloudSave = {
-    gacha:   retrieve<GachaState>(KEYS.gacha)     ?? defaultGachaState(),
-    deck:    retrieve<Deck>(KEYS.deck)             ?? createEmptyDeck(),
-    account: retrieve<AccountState>(KEYS.account) ?? createDefaultAccountState(),
-    savedAt: Date.now(),
+    gacha:         retrieve<GachaState>(KEYS.gacha)     ?? defaultGachaState(),
+    deck:          retrieve<Deck>(KEYS.deck)             ?? createEmptyDeck(),
+    account:       retrieve<AccountState>(KEYS.account) ?? createDefaultAccountState(),
+    savedAt:       Date.now(),
+    guild:         retrieve<unknown>(KEYS.guild)  ?? null,
+    energy:        retrieve<unknown>(KEYS.energy) ?? null,
+    quests:        retrieve<unknown>(KEYS.quests) ?? null,
+    tower:         { floor: towerFloor, highestFloor: towerHighest },
+    winStreak,
+    profileCardId: localStorage.getItem(KEYS.profileCardId) ?? 'azazel',
   };
   const { error } = await supabase
     .from('saves')
@@ -206,6 +229,15 @@ async function downloadSave(): Promise<boolean> {
     if (cloud.gacha)   persist(KEYS.gacha, cloud.gacha);
     if (cloud.deck)    persist(KEYS.deck, cloud.deck);
     if (cloud.account) persist(KEYS.account, cloud.account);
+    if (cloud.guild)   persist(KEYS.guild, cloud.guild);
+    if (cloud.energy)  persist(KEYS.energy, cloud.energy);
+    if (cloud.quests)  persist(KEYS.quests, cloud.quests);
+    if (cloud.tower) {
+      localStorage.setItem(KEYS.towerFloor,   String(cloud.tower.floor));
+      localStorage.setItem(KEYS.towerHighest, String(cloud.tower.highestFloor));
+    }
+    if (cloud.winStreak !== undefined) localStorage.setItem(KEYS.winStreak, String(cloud.winStreak));
+    if (cloud.profileCardId) localStorage.setItem(KEYS.profileCardId, cloud.profileCardId);
     persist(KEYS.savedAt, cloud.savedAt);
     console.log('[SaveService] Cloud-Spielstand geladen (neuer als lokal).');
     return true;

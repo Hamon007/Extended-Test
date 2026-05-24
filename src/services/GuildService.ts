@@ -112,6 +112,7 @@ function load(): GuildSaveState {
 function save(st: GuildSaveState): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+    void SaveService.uploadSave();
   } catch (e) {
     console.warn('[GuildService] Speichern fehlgeschlagen:', e);
   }
