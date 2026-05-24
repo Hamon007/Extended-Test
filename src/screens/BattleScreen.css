@@ -1304,3 +1304,242 @@
   background: rgba(201,168,76,0.15);
   border-color: #c9a84c;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ANIME RPG VISUAL EFFECTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Gegner-Portrait ─────────────────────────────────────────── */
+
+.enemy-portrait {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.enemy-portrait__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--elem-color, #888888);
+  box-shadow:
+    0 0 16px var(--elem-glow, rgba(136,136,136,0.3)),
+    inset 0 0 16px var(--elem-glow, rgba(136,136,136,0.1));
+  animation: portrait-ring-pulse 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes portrait-ring-pulse {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.06); }
+}
+
+.enemy-portrait__body {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.06), rgba(0,0,0,0.65));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  animation: portrait-idle-float 3.2s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes portrait-idle-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* ── Treffer-Reaktion ──────────────────────────────────────── */
+
+.enemy-portrait--hit .enemy-portrait__body {
+  animation: portrait-hit 0.48s ease-out !important;
+}
+.enemy-portrait--hit .enemy-portrait__ring {
+  animation: portrait-hit-ring 0.48s ease-out !important;
+}
+
+@keyframes portrait-hit {
+  0%   { transform: translateX(-8px) scale(1.15); filter: brightness(5) saturate(0); }
+  18%  { transform: translateX(8px)  scale(1.1);  filter: brightness(3) saturate(0.2); }
+  35%  { transform: translateX(-5px) scale(1.05); filter: brightness(2); }
+  55%  { transform: translateX(4px)  scale(1.02); filter: brightness(1.4); }
+  75%  { transform: translateX(-2px) scale(1.01); filter: brightness(1.1); }
+  100% { transform: translateY(-5px) scale(1);    filter: none; }
+}
+
+@keyframes portrait-hit-ring {
+  0%  { box-shadow: 0 0 50px rgba(255,255,255,1), inset 0 0 30px rgba(255,255,255,0.5); border-color: #ffffff; }
+  40% { box-shadow: 0 0 24px var(--elem-glow, rgba(136,136,136,0.5)); border-color: var(--elem-color, #888); }
+  100%{ box-shadow: 0 0 16px var(--elem-glow, rgba(136,136,136,0.3)); border-color: var(--elem-color, #888); }
+}
+
+/* ── Angriffs-Pose (Gegnerzug) ─────────────────────────────── */
+
+.enemy-portrait--attacking .enemy-portrait__body {
+  animation: portrait-attack 0.55s ease-in-out infinite !important;
+}
+.enemy-portrait--attacking .enemy-portrait__ring {
+  animation: portrait-attack-ring 0.55s ease-in-out infinite !important;
+}
+
+@keyframes portrait-attack {
+  0%, 100% { transform: translateY(0) scale(1);    filter: brightness(1); }
+  40%       { transform: translateY(-4px) scale(1.08); filter: brightness(1.6) saturate(1.4); }
+}
+
+@keyframes portrait-attack-ring {
+  0%, 100% { box-shadow: 0 0 16px var(--elem-glow, rgba(136,136,136,0.3)); border-color: var(--elem-color, #888); }
+  40%       { box-shadow: 0 0 32px var(--elem-glow, rgba(136,136,136,0.7)); border-color: var(--elem-color, #888); }
+}
+
+/* ── Tod-Animation ─────────────────────────────────────────── */
+
+.enemy-portrait--dead .enemy-portrait__body {
+  animation: portrait-death 0.95s ease-out forwards !important;
+}
+.enemy-portrait--dead .enemy-portrait__ring {
+  animation: portrait-death-ring 0.95s ease-out forwards !important;
+}
+
+@keyframes portrait-death {
+  0%   { transform: scale(1)   rotate(0deg);   filter: brightness(1); opacity: 1; }
+  22%  { transform: scale(1.4) rotate(8deg);   filter: brightness(5); opacity: 1; }
+  55%  { transform: scale(0.5) rotate(-15deg); filter: brightness(0.4); opacity: 0.5; }
+  100% { transform: scale(0)   rotate(30deg);  filter: brightness(0); opacity: 0; }
+}
+@keyframes portrait-death-ring {
+  0%   { transform: scale(1);   opacity: 1; }
+  30%  { transform: scale(2.5); opacity: 0.6; }
+  100% { transform: scale(4);   opacity: 0; }
+}
+
+/* ── Schwimmende Schadenszahlen ────────────────────────────── */
+
+.damage-numbers-layer {
+  position: fixed;
+  top: 40px;
+  left: max(0px, calc((100vw - 480px) / 2));
+  width: min(100vw, 480px);
+  height: 140px;
+  pointer-events: none;
+  z-index: 120;
+  overflow: visible;
+}
+
+.dmg-number {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 900;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: dmg-float-up 1.4s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  line-height: 1;
+}
+
+@keyframes dmg-float-up {
+  0%   { transform: translateX(-50%) translateY(0)      scale(0.35); opacity: 0; }
+  12%  { transform: translateX(-50%) translateY(-14px)  scale(1.3);  opacity: 1; }
+  28%  { transform: translateX(-50%) translateY(-28px)  scale(1.0);  opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-120px) scale(0.7);  opacity: 0; }
+}
+
+/* Größen-Stufen */
+.dmg-number--normal { font-size: 17px; color: #ffffff;  text-shadow: 0 1px 4px rgba(0,0,0,0.95); }
+.dmg-number--high   { font-size: 23px; color: #ffcc44;  text-shadow: 0 0 10px rgba(255,204,68,0.7), 0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--crit   { font-size: 30px; color: #ff8800;  text-shadow: 0 0 16px rgba(255,136,0,0.85), 0 0 32px rgba(255,68,0,0.5), 0 2px 4px rgba(0,0,0,0.95); letter-spacing: 1px; }
+.dmg-number--super  { font-size: 38px; color: #ff2266;  text-shadow: 0 0 22px rgba(255,34,102,0.95), 0 0 44px rgba(255,34,102,0.6), 0 2px 4px rgba(0,0,0,0.95); letter-spacing: 2px; }
+
+/* Element-Farben */
+.dmg-number--fire      { color: #ff7733; text-shadow: 0 0 12px rgba(255,85,0,0.8),   0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--ice       { color: #55ddff; text-shadow: 0 0 12px rgba(0,200,255,0.8),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--dark      { color: #bb88ff;   text-shadow: 0 0 12px rgba(153,0,255,0.8), 0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--light     { color: #ffff88; text-shadow: 0 0 12px rgba(255,238,0,0.9),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--lightning { color: #ffff44; text-shadow: 0 0 14px rgba(255,255,0,0.9),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--water     { color: #4499ff; text-shadow: 0 0 12px rgba(0,100,255,0.8),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--earth     { color: #88cc44; text-shadow: 0 0 12px rgba(68,170,34,0.8),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--wind      { color: #44ffcc; text-shadow: 0 0 12px rgba(0,221,170,0.8),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--void      { color: #ff44ff; text-shadow: 0 0 14px rgba(204,0,255,0.8),  0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--death     { color: #aaaaaa; text-shadow: 0 0 8px  rgba(120,120,120,0.6), 0 2px 4px rgba(0,0,0,0.9); }
+.dmg-number--chaos     { color: #ff4488; text-shadow: 0 0 14px rgba(255,0,68,0.85),  0 2px 4px rgba(0,0,0,0.9); }
+
+/* ── Karten-Schlag-Animation ───────────────────────────────── */
+
+.hand-card--striking {
+  animation: card-strike 0.44s cubic-bezier(0.22, 0.61, 0.36, 1) forwards !important;
+  z-index: 20;
+  pointer-events: none;
+}
+
+@keyframes card-strike {
+  0%   { transform: translateY(0)    scale(1);    filter: brightness(1); }
+  22%  { transform: translateY(-36px) scale(1.14); filter: brightness(2.8) saturate(1.8); }
+  55%  { transform: translateY(-14px) scale(0.94); filter: brightness(1.2); }
+  80%  { transform: translateY(-4px)  scale(1.02); filter: brightness(1); }
+  100% { transform: translateY(0)    scale(1);    filter: brightness(1); opacity: 0.5; }
+}
+
+/* ── HP-Balken Gefahren-Puls ───────────────────────────────── */
+
+@keyframes hp-danger-pulse {
+  0%, 100% { filter: brightness(1) saturate(1); opacity: 1; }
+  50%       { filter: brightness(1.7) saturate(1.6); opacity: 0.75; }
+}
+
+.battle-bar--danger .battle-bar__fill {
+  animation: hp-danger-pulse 0.9s ease-in-out infinite;
+}
+
+/* ── Arenen-Hintergrund-Atem (Overlay via position:absolute) ─ */
+
+.arena-bg-pulse {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(100,0,160,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: arena-bg-breathe 6s ease-in-out infinite;
+}
+
+@keyframes arena-bg-breathe {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* Make sure arena children sit above bg overlay */
+.arena-topbar,
+.arena-enemy-zone,
+.arena-log-wrap,
+.arena-player-zone,
+.arena-synergy-toast,
+.arena-awakening-toast,
+.arena-super-overlay,
+.arena-crit-flash {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Combo Impact Ring bei MAX-COMBO ───────────────────────── */
+
+.combo-display--max::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(240,208,128,0.8);
+  animation: combo-impact-ring 0.7s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes combo-impact-ring {
+  0%   { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(1.6);  opacity: 0; }
+}

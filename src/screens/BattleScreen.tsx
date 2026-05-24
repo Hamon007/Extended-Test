@@ -436,6 +436,64 @@ const BattleScreen: React.FC = () => {
   );
 };
 
+// ── Element-Daten ─────────────────────────────────────────────
+
+const ELEMENT_META: Record<string, { color: string; glow: string; icon: string }> = {
+  fire:      { color: '#ff5500', glow: 'rgba(255,85,0,0.45)',    icon: '🔥' },
+  ice:       { color: '#00aaff', glow: 'rgba(0,170,255,0.35)',   icon: '❄️' },
+  dark:      { color: '#9900ff', glow: 'rgba(153,0,255,0.4)',    icon: '🌑' },
+  light:     { color: '#ffee00', glow: 'rgba(255,238,0,0.35)',   icon: '☀️' },
+  earth:     { color: '#44aa22', glow: 'rgba(68,170,34,0.35)',   icon: '🌿' },
+  water:     { color: '#0066ff', glow: 'rgba(0,102,255,0.35)',   icon: '💧' },
+  lightning: { color: '#ffff00', glow: 'rgba(255,255,0,0.4)',    icon: '⚡' },
+  wind:      { color: '#00ddaa', glow: 'rgba(0,221,170,0.35)',   icon: '🌪️' },
+  void:      { color: '#cc00ff', glow: 'rgba(204,0,255,0.4)',    icon: '🔮' },
+  death:     { color: '#888888', glow: 'rgba(136,136,136,0.3)',  icon: '💀' },
+  chaos:     { color: '#ff0044', glow: 'rgba(255,0,68,0.45)',    icon: '🔱' },
+};
+
+// ── Gegner-Portrait ───────────────────────────────────────────
+
+const EnemyPortrait: React.FC<{
+  enemyData:   EnemyData;
+  isHit:       boolean;
+  isDead:      boolean;
+  isAttacking: boolean;
+}> = ({ enemyData, isHit, isDead, isAttacking }) => {
+  const meta = ELEMENT_META[enemyData.element] ?? { color: '#888888', glow: 'rgba(136,136,136,0.3)', icon: '👹' };
+  return (
+    <div
+      className={`enemy-portrait
+        ${isHit                                    ? 'enemy-portrait--hit'       : ''}
+        ${isDead                                   ? 'enemy-portrait--dead'      : ''}
+        ${isAttacking && !isHit && !isDead ? 'enemy-portrait--attacking' : ''}
+      `}
+      style={{ '--elem-color': meta.color, '--elem-glow': meta.glow } as React.CSSProperties}
+    >
+      <div className="enemy-portrait__ring" />
+      <div className="enemy-portrait__body">
+        <span className="enemy-portrait__icon">{isDead ? '💀' : meta.icon}</span>
+      </div>
+    </div>
+  );
+};
+
+// ── Schwimmende Schadenszahlen ─────────────────────────────────
+
+const FloatDmgNumber: React.FC<{ popup: DamagePopup }> = ({ popup }) => {
+  const tier     = popup.isCrit ? 'crit' : popup.damage >= 50_000 ? 'super' : popup.damage >= 10_000 ? 'high' : 'normal';
+  const elemClass = popup.element ? `dmg-number--${popup.element}` : '';
+  return (
+    <div
+      className={`dmg-number dmg-number--${tier} ${elemClass}`}
+      style={{ left: `${popup.xPct}%`, bottom: `${20 + (popup.yOffset ?? 0)}px` }}
+      aria-hidden="true"
+    >
+      {popup.damage.toLocaleString('de-DE')}
+    </div>
+  );
+};
+
 // ── Battle-Arena ──────────────────────────────────────────────
 
 interface BattleArenaProps {
@@ -453,9 +511,20 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [awakeningToast, setAwakeningToast] = useState<string | null>(null);
   const [superToast,     setSuperToast]     = useState<{ name: string; quote: string; damage: number } | null>(null);
   const [critFlash,      setCritFlash]      = useState(false);
+  const [enemyHit,       setEnemyHit]       = useState(false);
   const lastAwakenedCount = useRef(0);
   const lastLogId         = useRef(0);
+  const lastEnemyHpRef    = useRef(state.enemy.hp);
   const popupId = React.useRef(0);
+
+  // Gegner-Treffer-Reaktion
+  useEffect(() => {
+    if (state.enemy.hp < lastEnemyHpRef.current) {
+      setEnemyHit(true);
+      setTimeout(() => setEnemyHit(false), 460);
+    }
+    lastEnemyHpRef.current = state.enemy.hp;
+  }, [state.enemy.hp]);
 
   // Super-Attack-Toast + Critical-Flash basierend auf neuestem Log-Eintrag
   useEffect(() => {
@@ -551,7 +620,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         multiplier: damageMultiplier,
         hasSynergy: calc.hasSynergy,
         hasElement: calc.hasElementAdv,
-        xPct:       20 + Math.random() * 60,
+        xPct:       30 + Math.random() * 40,
+        element:    card.card?.element,
+        isCrit:     localComboCount >= 4 || (state.awakenedIds?.includes(card.sourceId) ?? false),
+        yOffset:    Math.floor(Math.random() * 30),
       });
 
       if (calc.hasSynergy && lastCard) {
@@ -580,6 +652,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
   return (
     <div className="battle-arena">
+      <div className="arena-bg-pulse" aria-hidden="true" />
+
+      {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}
+      <div className="damage-numbers-layer">
+        {popups.map(p => <FloatDmgNumber key={p.id} popup={p} />)}
+      </div>
 
       {/* Topbar */}
       <div className="arena-topbar">
@@ -629,7 +707,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
       {/* Gegner oben */}
       <div className="arena-enemy-zone">
-        <div className="arena-enemy-portrait"><span>💀</span></div>
+        <EnemyPortrait
+          enemyData={enemyData}
+          isHit={enemyHit}
+          isDead={enemy.hp <= 0}
+          isAttacking={phase === 'enemy_turn'}
+        />
         <div className="arena-enemy-info">
           <div className="arena-enemy-name">{enemyData.name}</div>
           <HpBar current={enemy.hp} max={enemy.hpMax} color="#cc2200" />
@@ -657,7 +740,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             isBreaking={combo.isBreaking}
             isMaxCombo={combo.isMaxCombo}
             lastCard={combo.lastCard}
-            popups={popups}
+            popups={[]}
           />
         </div>
       </div>
@@ -757,9 +840,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 // ── HP/MP-Balken ──────────────────────────────────────────────
 
 const HpBar: React.FC<{ current: number; max: number; color: string }> = ({ current, max, color }) => {
-  const pct = max > 0 ? Math.max(0, (current / max) * 100) : 0;
+  const pct      = max > 0 ? Math.max(0, (current / max) * 100) : 0;
+  const isDanger = pct > 0 && pct < 25;
   return (
-    <div className="battle-bar">
+    <div className={`battle-bar ${isDanger ? 'battle-bar--danger' : ''}`}>
       <div className="battle-bar__fill" style={{ width: `${pct}%`, background: color }} />
       <span className="battle-bar__label">
         {current.toLocaleString('de-DE')} / {max.toLocaleString('de-DE')}
@@ -791,8 +875,16 @@ interface PlayerHandCardProps {
 const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   card, canPlay, playerMp, selectIndex, onToggle,
 }) => {
-  const [imgErr, setImgErr] = useState(false);
+  const [imgErr,    setImgErr]   = useState(false);
+  const [striking,  setStriking] = useState(false);
   const touchStartY = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (card.played) {
+      setStriking(true);
+      setTimeout(() => setStriking(false), 460);
+    }
+  }, [card.played]);
 
   const noMp       = card.mpCost > playerMp;
   const blocked    = card.played || card.destroyed || !canPlay || noMp;
@@ -821,11 +913,12 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   return (
     <div
       className={`hand-card
-        ${isSelected     ? 'hand-card--selected'  : ''}
-        ${card.played    ? 'hand-card--played'    : ''}
-        ${card.destroyed ? 'hand-card--destroyed' : ''}
-        ${noMp && !card.played ? 'hand-card--no-mp' : ''}
-        ${!blocked && !isSelected ? 'hand-card--playable' : ''}
+        ${striking                                ? 'hand-card--striking'  : ''}
+        ${isSelected                              ? 'hand-card--selected'  : ''}
+        ${card.played                             ? 'hand-card--played'    : ''}
+        ${card.destroyed                          ? 'hand-card--destroyed' : ''}
+        ${noMp && !card.played                    ? 'hand-card--no-mp'     : ''}
+        ${!blocked && !isSelected && !striking    ? 'hand-card--playable'  : ''}
       `}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={handleClick}

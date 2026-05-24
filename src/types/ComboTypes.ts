@@ -64,4 +64,7 @@ export interface DamagePopup {
   hasSynergy:  boolean;
   hasElement:  boolean;
   xPct:        number;   // horizontale Position in % (20–80)
+  element?:    string;   // Karten-Element für Farb-Effekt
+  isCrit?:     boolean;  // Kritischer Treffer (Combo ≥4 oder erwacht)
+  yOffset?:    number;   // Zufälliger vertikaler Startversatz (0–30)
 }
