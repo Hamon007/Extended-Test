@@ -1,4 +1,4 @@
-/* ── MainScreen ──────────────────────────────────────────────── */
+/* ── MainScreen — Mobile-Ignite-Layout ───────────────────────── */
 
 .main-screen {
   position: relative;
@@ -11,504 +11,447 @@
   color: var(--text);
 }
 
-/* Scrollbarer Bereich zwischen Header und Nav */
-.main-body {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
+/* ── Kompakter Header (2 Zeilen) ─────────────────────────────── */
+
+.ms-header {
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #1a0e16 0%, #0e0810 100%);
+  border-bottom: 1px solid #3a2030;
 }
 
-/* ── Top-Bar ─────────────────────────────────────────────────── */
-
-.main-topbar {
+.ms-header__r1,
+.ms-header__r2 {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 10px;
-  background: var(--bg-mid);
-  border-bottom: 1px solid var(--border);
+  padding: 4px 6px;
+  gap: 5px;
+  min-height: 26px;
+}
+
+.ms-header__r1 { border-bottom: 1px solid rgba(58,32,48,0.5); }
+
+/* Buttons */
+.ms-btn {
+  background: rgba(42,26,34,0.7);
+  border: 1px solid #3a2030;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-btn--back {
+  font-size: 0.6rem;
+  padding: 3px 8px;
+}
+
+.ms-btn--back:active { border-color: var(--gold-dark); }
+
+.ms-btn--reload {
+  font-size: 0.9rem;
+  padding: 2px 7px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  color: var(--gold-dark);
+}
+
+.ms-btn--reload:active { color: var(--gold); }
+
+/* Ressourcen-Block (Stamina / EXP) */
+.ms-res {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   flex-shrink: 0;
 }
 
-.main-topbar__back {
+.ms-res--exp { flex-shrink: 1; min-width: 0; }
+
+.ms-res__icon {
+  font-size: 0.75rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ms-res__lv {
   font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  color: var(--gold);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 5px 10px;
-  cursor: pointer;
+  font-size: 0.45rem;
+  color: var(--gold-dark);
   white-space: nowrap;
-  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
 }
 
-.main-topbar__back:active {
-  color: var(--gold-bright);
-  border-color: var(--gold-dark);
+.ms-res__val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.main-topbar__countdown {
+.ms-res__pct {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: #4aff7a;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Gem icon */
+.ms-gem {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Timer */
+.ms-timer {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  padding: 0 8px;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.main-topbar__countdown-label {
+.ms-timer__lbl {
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
+  font-size: 0.4rem;
   color: var(--gold-dark);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.main-topbar__countdown-value {
+.ms-timer__val {
   font-family: 'Cinzel', serif;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--gold-bright);
   letter-spacing: 0.12em;
   text-shadow: 0 0 10px rgba(240,208,128,0.4);
-}
-
-.main-topbar__refresh {
-  font-size: 1rem;
-  color: var(--gold-dark);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.15s;
-}
-
-.main-topbar__refresh:active {
-  color: var(--gold);
-}
-
-/* ── Ressourcen-Balken ───────────────────────────────────────── */
-
-.main-resources {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px 10px;
-  background: rgba(19, 13, 16, 0.8);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.main-res-row {
-  display: flex;
-  gap: 8px;
-}
-
-.main-res-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex: 1;
-  min-width: 0;
-}
-
-.main-res-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.05em;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
-.main-res-bar {
-  flex: 1;
-  height: 6px;
-  background: rgba(42, 26, 34, 0.8);
-  border: 1px solid var(--border);
+/* Bars */
+.ms-bar {
+  height: 5px;
+  width: 50px;
+  background: rgba(42,26,34,0.8);
+  border: 1px solid #3a2030;
   border-radius: 3px;
   overflow: hidden;
-  min-width: 0;
+  flex-shrink: 0;
 }
 
-.main-res-bar__fill {
+.ms-bar--exp { width: 44px; }
+.ms-bar--mp  { flex: 1; min-width: 40px; max-width: 100px; width: auto; }
+
+.ms-bar__fill {
   height: 100%;
-  background: linear-gradient(90deg, #8a6520, var(--gold));
   border-radius: 3px;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #8a6520, var(--gold));
+  transition: width 0.4s ease;
 }
 
-.main-res-bar__fill--mp {
-  background: linear-gradient(90deg, #1a2a5a, #4a7aff);
-}
+.ms-bar__fill--exp { background: linear-gradient(90deg, #1a4a1a, #4aff7a); }
+.ms-bar__fill--mp  { background: linear-gradient(90deg, #1a2a5a, #4a7aff); }
 
-.main-res-bar__fill--exp {
-  background: linear-gradient(90deg, #1a4a1a, #4aff7a);
-}
+/* Row-2 extras */
+.ms-spacer      { flex: 1; }
 
-.main-res-value {
+.ms-mana-label {
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--text);
+  font-size: 0.5rem;
+  color: var(--gold-dark);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.main-res-value--mana {
-  color: var(--gold);
+.ms-mana-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--gold-bright);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 8px rgba(240,208,128,0.3);
 }
 
-/* ── Info-Banner ─────────────────────────────────────────────── */
+/* ── Hauptinhalt ─────────────────────────────────────────────── */
 
-.main-infobanner {
+.ms-content {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  background: rgba(201, 168, 76, 0.06);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.main-infobanner__icon {
-  color: var(--gold-dark);
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.main-infobanner__text {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  color: var(--text);
-  opacity: 0.8;
-  animation: banner-fade 0.6s ease;
-}
-
-@keyframes banner-fade {
-  from { opacity: 0; transform: translateY(3px); }
-  to   { opacity: 0.8; transform: translateY(0); }
-}
-
-.main-infobanner--live {
-  background: rgba(124,77,255,0.07);
-  border-bottom-color: rgba(124,77,255,0.25);
-}
-
-.main-infobanner__live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #a88aff;
-  flex-shrink: 0;
-  animation: live-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes live-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.7); }
-}
-
-/* ── Hauptkarte ──────────────────────────────────────────────── */
-
-.main-card {
-  display: flex;
-  gap: 0;
-  margin: 8px 10px;
-  background: var(--bg-mid);
-  border: 1px solid var(--border);
-  border-radius: 4px;
   overflow: hidden;
-  flex-shrink: 0;
+  min-height: 0;
 }
 
-.main-card__profile {
-  flex: 0 0 44%;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  padding: 6px;
-  border-right: 1px solid var(--border);
-}
-
-.main-profile-frame {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-/* Card frame — full portrait, no height cap */
-.main-profile-frame__card {
+/* Portrait (linke ~58%) */
+.ms-portrait {
+  flex: 0 0 58%;
   position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  border: 2px solid var(--gold-dark);
-  border-radius: 6px;
   overflow: hidden;
-  background: #0d0810;
-  box-shadow: 0 0 16px rgba(0,0,0,0.6);
+  cursor: pointer;
+  background: #08050a;
 }
 
-.main-profile-frame__img {
+.ms-portrait::after {
+  content: '';
   position: absolute;
   inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(8,5,10,0.85) 100%
+  );
+  pointer-events: none;
+}
+
+.ms-portrait__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-.main-profile-frame__overlay {
+.ms-portrait:active .ms-portrait__img {
+  transform: scale(1.02);
+}
+
+.ms-portrait__footer {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   padding: 24px 8px 8px;
-  background: linear-gradient(to top, rgba(8,5,10,0.95) 0%, transparent 100%);
+  z-index: 1;
 }
 
-.main-profile-frame__card-name {
+.ms-portrait__name {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: var(--gold-bright);
   letter-spacing: 0.05em;
-  text-shadow: 0 0 8px rgba(0,0,0,0.9);
+  text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.main-profile-frame__card-title {
+.ms-portrait__title {
   font-family: 'EB Garamond', serif;
-  font-size: 0.5rem;
-  color: rgba(240,208,128,0.7);
+  font-size: 0.55rem;
+  color: rgba(240,208,128,0.75);
+  text-shadow: 0 0 8px rgba(0,0,0,1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.main-profile-frame__num {
-  position: absolute;
-  top: 5px; left: 7px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: rgba(240,208,128,0.85);
-  text-shadow: 0 1px 4px #000;
-}
-
-.main-profile-frame__compass {
-  position: absolute;
-  top: 4px; right: 7px;
-  font-size: 0.7rem;
-  color: rgba(240,208,128,0.6);
-}
-
-
-.main-card__right {
+/* Rechtes Panel */
+.ms-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  gap: 6px;
+  padding: 8px 6px;
+  gap: 7px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #120a0f 0%, #0c0810 100%);
+  border-left: 1px solid #3a2030;
 }
 
-.main-card__action-btn {
+.ms-panel__btn {
   font-family: 'Cinzel', serif;
   font-size: 0.6rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--text);
-  background: rgba(42, 26, 34, 0.6);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 6px 8px;
+  background: linear-gradient(180deg, #2a1a22 0%, #1a0e16 100%);
+  border: 1px solid #4a2a38;
+  border-radius: 6px;
+  padding: 8px 10px;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, background 0.15s;
   position: relative;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-.main-card__action-btn:active {
-  background: rgba(201, 168, 76, 0.1);
+.ms-panel__btn:active {
+  background: linear-gradient(180deg, #3a2030 0%, #2a1a22 100%);
   border-color: var(--gold-dark);
 }
 
-.main-card__badge {
+.ms-panel__btn--updates { margin-top: 0; }
+
+.ms-badge {
   position: absolute;
-  right: 6px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   background: #c0392b;
   color: #fff;
   font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  width: 18px;
+  font-size: 0.5rem;
+  min-width: 18px;
   height: 18px;
-  border-radius: 50%;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 3px;
+  box-shadow: 0 0 6px rgba(192,57,43,0.6);
 }
 
-.main-card__divider {
+.ms-panel__divider {
   height: 1px;
-  background: var(--border);
-  margin: 2px 0;
+  background: linear-gradient(90deg, transparent, #4a2a38, transparent);
+  flex-shrink: 0;
 }
 
-.main-card__status {
+/* Status-Block */
+.ms-status {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 
-.main-card__status-title {
+.ms-status__title {
   font-family: 'Cinzel', serif;
   font-size: 0.6rem;
   color: var(--gold-dark);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  border-bottom: 1px solid #3a2030;
+  padding-bottom: 4px;
 }
 
-.main-card__status-row {
+.ms-status__row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.main-card__status-label {
+.ms-status__label {
   font-family: 'EB Garamond', serif;
   font-size: 0.7rem;
   color: var(--text);
   opacity: 0.7;
 }
 
-.main-card__status-value {
+.ms-status__val {
   font-family: 'Cinzel', serif;
   font-size: 0.7rem;
   color: var(--gold-bright);
+  text-shadow: 0 0 6px rgba(240,208,128,0.3);
 }
 
-/* ── Tipp-Bereich ────────────────────────────────────────────── */
-
-.main-tip {
+/* Live-Feed (kompakt im Panel) */
+.ms-feed {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin: 0 10px 4px;
-  padding: 6px 8px;
-  background: rgba(19, 13, 16, 0.6);
-  border: 1px solid var(--border);
+  align-items: flex-start;
+  gap: 5px;
+  padding: 5px 6px;
+  background: rgba(124,77,255,0.06);
+  border: 1px solid rgba(124,77,255,0.15);
   border-radius: 4px;
-  min-height: 50px;
-  position: relative;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
-.main-tip__text {
+.ms-feed--hint {
+  background: rgba(42,26,34,0.4);
+  border-color: #3a2030;
+}
+
+.ms-feed__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a88aff;
+  flex-shrink: 0;
+  margin-top: 3px;
+  animation: ms-live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ms-live-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.ms-feed__text {
   font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text);
   opacity: 0.8;
+  line-height: 1.4;
+  animation: ms-feed-in 0.4s ease;
+}
+
+@keyframes ms-feed-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 0.8; transform: translateY(0); }
+}
+
+/* ── Tipp-Strip (unterhalb des Hauptbereichs) ────────────────── */
+
+.ms-tip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 5px 8px;
+  background: linear-gradient(180deg, #120a0f 0%, #0c0810 100%);
+  border-top: 1px solid #3a2030;
+  position: relative;
+  overflow: hidden;
+}
+
+.ms-tip__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: var(--text);
+  opacity: 0.85;
   flex: 1;
-  padding-right: 60px;
+  padding-right: 56px;
   line-height: 1.4;
 }
 
-.main-tip__npc {
+.ms-tip__npc {
   position: absolute;
-  right: -8px;
+  right: -4px;
   bottom: 0;
-  height: 80px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   object-position: bottom;
-  opacity: 0.5;
+  opacity: 0.55;
   pointer-events: none;
+  animation: ms-tip-in 0.5s ease;
 }
 
-/* ── Trenner ─────────────────────────────────────────────────── */
-
-.main-divider {
-  font-family: 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-dark);
-  text-align: center;
-  letter-spacing: 0.15em;
-  padding: 4px 0;
-  opacity: 0.7;
-  flex-shrink: 0;
+@keyframes ms-tip-in {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 0.55; transform: translateX(0); }
 }
 
-/* ── Bottom Navigation ───────────────────────────────────────── */
-
-.main-nav {
-  display: flex;
-  align-items: stretch;
-  border-top: 2px solid var(--gold-dark);
-  background: var(--bg-mid);
-  flex-shrink: 0;
-}
-
-.main-nav__btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 8px 4px;
-  background: transparent;
-  border: none;
-  border-right: 1px solid var(--border);
-  cursor: pointer;
-  color: var(--text);
-  transition: background 0.15s;
-  position: relative;
-}
-
-.main-nav__btn:last-child {
-  border-right: none;
-}
-
-.main-nav__btn:active {
-  background: rgba(201, 168, 76, 0.1);
-}
-
-.main-nav__btn--center {
-  background: rgba(201, 168, 76, 0.06);
-  flex: 1.3;
-}
-
-.main-nav__btn--center .main-nav__icon {
-  font-size: 1.3rem;
-}
-
-.main-nav__icon {
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.main-nav__label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  letter-spacing: 0.06em;
-  color: var(--gold-dark);
-  text-transform: uppercase;
-}
-
-.main-nav__badge {
+.ms-tip__brand {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  background: #c0392b;
-  color: #fff;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 0.42rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+  white-space: nowrap;
+  pointer-events: none;
 }

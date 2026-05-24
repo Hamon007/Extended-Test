@@ -95,6 +95,8 @@ const App: React.FC = () => {
       case 'menu':     goTo('menu'); break;
       case 'battle':   goTo('battle'); break;
       case 'guild':    goTo('guild'); break;
+      case 'quests':   goTo('quests'); break;
+      case 'fusion':   goTo('fusion'); break;
     }
   };
 
@@ -181,27 +183,27 @@ const App: React.FC = () => {
       {/* ── Globale Bottom-Navigation ── */}
       {showNav && (
         <nav className="app-nav">
-          <button className={`app-nav__btn${screen === 'guild' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('guild')}>
+          <button className={`app-nav__btn${screen === 'main' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => { setStack(['title', 'main']); }}>
             <span className="app-nav__icon">🏰</span>
-            <span className="app-nav__label">Gilde</span>
+            <span className="app-nav__label">Festung</span>
           </button>
           <button className={`app-nav__btn${screen === 'gacha' ? ' app-nav__btn--active' : ''}`}
             onClick={() => navTo('gacha')}>
             <span className="app-nav__icon">🔮</span>
             <span className="app-nav__label">Beschwören</span>
           </button>
-          <button className={`app-nav__btn${screen === 'main' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => { setStack(['title', 'main']); }}>
-            <span className="app-nav__icon">🏠</span>
-            <span className="app-nav__label">Heim</span>
-          </button>
-          <button className={`app-nav__btn${screen === 'battle' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('battle')}>
+          <button className={`app-nav__btn${screen === 'quests' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('quests')}>
             <span className="app-nav__icon">⚔️</span>
-            <span className="app-nav__label">Kampf</span>
+            <span className="app-nav__label">Quests</span>
           </button>
-          <button className={`app-nav__btn${screen === 'menu' || screen === 'cardCollection' ? ' app-nav__btn--active' : ''}`}
+          <button className={`app-nav__btn${screen === 'fusion' ? ' app-nav__btn--active' : ''}`}
+            onClick={() => navTo('fusion')}>
+            <span className="app-nav__icon">🔱</span>
+            <span className="app-nav__label">Fusion</span>
+          </button>
+          <button className={`app-nav__btn${screen === 'menu' || screen === 'cardCollection' || screen === 'guild' ? ' app-nav__btn--active' : ''}`}
             onClick={() => navTo('menu')}>
             <span className="app-nav__icon">☰</span>
             <span className="app-nav__label">Menü</span>
