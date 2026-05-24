@@ -24,12 +24,6 @@ const TIPS = [
 
 const B = import.meta.env.BASE_URL;
 
-const NPC_IMAGES = [
-  `${B}assets/cards/azazel.webp`,
-  `${B}assets/cards/azgaroth.webp`,
-  `${B}assets/cards/satan.webp`,
-];
-
 const BATTLE_HOURS = [0, 7, 14, 21];
 
 function nextBattleMs(): number {
@@ -61,7 +55,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [detailCard,    setDetailCard]    = useState<Card | null>(null);
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
-  const [npcIndex,      setNpcIndex]      = useState(0);
   const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
   const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
   const [energy,        setEnergy]        = useState(() => EnergyService.load());
@@ -78,11 +71,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
 
   useEffect(() => {
     const id = setInterval(() => setTipIndex(i => (i + 1) % TIPS.length), 6000);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    const id = setInterval(() => setNpcIndex(i => (i + 1) % NPC_IMAGES.length), 5000);
     return () => clearInterval(id);
   }, []);
 
@@ -316,7 +304,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
           <img src={`${B}assets/ui/message.png`} alt="" className="ms-message__frame" draggable={false} />
           <div className="ms-message__text">{TIPS[tipIndex]}</div>
           <img
-            key={npcIndex}
             src={`${B}assets/ui/guide.png`}
             alt=""
             className="ms-message__npc"
