@@ -176,6 +176,7 @@ function updateLastLogin(): void {
 async function uploadSave(): Promise<void> {
   if (!supabase || !AuthService.isLoggedIn) return;
   const userId = AuthService.user!.id;
+  const now = Date.now();
   const towerFloor    = parseInt(localStorage.getItem(KEYS.towerFloor)   ?? '1', 10);
   const towerHighest  = parseInt(localStorage.getItem(KEYS.towerHighest) ?? '1', 10);
   const winStreak     = parseInt(localStorage.getItem(KEYS.winStreak)    ?? '0', 10);
@@ -183,7 +184,7 @@ async function uploadSave(): Promise<void> {
     gacha:         retrieve<GachaState>(KEYS.gacha)     ?? defaultGachaState(),
     deck:          retrieve<Deck>(KEYS.deck)             ?? createEmptyDeck(),
     account:       retrieve<AccountState>(KEYS.account) ?? createDefaultAccountState(),
-    savedAt:       Date.now(),
+    savedAt:       now,
     guild:         retrieve<unknown>(KEYS.guild)  ?? null,
     energy:        retrieve<unknown>(KEYS.energy) ?? null,
     quests:        retrieve<unknown>(KEYS.quests) ?? null,
@@ -191,6 +192,7 @@ async function uploadSave(): Promise<void> {
     winStreak,
     profileCardId: localStorage.getItem(KEYS.profileCardId) ?? 'azazel',
   };
+  persist(KEYS.savedAt, now);
   const { error } = await supabase
     .from('saves')
     .upsert(

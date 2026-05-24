@@ -71,6 +71,20 @@ const App: React.FC = () => {
       }
     });
 
+    // Also sync when user logs in mid-session via AuthModal
+    let prevLoggedIn = AuthService.isLoggedIn;
+    const unsub = AuthService.subscribe(async user => {
+      const nowLoggedIn = user !== null;
+      if (!prevLoggedIn && nowLoggedIn) {
+        const wasNewer = await SaveService.downloadSave();
+        if (wasNewer) { window.location.reload(); return; }
+        const gs = SaveService.loadGachaState();
+        const { state, processed } = await TradeService.processCompletedListings(gs);
+        if (processed > 0) SaveService.saveGachaState(state);
+      }
+      prevLoggedIn = nowLoggedIn;
+    });
+
     const bonus = ProgressionService.checkAndApplyDailyBonus();
     if (bonus.granted) {
       setDailyToast(bonus.crystals);
@@ -78,6 +92,7 @@ const App: React.FC = () => {
     }
 
     setReady(true);
+    return () => unsub();
   }, []);
 
   if (!ready) {
