@@ -37,15 +37,6 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
-/* Im PWA-Standalone-Modus: overflow:hidden auf html entfernen.
-   iOS Safari Bug: html{overflow:hidden} verankert position:fixed
-   am html-Box statt am Viewport. Im Browser ist das kein Problem. */
-@media (display-mode: standalone) {
-  html {
-    overflow: visible;
-  }
-}
-
 /* Kein Text-Select im UI */
 button, [role="button"] {
   user-select: none;

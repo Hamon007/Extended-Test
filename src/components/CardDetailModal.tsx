@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import type { Card } from '../types/Card';
 import { RARITY_COLOR, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
@@ -49,7 +48,7 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => 
   const rarityColor  = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
   const synergyCards = CardDatabase.getSynergies(card);
 
-  return createPortal(
+  return (
     <div
       className="detail-overlay"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -244,8 +243,7 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => 
 
         </div>}
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 };
 

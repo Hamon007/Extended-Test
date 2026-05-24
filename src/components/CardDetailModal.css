@@ -2,16 +2,14 @@
 
 .detail-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.92);
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.88);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   animation: overlay-in 0.2s ease;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: auto;
+  overflow: hidden;
 }
 
 @keyframes overlay-in {
