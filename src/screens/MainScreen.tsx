@@ -55,7 +55,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [detailCard,    setDetailCard]    = useState<Card | null>(null);
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
-  const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
+  const [_deckStats,    setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
   const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
   const [energy,        setEnergy]        = useState(() => EnergyService.load());
   const [energyMax,     setEnergyMax]     = useState(() => EnergyService.getMax());
@@ -63,6 +63,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [feedIndex,     setFeedIndex]     = useState(0);
   const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
+  const updateCount = 0; // wird später dynamisch
 
   useEffect(() => {
     const id = setInterval(() => setCountdown(nextBattleMs()), 1000);
@@ -166,12 +167,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         {/* Zeile 2: Linke Bars | [Crest-Spacer] | Rechte Bars */}
         <div className="ms-hr2">
 
-          {/* Links: Stamina + MP */}
+          {/* Links: Stamina + MP (ohne Label-Text) */}
           <div className="ms-bars ms-bars--left">
             <div className="ms-bar-wrap">
               <img src={`${B}assets/ui/bar-stamina.png`} alt="" className="ms-bar__frame" draggable={false} />
               <div className="ms-bar__over">
-                <span className="ms-bar__lbl">Ausdauer</span>
                 <div className="ms-bar__track">
                   <div className="ms-bar__fill ms-bar__fill--sta" style={{ width: `${staminaPct}%` }} />
                 </div>
@@ -181,7 +181,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
             <div className="ms-bar-wrap">
               <img src={`${B}assets/ui/bar-mp.png`} alt="" className="ms-bar__frame" draggable={false} />
               <div className="ms-bar__over">
-                <span className="ms-bar__lbl">MP</span>
                 <div className="ms-bar__track">
                   <div className="ms-bar__fill ms-bar__fill--mp" style={{ width: `${mpPct}%` }} />
                 </div>
@@ -192,12 +191,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
 
           <div className="ms-hr2__spacer" />
 
-          {/* Rechts: EXP + Mana */}
+          {/* Rechts: EXP + Mana (ohne Label-Text) */}
           <div className="ms-bars ms-bars--right">
             <div className="ms-bar-wrap">
               <img src={`${B}assets/ui/bar-exp.png`} alt="" className="ms-bar__frame" draggable={false} />
               <div className="ms-bar__over">
-                <span className="ms-bar__lbl">EXP</span>
                 <div className="ms-bar__track">
                   <div className="ms-bar__fill ms-bar__fill--exp" style={{ width: `${xpPct}%` }} />
                 </div>
@@ -262,37 +260,36 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
             <div className="ms-rbtn">
               <div className="ms-rbtn__wrap">
                 <img src={`${B}assets/ui/btn-updates.png`} alt="Updates" className="ms-rbtn__img" draggable={false} />
-                <span className="ms-rbtn__badge">3</span>
+                <span className="ms-rbtn__badge">{updateCount}</span>
               </div>
               <span className="ms-rbtn__lbl">Updates</span>
             </div>
           </div>
 
-          {/* Status */}
+          {/* Profil-Karte (ersetzt Status) */}
           <div className="ms-status">
             <div className="ms-status__hdr">
               <img src={`${B}assets/ui/status-header.png`} alt="" draggable={false} />
-              <span className="ms-status__hdr-txt">Status</span>
+              <span className="ms-status__hdr-txt">Profil</span>
             </div>
-            <div className="ms-stat-row">
-              <img src={`${B}assets/ui/stat-atk.png`} alt="" className="ms-stat-row__frame" draggable={false} />
-              <div className="ms-stat-row__over">
-                <span className="ms-stat-row__lbl">Gesamt ATK:</span>
-                <span className="ms-stat-row__val">{deckStats ? deckStats.atk.toLocaleString('de-DE') : '—'}</span>
+            <div className="ms-profile-mini">
+              <img
+                className="ms-profile-mini__art"
+                src={profileCard?.image ?? `${B}assets/cards/azazel.webp`}
+                alt=""
+                draggable={false}
+              />
+              <img
+                className="ms-profile-mini__frame"
+                src={`${B}assets/ui/card-frame.png`}
+                alt=""
+                draggable={false}
+              />
+              <div className="ms-profile-mini__footer">
+                <span className="ms-profile-mini__name">{profileCard?.name ?? 'Azazel'}</span>
+                <span className="ms-profile-mini__lv">Lv.{account.level}</span>
               </div>
             </div>
-            <div className="ms-stat-row">
-              <img src={`${B}assets/ui/stat-def.png`} alt="" className="ms-stat-row__frame" draggable={false} />
-              <div className="ms-stat-row__over">
-                <span className="ms-stat-row__lbl">Gesamt DEF:</span>
-                <span className="ms-stat-row__val">{deckStats ? deckStats.def.toLocaleString('de-DE') : '—'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Account-Level (klein) */}
-          <div className="ms-panel__lv">
-            Lv.{account.level} · {energy.potions > 0 ? `${energy.potions}× 🧪` : ''}
           </div>
 
         </div>{/* panel */}
@@ -311,8 +308,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
           />
         </div>
         <div className="ms-banner">
+          <div
+            className="ms-banner__bg"
+            style={{ backgroundImage: `url(${profileCard?.image ?? `${B}assets/cards/satan.webp`})` }}
+          />
+          <div className="ms-banner__dim" />
+          <div className="ms-banner__content">
+            <span className="ms-banner__event">✦ Limitiertes Event ✦</span>
+            <span className="ms-banner__cname">{profileCard?.name ?? 'Codex Immortalis'}</span>
+            {profileCard && <span className="ms-banner__rarity">{(profileCard as { rarity?: string }).rarity ?? ''}</span>}
+          </div>
           <img src={`${B}assets/ui/banner.png`} alt="" className="ms-banner__frame" draggable={false} />
-          <span className="ms-banner__txt">✦ Codex Immortalis ✦</span>
         </div>
       </div>
 

@@ -7,8 +7,10 @@
   display: flex;
   flex-direction: column;
   background: #08050a;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   color: var(--text);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -241,7 +243,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 10%;
+  left: 17%;
   right: 5%;
   display: flex;
   align-items: center;
@@ -266,20 +268,21 @@
 ═══════════════════════════════════════════════════════════════ */
 
 .ms-content {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
-  overflow: hidden;
-  min-height: 0;
+  min-height: 280px;
 }
 
 /* ── Charakter-Karte (links) ── */
 
 .ms-card {
   flex: 0 0 56%;
+  aspect-ratio: 1072 / 1448;
   position: relative;
   overflow: hidden;
   cursor: pointer;
   background: #050305;
+  align-self: flex-start;
 }
 
 .ms-card__art {
@@ -346,7 +349,6 @@
   flex-direction: column;
   padding: 8px 6px 4px;
   gap: 6px;
-  overflow: hidden;
   background: linear-gradient(180deg, #0e0810 0%, #08050a 100%);
   border-left: 1px solid #2a1a22;
 }
@@ -416,14 +418,13 @@
   z-index: 5;
 }
 
-/* Status-Block */
+/* Profil / Status-Block */
 .ms-status {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   min-height: 0;
-  overflow: hidden;
 }
 
 .ms-status__hdr {
@@ -565,29 +566,132 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Section-Banner */
-.ms-banner {
+/* Mini-Profil im rechten Panel */
+.ms-profile-mini {
+  flex: 1;
   position: relative;
+  overflow: hidden;
+  min-height: 80px;
+  border-radius: 3px;
+}
+
+.ms-profile-mini__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.ms-profile-mini__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ms-profile-mini__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 16px 6px 8px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.ms-profile-mini__name {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--gold-bright);
+  text-shadow: 0 0 8px rgba(0,0,0,1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-profile-mini__lv {
+  font-family: 'Cinzel', serif;
+  font-size: 0.45rem;
+  color: var(--gold-dark);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.ms-banner__frame {
-  width: 100%;
-  height: 46px;
-  object-fit: fill;
-  display: block;
+/* Section-Banner mit Charakter-Art */
+.ms-banner {
+  position: relative;
+  height: 90px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.ms-banner__txt {
+.ms-banner__bg {
   position: absolute;
   inset: 0;
+  background-size: cover;
+  background-position: center 20%;
+  z-index: 0;
+}
+
+.ms-banner__dim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.ms-banner__content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
+  padding: 0 20px;
+  gap: 1px;
+}
+
+.ms-banner__event {
+  font-family: 'Cinzel', serif;
+  font-size: 0.42rem;
+  color: rgba(240,208,128,0.85);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ms-banner__cname {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: #f0d080;
+  text-shadow: 0 0 20px rgba(255,80,0,0.65), 0 2px 6px rgba(0,0,0,1);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ms-banner__rarity {
   font-family: 'Cinzel', serif;
   font-size: 0.6rem;
-  color: rgba(30,15,10,0.85);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
+  color: #ff8844;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(255,80,0,0.5);
+}
+
+.ms-banner__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 3;
   pointer-events: none;
 }
