@@ -10,33 +10,45 @@ import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
 
+// ── Typen ─────────────────────────────────────────────────────
+
 interface MainScreenProps {
   onBack: () => void;
 }
 
+// ── Konstanten ────────────────────────────────────────────────
+
 const TIPS = [
-  'Du kannst Unsterbliche beschwören, um dein Deck zu stärken!',
-  'Kombiniere Elemente für mächtige Combo-Angriffe.',
-  'Seltenere Karten haben höhere Basis-Stats.',
-  'Prüfe täglich dein Quest-Board für Belohnungen.',
-  'MR-Karten dürfen nur einmal pro Deck verwendet werden.',
+  'Tipp: Du kannst Unsterbliche beschwören, um dein Deck zu stärken!',
+  'Tipp: Kombiniere Elemente für mächtige Combo-Angriffe.',
+  'Tipp: Seltenere Karten haben höhere Basis-Stats.',
+  'Tipp: Prüfe täglich dein Quest-Board für Belohnungen.',
+  'Tipp: MR-Karten dürfen nur einmal pro Deck verwendet werden.',
 ];
 
 const B = import.meta.env.BASE_URL;
 
 const BATTLE_HOURS = [0, 7, 14, 21];
 
+// ── Hilfsfunktionen ───────────────────────────────────────────
+
 function nextBattleMs(): number {
   const now = new Date();
+  // nächste UTC-Stunde in [0,7,14,21]
   const h = now.getUTCHours();
   const m = now.getUTCMinutes();
   const s = now.getUTCSeconds();
+
   const elapsedInHour = m * 60 + s;
+
   for (const bh of BATTLE_HOURS) {
     const diff = (bh - h + 24) % 24;
     if (diff === 0 && elapsedInHour === 0) return 0;
-    if (diff > 0) return (diff * 3600 - elapsedInHour) * 1000;
+    if (diff > 0) {
+      return (diff * 3600 - elapsedInHour) * 1000;
+    }
   }
+  // wrap um Mitternacht
   const firstHour = BATTLE_HOURS[0];
   const hoursUntil = (firstHour + 24 - h + 24) % 24 || 24;
   return (hoursUntil * 3600 - elapsedInHour) * 1000;
@@ -51,35 +63,41 @@ function formatCountdown(ms: number): string {
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
 }
 
+// ── Haupt-Komponente ──────────────────────────────────────────
+
 const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [detailCard,    setDetailCard]    = useState<Card | null>(null);
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
-  const [_deckStats,    setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
+  const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
   const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
   const [energy,        setEnergy]        = useState(() => EnergyService.load());
   const [energyMax,     setEnergyMax]     = useState(() => EnergyService.getMax());
   const [feedEvents,    setFeedEvents]    = useState<FeedEvent[]>([]);
   const [feedIndex,     setFeedIndex]     = useState(0);
   const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
+  // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
-  const updateCount = 0; // wird später dynamisch
 
+  // Countdown-Tick
   useEffect(() => {
     const id = setInterval(() => setCountdown(nextBattleMs()), 1000);
     return () => clearInterval(id);
   }, []);
 
+  // Tipp-Rotation alle 6s
   useEffect(() => {
     const id = setInterval(() => setTipIndex(i => (i + 1) % TIPS.length), 6000);
     return () => clearInterval(id);
   }, []);
 
+  // Track auth state reactively
   useEffect(() => {
     setLoggedIn(AuthService.isLoggedIn);
     return AuthService.subscribe(user => setLoggedIn(user !== null));
   }, []);
 
+  // Live feed: load + Realtime subscription for instant updates + 60s polling backup
   useEffect(() => {
     if (!loggedIn) return;
     const load = () => ActivityFeedService.getRecent(15).then(setFeedEvents);
@@ -89,12 +107,14 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     return () => { unsubRealtime(); clearInterval(pollId); };
   }, [loggedIn]);
 
+  // Cycle through feed events every 5s
   useEffect(() => {
     if (feedEvents.length < 2) return;
     const id = setInterval(() => setFeedIndex(i => (i + 1) % feedEvents.length), 5000);
     return () => clearInterval(id);
   }, [feedEvents.length]);
 
+  // Account + Energy beim Erscheinen und bei Fokus-Rückkehr aktualisieren
   useEffect(() => {
     const refresh = () => {
       setAccount(SaveService.loadAccountState());
@@ -107,12 +127,19 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
     return () => window.removeEventListener('focus', refresh);
   }, []);
 
+  // Deck-Stats laden
   useEffect(() => {
     const deck = SaveService.loadDeck();
-    if (deck.uuids.length === 0) { setDeckStats(null); return; }
+    if (deck.uuids.length === 0) {
+      setDeckStats(null);
+      return;
+    }
     const gachaState = SaveService.loadGachaState();
     const inventory = gachaState.inventory;
-    let totalAtk = 0, totalDef = 0, found = 0;
+    let totalAtk = 0;
+    let totalDef = 0;
+    let found = 0;
+
     for (const uuid of deck.uuids) {
       const inst = inventory.find(ci => ci.uuid === uuid);
       if (!inst) continue;
@@ -122,207 +149,188 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
       totalDef += card.stats.def;
       found++;
     }
+
     setDeckStats(found > 0 ? { atk: totalAtk, def: totalDef } : null);
   }, []);
 
-  const handleRefresh = useCallback(() => setCountdown(nextBattleMs()), []);
-
-  const profileCard = CardDatabase.getById(profileCardId);
-  const staminaPct  = energyMax > 0 ? Math.min(100, (energy.energy / energyMax) * 100) : 0;
-  const mpPct       = account.maxMana > 0 ? Math.min(100, (account.mana / account.maxMana) * 100) : 0;
-  const xpMax       = AccountProgressionService.xpToNextLevel(account.level);
-  const xpPct       = xpMax > 0 ? Math.min(100, (account.xp / xpMax) * 100) : 100;
-  const xpPctInt    = Math.round(xpPct);
-
-  const infoText = feedEvents.length > 0
-    ? ActivityFeedService.formatEvent(feedEvents[feedIndex % feedEvents.length])
-    : 'Willkommen zurück, Beschwörer. Deine nächste Schlacht wartet.';
+  const handleRefresh = useCallback(() => {
+    setCountdown(nextBattleMs());
+  }, []);
 
   return (
     <div className="main-screen">
 
-      {/* ── HEADER: Back | Crest-Timer | Reload + Bars ── */}
-      <div className="ms-header">
-
-        {/* Timer-Crest (absolut zentriert, überlagert Bars) */}
-        <div className="ms-crest" aria-hidden="true">
-          <img src={`${B}assets/ui/timer.png`} alt="" className="ms-crest__frame" draggable={false} />
-          <div className="ms-crest__text">
-            <span className="ms-crest__lbl">Bis zur nächsten Schlacht</span>
-            <span className="ms-crest__val">{formatCountdown(countdown)}</span>
-          </div>
+      {/* ── Top-Bar ── */}
+      <div className="main-topbar">
+        <button className="main-topbar__back" onClick={onBack}>← Zurück</button>
+        <div className="main-topbar__countdown">
+          <span className="main-topbar__countdown-label">Bis zur nächsten Schlacht</span>
+          <span className="main-topbar__countdown-value">{formatCountdown(countdown)}</span>
         </div>
-
-        {/* Zeile 1: Back | [Crest-Spacer] | Reload */}
-        <div className="ms-hr1">
-          <button className="ms-hbtn ms-hbtn--back" onClick={onBack}>
-            <img src={`${B}assets/ui/back.png`} alt="Zurück" draggable={false} />
-          </button>
-          <div className="ms-hr1__spacer" />
-          <button className="ms-hbtn ms-hbtn--reload" onClick={handleRefresh}>
-            <img src={`${B}assets/ui/reload.png`} alt="Neu laden" draggable={false} />
-          </button>
-        </div>
-
-        {/* Zeile 2: Linke Bars | [Crest-Spacer] | Rechte Bars */}
-        <div className="ms-hr2">
-
-          {/* Links: Stamina + MP (ohne Label-Text) */}
-          <div className="ms-bars ms-bars--left">
-            <div className="ms-bar-wrap">
-              <img src={`${B}assets/ui/bar-stamina.png`} alt="" className="ms-bar__frame" draggable={false} />
-              <div className="ms-bar__over">
-                <div className="ms-bar__track">
-                  <div className="ms-bar__fill ms-bar__fill--sta" style={{ width: `${staminaPct}%` }} />
-                </div>
-                <span className="ms-bar__val">{energy.energy}/{energyMax}</span>
-              </div>
-            </div>
-            <div className="ms-bar-wrap">
-              <img src={`${B}assets/ui/bar-mp.png`} alt="" className="ms-bar__frame" draggable={false} />
-              <div className="ms-bar__over">
-                <div className="ms-bar__track">
-                  <div className="ms-bar__fill ms-bar__fill--mp" style={{ width: `${mpPct}%` }} />
-                </div>
-                <span className="ms-bar__val">{account.mana}/{account.maxMana}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="ms-hr2__spacer" />
-
-          {/* Rechts: EXP + Mana (ohne Label-Text) */}
-          <div className="ms-bars ms-bars--right">
-            <div className="ms-bar-wrap">
-              <img src={`${B}assets/ui/bar-exp.png`} alt="" className="ms-bar__frame" draggable={false} />
-              <div className="ms-bar__over">
-                <div className="ms-bar__track">
-                  <div className="ms-bar__fill ms-bar__fill--exp" style={{ width: `${xpPct}%` }} />
-                </div>
-                <span className="ms-bar__val">{xpPctInt}%</span>
-              </div>
-            </div>
-            <div className="ms-bar-wrap">
-              <img src={`${B}assets/ui/bar-mana.png`} alt="" className="ms-bar__frame" draggable={false} />
-              <div className="ms-bar__over ms-bar__over--mana">
-                <span className="ms-bar__mana-lbl">Mana</span>
-                <span className="ms-bar__mana-val">{account.mana.toLocaleString('de-DE')}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>{/* hr2 */}
-      </div>{/* header */}
-
-      {/* ── INFO-PANEL ── */}
-      <div className="ms-info">
-        <img src={`${B}assets/ui/info.png`} alt="" className="ms-info__frame" draggable={false} />
-        <div className="ms-info__text" key={feedIndex}>{infoText}</div>
+        <button className="main-topbar__refresh" onClick={handleRefresh} aria-label="Aktualisieren">↺</button>
       </div>
 
-      {/* ── HAUPTINHALT: Karte links | Panel rechts ── */}
-      <div className="ms-content">
-
-        {/* Charakter-Karte */}
-        <div
-          className="ms-card"
-          onClick={() => setDetailCard(profileCard ?? CardDatabase.getById('azazel') ?? null)}
-          role="button"
-          aria-label="Profilkarte"
-        >
-          <img
-            className="ms-card__art"
-            src={profileCard?.image ?? `${B}assets/cards/azazel.webp`}
-            alt={profileCard?.name ?? ''}
-            draggable={false}
-          />
-          <img
-            className="ms-card__frame"
-            src={`${B}assets/ui/card-frame.png`}
-            alt=""
-            draggable={false}
-          />
-          <div className="ms-card__footer">
-            <div className="ms-card__name">{profileCard?.name ?? 'Azazel'},</div>
-            <div className="ms-card__title">{profileCard?.title ?? 'Richter der sterbenden Sonne'}</div>
+      {/* ── Ressourcen-Balken ── */}
+      <div className="main-resources">
+        <div className="main-res-row">
+          {/* Ausdauer — aus EnergyService (dynamisches Max aus Account-Level) */}
+          <div className="main-res-item">
+            <span className="main-res-label">Ausdauer</span>
+            <div className="main-res-bar">
+              <div
+                className="main-res-bar__fill"
+                style={{ width: `${energyMax > 0 ? (energy.energy / energyMax) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="main-res-value">{energy.energy}/{energyMax}</span>
+          </div>
+          {/* EXP — Account-XP-Fortschritt */}
+          <div className="main-res-item">
+            <span className="main-res-label">
+              Lv.{account.level} · EXP
+            </span>
+            <div className="main-res-bar main-res-bar--exp">
+              <div
+                className="main-res-bar__fill main-res-bar__fill--exp"
+                style={{
+                  width: `${AccountProgressionService.xpToNextLevel(account.level) > 0
+                    ? (account.xp / AccountProgressionService.xpToNextLevel(account.level)) * 100
+                    : 0}%`,
+                }}
+              />
+            </div>
+            <span className="main-res-value">
+              {account.xp.toLocaleString('de-DE')} / {AccountProgressionService.xpToNextLevel(account.level).toLocaleString('de-DE')}
+            </span>
           </div>
         </div>
-
-        {/* Rechtes Panel */}
-        <div className="ms-panel">
-
-          {/* Runde Buttons: Relics + Updates */}
-          <div className="ms-panel__btns">
-            <div className="ms-rbtn">
-              <img src={`${B}assets/ui/btn-relics.png`} alt="Relics" className="ms-rbtn__img" draggable={false} />
-              <span className="ms-rbtn__lbl">Relics kaufen</span>
-            </div>
-            <div className="ms-rbtn">
-              <div className="ms-rbtn__wrap">
-                <img src={`${B}assets/ui/btn-updates.png`} alt="Updates" className="ms-rbtn__img" draggable={false} />
-                <span className="ms-rbtn__badge">{updateCount}</span>
-              </div>
-              <span className="ms-rbtn__lbl">Updates</span>
-            </div>
-          </div>
-
-          {/* Profil-Karte (ersetzt Status) */}
-          <div className="ms-status">
-            <div className="ms-status__hdr">
-              <img src={`${B}assets/ui/status-header.png`} alt="" draggable={false} />
-              <span className="ms-status__hdr-txt">Profil</span>
-            </div>
-            <div className="ms-profile-mini">
-              <img
-                className="ms-profile-mini__art"
-                src={profileCard?.image ?? `${B}assets/cards/azazel.webp`}
-                alt=""
-                draggable={false}
+        <div className="main-res-row">
+          {/* Mana — Account-Mana */}
+          <div className="main-res-item">
+            <span className="main-res-label">Mana</span>
+            <div className="main-res-bar main-res-bar--mana">
+              <div
+                className="main-res-bar__fill main-res-bar__fill--mp"
+                style={{ width: `${account.maxMana > 0 ? (account.mana / account.maxMana) * 100 : 0}%` }}
               />
-              <img
-                className="ms-profile-mini__frame"
-                src={`${B}assets/ui/card-frame.png`}
-                alt=""
-                draggable={false}
-              />
-              <div className="ms-profile-mini__footer">
-                <span className="ms-profile-mini__name">{profileCard?.name ?? 'Azazel'}</span>
-                <span className="ms-profile-mini__lv">Lv.{account.level}</span>
-              </div>
             </div>
+            <span className="main-res-value">{account.mana.toLocaleString('de-DE')}/{account.maxMana.toLocaleString('de-DE')}</span>
           </div>
-
-        </div>{/* panel */}
-      </div>{/* content */}
-
-      {/* ── BOTTOM: Message-Box + NPC + Banner ── */}
-      <div className="ms-bottom">
-        <div className="ms-message">
-          <img src={`${B}assets/ui/message.png`} alt="" className="ms-message__frame" draggable={false} />
-          <div className="ms-message__text">{TIPS[tipIndex]}</div>
-          <img
-            src={`${B}assets/ui/guide.png`}
-            alt=""
-            className="ms-message__npc"
-            draggable={false}
-          />
-        </div>
-        <div className="ms-banner">
-          <div
-            className="ms-banner__bg"
-            style={{ backgroundImage: `url(${profileCard?.image ?? `${B}assets/cards/satan.webp`})` }}
-          />
-          <div className="ms-banner__dim" />
-          <div className="ms-banner__content">
-            <span className="ms-banner__event">✦ Limitiertes Event ✦</span>
-            <span className="ms-banner__cname">{profileCard?.name ?? 'Codex Immortalis'}</span>
-            {profileCard && <span className="ms-banner__rarity">{(profileCard as { rarity?: string }).rarity ?? ''}</span>}
+          {/* Tränke */}
+          <div className="main-res-item">
+            <span className="main-res-label">Tränke</span>
+            <div className="main-res-bar" style={{ background: 'none' }}>
+              <span style={{ fontSize: 18, letterSpacing: 4 }}>
+                {Array.from({ length: energy.potions }).map((_, i) => <span key={i}>🧪</span>)}
+                {energy.potions === 0 && <span style={{ fontSize: 11, color: '#666' }}>—</span>}
+              </span>
+            </div>
+            <span className="main-res-value">{energy.potions}×</span>
           </div>
-          <img src={`${B}assets/ui/banner.png`} alt="" className="ms-banner__frame" draggable={false} />
         </div>
       </div>
 
+      {/* ── Live-Ereignisse Banner ── */}
+      <div className={`main-infobanner${feedEvents.length > 0 ? ' main-infobanner--live' : ''}`}>
+        {feedEvents.length > 0 ? (
+          <>
+            <span className="main-infobanner__live-dot" />
+            <span className="main-infobanner__text" key={feedIndex}>
+              {ActivityFeedService.formatEvent(feedEvents[feedIndex % feedEvents.length])}
+            </span>
+          </>
+        ) : !loggedIn ? (
+          <>
+            <span className="main-infobanner__icon">🔒</span>
+            <span className="main-infobanner__text">Anmelden für Live-Ereignisse</span>
+          </>
+        ) : (
+          <>
+            <span className="main-infobanner__icon">📡</span>
+            <span className="main-infobanner__text">Keine Ereignisse — ziehe SSR/MR oder fusioniere zu LR!</span>
+          </>
+        )}
+      </div>
+
+      {/* ── Scrollbarer Inhaltsbereich ── */}
+      <div className="main-body">
+
+      {/* ── Hauptkarte ── */}
+      <div className="main-card">
+        {/* Profil-Seite */}
+        <div className="main-card__profile">
+          <div className="main-profile-frame">
+            {(() => {
+              const profileCard = CardDatabase.getById(profileCardId);
+              return (
+                <div
+                  className="main-profile-frame__card"
+                  onClick={() => setDetailCard(profileCard ?? CardDatabase.getById('azazel') ?? null)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img
+                    className="main-profile-frame__img"
+                    src={profileCard?.image ?? `${B}assets/cards/azazel.webp`}
+                    alt={profileCard?.name ?? 'Azazel'}
+                  />
+                  <div className="main-profile-frame__num">006.</div>
+                  <div className="main-profile-frame__compass">✦</div>
+                  <div className="main-profile-frame__overlay">
+                    <div className="main-profile-frame__card-name">{profileCard?.name ?? 'Azazel'},</div>
+                    <div className="main-profile-frame__card-title">{profileCard?.title ?? 'Richter der sterbenden Sonne'}</div>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+
+        {/* Rechte Seite */}
+        <div className="main-card__right">
+          <button className="main-card__action-btn" onClick={() => {}}>
+            💎 Relics kaufen
+          </button>
+          <button className="main-card__action-btn" onClick={() => {}}>
+            📜 Updates <span className="main-card__badge">③</span>
+          </button>
+          <div className="main-card__divider" />
+          <div className="main-card__status">
+            <div className="main-card__status-title">Status</div>
+            <div className="main-card__status-row">
+              <span className="main-card__status-label">Gesamt ATK:</span>
+              <span className="main-card__status-value">
+                {deckStats ? deckStats.atk.toLocaleString('de-DE') : '—'}
+              </span>
+            </div>
+            <div className="main-card__status-row">
+              <span className="main-card__status-label">Gesamt DEF:</span>
+              <span className="main-card__status-value">
+                {deckStats ? deckStats.def.toLocaleString('de-DE') : '—'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Tipp-Bereich ── */}
+      <div className="main-tip">
+        <span className="main-tip__text">{TIPS[tipIndex]}</span>
+        <img
+          className="main-tip__npc"
+          src={`${B}assets/ui/guide.png`}
+          alt="NPC"
+          draggable={false}
+        />
+      </div>
+
+      {/* ── Trenner ── */}
+      <div className="main-divider">─────── ✦ Mobile Ignite ✦ ───────</div>
+
+      </div>{/* end main-body */}
+
+      {/* ── Kartendetail-Modal ── */}
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
+
     </div>
   );
 };

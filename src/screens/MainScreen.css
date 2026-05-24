@@ -1,4 +1,4 @@
-/* ── MainScreen — Asset-Layout ───────────────────────────────── */
+/* ── MainScreen ──────────────────────────────────────────────── */
 
 .main-screen {
   position: relative;
@@ -6,692 +6,509 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #08050a;
+  background: var(--bg-deep);
+  overflow: hidden;
+  color: var(--text);
+}
+
+/* Scrollbarer Bereich zwischen Header und Nav */
+.main-body {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  color: var(--text);
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HEADER
-═══════════════════════════════════════════════════════════════ */
+/* ── Top-Bar ─────────────────────────────────────────────────── */
 
-.ms-header {
+.main-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  position: relative;
-  background: linear-gradient(180deg, #0e0810 0%, #0a0608 100%);
-  border-bottom: 1px solid #2a1a22;
 }
 
-/* ── Timer-Crest (absolut zentriert, z-index 15) ── */
-
-.ms-crest {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50%;
-  z-index: 15;
-  pointer-events: none;
+.main-topbar__back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
 }
 
-.ms-crest__frame {
-  width: 100%;
-  height: auto;
-  display: block;
+.main-topbar__back:active {
+  color: var(--gold-bright);
+  border-color: var(--gold-dark);
 }
 
-.ms-crest__text {
-  position: absolute;
-  /* Dark rectangle of the crest: vertically ~48-82%, horizontally ~8-92% */
-  top: 50%;
-  left: 8%;
-  right: 8%;
-  bottom: 8%;
+.main-topbar__countdown {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1px;
+  flex: 1;
+  padding: 0 8px;
 }
 
-.ms-crest__lbl {
+.main-topbar__countdown-label {
   font-family: 'Cinzel', serif;
-  font-size: 0.42rem;
-  color: rgba(201,168,76,0.75);
+  font-size: 0.55rem;
+  color: var(--gold-dark);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
-.ms-crest__val {
+.main-topbar__countdown-value {
   font-family: 'Cinzel', serif;
-  font-size: 1.05rem;
-  color: #f0d080;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 12px rgba(240,208,128,0.5);
-  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(240,208,128,0.4);
 }
 
-/* ── Zeile 1: Back-Button | Spacer | Reload-Button ── */
-
-.ms-hr1 {
-  display: flex;
-  align-items: flex-start;
-  padding: 5px 5px 0;
-  position: relative;
-  z-index: 20;
-}
-
-.ms-hr1__spacer {
-  flex: 0 0 52%;
-}
-
-.ms-hbtn {
-  flex: 1;
+.main-topbar__refresh {
+  font-size: 1rem;
+  color: var(--gold-dark);
   background: transparent;
   border: none;
-  padding: 0;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  display: flex;
-  align-items: flex-start;
+  padding: 4px 8px;
+  transition: color 0.15s;
 }
 
-.ms-hbtn--back  { justify-content: flex-start; }
-.ms-hbtn--reload { justify-content: flex-end; }
-
-.ms-hbtn img {
-  height: 36px;
-  width: auto;
-  display: block;
-  transition: opacity 0.15s;
+.main-topbar__refresh:active {
+  color: var(--gold);
 }
 
-.ms-hbtn:active img { opacity: 0.75; }
+/* ── Ressourcen-Balken ───────────────────────────────────────── */
 
-/* ── Zeile 2: Linke Bars | Spacer | Rechte Bars ── */
-
-.ms-hr2 {
-  display: flex;
-  align-items: flex-start;
-  padding: 3px 5px 8px;
-  position: relative;
-  z-index: 5;
-}
-
-.ms-hr2__spacer {
-  flex: 0 0 52%;
-}
-
-.ms-bars {
-  flex: 1;
+.main-resources {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(19, 13, 16, 0.8);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
-/* ── Bar-Frames ── */
-
-.ms-bar-wrap {
-  position: relative;
-  width: 100%;
+.main-res-row {
+  display: flex;
+  gap: 8px;
 }
 
-.ms-bar__frame {
-  width: 100%;
-  height: 40px;
-  object-fit: fill;
-  display: block;
-}
-
-/* Overlay auf dem Bar-Frame: Label | Track | Wert */
-.ms-bar__over {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 32%;   /* nach dem Icon-Medallion */
-  right: 4%;
+.main-res-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-  pointer-events: none;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
 }
 
-.ms-bar__lbl {
+.main-res-label {
   font-family: 'Cinzel', serif;
-  font-size: 0.42rem;
-  color: rgba(200,180,140,0.9);
-  letter-spacing: 0.04em;
+  font-size: 0.55rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.05em;
   white-space: nowrap;
   flex-shrink: 0;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
-.ms-bar__track {
+.main-res-bar {
   flex: 1;
-  height: 5px;
-  background: rgba(0,0,0,0.45);
+  height: 6px;
+  background: rgba(42, 26, 34, 0.8);
+  border: 1px solid var(--border);
   border-radius: 3px;
   overflow: hidden;
   min-width: 0;
 }
 
-.ms-bar__fill {
+.main-res-bar__fill {
   height: 100%;
+  background: linear-gradient(90deg, #8a6520, var(--gold));
   border-radius: 3px;
-  transition: width 0.5s ease;
+  transition: width 0.3s ease;
 }
 
-.ms-bar__fill--sta { background: linear-gradient(90deg, #880000, #ff3030); }
-.ms-bar__fill--mp  { background: linear-gradient(90deg, #003388, #2277ff); }
-.ms-bar__fill--exp { background: linear-gradient(90deg, #440088, #9944ff); }
+.main-res-bar__fill--mp {
+  background: linear-gradient(90deg, #1a2a5a, #4a7aff);
+}
 
-.ms-bar__val {
+.main-res-bar__fill--exp {
+  background: linear-gradient(90deg, #1a4a1a, #4aff7a);
+}
+
+.main-res-value {
   font-family: 'Cinzel', serif;
-  font-size: 0.42rem;
-  color: #fff;
+  font-size: 0.55rem;
+  color: var(--text);
   white-space: nowrap;
   flex-shrink: 0;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
-/* Mana-Bar: nur Label + großer Wert */
-.ms-bar__over--mana {
-  left: 38%;
-  flex-direction: column;
-  gap: 0;
-  justify-content: center;
-  align-items: flex-start;
+.main-res-value--mana {
+  color: var(--gold);
 }
 
-.ms-bar__mana-lbl {
-  font-family: 'Cinzel', serif;
-  font-size: 0.4rem;
-  color: rgba(200,180,140,0.8);
-  letter-spacing: 0.06em;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-}
+/* ── Info-Banner ─────────────────────────────────────────────── */
 
-.ms-bar__mana-val {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  color: #f0d080;
-  letter-spacing: 0.08em;
-  text-shadow: 0 0 8px rgba(240,208,128,0.4), 0 1px 3px rgba(0,0,0,0.9);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   INFO-PANEL
-═══════════════════════════════════════════════════════════════ */
-
-.ms-info {
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.ms-info__frame {
-  width: 100%;
-  height: 38px;
-  object-fit: fill;
-  display: block;
-}
-
-.ms-info__text {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 17%;
-  right: 5%;
+.main-infobanner {
   display: flex;
   align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(201, 168, 76, 0.06);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.main-infobanner__icon {
+  color: var(--gold-dark);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.main-infobanner__text {
   font-family: 'EB Garamond', serif;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--text);
-  opacity: 0.9;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  animation: ms-info-in 0.4s ease;
-  pointer-events: none;
+  opacity: 0.8;
+  animation: banner-fade 0.6s ease;
 }
 
-@keyframes ms-info-in {
-  from { opacity: 0; }
-  to   { opacity: 0.9; }
+@keyframes banner-fade {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 0.8; transform: translateY(0); }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HAUPTINHALT: Karte + Panel
-═══════════════════════════════════════════════════════════════ */
+.main-infobanner--live {
+  background: rgba(124,77,255,0.07);
+  border-bottom-color: rgba(124,77,255,0.25);
+}
 
-.ms-content {
-  flex: 0 0 auto;
+.main-infobanner__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a88aff;
+  flex-shrink: 0;
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── Hauptkarte ──────────────────────────────────────────────── */
+
+.main-card {
   display: flex;
-  min-height: 280px;
-}
-
-/* ── Charakter-Karte (links) ── */
-
-.ms-card {
-  flex: 0 0 56%;
-  aspect-ratio: 1072 / 1448;
-  position: relative;
+  gap: 0;
+  margin: 8px 10px;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   overflow: hidden;
-  cursor: pointer;
-  background: #050305;
-  align-self: flex-start;
+  flex-shrink: 0;
 }
 
-.ms-card__art {
+.main-card__profile {
+  flex: 0 0 44%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 6px;
+  border-right: 1px solid var(--border);
+}
+
+.main-profile-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Card frame — full portrait, no height cap */
+.main-profile-frame__card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border: 2px solid var(--gold-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0d0810;
+  box-shadow: 0 0 16px rgba(0,0,0,0.6);
+}
+
+.main-profile-frame__img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  display: block;
-  transition: transform 0.35s ease;
 }
 
-.ms-card:active .ms-card__art {
-  transform: scale(1.03);
-}
-
-.ms-card__frame {
+.main-profile-frame__overlay {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  display: block;
-  pointer-events: none;
-  z-index: 2;
+  bottom: 0; left: 0; right: 0;
+  padding: 24px 8px 8px;
+  background: linear-gradient(to top, rgba(8,5,10,0.95) 0%, transparent 100%);
 }
 
-.ms-card__footer {
-  position: absolute;
-  bottom: 10%;
-  left: 6%;
-  right: 6%;
-  z-index: 3;
-  text-align: center;
-  pointer-events: none;
-}
-
-.ms-card__name {
+.main-profile-frame__card-name {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
   font-size: 0.6rem;
   color: var(--gold-bright);
-  text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,1);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(0,0,0,0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.ms-card__title {
+.main-profile-frame__card-title {
   font-family: 'EB Garamond', serif;
   font-size: 0.5rem;
   color: rgba(240,208,128,0.7);
-  text-shadow: 0 0 8px rgba(0,0,0,1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ── Rechtes Panel ── */
+.main-profile-frame__num {
+  position: absolute;
+  top: 5px; left: 7px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: rgba(240,208,128,0.85);
+  text-shadow: 0 1px 4px #000;
+}
 
-.ms-panel {
+.main-profile-frame__compass {
+  position: absolute;
+  top: 4px; right: 7px;
+  font-size: 0.7rem;
+  color: rgba(240,208,128,0.6);
+}
+
+
+.main-card__right {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px 6px 4px;
+  padding: 8px;
   gap: 6px;
-  background: linear-gradient(180deg, #0e0810 0%, #08050a 100%);
-  border-left: 1px solid #2a1a22;
 }
 
-/* Runde Buttons: Relics + Updates */
-.ms-panel__btns {
-  display: flex;
-  gap: 4px;
-  justify-content: space-around;
-  flex-shrink: 0;
-}
-
-.ms-rbtn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+.main-card__action-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  background: rgba(42, 26, 34, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 8px;
   cursor: pointer;
-  flex: 1;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ms-rbtn__wrap {
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
   position: relative;
 }
 
-.ms-rbtn__img {
-  width: 100%;
-  max-width: 78px;
-  height: auto;
-  display: block;
-  transition: transform 0.15s, filter 0.15s;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+.main-card__action-btn:active {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: var(--gold-dark);
 }
 
-.ms-rbtn:active .ms-rbtn__img {
-  transform: scale(0.93);
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.4)) brightness(1.15);
-}
-
-.ms-rbtn__lbl {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.05em;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.ms-rbtn__badge {
+.main-card__badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
   background: #c0392b;
   color: #fff;
   font-family: 'Cinzel', serif;
   font-size: 0.55rem;
-  font-weight: bold;
-  min-width: 18px;
+  width: 18px;
   height: 18px;
-  border-radius: 9px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 3px;
-  box-shadow: 0 0 6px rgba(192,57,43,0.7);
-  z-index: 5;
 }
 
-/* Profil / Status-Block */
-.ms-status {
-  flex: 1;
+.main-card__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.main-card__status {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-height: 0;
+  gap: 3px;
 }
 
-.ms-status__hdr {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.ms-status__hdr img {
-  width: 100%;
-  height: 30px;
-  object-fit: fill;
-  display: block;
-}
-
-.ms-status__hdr-txt {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.main-card__status-title {
   font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  color: #f0d080;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 10px rgba(240,208,128,0.4);
-  pointer-events: none;
-}
-
-.ms-stat-row {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.ms-stat-row__frame {
-  width: 100%;
-  height: 44px;
-  object-fit: fill;
-  display: block;
-}
-
-.ms-stat-row__over {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 22%;   /* nach dem Icon (Schwerter / Schild) */
-  right: 4%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px;
-  pointer-events: none;
-}
-
-.ms-stat-row__lbl {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.68rem;
-  color: rgba(50,30,20,0.9);
-}
-
-.ms-stat-row__val {
-  font-family: 'Cinzel', serif;
-  font-size: 0.78rem;
-  color: #1a0a08;
-  font-weight: bold;
-  text-shadow: none;
-}
-
-/* Level / Tränke (klein) */
-.ms-panel__lv {
-  font-family: 'Cinzel', serif;
-  font-size: 0.45rem;
+  font-size: 0.6rem;
   color: var(--gold-dark);
-  text-align: center;
-  letter-spacing: 0.08em;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   BOTTOM: Message-Box + NPC + Banner
-═══════════════════════════════════════════════════════════════ */
-
-.ms-bottom {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Message-Box */
-.ms-message {
-  position: relative;
-  overflow: visible;
-}
-
-.ms-message__frame {
-  width: 100%;
-  height: 72px;
-  object-fit: fill;
-  display: block;
-}
-
-.ms-message__text {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 5%;
-  right: 22%;   /* Platz für NPC */
-  display: flex;
-  align-items: center;
-  font-family: 'EB Garamond', serif;
-  font-size: 0.75rem;
-  color: var(--text);
-  opacity: 0.9;
-  line-height: 1.35;
-  animation: ms-tip-in 0.5s ease;
-  pointer-events: none;
-}
-
-@keyframes ms-tip-in {
-  from { opacity: 0; }
-  to   { opacity: 0.9; }
-}
-
-.ms-message__npc {
-  position: absolute;
-  right: -2px;
-  bottom: 0;
-  height: 110px;
-  width: auto;
-  object-fit: contain;
-  object-position: bottom;
-  pointer-events: none;
-  z-index: 5;
-  animation: ms-npc-in 0.5s ease;
-}
-
-@keyframes ms-npc-in {
-  from { opacity: 0; transform: translateX(10px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* Mini-Profil im rechten Panel */
-.ms-profile-mini {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  min-height: 80px;
-  border-radius: 3px;
-}
-
-.ms-profile-mini__art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-}
-
-.ms-profile-mini__frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.ms-profile-mini__footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  padding: 16px 6px 8px;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  pointer-events: none;
-}
-
-.ms-profile-mini__name {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 0.55rem;
-  color: var(--gold-bright);
-  text-shadow: 0 0 8px rgba(0,0,0,1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ms-profile-mini__lv {
-  font-family: 'Cinzel', serif;
-  font-size: 0.45rem;
-  color: var(--gold-dark);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Section-Banner mit Charakter-Art */
-.ms-banner {
-  position: relative;
-  height: 90px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.ms-banner__bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center 20%;
-  z-index: 0;
-}
-
-.ms-banner__dim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%);
-  z-index: 1;
-}
-
-.ms-banner__content {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0 20px;
-  gap: 1px;
-}
-
-.ms-banner__event {
-  font-family: 'Cinzel', serif;
-  font-size: 0.42rem;
-  color: rgba(240,208,128,0.85);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.ms-banner__cname {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 1.1rem;
-  color: #f0d080;
-  text-shadow: 0 0 20px rgba(255,80,0,0.65), 0 2px 6px rgba(0,0,0,1);
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+.main-card__status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.ms-banner__rarity {
+.main-card__status-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.main-card__status-value {
   font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  color: #ff8844;
-  letter-spacing: 0.12em;
-  text-shadow: 0 0 10px rgba(255,80,0,0.5);
+  font-size: 0.7rem;
+  color: var(--gold-bright);
 }
 
-.ms-banner__frame {
+/* ── Tipp-Bereich ────────────────────────────────────────────── */
+
+.main-tip {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 0 10px 4px;
+  padding: 6px 8px;
+  background: rgba(19, 13, 16, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  min-height: 50px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.main-tip__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.8;
+  flex: 1;
+  padding-right: 60px;
+  line-height: 1.4;
+}
+
+.main-tip__npc {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  z-index: 3;
+  right: -8px;
+  bottom: 0;
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom;
+  opacity: 0.5;
   pointer-events: none;
+}
+
+/* ── Trenner ─────────────────────────────────────────────────── */
+
+.main-divider {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: var(--gold-dark);
+  text-align: center;
+  letter-spacing: 0.15em;
+  padding: 4px 0;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+/* ── Bottom Navigation ───────────────────────────────────────── */
+
+.main-nav {
+  display: flex;
+  align-items: stretch;
+  border-top: 2px solid var(--gold-dark);
+  background: var(--bg-mid);
+  flex-shrink: 0;
+}
+
+.main-nav__btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s;
+  position: relative;
+}
+
+.main-nav__btn:last-child {
+  border-right: none;
+}
+
+.main-nav__btn:active {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.main-nav__btn--center {
+  background: rgba(201, 168, 76, 0.06);
+  flex: 1.3;
+}
+
+.main-nav__btn--center .main-nav__icon {
+  font-size: 1.3rem;
+}
+
+.main-nav__icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.main-nav__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-dark);
+  text-transform: uppercase;
+}
+
+.main-nav__badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: #c0392b;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
