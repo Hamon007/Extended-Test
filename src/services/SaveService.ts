@@ -258,9 +258,17 @@ async function downloadSave(): Promise<boolean> {
     anyChanged = true;
   }
 
-  // ── Energy / Quests: prefer cloud if present ──────────────────
-  if (cloud.energy) { persist(KEYS.energy, cloud.energy); anyChanged = true; }
-  if (cloud.quests) { persist(KEYS.quests, cloud.quests); anyChanged = true; }
+  // ── Energy / Quests: prefer cloud only if actually different ─────
+  const localEnergyRaw = localStorage.getItem(KEYS.energy);
+  if (cloud.energy && JSON.stringify(cloud.energy) !== localEnergyRaw) {
+    persist(KEYS.energy, cloud.energy);
+    anyChanged = true;
+  }
+  const localQuestsRaw = localStorage.getItem(KEYS.quests);
+  if (cloud.quests && JSON.stringify(cloud.quests) !== localQuestsRaw) {
+    persist(KEYS.quests, cloud.quests);
+    anyChanged = true;
+  }
 
   // ── WinStreak: take max ───────────────────────────────────────
   const cloudStreak = cloud.winStreak ?? 0;
