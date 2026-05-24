@@ -103,9 +103,9 @@ function loadGachaState(): GachaState {
     : [];
 
   return {
-    crystals:     STARTING_CRYSTALS, // Alpha: immer volle Kristalle beim Laden
-    pityCounter:  saved.pityCounter ?? 0,
-    totalPulls:   saved.totalPulls  ?? 0,
+    crystals:     saved.crystals     ?? STARTING_CRYSTALS,
+    pityCounter:  saved.pityCounter  ?? 0,
+    totalPulls:   saved.totalPulls   ?? 0,
     inventory,
     crystalCards: saved.crystalCards ?? { ...STARTING_CRYSTAL_CARDS },
   };
