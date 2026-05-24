@@ -28,6 +28,12 @@ const TIPS = [
 
 const B = import.meta.env.BASE_URL;
 
+const NPC_IMAGES = [
+  `${B}assets/cards/azazel.webp`,
+  `${B}assets/cards/azgaroth.webp`,
+  `${B}assets/cards/satan.webp`,
+];
+
 const BATTLE_HOURS = [0, 7, 14, 21];
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
@@ -69,6 +75,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [detailCard,    setDetailCard]    = useState<Card | null>(null);
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
+  const [npcIndex,      setNpcIndex]      = useState(0);
   const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
   const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
   const [energy,        setEnergy]        = useState(() => EnergyService.load());
@@ -88,6 +95,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   // Tipp-Rotation alle 6s
   useEffect(() => {
     const id = setInterval(() => setTipIndex(i => (i + 1) % TIPS.length), 6000);
+    return () => clearInterval(id);
+  }, []);
+
+  // NPC-Rotation alle 5s
+  useEffect(() => {
+    const id = setInterval(() => setNpcIndex(i => (i + 1) % NPC_IMAGES.length), 5000);
     return () => clearInterval(id);
   }, []);
 
@@ -316,10 +329,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
       <div className="main-tip">
         <span className="main-tip__text">{TIPS[tipIndex]}</span>
         <img
+          key={npcIndex}
           className="main-tip__npc"
-          src={`${B}assets/ui/guide.png`}
+          src={NPC_IMAGES[npcIndex]}
           alt="NPC"
-          draggable={false}
         />
       </div>
 
