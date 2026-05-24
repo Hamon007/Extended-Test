@@ -60,28 +60,28 @@ const App: React.FC = () => {
     EnemyDatabase.init();
     SaveService.updateLastLogin();
 
-    // Init auth, sync cloud save, then apply pending trade card swaps
-    AuthService.init().then(async () => {
-      if (AuthService.isLoggedIn) {
-        const wasNewer = await SaveService.downloadSave();
-        if (wasNewer) { window.location.reload(); return; }
-        const gs = SaveService.loadGachaState();
-        const { state, processed } = await TradeService.processCompletedListings(gs);
-        if (processed > 0) SaveService.saveGachaState(state);
-      }
+    let syncDone = false;
+
+    const runSync = async () => {
+      if (syncDone) return;
+      syncDone = true;
+      const wasNewer = await SaveService.downloadSave();
+      if (wasNewer) { window.location.reload(); return; }
+      const gs = SaveService.loadGachaState();
+      const { state, processed } = await TradeService.processCompletedListings(gs);
+      if (processed > 0) SaveService.saveGachaState(state);
+    };
+
+    // Sync on startup if already logged in
+    AuthService.init().then(() => {
+      if (AuthService.isLoggedIn) void runSync();
     });
 
-    // Also sync when user logs in mid-session via AuthModal
+    // Sync when user logs in mid-session via AuthModal (only fires for new logins)
     let prevLoggedIn = AuthService.isLoggedIn;
-    const unsub = AuthService.subscribe(async user => {
+    const unsub = AuthService.subscribe(user => {
       const nowLoggedIn = user !== null;
-      if (!prevLoggedIn && nowLoggedIn) {
-        const wasNewer = await SaveService.downloadSave();
-        if (wasNewer) { window.location.reload(); return; }
-        const gs = SaveService.loadGachaState();
-        const { state, processed } = await TradeService.processCompletedListings(gs);
-        if (processed > 0) SaveService.saveGachaState(state);
-      }
+      if (!prevLoggedIn && nowLoggedIn) void runSync();
       prevLoggedIn = nowLoggedIn;
     });
 

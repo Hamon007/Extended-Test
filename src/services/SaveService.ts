@@ -258,17 +258,11 @@ async function downloadSave(): Promise<boolean> {
     anyChanged = true;
   }
 
-  // ── Energy / Quests: prefer cloud only if actually different ─────
-  const localEnergyRaw = localStorage.getItem(KEYS.energy);
-  if (cloud.energy && JSON.stringify(cloud.energy) !== localEnergyRaw) {
-    persist(KEYS.energy, cloud.energy);
-    anyChanged = true;
-  }
-  const localQuestsRaw = localStorage.getItem(KEYS.quests);
-  if (cloud.quests && JSON.stringify(cloud.quests) !== localQuestsRaw) {
-    persist(KEYS.quests, cloud.quests);
-    anyChanged = true;
-  }
+  // ── Energy / Quests: silent sync — never trigger reload ──────────
+  // (Supabase JSONB can reorder keys, making JSON comparison unreliable.
+  //  These fields are read fresh on every screen mount so no reload needed.)
+  if (cloud.energy) persist(KEYS.energy, cloud.energy);
+  if (cloud.quests) persist(KEYS.quests, cloud.quests);
 
   // ── WinStreak: take max ───────────────────────────────────────
   const cloudStreak = cloud.winStreak ?? 0;
