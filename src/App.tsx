@@ -34,6 +34,16 @@ const NO_NAV_SCREENS: Screen[] = ['title'];
 
 // ── App ───────────────────────────────────────────────────────
 
+const B = import.meta.env.BASE_URL;
+
+const NAV_ITEMS = [
+  { key: 'main',     img: `${B}assets/nav/nav-1-stronghold.png`, label: 'Festung',   action: 'home'     },
+  { key: 'gacha',    img: `${B}assets/nav/nav-2-conjure.png`,    label: 'Beschwören', action: 'gacha'    },
+  { key: 'quests',   img: `${B}assets/nav/nav-3-quest.png`,      label: 'Quests',    action: 'quests'   },
+  { key: 'fusion',   img: `${B}assets/nav/nav-4-sacrifice.png`,  label: 'Fusion',    action: 'fusion'   },
+  { key: 'menu',     img: `${B}assets/nav/nav-5-menu.png`,       label: 'Menü',      action: 'menu'     },
+] as const;
+
 const App: React.FC = () => {
   const [ready,            setReady]            = useState(false);
   const [stack,            setStack]            = useState<Screen[]>(
@@ -183,31 +193,32 @@ const App: React.FC = () => {
       {/* ── Globale Bottom-Navigation ── */}
       {showNav && (
         <nav className="app-nav">
-          <button className={`app-nav__btn${screen === 'main' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => { setStack(['title', 'main']); }}>
-            <span className="app-nav__icon">🏰</span>
-            <span className="app-nav__label">Festung</span>
-          </button>
-          <button className={`app-nav__btn${screen === 'gacha' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('gacha')}>
-            <span className="app-nav__icon">🔮</span>
-            <span className="app-nav__label">Beschwören</span>
-          </button>
-          <button className={`app-nav__btn${screen === 'quests' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('quests')}>
-            <span className="app-nav__icon">⚔️</span>
-            <span className="app-nav__label">Quests</span>
-          </button>
-          <button className={`app-nav__btn${screen === 'fusion' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('fusion')}>
-            <span className="app-nav__icon">🔱</span>
-            <span className="app-nav__label">Fusion</span>
-          </button>
-          <button className={`app-nav__btn${screen === 'menu' || screen === 'cardCollection' || screen === 'guild' ? ' app-nav__btn--active' : ''}`}
-            onClick={() => navTo('menu')}>
-            <span className="app-nav__icon">☰</span>
-            <span className="app-nav__label">Menü</span>
-          </button>
+          {NAV_ITEMS.map(item => {
+            const isActive =
+              item.key === 'main'
+                ? screen === 'main'
+                : item.key === 'menu'
+                ? screen === 'menu' || screen === 'cardCollection' || screen === 'guild'
+                : screen === item.key;
+            return (
+              <button
+                key={item.key}
+                className={`app-nav__btn${isActive ? ' app-nav__btn--active' : ''}`}
+                onClick={() => {
+                  if (item.action === 'home') setStack(['title', 'main']);
+                  else navTo(item.action);
+                }}
+              >
+                <img
+                  src={item.img}
+                  alt={item.label}
+                  className="app-nav__img"
+                  draggable={false}
+                />
+                <span className="app-nav__label">{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       )}
     </div>

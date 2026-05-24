@@ -55,8 +55,10 @@
 .app-nav {
   flex-shrink: 0;
   display: flex;
-  background: linear-gradient(180deg, #150d12, #0e0810);
-  border-top: 2px solid #8a6520;
+  align-items: flex-end;
+  background: linear-gradient(180deg, #120a0f 0%, #08050a 100%);
+  border-top: 1px solid #3a2030;
+  padding: 4px 0 8px;
 }
 
 .app-nav__btn {
@@ -64,31 +66,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 8px 4px 12px;
+  gap: 2px;
+  padding: 4px 2px 0;
   background: none;
   border: none;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: transform 0.18s ease;
   border-radius: 0;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
-.app-nav__btn:active { background: rgba(201,168,76,0.08); }
+.app-nav__btn:active { transform: scale(0.92); }
 
-.app-nav__btn--active {
-  background: rgba(201,168,76,0.06);
-  border-top: 2px solid #c9a84c;
-  margin-top: -2px;
+.app-nav__img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: grayscale(0.35) brightness(0.6) drop-shadow(0 0 0px transparent);
+  transition: filter 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  user-select: none;
 }
 
-.app-nav__icon  { font-size: 22px; }
+.app-nav__btn--active .app-nav__img {
+  filter: grayscale(0) brightness(1) drop-shadow(0 0 8px rgba(201,168,76,0.55));
+  transform: scale(1.12) translateY(-3px);
+}
 
 .app-nav__label {
   font-family: 'Cinzel', serif;
-  font-size: 8px;
-  color: #8a6520;
-  letter-spacing: 1px;
+  font-size: 7px;
+  color: #5a3a48;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: color 0.2s;
 }
 
 .app-nav__btn--active .app-nav__label { color: #c9a84c; }
