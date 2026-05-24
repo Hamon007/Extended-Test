@@ -202,7 +202,7 @@ async function uploadSave(): Promise<void> {
   if (error) console.warn('[SaveService] Cloud-Upload fehlgeschlagen:', error.message);
 }
 
-/** Returns true if cloud data was newer and applied (page reload needed). */
+/** Merges cloud and local data, uploads merged result, returns true if local state changed. */
 async function downloadSave(): Promise<boolean> {
   if (!supabase || !AuthService.isLoggedIn) return false;
   const userId = AuthService.user!.id;
@@ -211,45 +211,76 @@ async function downloadSave(): Promise<boolean> {
     .select('data')
     .eq('user_id', userId)
     .maybeSingle();
-  if (error || !row?.data) {
-    // No cloud save yet — upload local data
+
+  if (error) {
+    console.warn('[SaveService] Download fehlgeschlagen:', error.message);
+    return false;
+  }
+  if (!row?.data) {
     await uploadSave();
     return false;
   }
-  const cloud = row.data as CloudSave;
-  const localTs   = retrieve<number>(KEYS.savedAt) ?? 0;
+
+  const cloud    = row.data as CloudSave;
+  let anyChanged = false;
+
+  // ── Core (gacha / deck / account): more cards wins, else newer wins ──
+  const localTs    = retrieve<number>(KEYS.savedAt) ?? 0;
   const localCards = retrieve<GachaState>(KEYS.gacha)?.inventory?.length ?? 0;
   const cloudCards = cloud.gacha?.inventory?.length ?? 0;
+  const useCloud   = cloudCards > localCards || (cloud.savedAt > localTs && cloudCards >= localCards);
 
-  // Local has real cards but cloud is empty → always prefer local
-  if (localCards > 0 && cloudCards === 0) {
-    await uploadSave();
-    return false;
+  if (useCloud) {
+    if (cloud.gacha)   { persist(KEYS.gacha, cloud.gacha);     anyChanged = true; }
+    if (cloud.deck)    { persist(KEYS.deck, cloud.deck);       anyChanged = true; }
+    if (cloud.account) { persist(KEYS.account, cloud.account); anyChanged = true; }
   }
 
-  if (cloud.savedAt > localTs) {
-    if (cloud.gacha)   persist(KEYS.gacha, cloud.gacha);
-    if (cloud.deck)    persist(KEYS.deck, cloud.deck);
-    if (cloud.account) persist(KEYS.account, cloud.account);
-    if (cloud.guild)   persist(KEYS.guild, cloud.guild);
-    if (cloud.energy)  persist(KEYS.energy, cloud.energy);
-    if (cloud.quests)  persist(KEYS.quests, cloud.quests);
-    if (cloud.tower) {
-      localStorage.setItem(KEYS.towerFloor,   String(cloud.tower.floor));
-      localStorage.setItem(KEYS.towerHighest, String(cloud.tower.highestFloor));
-    }
-    if (cloud.winStreak !== undefined) localStorage.setItem(KEYS.winStreak, String(cloud.winStreak));
-    if (cloud.profileCardId) localStorage.setItem(KEYS.profileCardId, cloud.profileCardId);
-    persist(KEYS.savedAt, cloud.savedAt);
-    console.log('[SaveService] Cloud-Spielstand geladen (neuer als lokal).');
-    // Upload immediately so any local-only fields (guild/tower from older saves)
-    // are merged into the cloud before the page reloads.
-    await uploadSave();
-    return true;
+  // ── Guild: take whichever has more guildXp ────────────────────
+  const cloudGuild = cloud.guild as { guildXp?: number } | null | undefined;
+  const localGuild = retrieve<{ guildXp?: number }>(KEYS.guild);
+  if (cloudGuild && (cloudGuild.guildXp ?? 0) > (localGuild?.guildXp ?? 0)) {
+    persist(KEYS.guild, cloudGuild);
+    anyChanged = true;
   }
-  // Local is newer or same — push to cloud
+
+  // ── Tower: take highest floor ──────────────────────────────────
+  const cloudHighest = cloud.tower?.highestFloor ?? 1;
+  const localHighest = parseInt(localStorage.getItem(KEYS.towerHighest) ?? '1', 10);
+  if (cloudHighest > localHighest) {
+    localStorage.setItem(KEYS.towerHighest, String(cloudHighest));
+    anyChanged = true;
+  }
+  const cloudFloor = cloud.tower?.floor ?? 1;
+  const localFloor = parseInt(localStorage.getItem(KEYS.towerFloor) ?? '1', 10);
+  if (cloudFloor > localFloor) {
+    localStorage.setItem(KEYS.towerFloor, String(cloudFloor));
+    anyChanged = true;
+  }
+
+  // ── Energy / Quests: prefer cloud if present ──────────────────
+  if (cloud.energy) { persist(KEYS.energy, cloud.energy); anyChanged = true; }
+  if (cloud.quests) { persist(KEYS.quests, cloud.quests); anyChanged = true; }
+
+  // ── WinStreak: take max ───────────────────────────────────────
+  const cloudStreak = cloud.winStreak ?? 0;
+  const localStreak = parseInt(localStorage.getItem(KEYS.winStreak) ?? '0', 10);
+  if (cloudStreak > localStreak) {
+    localStorage.setItem(KEYS.winStreak, String(cloudStreak));
+    anyChanged = true;
+  }
+
+  // ── Profile card: prefer cloud if local is not set ────────────
+  if (cloud.profileCardId && !localStorage.getItem(KEYS.profileCardId)) {
+    localStorage.setItem(KEYS.profileCardId, cloud.profileCardId);
+    anyChanged = true;
+  }
+
+  // Upload merged state (pushes any local-only fields like guild/tower to cloud)
   await uploadSave();
-  return false;
+
+  if (anyChanged) console.log('[SaveService] Sync: Cloud-Daten übernommen.');
+  return anyChanged;
 }
 
 // ── Debug: kompletten State zurücksetzen ──────────────────────

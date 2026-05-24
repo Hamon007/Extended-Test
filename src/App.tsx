@@ -126,6 +126,7 @@ const App: React.FC = () => {
   };
 
   const handleMenuNav = (target: string) => {
+    if (target === 'main')        { setStack(['title', 'main']); return; }
     if (target === 'cardCollection') goTo('cardCollection');
     if (target === 'deck') goTo('deck');
     if (target === 'fusion') goTo('fusion');
