@@ -335,13 +335,14 @@ function playPlayerCard(
   const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * awakeningMult * superMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
-  const handWithoutCard = state.player.hand.filter((_, i) => i !== cardIdx);
-  const drawCount       = Math.max(0, HAND_LIMIT - handWithoutCard.length);
-  const drawn           = state.player.deck.slice(0, drawCount);
-  const newHand         = [...handWithoutCard, ...drawn];
-  const newDeck         = state.player.deck.slice(drawCount);
+  // Karte in der Hand als gespielt markieren (bleibt sichtbar mit ✓-Overlay).
+  // Karten werden NICHT entfernt — das Deck bleibt diese Runde intakt.
+  // resolveRoundEnd() recycelt am Rundenende die gesamte Hand + Deck.
+  const newHand = state.player.hand.map((c, i) =>
+    i === cardIdx ? { ...c, played: true } : c,
+  );
 
-  let newPlayer = spendMP({ ...state.player, hand: newHand, deck: newDeck }, card.mpCost);
+  let newPlayer = spendMP({ ...state.player, hand: newHand }, card.mpCost);
   let newEnemy  = applyDamage(state.enemy, damage);
 
   // Mirror-Modus: 40% Rückschlag auf den Spieler
