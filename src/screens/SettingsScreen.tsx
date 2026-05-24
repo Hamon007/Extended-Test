@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DevModeService } from '../services/DevModeService';
 import './SettingsScreen.css';
 
+
 interface Props { onBack: () => void; }
 
 const SettingsScreen: React.FC<Props> = ({ onBack }) => {
@@ -94,6 +95,20 @@ const SettingsScreen: React.FC<Props> = ({ onBack }) => {
               {error && (
                 <div className="settings-password-error">Falsches Passwort.</div>
               )}
+            </div>
+          )}
+        {/* ── Dev-Aktionen ── */}
+          {devEnabled && (
+            <div className="settings-dev-actions">
+              <button
+                className="settings-dev-action-btn"
+                onClick={() => {
+                  const n = DevModeService.unlockAllCards();
+                  showToast(n > 0 ? `${n} Karten freigeschaltet!` : 'Alle Karten bereits vorhanden.');
+                }}
+              >
+                🃏 Alle Karten freischalten
+              </button>
             </div>
           )}
         </section>

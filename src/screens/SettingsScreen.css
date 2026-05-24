@@ -114,3 +114,26 @@
   font-family: 'Cinzel', serif; font-size: 0.6rem;
   color: #ef9a9a; letter-spacing: 0.05em;
 }
+
+.settings-dev-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.settings-dev-action-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: #1a0d12;
+  background: linear-gradient(135deg, #c9a84c, #f0d080);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  text-align: left;
+  transition: opacity 0.15s;
+}
+.settings-dev-action-btn:active { opacity: 0.75; }
