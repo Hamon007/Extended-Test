@@ -1,4 +1,4 @@
-/* ── MainScreen — Mobile-Ignite-Layout ───────────────────────── */
+/* ── MainScreen — Asset-Layout ───────────────────────────────── */
 
 .main-screen {
   position: relative;
@@ -6,184 +6,264 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg-deep);
+  background: #08050a;
   overflow: hidden;
   color: var(--text);
 }
 
-/* ── Kompakter Header (2 Zeilen) ─────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════════════ */
 
 .ms-header {
   flex-shrink: 0;
-  background: linear-gradient(180deg, #1a0e16 0%, #0e0810 100%);
-  border-bottom: 1px solid #3a2030;
+  position: relative;
+  background: linear-gradient(180deg, #0e0810 0%, #0a0608 100%);
+  border-bottom: 1px solid #2a1a22;
 }
 
-.ms-header__r1,
-.ms-header__r2 {
-  display: flex;
-  align-items: center;
-  padding: 4px 6px;
-  gap: 5px;
-  min-height: 26px;
+/* ── Timer-Crest (absolut zentriert, z-index 15) ── */
+
+.ms-crest {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  z-index: 15;
+  pointer-events: none;
 }
 
-.ms-header__r1 { border-bottom: 1px solid rgba(58,32,48,0.5); }
-
-/* Buttons */
-.ms-btn {
-  background: rgba(42,26,34,0.7);
-  border: 1px solid #3a2030;
-  border-radius: 3px;
-  cursor: pointer;
-  color: var(--gold);
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: border-color 0.15s;
-  -webkit-tap-highlight-color: transparent;
+.ms-crest__frame {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.ms-btn--back {
-  font-size: 0.6rem;
-  padding: 3px 8px;
-}
-
-.ms-btn--back:active { border-color: var(--gold-dark); }
-
-.ms-btn--reload {
-  font-size: 0.9rem;
-  padding: 2px 7px;
-  line-height: 1;
-  border: none;
-  background: transparent;
-  color: var(--gold-dark);
-}
-
-.ms-btn--reload:active { color: var(--gold); }
-
-/* Ressourcen-Block (Stamina / EXP) */
-.ms-res {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-}
-
-.ms-res--exp { flex-shrink: 1; min-width: 0; }
-
-.ms-res__icon {
-  font-size: 0.75rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.ms-res__lv {
-  font-family: 'Cinzel', serif;
-  font-size: 0.45rem;
-  color: var(--gold-dark);
-  white-space: nowrap;
-  flex-shrink: 0;
-  letter-spacing: 0.04em;
-}
-
-.ms-res__val {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  color: var(--text);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.ms-res__pct {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  color: #4aff7a;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Gem icon */
-.ms-gem {
-  font-size: 1rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* Timer */
-.ms-timer {
-  flex: 1;
+.ms-crest__text {
+  position: absolute;
+  /* Dark rectangle of the crest: vertically ~48-82%, horizontally ~8-92% */
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 0;
-  overflow: hidden;
+  justify-content: center;
+  gap: 1px;
 }
 
-.ms-timer__lbl {
+.ms-crest__lbl {
   font-family: 'Cinzel', serif;
-  font-size: 0.4rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.05em;
+  font-size: 0.42rem;
+  color: rgba(201,168,76,0.75);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.ms-timer__val {
+.ms-crest__val {
   font-family: 'Cinzel', serif;
-  font-size: 0.8rem;
-  color: var(--gold-bright);
-  letter-spacing: 0.12em;
-  text-shadow: 0 0 10px rgba(240,208,128,0.4);
+  font-size: 1.05rem;
+  color: #f0d080;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 12px rgba(240,208,128,0.5);
   white-space: nowrap;
 }
 
-/* Bars */
-.ms-bar {
-  height: 5px;
-  width: 50px;
-  background: rgba(42,26,34,0.8);
-  border: 1px solid #3a2030;
-  border-radius: 3px;
-  overflow: hidden;
-  flex-shrink: 0;
+/* ── Zeile 1: Back-Button | Spacer | Reload-Button ── */
+
+.ms-hr1 {
+  display: flex;
+  align-items: flex-start;
+  padding: 5px 5px 0;
+  position: relative;
+  z-index: 20;
 }
 
-.ms-bar--exp { width: 44px; }
-.ms-bar--mp  { flex: 1; min-width: 40px; max-width: 100px; width: auto; }
+.ms-hr1__spacer {
+  flex: 0 0 52%;
+}
+
+.ms-hbtn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: flex-start;
+}
+
+.ms-hbtn--back  { justify-content: flex-start; }
+.ms-hbtn--reload { justify-content: flex-end; }
+
+.ms-hbtn img {
+  height: 36px;
+  width: auto;
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.ms-hbtn:active img { opacity: 0.75; }
+
+/* ── Zeile 2: Linke Bars | Spacer | Rechte Bars ── */
+
+.ms-hr2 {
+  display: flex;
+  align-items: flex-start;
+  padding: 3px 5px 8px;
+  position: relative;
+  z-index: 5;
+}
+
+.ms-hr2__spacer {
+  flex: 0 0 52%;
+}
+
+.ms-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ── Bar-Frames ── */
+
+.ms-bar-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.ms-bar__frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 32px;
+}
+
+/* Overlay auf dem Bar-Frame: Label | Track | Wert */
+.ms-bar__over {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 32%;   /* nach dem Icon-Medallion */
+  right: 4%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.ms-bar__lbl {
+  font-family: 'Cinzel', serif;
+  font-size: 0.42rem;
+  color: rgba(200,180,140,0.9);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+.ms-bar__track {
+  flex: 1;
+  height: 5px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 0;
+}
 
 .ms-bar__fill {
   height: 100%;
   border-radius: 3px;
-  background: linear-gradient(90deg, #8a6520, var(--gold));
-  transition: width 0.4s ease;
+  transition: width 0.5s ease;
 }
 
-.ms-bar__fill--exp { background: linear-gradient(90deg, #1a4a1a, #4aff7a); }
-.ms-bar__fill--mp  { background: linear-gradient(90deg, #1a2a5a, #4a7aff); }
+.ms-bar__fill--sta { background: linear-gradient(90deg, #880000, #ff3030); }
+.ms-bar__fill--mp  { background: linear-gradient(90deg, #003388, #2277ff); }
+.ms-bar__fill--exp { background: linear-gradient(90deg, #440088, #9944ff); }
 
-/* Row-2 extras */
-.ms-spacer      { flex: 1; }
-
-.ms-mana-label {
+.ms-bar__val {
   font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  color: var(--gold-dark);
+  font-size: 0.42rem;
+  color: #fff;
   white-space: nowrap;
   flex-shrink: 0;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
-.ms-mana-val {
+/* Mana-Bar: nur Label + großer Wert */
+.ms-bar__over--mana {
+  left: 38%;
+  flex-direction: column;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.ms-bar__mana-lbl {
   font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  color: var(--gold-bright);
-  white-space: nowrap;
-  flex-shrink: 0;
-  text-shadow: 0 0 8px rgba(240,208,128,0.3);
+  font-size: 0.4rem;
+  color: rgba(200,180,140,0.8);
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
-/* ── Hauptinhalt ─────────────────────────────────────────────── */
+.ms-bar__mana-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: #f0d080;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(240,208,128,0.4), 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INFO-PANEL
+═══════════════════════════════════════════════════════════════ */
+
+.ms-info {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ms-info__frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 30px;
+}
+
+.ms-info__text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10%;
+  right: 5%;
+  display: flex;
+  align-items: center;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: var(--text);
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: ms-info-in 0.4s ease;
+  pointer-events: none;
+}
+
+@keyframes ms-info-in {
+  from { opacity: 0; }
+  to   { opacity: 0.9; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HAUPTINHALT: Karte + Panel
+═══════════════════════════════════════════════════════════════ */
 
 .ms-content {
   flex: 1;
@@ -192,115 +272,139 @@
   min-height: 0;
 }
 
-/* Portrait (linke ~58%) */
-.ms-portrait {
-  flex: 0 0 58%;
+/* ── Charakter-Karte (links) ── */
+
+.ms-card {
+  flex: 0 0 53%;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background: #08050a;
+  background: #050305;
 }
 
-.ms-portrait::after {
-  content: '';
+.ms-card__art {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 55%,
-    rgba(8,5,10,0.85) 100%
-  );
-  pointer-events: none;
-}
-
-.ms-portrait__img {
-  width: 100%;
-  height: 100%;
+  inset: 3% 4%;
+  width: 92%;
+  height: 94%;
   object-fit: cover;
   object-position: top center;
   display: block;
-  transition: transform 0.4s ease;
+  transition: transform 0.35s ease;
 }
 
-.ms-portrait:active .ms-portrait__img {
-  transform: scale(1.02);
+.ms-card:active .ms-card__art {
+  transform: scale(1.03);
 }
 
-.ms-portrait__footer {
+.ms-card__frame {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 24px 8px 8px;
-  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.ms-portrait__name {
+.ms-card__footer {
+  position: absolute;
+  bottom: 10%;
+  left: 6%;
+  right: 6%;
+  z-index: 3;
+  text-align: center;
+  pointer-events: none;
+}
+
+.ms-card__name {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--gold-bright);
-  letter-spacing: 0.05em;
   text-shadow: 0 0 10px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.ms-portrait__title {
+.ms-card__title {
   font-family: 'EB Garamond', serif;
-  font-size: 0.55rem;
-  color: rgba(240,208,128,0.75);
+  font-size: 0.5rem;
+  color: rgba(240,208,128,0.7);
   text-shadow: 0 0 8px rgba(0,0,0,1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Rechtes Panel */
+/* ── Rechtes Panel ── */
+
 .ms-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px 6px;
-  gap: 7px;
-  overflow-y: auto;
-  background: linear-gradient(180deg, #120a0f 0%, #0c0810 100%);
-  border-left: 1px solid #3a2030;
+  padding: 8px 6px 4px;
+  gap: 6px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0e0810 0%, #08050a 100%);
+  border-left: 1px solid #2a1a22;
 }
 
-.ms-panel__btn {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.05em;
-  color: var(--text);
-  background: linear-gradient(180deg, #2a1a22 0%, #1a0e16 100%);
-  border: 1px solid #4a2a38;
-  border-radius: 6px;
-  padding: 8px 10px;
+/* Runde Buttons: Relics + Updates */
+.ms-panel__btns {
+  display: flex;
+  gap: 4px;
+  justify-content: space-around;
+  flex-shrink: 0;
+}
+
+.ms-rbtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   cursor: pointer;
-  text-align: left;
-  position: relative;
-  transition: border-color 0.15s, background 0.15s;
+  flex: 1;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-.ms-panel__btn:active {
-  background: linear-gradient(180deg, #3a2030 0%, #2a1a22 100%);
-  border-color: var(--gold-dark);
+.ms-rbtn__wrap {
+  position: relative;
 }
 
-.ms-panel__btn--updates { margin-top: 0; }
+.ms-rbtn__img {
+  width: 100%;
+  max-width: 78px;
+  height: auto;
+  display: block;
+  transition: transform 0.15s, filter 0.15s;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+}
 
-.ms-badge {
+.ms-rbtn:active .ms-rbtn__img {
+  transform: scale(0.93);
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.4)) brightness(1.15);
+}
+
+.ms-rbtn__lbl {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.05em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ms-rbtn__badge {
   position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: -4px;
+  right: -4px;
   background: #c0392b;
   color: #fff;
   font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
+  font-size: 0.55rem;
+  font-weight: bold;
   min-width: 18px;
   height: 18px;
   border-radius: 9px;
@@ -308,150 +412,182 @@
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-  box-shadow: 0 0 6px rgba(192,57,43,0.6);
-}
-
-.ms-panel__divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #4a2a38, transparent);
-  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(192,57,43,0.7);
+  z-index: 5;
 }
 
 /* Status-Block */
 .ms-status {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-}
-
-.ms-status__title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border-bottom: 1px solid #3a2030;
-  padding-bottom: 4px;
-}
-
-.ms-status__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ms-status__label {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.7rem;
-  color: var(--text);
-  opacity: 0.7;
-}
-
-.ms-status__val {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  color: var(--gold-bright);
-  text-shadow: 0 0 6px rgba(240,208,128,0.3);
-}
-
-/* Live-Feed (kompakt im Panel) */
-.ms-feed {
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  padding: 5px 6px;
-  background: rgba(124,77,255,0.06);
-  border: 1px solid rgba(124,77,255,0.15);
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.ms-feed--hint {
-  background: rgba(42,26,34,0.4);
-  border-color: #3a2030;
-}
-
-.ms-feed__dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #a88aff;
-  flex-shrink: 0;
-  margin-top: 3px;
-  animation: ms-live-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes ms-live-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
-.ms-feed__text {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.65rem;
-  color: var(--text);
-  opacity: 0.8;
-  line-height: 1.4;
-  animation: ms-feed-in 0.4s ease;
-}
-
-@keyframes ms-feed-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to   { opacity: 0.8; transform: translateY(0); }
-}
-
-/* ── Tipp-Strip (unterhalb des Hauptbereichs) ────────────────── */
-
-.ms-tip {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  min-height: 48px;
-  padding: 5px 8px;
-  background: linear-gradient(180deg, #120a0f 0%, #0c0810 100%);
-  border-top: 1px solid #3a2030;
-  position: relative;
+  gap: 3px;
+  min-height: 0;
   overflow: hidden;
 }
 
-.ms-tip__text {
-  font-family: 'EB Garamond', serif;
-  font-size: 0.72rem;
-  color: var(--text);
-  opacity: 0.85;
-  flex: 1;
-  padding-right: 56px;
-  line-height: 1.4;
+.ms-status__hdr {
+  position: relative;
+  flex-shrink: 0;
 }
 
-.ms-tip__npc {
+.ms-status__hdr img {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 22px;
+}
+
+.ms-status__hdr-txt {
   position: absolute;
-  right: -4px;
-  bottom: 0;
-  height: 72px;
-  width: auto;
-  object-fit: contain;
-  object-position: bottom;
-  opacity: 0.55;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: #f0d080;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 10px rgba(240,208,128,0.4);
   pointer-events: none;
+}
+
+.ms-stat-row {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ms-stat-row__frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 28px;
+}
+
+.ms-stat-row__over {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 22%;   /* nach dem Icon (Schwerter / Schild) */
+  right: 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  pointer-events: none;
+}
+
+.ms-stat-row__lbl {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.68rem;
+  color: rgba(50,30,20,0.9);
+}
+
+.ms-stat-row__val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: #1a0a08;
+  font-weight: bold;
+  text-shadow: none;
+}
+
+/* Level / Tränke (klein) */
+.ms-panel__lv {
+  font-family: 'Cinzel', serif;
+  font-size: 0.45rem;
+  color: var(--gold-dark);
+  text-align: center;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOTTOM: Message-Box + NPC + Banner
+═══════════════════════════════════════════════════════════════ */
+
+.ms-bottom {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Message-Box */
+.ms-message {
+  position: relative;
+  overflow: visible;
+}
+
+.ms-message__frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 44px;
+}
+
+.ms-message__text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5%;
+  right: 22%;   /* Platz für NPC */
+  display: flex;
+  align-items: center;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.9;
+  line-height: 1.35;
   animation: ms-tip-in 0.5s ease;
+  pointer-events: none;
 }
 
 @keyframes ms-tip-in {
-  from { opacity: 0; transform: translateX(12px); }
-  to   { opacity: 0.55; transform: translateX(0); }
+  from { opacity: 0; }
+  to   { opacity: 0.9; }
 }
 
-.ms-tip__brand {
+.ms-message__npc {
   position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: -2px;
+  bottom: 0;
+  height: 110px;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom;
+  pointer-events: none;
+  z-index: 5;
+  animation: ms-npc-in 0.5s ease;
+}
+
+@keyframes ms-npc-in {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Section-Banner */
+.ms-banner {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ms-banner__frame {
+  width: 100%;
+  height: auto;
+  display: block;
+  min-height: 28px;
+}
+
+.ms-banner__txt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: 'Cinzel', serif;
-  font-size: 0.42rem;
-  color: var(--gold-dark);
-  letter-spacing: 0.2em;
-  opacity: 0.5;
-  white-space: nowrap;
+  font-size: 0.6rem;
+  color: rgba(30,15,10,0.85);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
   pointer-events: none;
 }

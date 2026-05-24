@@ -37,11 +37,11 @@ const NO_NAV_SCREENS: Screen[] = ['title'];
 const B = import.meta.env.BASE_URL;
 
 const NAV_ITEMS = [
-  { key: 'main',     img: `${B}assets/nav/nav-1-stronghold.png`, label: 'Festung',   action: 'home'     },
-  { key: 'gacha',    img: `${B}assets/nav/nav-2-conjure.png`,    label: 'Beschwören', action: 'gacha'    },
-  { key: 'quests',   img: `${B}assets/nav/nav-3-quest.png`,      label: 'Quests',    action: 'quests'   },
-  { key: 'fusion',   img: `${B}assets/nav/nav-4-sacrifice.png`,  label: 'Fusion',    action: 'fusion'   },
-  { key: 'menu',     img: `${B}assets/nav/nav-5-menu.png`,       label: 'Menü',      action: 'menu'     },
+  { key: 'guild',  img: `${B}assets/nav/nav-1-stronghold.png`, label: 'Festung',    action: 'guild'  },
+  { key: 'gacha',  img: `${B}assets/nav/nav-2-conjure.png`,    label: 'Beschwören', action: 'gacha'  },
+  { key: 'battle', img: `${B}assets/nav/nav-3-quest.png`,      label: 'Turm',       action: 'battle' },
+  { key: 'fusion', img: `${B}assets/nav/nav-4-sacrifice.png`,  label: 'Fusion',     action: 'fusion' },
+  { key: 'menu',   img: `${B}assets/nav/nav-5-menu.png`,       label: 'Menü',       action: 'menu'   },
 ] as const;
 
 const App: React.FC = () => {
@@ -195,19 +195,14 @@ const App: React.FC = () => {
         <nav className="app-nav">
           {NAV_ITEMS.map(item => {
             const isActive =
-              item.key === 'main'
-                ? screen === 'main'
-                : item.key === 'menu'
-                ? screen === 'menu' || screen === 'cardCollection' || screen === 'guild'
+              item.key === 'menu'
+                ? screen === 'menu' || screen === 'cardCollection'
                 : screen === item.key;
             return (
               <button
                 key={item.key}
                 className={`app-nav__btn${isActive ? ' app-nav__btn--active' : ''}`}
-                onClick={() => {
-                  if (item.action === 'home') setStack(['title', 'main']);
-                  else navTo(item.action);
-                }}
+                onClick={() => navTo(item.action)}
               >
                 <img
                   src={item.img}
