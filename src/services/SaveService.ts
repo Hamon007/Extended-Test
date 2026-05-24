@@ -242,6 +242,9 @@ async function downloadSave(): Promise<boolean> {
     if (cloud.profileCardId) localStorage.setItem(KEYS.profileCardId, cloud.profileCardId);
     persist(KEYS.savedAt, cloud.savedAt);
     console.log('[SaveService] Cloud-Spielstand geladen (neuer als lokal).');
+    // Upload immediately so any local-only fields (guild/tower from older saves)
+    // are merged into the cloud before the page reloads.
+    await uploadSave();
     return true;
   }
   // Local is newer or same — push to cloud
