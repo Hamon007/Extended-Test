@@ -17,6 +17,7 @@ import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
 import { AccountProgressionService } from './AccountProgressionService';
 import { ActivityFeedService } from './ActivityFeedService';
+import { WinStreakService } from './WinStreakService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -70,12 +71,18 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
   const state = SaveService.loadGachaState();
 
   if (result.outcome === 'victory') {
+    // Win-Streak vor Belohnungsberechnung erhöhen, damit der neue Multiplikator zählt
+    const newStreak = WinStreakService.incrementOnVictory();
+    const streakReward = WinStreakService.getRewardMultiplier(newStreak);
+    const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier);
+    const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier);
+
     const newCards = rollRewardCards(enemy, state.totalPulls);
 
     // Kristalle + Karten zum Inventar hinzufügen
     const updatedState = {
       ...state,
-      crystals:   state.crystals + result.rewardCrystals,
+      crystals:   state.crystals + boostedCrystals,
       inventory:  [...state.inventory, ...newCards],
       totalPulls: state.totalPulls + newCards.length,
     };
@@ -94,10 +101,10 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
       });
     }
 
-    // Account-XP aus dem Battle-Sieg hinzufügen
+    // Account-XP aus dem Battle-Sieg hinzufügen (Streak-Bonus angewandt)
     const accountResult = AccountProgressionService.addAccountXp(
       SaveService.loadAccountState(),
-      result.rewardXp,
+      boostedXp,
     );
     SaveService.saveAccountState(accountResult.newState);
 
@@ -117,11 +124,11 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
 
     return {
       isVictory:        true,
-      crystalsGained:   result.rewardCrystals,
-      xpGained:         result.rewardXp,
+      crystalsGained:   boostedCrystals,
+      xpGained:         boostedXp,
       newCards,
       potionsGained,
-      accountXpGained:  result.rewardXp,
+      accountXpGained:  boostedXp,
       accountLevelUp:   accountResult.leveledUp ? {
         newLevel:      accountResult.newLevel,
         levelsGained:  accountResult.levelsGained,
@@ -132,6 +139,7 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
   }
 
   if (result.outcome === 'defeat') {
+    WinStreakService.resetOnDefeat();
     const updatedState = {
       ...state,
       crystals: state.crystals + DEFEAT_CONSOLATION,

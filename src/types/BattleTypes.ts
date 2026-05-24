@@ -115,6 +115,8 @@ export interface BattleLogEntry {
   damage:    number;
   mpSpent:   number;
   text:      string;
+  quote?:    string;
+  isSuper?:  boolean;
 }
 
 // ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────

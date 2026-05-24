@@ -1150,3 +1150,157 @@
   font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: 0.85rem;
   font-weight: bold; color: #ff8a65; letter-spacing: 0.1em;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SUPER-ANGRIFF Overlay (dramatischer Moment)
+   ══════════════════════════════════════════════════════════════ */
+.arena-super-overlay {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 400; pointer-events: none;
+  animation: super-bg 0.3s ease;
+}
+@keyframes super-bg {
+  from { background: rgba(0,0,0,0); }
+  to   { background: rgba(0,0,0,0.55); }
+}
+.arena-super-overlay__inner {
+  text-align: center;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #1a0518, #3a0828, #1a0518);
+  border: 2px solid #ff5722;
+  border-radius: 14px;
+  box-shadow: 0 0 60px rgba(255,87,34,0.6), 0 0 120px rgba(255,87,34,0.3);
+  animation: super-pop 0.35s cubic-bezier(0.34, 1.56, 0.5, 1);
+  max-width: 90vw;
+}
+@keyframes super-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.arena-super-overlay__label {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.7rem; letter-spacing: 0.4em;
+  color: #ff8a65; margin-bottom: 6px;
+}
+.arena-super-overlay__name {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.4rem; color: #fff;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 20px rgba(255,87,34,0.8);
+  margin-bottom: 8px;
+}
+.arena-super-overlay__quote {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.95rem; color: #ffccbc;
+  font-style: italic; margin-bottom: 12px;
+  line-height: 1.4;
+}
+.arena-super-overlay__damage {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem; color: #ff5722;
+  font-weight: bold; letter-spacing: 0.1em;
+  text-shadow: 0 0 12px rgba(255,87,34,0.6);
+}
+
+/* Crit-Flash */
+.arena-crit-flash {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,217,102,0.4) 0%, transparent 70%);
+  z-index: 250; pointer-events: none;
+  animation: crit-flash 0.6s ease;
+}
+@keyframes crit-flash {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Battle-Log: Super-Eintrag + Quote */
+.battle-log__entry { display: flex; flex-direction: column; gap: 2px; }
+.battle-log__main  { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.battle-log__entry--super .battle-log__main {
+  color: #ff8a65;
+  text-shadow: 0 0 8px rgba(255,87,34,0.4);
+  font-weight: bold;
+}
+.battle-log__quote {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  font-style: italic;
+  color: rgba(232,213,176,0.7);
+  padding-left: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WIN-STREAK Chip + Event-Toast
+   ══════════════════════════════════════════════════════════════ */
+.battle-select-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.battle-streak-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ffb74d;
+  background: rgba(255,87,34,0.15);
+  border: 1px solid #c97a2a;
+  border-radius: 12px;
+  padding: 4px 10px;
+  letter-spacing: 0.05em;
+}
+.battle-streak-chip--hot {
+  color: #fff;
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  border-color: #ffb74d;
+  animation: streak-pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255,87,34,0.5);
+}
+@keyframes streak-pulse {
+  0%,100% { box-shadow: 0 0 10px rgba(255,87,34,0.5); }
+  50%      { box-shadow: 0 0 20px rgba(255,87,34,0.85); }
+}
+
+.event-toast {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  background: rgba(20,40,80,0.92);
+  border: 1px solid #4a7fc9;
+  color: #c0e0ff;
+  font-family: 'Cinzel', serif; font-size: 0.75rem;
+  padding: 8px 18px; border-radius: 20px;
+  z-index: 999; pointer-events: none;
+  animation: event-toast-in 0.2s ease;
+}
+@keyframes event-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EVENT-Overlay (Wahl-Buttons)
+   ══════════════════════════════════════════════════════════════ */
+.event-overlay__icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 10px rgba(123,47,190,0.5));
+}
+.event-overlay__choices {
+  display: flex; flex-direction: column; gap: 6px; width: 100%;
+  margin-top: 6px;
+}
+.event-overlay__choice {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif; font-size: 0.78rem;
+  letter-spacing: 0.08em; color: #f0d080;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #8a6520;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.event-overlay__choice:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: #c9a84c;
+}

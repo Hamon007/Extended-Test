@@ -64,8 +64,9 @@ function log(
   damage:   number,
   mpSpent:  number,
   text:     string,
+  extra?:   { quote?: string; isSuper?: boolean },
 ): BattleLogEntry {
-  return { id: makeLogId(), round, actor, cardName, damage, mpSpent, text };
+  return { id: makeLogId(), round, actor, cardName, damage, mpSpent, text, ...extra };
 }
 
 /** Schaden auf eine Seite anwenden. HP unterschreitet nie 0. */
@@ -291,6 +292,7 @@ function playPlayerCard(
   state:            BattleState,
   instanceId:       string,
   damageMultiplier: number = 1.0,
+  comboCount:       number = 1,
 ): BattleState {
   if (state.phase !== 'player_turn' || state.result) return state;
 
@@ -301,26 +303,23 @@ function playPlayerCard(
   if (card.played || card.destroyed)            return state;
   if (state.player.mp < card.mpCost)            return state;
 
-  // Meta-Multiplikatoren anwenden: Leader + Formation + Daily + Awakening
+  // Meta-Multiplikatoren: Leader + Formation + Daily + Awakening
   const leaderMult    = LeaderService.damageMultiplier(state.leaderBonus ?? null, card.card?.element);
   const formationMult = FormationService.damageMultiplier(state.formation ?? null, card.card);
   const dailyMult     = applyDailyDamageMod(card.card?.element, state.dailyModifier ?? null);
 
-  // Awakening-Check: nach Combo + HPs entscheidet das Profil
-  let awakeningMult  = 1.0;
-  let newlyAwakened  = false;
+  // Awakening-Check
+  let awakeningMult = 1.0;
+  let newlyAwakened = false;
+  let isAwakened    = false;
   if (card.card) {
     const playerHpPct = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
     const enemyHpPct  = state.enemy.hpMax  > 0 ? state.enemy.hp  / state.enemy.hpMax  : 1;
-    // Note: comboCount comes via damageMultiplier — we approximate from the existing awakened list.
-    // The combo trigger is checked from the multiplier path; here we just check HP and persistence.
     const wasAwakened = state.awakenedIds?.includes(card.sourceId) ?? false;
     const profile = AwakeningService.getAwakeningProfile(card.card);
     if (profile) {
-      const isAwakened = wasAwakened || AwakeningService.checkAwakened(card.card, {
-        comboCount:  Math.round(damageMultiplier),  // proxy — caller passes high mult for high combo
-        playerHpPct,
-        enemyHpPct,
+      isAwakened = wasAwakened || AwakeningService.checkAwakened(card.card, {
+        comboCount, playerHpPct, enemyHpPct,
       });
       if (isAwakened) {
         awakeningMult = 1.0 + profile.damageBoost;
@@ -329,7 +328,11 @@ function playPlayerCard(
     }
   }
 
-  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * awakeningMult;
+  // ── Super-Angriff: erwachte Karte in 3er+ Kombo ──
+  const isSuper = isAwakened && comboCount >= 3;
+  const superMult = isSuper ? 3.0 : 1.0;
+
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * awakeningMult * superMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
   const handWithoutCard = state.player.hand.filter((_, i) => i !== cardIdx);
@@ -347,11 +350,16 @@ function playPlayerCard(
     newPlayer = applyDamage(newPlayer, recoil);
   }
 
-  const logText = newlyAwakened
-    ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden`
-    : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
+  const logText = isSuper
+    ? `▼ SUPER: ${card.name} → ${damage.toLocaleString('de-DE')} Schaden!`
+    : newlyAwakened
+      ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden`
+      : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
 
-  const entry = log(state.round, 'player', card.name, damage, card.mpCost, logText);
+  const entry = log(state.round, 'player', card.name, damage, card.mpCost, logText, {
+    quote:   isSuper ? card.card?.quote : undefined,
+    isSuper,
+  });
 
   const awakenedIds = newlyAwakened
     ? [...(state.awakenedIds ?? []), card.sourceId]

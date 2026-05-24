@@ -13,6 +13,8 @@ import { QuestService }         from '../services/QuestService';
 import { LeaderService }        from '../services/LeaderService';
 import { FormationService }     from '../services/FormationService';
 import { DailyTrialService } from '../services/DailyTrialService';
+import { WinStreakService }  from '../services/WinStreakService';
+import { TowerEventService, type TowerEvent } from '../services/TowerEventService';
 import { CardDatabase }         from '../services/CardDatabase';
 import { TowerLore }            from '../data/towerLore';
 import type { BattleMeta }      from '../services/BattleManager';
@@ -42,6 +44,9 @@ const BattleScreen: React.FC = () => {
   const [towerFloor,     setTowerFloor]     = useState(() => TowerService.getFloor());
   const [loreOverlay,    setLoreOverlay]    = useState<{ floor: number; type: 'normal'|'elite'|'boss' } | null>(null);
   const [pendingMeta,    setPendingMeta]    = useState<{ enemy: EnemyData; meta: BattleMeta; tact: TacticalEnemyConfig | null } | null>(null);
+  const [towerEvent,     setTowerEvent]     = useState<TowerEvent | null>(null);
+  const [eventToast,     setEventToast]     = useState('');
+  const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied = useRef(false);
 
@@ -103,6 +108,7 @@ const BattleScreen: React.FC = () => {
     setRewardDetails(null);
     setTacticalConfig(null);
     setIsTowerMode(false);
+    setWinStreak(WinStreakService.get());
     rewardApplied.current = false;
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
@@ -126,44 +132,102 @@ const BattleScreen: React.FC = () => {
 
   const isBoss = TowerService.isBossFloor(towerFloor);
 
+  const buildTowerEnemy = (cursed: boolean, tripleReward: boolean): { enemy: EnemyData; tact: TacticalEnemyConfig | null } => {
+    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
+    const cursedMult = cursed ? 1.5 : 1.0;
+    const rewardMult = tripleReward ? 3.0 : cursed ? 2.5 : 1.0;
+    if (tactEnemy) {
+      const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0]!;
+      const enemy: EnemyData = {
+        ...base,
+        id:    tactEnemy.id,
+        name:  cursed ? `Verfluchter ${tactEnemy.name}` : tactEnemy.name,
+        title: tactEnemy.title,
+        stats: {
+          hp:      Math.round(base.stats.hp * (1 + towerFloor * 0.15) * cursedMult),
+          mpMax:   base.stats.mpMax,
+          mpRegen: base.stats.mpRegen,
+        },
+        cards: base.cards.map(c => ({ ...c, atk: Math.round(c.atk * (1 + towerFloor * 0.1) * cursedMult) })),
+        rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2) * rewardMult),
+        rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2) * rewardMult),
+      };
+      return { enemy, tact: tactEnemy };
+    }
+    const all = EnemyDatabase.getAll();
+    const r = all[Math.floor(Math.random() * all.length)]!;
+    const enemy: EnemyData = cursed || tripleReward ? {
+      ...r,
+      name: cursed ? `Verfluchter ${r.name}` : r.name,
+      stats: { ...r.stats, hp: Math.round(r.stats.hp * cursedMult) },
+      cards: r.cards.map(c => ({ ...c, atk: Math.round(c.atk * cursedMult) })),
+      rewardXp:       Math.round(r.rewardXp * rewardMult),
+      rewardCrystals: Math.round(r.rewardCrystals * rewardMult),
+    } : r;
+    return { enemy, tact: null };
+  };
+
+  const startFloorBattle = (cursed = false, tripleReward = false) => {
+    const { enemy, tact } = buildTowerEnemy(cursed, tripleReward);
+    const meta: BattleMeta = { leaderBonus, formation };
+    const type = isBoss ? 'boss' : tact ? 'elite' : 'normal';
+    setPendingMeta({ enemy, meta, tact });
+    setLoreOverlay({ floor: towerFloor, type });
+  };
+
   const handleTowerStart = () => {
     if (!deckComplete) return;
     if (!energy.consume()) return;
     setIsTowerMode(true);
 
-    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
-    let enemy: EnemyData;
-    if (tactEnemy) {
-      const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0];
-      if (!base) return;
-      enemy = {
-        ...base,
-        id:    tactEnemy.id,
-        name:  tactEnemy.name,
-        title: tactEnemy.title,
-        stats: {
-          hp:      Math.round(base.stats.hp      * (1 + towerFloor * 0.15)),
-          mpMax:   base.stats.mpMax,
-          mpRegen: base.stats.mpRegen,
-        },
-        cards: base.cards.map(c => ({ ...c, atk: Math.round(c.atk * (1 + towerFloor * 0.1)) })),
-        rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2)),
-        rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2)),
-      };
-    } else {
-      const all = EnemyDatabase.getAll();
-      const random = all[Math.floor(Math.random() * all.length)];
-      if (!random) return;
-      enemy = random;
+    // Würfle ein Zufalls-Ereignis
+    const ev = TowerEventService.rollEvent();
+    if (ev) {
+      setTowerEvent(ev);
+      return;
     }
+    startFloorBattle();
+  };
 
-    const meta: BattleMeta = {
-      leaderBonus,
-      formation,
-    };
-    const type = isBoss ? 'boss' : tactEnemy ? 'elite' : 'normal';
-    setPendingMeta({ enemy, meta, tact: tactEnemy });
-    setLoreOverlay({ floor: towerFloor, type });
+  const handleEventChoice = (kind: 'continue' | 'merchant_crystals' | 'merchant_potions' | 'merchant_card' | 'fight') => {
+    if (!towerEvent) return;
+    switch (towerEvent.kind) {
+      case 'treasure': {
+        const reward = TowerEventService.claimTreasure();
+        setEventToast(`Truhe geöffnet: ${reward}`);
+        setTimeout(() => setEventToast(''), 2800);
+        setTowerEvent(null);
+        startFloorBattle();
+        break;
+      }
+      case 'merchant': {
+        if (kind === 'merchant_crystals') {
+          const r = TowerEventService.acceptMerchant('crystals');
+          setEventToast(`Händler: ${r}`);
+        } else if (kind === 'merchant_potions') {
+          const r = TowerEventService.acceptMerchant('potions');
+          setEventToast(`Händler: ${r}`);
+        } else if (kind === 'merchant_card') {
+          const r = TowerEventService.acceptMerchant('small_crystal_card');
+          setEventToast(`Händler: ${r}`);
+        }
+        setTimeout(() => setEventToast(''), 2800);
+        setTowerEvent(null);
+        startFloorBattle();
+        break;
+      }
+      case 'stranger': {
+        setTowerEvent(null);
+        startFloorBattle(false, true);
+        break;
+      }
+      case 'cursed': {
+        setTowerEvent(null);
+        startFloorBattle(true, false);
+        break;
+      }
+    }
+    void kind;
   };
 
   const handleDailyTrialStart = () => {
@@ -202,6 +266,36 @@ const BattleScreen: React.FC = () => {
     setPendingMeta(null);
   };
 
+  // ── Event-Overlay ──
+  if (towerEvent) {
+    return (
+      <div className="lore-overlay">
+        <div className="lore-overlay__box">
+          <div className="event-overlay__icon">{towerEvent.icon}</div>
+          <h2 className="lore-overlay__subtitle">{towerEvent.title}</h2>
+          <p className="lore-overlay__text">{towerEvent.description}</p>
+
+          {towerEvent.kind === 'merchant' && (
+            <div className="event-overlay__choices">
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_crystals')}>+300 💎</button>
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_potions')}>+3 🧪 Tränke</button>
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_card')}>+1 💎 Karte (Klein)</button>
+            </div>
+          )}
+          {towerEvent.kind === 'treasure' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('continue')}>▶ Truhe öffnen</button>
+          )}
+          {towerEvent.kind === 'stranger' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('fight')}>⚔ Herausforderung annehmen — Belohnung ×3</button>
+          )}
+          {towerEvent.kind === 'cursed' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('fight')}>⚔ Trotzdem kämpfen — Belohnung ×2,5</button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ── Lore-Overlay ──
   if (loreOverlay) {
     const lore = TowerLore.forFloor(loreOverlay.floor, loreOverlay.type);
@@ -219,10 +313,19 @@ const BattleScreen: React.FC = () => {
     );
   }
 
+  const streakReward = WinStreakService.getRewardMultiplier(winStreak);
+
   return (
     <div className="battle-screen--select">
+      {eventToast && <div className="event-toast">{eventToast}</div>}
+
       <div className="battle-select-header">
         <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
+        {winStreak >= 1 && (
+          <div className={`battle-streak-chip ${winStreak >= 5 ? 'battle-streak-chip--hot' : ''}`}>
+            🔥 {winStreak}{streakReward.multiplier > 1.0 && <> · ×{streakReward.multiplier.toFixed(1)}</>}
+          </div>
+        )}
       </div>
 
       {/* Etagen-Info */}
@@ -348,8 +451,26 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [synergyToast, setSynergyToast] = useState<{ a: string; b: string; count: number } | null>(null);
   const [awakeningToast, setAwakeningToast] = useState<string | null>(null);
+  const [superToast,     setSuperToast]     = useState<{ name: string; quote: string; damage: number } | null>(null);
+  const [critFlash,      setCritFlash]      = useState(false);
   const lastAwakenedCount = useRef(0);
+  const lastLogId         = useRef(0);
   const popupId = React.useRef(0);
+
+  // Super-Attack-Toast + Critical-Flash basierend auf neuestem Log-Eintrag
+  useEffect(() => {
+    const lastLog = state.log[state.log.length - 1];
+    if (!lastLog || lastLog.id === lastLogId.current) return;
+    lastLogId.current = lastLog.id;
+    if (lastLog.isSuper && lastLog.quote) {
+      setSuperToast({ name: lastLog.cardName, quote: lastLog.quote, damage: lastLog.damage });
+      setTimeout(() => setSuperToast(null), 2800);
+    }
+    if (lastLog.actor === 'player' && lastLog.damage >= 10_000) {
+      setCritFlash(true);
+      setTimeout(() => setCritFlash(false), 600);
+    }
+  }, [state.log]);
 
   // Awakening-Toast wenn neue Karte erwacht
   useEffect(() => {
@@ -422,7 +543,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         ? tactical.playTacticalCard(card, localComboCount)
         : calc.totalMultiplier;
 
-      battle.playCard(card.instanceId, damageMultiplier);
+      battle.playCard(card.instanceId, damageMultiplier, localComboCount);
 
       addPopup({
         damage:     Math.max(1, Math.round(card.atk * damageMultiplier)),
@@ -490,6 +611,21 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           <span className="arena-awakening-toast__text">{awakeningToast}</span>
         </div>
       )}
+
+      {/* Super-Attack-Overlay */}
+      {superToast && (
+        <div className="arena-super-overlay">
+          <div className="arena-super-overlay__inner">
+            <div className="arena-super-overlay__label">▼ SUPER-ANGRIFF ▼</div>
+            <div className="arena-super-overlay__name">{superToast.name}</div>
+            <div className="arena-super-overlay__quote">„{superToast.quote}"</div>
+            <div className="arena-super-overlay__damage">{superToast.damage.toLocaleString('de-DE')} SCHADEN</div>
+          </div>
+        </div>
+      )}
+
+      {/* Critical Flash */}
+      {critFlash && <div className="arena-crit-flash" />}
 
       {/* Gegner oben */}
       <div className="arena-enemy-zone">
@@ -743,12 +879,20 @@ const BattleLog: React.FC<{ entries: BattleState['log'] }> = ({ entries }) => {
   return (
     <div className="battle-log">
       {visible.map(e => (
-        <div key={e.id} className={`battle-log__entry battle-log__entry--${e.actor}`}>
-          {e.text}
-          {e.damage > 0 && (
-            <span className={`battle-log__dmg battle-log__dmg--${e.actor}`}>
-              -{e.damage.toLocaleString('de-DE')}
-            </span>
+        <div
+          key={e.id}
+          className={`battle-log__entry battle-log__entry--${e.actor} ${e.isSuper ? 'battle-log__entry--super' : ''}`}
+        >
+          <div className="battle-log__main">
+            <span>{e.text}</span>
+            {e.damage > 0 && (
+              <span className={`battle-log__dmg battle-log__dmg--${e.actor}`}>
+                -{e.damage.toLocaleString('de-DE')}
+              </span>
+            )}
+          </div>
+          {e.quote && (
+            <div className="battle-log__quote">„{e.quote}"</div>
           )}
         </div>
       ))}

@@ -17,7 +17,7 @@ export interface BattleStore {
   state:          BattleState | null;
   isEnemyActing:  boolean;
   startBattle:    (instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => void;
-  playCard:       (instanceId: string, damageMultiplier?: number) => void;
+  playCard:       (instanceId: string, damageMultiplier?: number, comboCount?: number) => void;
   endTurn:        () => void;
   resetBattle:    () => void;
 }
@@ -61,8 +61,8 @@ export function useBattleStore(): BattleStore {
     setIsEnemyActing(false);
   }, []);
 
-  const playCard = useCallback((instanceId: string, damageMultiplier = 1.0) => {
-    setState(prev => prev ? BattleManager.playPlayerCard(prev, instanceId, damageMultiplier) : null);
+  const playCard = useCallback((instanceId: string, damageMultiplier = 1.0, comboCount = 1) => {
+    setState(prev => prev ? BattleManager.playPlayerCard(prev, instanceId, damageMultiplier, comboCount) : null);
   }, []);
 
   const endTurn = useCallback(() => {
