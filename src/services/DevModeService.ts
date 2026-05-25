@@ -1,5 +1,6 @@
 import { CardDatabase } from './CardDatabase';
 import { SaveService }   from './SaveService';
+import { LevelSystem }   from './LevelSystem';
 
 const DEV_KEY  = 'ci_dev_mode';
 const PASSWORD = 'Osmanos';
@@ -54,8 +55,9 @@ export const DevModeService = {
     const state = SaveService.loadGachaState();
     let changed = 0;
     for (const inst of state.inventory) {
-      if (inst.level < 60) {
-        inst.level = 60;
+      const cap = LevelSystem.levelCap(inst.rarity);
+      if (inst.level < cap) {
+        inst.level = cap;
         inst.xp    = 0;
         changed++;
       }

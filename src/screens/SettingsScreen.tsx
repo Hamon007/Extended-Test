@@ -113,7 +113,7 @@ const SettingsScreen: React.FC<Props> = ({ onBack }) => {
                 className="settings-dev-action-btn"
                 onClick={() => {
                   const n = DevModeService.maxLevelAllCards();
-                  showToast(n > 0 ? `${n} Karten auf Lvl 60 gesetzt!` : 'Alle Karten bereits Lvl 60.');
+                  showToast(n > 0 ? `${n} Karten auf Max-Level gesetzt!` : 'Alle Karten bereits auf Max-Level.');
                 }}
               >
                 ⬆️ Alle Karten → Lvl 60

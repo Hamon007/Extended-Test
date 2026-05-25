@@ -13,9 +13,6 @@ import type { Card } from '../types/Card';
 import { rarityMajor } from '../types/Card';
 import type { CardInstance, GachaState } from '../types/GachaTypes';
 import { CardDatabase } from './CardDatabase';
-import { AWAKENING_CRYSTAL_COST } from '../config/GameConfig';
-
-export { AWAKENING_CRYSTAL_COST };
 
 export type AwakenBlockReason = 'NOT_LR' | 'NO_AWAKENING' | 'TARGET_MISSING';
 
@@ -40,7 +37,7 @@ function getAwakenInfo(instance: CardInstance): AwakenInfo {
 
 // ── Awakening durchführen ─────────────────────────────────────
 
-export type AwakenError = 'NOT_FOUND' | 'CANNOT_AWAKEN' | 'NOT_ENOUGH_CRYSTALS';
+export type AwakenError = 'NOT_FOUND' | 'CANNOT_AWAKEN' | 'NOT_ENOUGH_DUPLICATES';
 
 export interface AwakenSuccess {
   ok:           true;
@@ -60,20 +57,24 @@ function awaken(state: GachaState, uuid: string): AwakenSuccess | AwakenFailure 
 
   const info = getAwakenInfo(instance);
   if (!info.canAwaken || !info.awakenedCard) return { ok: false, error: 'CANNOT_AWAKEN' };
-  if (state.crystals < AWAKENING_CRYSTAL_COST) return { ok: false, error: 'NOT_ENOUGH_CRYSTALS' };
+
+  const duplicate = state.inventory.find(i => i.cardId === instance.cardId && i.uuid !== uuid);
+  if (!duplicate) return { ok: false, error: 'NOT_ENOUGH_DUPLICATES' };
 
   const fromName = CardDatabase.getById(instance.cardId)?.name ?? instance.cardId;
   const target   = info.awakenedCard;
 
-  const newInventory = state.inventory.map(i =>
-    i.uuid === uuid
-      ? { ...i, cardId: target.id, rarity: target.rarity, isNew: true }
-      : i
-  );
+  let duplicateRemoved = false;
+  const newInventory = state.inventory
+    .filter(i => {
+      if (!duplicateRemoved && i.uuid === duplicate.uuid) { duplicateRemoved = true; return false; }
+      return true;
+    })
+    .map(i => i.uuid === uuid ? { ...i, cardId: target.id, rarity: target.rarity, isNew: true } : i);
 
   return {
     ok:           true,
-    nextState:    { ...state, crystals: state.crystals - AWAKENING_CRYSTAL_COST, inventory: newInventory },
+    nextState:    { ...state, inventory: newInventory },
     awakenedCard: target,
     fromName,
   };
@@ -82,5 +83,4 @@ function awaken(state: GachaState, uuid: string): AwakenSuccess | AwakenFailure 
 export const AwakeningSystem = {
   getAwakenInfo,
   awaken,
-  AWAKENING_CRYSTAL_COST,
 };

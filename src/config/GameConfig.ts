@@ -71,7 +71,7 @@ export const POTION_RESTORE    = 1;
 
 /** Maximales Level je Hauptstufe */
 export const LEVEL_CAP_BY_MAJOR: Record<string, number> = {
-  N: 20, R: 30, SR: 40, SSR: 50, MR: 60, LR: 70,
+  N: 20, R: 30, SR: 40, SSR: 50, MR: 60, LR: 80,
 };
 
 /** XP, die eine Kristallkarte gewährt */
@@ -82,9 +82,9 @@ export const CRYSTAL_CARD_XP = {
 } as const;
 
 export const XP_PER_LEVEL_FACTOR    = 100;    // xpToNext(L) = L × 100
-export const LEVEL_ATK_BONUS_PER_LV = 0.005;  // +0,5 % ATK je Level über 1
-export const LEVEL_DEF_BONUS_PER_LV = 0.005;  // +0,5 % DEF je Level über 1
-export const LEVEL_HP_BONUS_PER_LV  = 0.003;  // +0,3 % HP  je Level über 1
+export const LEVEL_ATK_BONUS_PER_LV = 0.007;  // +0,7 % ATK je Level über 1
+export const LEVEL_DEF_BONUS_PER_LV = 0.007;  // +0,7 % DEF je Level über 1
+export const LEVEL_HP_BONUS_PER_LV  = 0.005;  // +0,5 % HP  je Level über 1
 
 /** Basis-XP beim Opfern einer Karte nach Hauptstufe */
 export const SACRIFICE_XP_BASE: Record<string, number> = {

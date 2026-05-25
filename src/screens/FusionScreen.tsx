@@ -13,7 +13,6 @@ interface FusionScreenProps {
 const ERROR_LABEL: Record<string, string> = {
   MAXED:                 'Karte ist bereits auf Maximalstufe (LR).',
   NOT_ENOUGH_DUPLICATES: 'Nicht genug Duplikate.',
-  NOT_ENOUGH_CRYSTALS:   'Nicht genug Kristalle.',
   NOT_FOUND:             'Karte nicht gefunden.',
   CANNOT_AWAKEN:         'Diese Karte kann nicht erwachen.',
 };
@@ -177,7 +176,9 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
         {isMaxed && canAwaken && (
           <div className="fusion-row__req">
             <span className="fusion-row__awaken-target">→ {awakenInfo.awakenedCard?.name}</span>
-            <span className="fusion-row__cost">💎 {AwakeningSystem.AWAKENING_CRYSTAL_COST.toLocaleString('de-DE')}</span>
+            <span className={duplicatesAvailable >= 1 ? 'fusion-req--ok' : 'fusion-req--miss'}>
+              1 LR Kopie nötig · {duplicatesAvailable} verfügbar
+            </span>
           </div>
         )}
       </div>
@@ -196,6 +197,7 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
         <button
           className="fusion-row__btn fusion-row__btn--awaken"
           onClick={onAwaken}
+          disabled={duplicatesAvailable < 1}
         >
           ✦ ERWACHEN
         </button>
