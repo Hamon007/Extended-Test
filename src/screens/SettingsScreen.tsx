@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DevModeService } from '../services/DevModeService';
+import { AudioService }   from '../services/AudioService';
 import './SettingsScreen.css';
 
 
@@ -7,10 +8,17 @@ interface Props { onBack: () => void; }
 
 const SettingsScreen: React.FC<Props> = ({ onBack }) => {
   const [devEnabled, setDevEnabled] = useState(() => DevModeService.isEnabled());
+  const [soundOn,    setSoundOn]    = useState(() => !AudioService.isMuted());
   const [password,   setPassword]   = useState('');
   const [showInput,  setShowInput]  = useState(false);
   const [error,      setError]      = useState(false);
   const [toast,      setToast]      = useState('');
+
+  function handleToggleSound() {
+    const muted = AudioService.toggleMute();
+    setSoundOn(!muted);
+    if (!muted) { AudioService.unlock(); AudioService.reward(); }
+  }
 
   function showToast(msg: string) {
     setToast(msg);
@@ -48,6 +56,31 @@ const SettingsScreen: React.FC<Props> = ({ onBack }) => {
       </div>
 
       <div className="settings-body">
+
+        {/* ── Audio ── */}
+        <section className="settings-section">
+          <div className="settings-section__title">AUDIO</div>
+          <div className="settings-dev-card">
+            <div className="settings-dev-card__left">
+              <div className="settings-dev-card__icon">{soundOn ? '🔊' : '🔇'}</div>
+              <div className="settings-dev-card__info">
+                <div className="settings-dev-card__name">Soundeffekte</div>
+                <div className="settings-dev-card__desc">
+                  {soundOn ? 'Kampf-Sounds & Haptik aktiv' : 'Stummgeschaltet'}
+                </div>
+              </div>
+            </div>
+            <button
+              className={`settings-toggle ${soundOn ? 'settings-toggle--on' : ''}`}
+              onClick={handleToggleSound}
+              role="switch"
+              aria-checked={soundOn}
+              aria-label="Soundeffekte umschalten"
+            >
+              <span className="settings-toggle__knob" />
+            </button>
+          </div>
+        </section>
 
         {/* ── Entwicklermodus ── */}
         <section className="settings-section">

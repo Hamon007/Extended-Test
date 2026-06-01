@@ -24,6 +24,7 @@ import QuestScreen               from './screens/QuestScreen';
 import SettingsScreen            from './screens/SettingsScreen';
 import { DevModeService }        from './services/DevModeService';
 import { TradeService }          from './services/TradeService';
+import { AudioService }          from './services/AudioService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
 
@@ -91,8 +92,15 @@ const App: React.FC = () => {
       setTimeout(() => setDailyToast(null), 3500);
     }
 
+    // Audio beim ersten User-Tap freischalten (Browser-Vorgabe)
+    const unlockAudio = () => AudioService.unlock();
+    window.addEventListener('pointerdown', unlockAudio, { once: true });
+
     setReady(true);
-    return () => unsub();
+    return () => {
+      unsub();
+      window.removeEventListener('pointerdown', unlockAudio);
+    };
   }, []);
 
   if (!ready) {
@@ -115,6 +123,7 @@ const App: React.FC = () => {
   };
 
   const navTo = (target: string) => {
+    AudioService.tap();
     switch (target) {
       case 'gacha':    goTo('gacha'); break;
       case 'menu':     goTo('menu'); break;

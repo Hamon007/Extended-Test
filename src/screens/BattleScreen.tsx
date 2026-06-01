@@ -16,6 +16,7 @@ import { DailyTrialService } from '../services/DailyTrialService';
 import { WinStreakService }  from '../services/WinStreakService';
 import { TowerEventService, type TowerEvent } from '../services/TowerEventService';
 import { CardDatabase }         from '../services/CardDatabase';
+import { AudioService }         from '../services/AudioService';
 import { TowerLore }            from '../data/towerLore';
 import type { BattleMeta }      from '../services/BattleManager';
 import type { Card }            from '../types/Card';
@@ -515,9 +516,31 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const lastAwakenedCount = useRef(0);
   const lastLogId         = useRef(0);
   const lastEnemyHpRef    = useRef(state.enemy.hp);
+  const lastPlayerHpRef   = useRef(state.player.hp);
+  const wasBreakingRef    = useRef(false);
+  const resultSoundRef    = useRef(false);
+  const resolvingRef      = useRef(false);
+  const arenaRef          = useRef<HTMLDivElement>(null);
   const popupId = React.useRef(0);
 
-  // Gegner-Treffer-Reaktion
+  // Screen-Shake via Web Animations API (retriggert zuverlässig).
+  const triggerShake = useCallback((level: 1 | 2) => {
+    const el = arenaRef.current;
+    if (!el) return;
+    const amp = level === 2 ? 8 : 3.5;
+    el.animate(
+      [
+        { transform: 'translate(0,0)' },
+        { transform: `translate(${amp}px, ${-amp * 0.7}px)` },
+        { transform: `translate(${-amp * 0.8}px, ${amp * 0.6}px)` },
+        { transform: `translate(${amp * 0.5}px, ${amp * 0.3}px)` },
+        { transform: 'translate(0,0)' },
+      ],
+      { duration: level === 2 ? 340 : 170, easing: 'ease-out' },
+    );
+  }, []);
+
+  // Gegner-Treffer-Reaktion (Portrait-Shake)
   useEffect(() => {
     if (state.enemy.hp < lastEnemyHpRef.current) {
       setEnemyHit(true);
@@ -526,6 +549,31 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     lastEnemyHpRef.current = state.enemy.hp;
   }, [state.enemy.hp]);
 
+  // Spieler nimmt Schaden → Einschlag-Sound, Haptik, harter Shake
+  useEffect(() => {
+    if (state.player.hp < lastPlayerHpRef.current) {
+      AudioService.enemyHit();
+      AudioService.vibrate(40);
+      triggerShake(2);
+    }
+    lastPlayerHpRef.current = state.player.hp;
+  }, [state.player.hp, triggerShake]);
+
+  // Combo gebrochen → dumpfer Sound
+  useEffect(() => {
+    if (combo.isBreaking && !wasBreakingRef.current) AudioService.comboBreak();
+    wasBreakingRef.current = combo.isBreaking;
+  }, [combo.isBreaking]);
+
+  // Sieg / Niederlage → Fanfare
+  useEffect(() => {
+    if (state.result && !resultSoundRef.current) {
+      resultSoundRef.current = true;
+      if (state.result.outcome === 'victory') { AudioService.victory(); AudioService.vibrate([20, 40, 20, 40, 60]); }
+      else AudioService.defeat();
+    }
+  }, [state.result]);
+
   // Super-Attack-Toast + Critical-Flash basierend auf neuestem Log-Eintrag
   useEffect(() => {
     const lastLog = state.log[state.log.length - 1];
@@ -533,6 +581,9 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     lastLogId.current = lastLog.id;
     if (lastLog.isSuper && lastLog.quote) {
       setSuperToast({ name: lastLog.cardName, quote: lastLog.quote, damage: lastLog.damage });
+      AudioService.super();
+      AudioService.vibrate([30, 40, 60]);
+      triggerShake(2);
       setTimeout(() => setSuperToast(null), 2800);
     }
     if (lastLog.actor === 'player' && lastLog.damage >= 10_000) {
@@ -549,6 +600,8 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       const card = newestId ? state.player.hand.concat(state.player.deck).find(c => c.sourceId === newestId)?.card : null;
       if (card) {
         setAwakeningToast(`${card.name} ERWACHT!`);
+        AudioService.awaken();
+        AudioService.vibrate([20, 30, 40]);
         setTimeout(() => setAwakeningToast(null), 2400);
       }
     }
@@ -575,6 +628,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   // Karte in Auswahl ein-/ausschalten
   const handleToggleCard = useCallback((card: BattleCard) => {
     if (!canPlay || card.played || card.destroyed || card.mpCost > player.mp) return;
+    AudioService.tap();
     setSelectedIds(prev =>
       prev.includes(card.instanceId)
         ? prev.filter(id => id !== card.instanceId)
@@ -582,76 +636,94 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     );
   }, [canPlay, player.mp]);
 
-  // Alle ausgewählten Karten in Reihenfolge ausspielen
+  // Ausgewählte Karten NACHEINANDER ausspielen — jede schlägt mit
+  // eigenem Sound, Schadenszahl, Shake und Haptik ein (Combo-Flurry).
+  const STAGGER_MS = 230;
   const handlePlaySelected = useCallback(() => {
-    if (!canPlay || selectedIds.length === 0) return;
+    if (!canPlay || selectedIds.length === 0 || resolvingRef.current) return;
+
+    // Karten zum Zeitpunkt des Klicks auflösen (Render-Hand)
+    const queue = selectedIds
+      .map(id => player.hand.find(c => c.instanceId === id))
+      .filter((c): c is BattleCard => !!c && !c.played && !c.destroyed);
+    if (queue.length === 0) { setSelectedIds([]); return; }
+
+    resolvingRef.current = true;
+    setSelectedIds([]);
+    AudioService.unlock();
 
     let localComboCount = combo.isActive ? combo.count : 0;
-    // Synergy only fires within the same batch — start fresh each play action
     let lastCard: BattleCard | null = null;
     const synergyPairs: Array<{ a: string; b: string }> = [];
 
-    for (const instanceId of selectedIds) {
-      const card = player.hand.find(c => c.instanceId === instanceId);
-      if (!card || card.played || card.destroyed) continue;
+    const playOne = (idx: number) => {
+      if (idx >= queue.length) {
+        // Synergie-Toast nach Abschluss des Flurry
+        if (synergyPairs.length > 0) {
+          const count = synergyPairs.length;
+          setSynergyToast({ a: synergyPairs[0].a, b: synergyPairs[count - 1].b, count });
+          setTimeout(() => setSynergyToast(null), 2400);
+          QuestService.recordEvent('use_synergy', count);
+        }
+        resolvingRef.current = false;
+        return;
+      }
 
+      const card = queue[idx];
       localComboCount = Math.min(5, localComboCount + 1);
       const calc = ComboSystem.calculate(
-        card.atk,
-        localComboCount,
-        lastCard,
-        card,
-        enemyData.element,
+        card.atk, localComboCount, lastCard, card, enemyData.element,
       );
 
       combo.onCardPlayed(card, calc.windowExtension);
       if (localComboCount >= 2) QuestService.recordEvent('play_combos');
 
-      // Tactical mode: get multiplier from tactical layer; always use battle prop for damage
       const damageMultiplier = (tacticalConfig && tactical.tactical)
         ? tactical.playTacticalCard(card, localComboCount)
         : calc.totalMultiplier;
 
       battle.playCard(card.instanceId, damageMultiplier, localComboCount);
 
+      const dmg    = Math.max(1, Math.round(card.atk * damageMultiplier));
+      const isCrit = localComboCount >= 4 || (state.awakenedIds?.includes(card.sourceId) ?? false);
+
       addPopup({
-        damage:     Math.max(1, Math.round(card.atk * damageMultiplier)),
+        damage:     dmg,
         combo:      localComboCount,
         multiplier: damageMultiplier,
         hasSynergy: calc.hasSynergy,
         hasElement: calc.hasElementAdv,
-        xPct:       30 + Math.random() * 40,
+        xPct:       38 + Math.random() * 24,
         element:    card.card?.element,
-        isCrit:     localComboCount >= 4 || (state.awakenedIds?.includes(card.sourceId) ?? false),
-        yOffset:    Math.floor(Math.random() * 30),
+        isCrit,
+        yOffset:    idx * 6,
       });
 
-      if (calc.hasSynergy && lastCard) {
-        synergyPairs.push({ a: lastCard.name, b: card.name });
+      // ── Audio + Juice ──
+      AudioService.cardPlay();
+      AudioService.combo(localComboCount);
+      if (isCrit) {
+        AudioService.crit();
+        AudioService.vibrate(28);
+        triggerShake(2);
+      } else {
+        AudioService.hit(Math.min(1, dmg / 25_000));
+        AudioService.vibrate(12);
+        triggerShake(1);
       }
+      if (calc.hasSynergy) AudioService.synergy();
 
+      if (calc.hasSynergy && lastCard) synergyPairs.push({ a: lastCard.name, b: card.name });
       lastCard = card;
-    }
 
-    // Show synergy toast after all cards are processed
-    if (synergyPairs.length > 0) {
-      const count = synergyPairs.length;
-      const first = synergyPairs[0];
-      const last  = synergyPairs[count - 1];
-      setSynergyToast({
-        a:     count === 1 ? first.a : first.a,
-        b:     count === 1 ? first.b : last.b,
-        count,
-      });
-      setTimeout(() => setSynergyToast(null), 2400);
-      QuestService.recordEvent('use_synergy', synergyPairs.length);
-    }
+      setTimeout(() => playOne(idx + 1), STAGGER_MS);
+    };
 
-    setSelectedIds([]);
-  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup]);
+    playOne(0);
+  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup, triggerShake, state.awakenedIds]);
 
   return (
-    <div className="battle-arena">
+    <div className="battle-arena" ref={arenaRef}>
       <div className="arena-bg-pulse" aria-hidden="true" />
 
       {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}

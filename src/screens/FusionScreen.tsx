@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFusionStore } from '../hooks/useFusionStore';
 import { FusionSystem, type FusionGroup } from '../services/FusionSystem';
 import { AwakeningSystem } from '../services/AwakeningSystem';
+import { AudioService } from '../services/AudioService';
 import { RARITY_COLOR } from '../types/Card';
 import type { CardStats } from '../types/Card';
 import './FusionScreen.css';
@@ -236,6 +237,7 @@ interface OverlayProps {
 }
 
 const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) => {
+  useEffect(() => { AudioService.reveal(0.7); AudioService.vibrate([15, 25, 40]); }, []);
   const toColor = RARITY_COLOR[lastFusion.to as keyof typeof RARITY_COLOR] ?? '#f0d080';
   return (
     <div className="fusion-overlay" onClick={onClose}>
@@ -261,6 +263,7 @@ interface AwakenOverlayProps {
 }
 
 const AwakenResultOverlay: React.FC<AwakenOverlayProps> = ({ lastAwakening, onClose }) => {
+  useEffect(() => { AudioService.awaken(); AudioService.vibrate([20, 30, 50, 30, 60]); }, []);
   const lrColor = RARITY_COLOR.LR;
   return (
     <div className="fusion-overlay" onClick={onClose}>
