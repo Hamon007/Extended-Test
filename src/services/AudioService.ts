@@ -204,6 +204,14 @@ export const AudioService = {
       tone({ freq: f, dur: 0.5, type: 'triangle', gain: 0.12, attack: 0.05, delay: i * 0.06 }));
   },
 
+  /** Verteidigungs-Haltung — metallischer Schild-Klang. */
+  guard(): void {
+    if (muted) return;
+    tone({ freq: 330, endFreq: 220, dur: 0.18, type: 'square', gain: 0.14 });
+    noise({ dur: 0.14, gain: 0.12, type: 'bandpass', freq: 1200 });
+    tone({ freq: 660, dur: 0.12, type: 'sine', gain: 0.1, delay: 0.04 });
+  },
+
   /** Spieler nimmt Schaden — dunkler Einschlag. */
   enemyHit(): void {
     if (muted) return;

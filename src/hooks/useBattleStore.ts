@@ -19,6 +19,7 @@ export interface BattleStore {
   startBattle:    (instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => void;
   playCard:       (instanceId: string, damageMultiplier?: number, comboCount?: number) => void;
   endTurn:        () => void;
+  guard:          () => void;
   resetBattle:    () => void;
 }
 
@@ -69,11 +70,15 @@ export function useBattleStore(): BattleStore {
     setState(prev => prev ? BattleManager.endPlayerTurn(prev) : null);
   }, []);
 
+  const guard = useCallback(() => {
+    setState(prev => prev ? BattleManager.guardAndEndTurn(prev) : null);
+  }, []);
+
   const resetBattle = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setState(null);
     setIsEnemyActing(false);
   }, []);
 
-  return { state, isEnemyActing, startBattle, playCard, endTurn, resetBattle };
+  return { state, isEnemyActing, startBattle, playCard, endTurn, guard, resetBattle };
 }

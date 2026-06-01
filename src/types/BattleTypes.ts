@@ -90,6 +90,7 @@ export interface BattleState {
   dailyModifier?:  DailyModifier | null;
   maxRounds?:      number;                  // overrides MAX_ROUNDS if set
   awakenedIds?:    string[];                // sourceIds awakened this battle (persisted)
+  guarding?:       boolean;                 // Verteidigungs-Haltung: halbiert nächsten Gegnerschaden
 }
 
 export type BattlePhase =

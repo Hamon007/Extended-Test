@@ -23,6 +23,10 @@ export const ENEMY_TURN_DELAY_MS = 800;  // Pause vor Gegnerzug (UX)
 export const ROUND_END_DELAY_MS  = 600;  // Pause nach Gegnerzug
 export const ACCOUNT_CONSOLATION_XP = 10; // Trost-XP bei Niederlage
 
+// Verteidigen: MP-Kosten und Schadensreduktion des nächsten Gegnerzugs
+export const GUARD_MP_COST    = 50;
+export const GUARD_REDUCTION  = 0.5;     // eingehender Schaden ×0,5 in Guard-Haltung
+
 // ── Combo ─────────────────────────────────────────────────────
 
 export const COMBO_WINDOW_MS   = 1_500;  // Basis-Fenster in ms

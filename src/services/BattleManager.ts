@@ -32,6 +32,7 @@ import {
   PLAYER_MP_START,
   HAND_LIMIT,
 } from '../types/BattleTypes';
+import { GUARD_MP_COST, GUARD_REDUCTION } from '../config/GameConfig';
 import { CardDatabase } from './CardDatabase';
 import { FusionSystem } from './FusionSystem';
 import { LeaderService, type LeaderBonus }     from './LeaderService';
@@ -390,6 +391,46 @@ function endPlayerTurn(state: BattleState): BattleState {
 }
 
 /**
+ * Spieler nimmt eine Verteidigungs-Haltung ein und beendet den Zug.
+ * Kostet GUARD_MP_COST MP und halbiert den Schaden des nächsten Gegnerzugs.
+ */
+function guardAndEndTurn(state: BattleState): BattleState {
+  if (state.phase !== 'player_turn' || state.result) return state;
+  if (state.player.mp < GUARD_MP_COST) return state;
+
+  const newPlayer = spendMP(state.player, GUARD_MP_COST);
+  const sysLog = log(state.round, 'system', '', 0, GUARD_MP_COST,
+    `🛡 Verteidigung! Eingehender Schaden −${Math.round((1 - GUARD_REDUCTION) * 100)}%.`);
+  return {
+    ...state,
+    player:   newPlayer,
+    guarding: true,
+    phase:    'enemy_turn',
+    log:      [...state.log, sysLog],
+  };
+}
+
+/**
+ * Schätzt den Schaden, den der Gegner im nächsten Zug verursacht
+ * (deterministische KI → exakt; 'random' → Obergrenze). Rein für die UI.
+ */
+function forecastEnemyDamage(state: BattleState): number {
+  const hand = state.enemy.hand.map(c => ({ ...c }));
+  let mp = state.enemy.mp;
+  let total = 0;
+  let limit = hand.length + 1;
+  while (limit-- > 0) {
+    const card = aiPickCard(hand, mp, state.enemyData.aiStrategy);
+    if (!card) break;
+    total += calcDamage(card.atk, 0);
+    mp -= card.mpCost;
+    const idx = hand.findIndex(c => c.instanceId === card.instanceId);
+    if (idx >= 0) hand[idx].played = true;
+  }
+  return state.guarding ? Math.round(total * GUARD_REDUCTION) : total;
+}
+
+/**
  * Kompletter Gegner-Zug (synchron, alle Karten in einem Schritt).
  * Wird nach endPlayerTurn() aufgerufen.
  */
@@ -405,8 +446,9 @@ function runEnemyTurn(state: BattleState): BattleState {
     const card = aiPickCard(current.enemy.hand, current.enemy.mp, strategy);
     if (!card) break;
 
-    const damage   = calcDamage(card.atk, 0);
-    const newEHand = current.enemy.hand.map(c =>
+    const rawDamage = calcDamage(card.atk, 0);
+    const damage    = current.guarding ? Math.round(rawDamage * GUARD_REDUCTION) : rawDamage;
+    const newEHand  = current.enemy.hand.map(c =>
       c.instanceId === card.instanceId ? { ...c, played: true } : c
     );
 
@@ -477,11 +519,12 @@ function resolveRoundEnd(state: BattleState): BattleState {
 
   return {
     ...state,
-    round:  nextRound,
-    phase:  'player_turn',
-    player: newPlayer,
-    enemy:  newEnemy,
-    log:    [...state.log, entry],
+    round:    nextRound,
+    phase:    'player_turn',
+    player:   newPlayer,
+    enemy:    newEnemy,
+    guarding: false,
+    log:      [...state.log, entry],
   };
 }
 
@@ -491,6 +534,8 @@ export const BattleManager = {
   initBattle,
   playPlayerCard,   // accepts optional damageMultiplier (default 1.0)
   endPlayerTurn,
+  guardAndEndTurn,
+  forecastEnemyDamage,
   runEnemyTurn,
   resolveRoundEnd,
 };

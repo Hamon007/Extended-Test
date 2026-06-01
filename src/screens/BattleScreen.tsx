@@ -18,7 +18,8 @@ import { TowerEventService, type TowerEvent } from '../services/TowerEventServic
 import { CardDatabase }         from '../services/CardDatabase';
 import { AudioService }         from '../services/AudioService';
 import { TowerLore }            from '../data/towerLore';
-import type { BattleMeta }      from '../services/BattleManager';
+import { BattleManager, type BattleMeta } from '../services/BattleManager';
+import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
 import VictoryScreen            from './VictoryScreen';
@@ -722,6 +723,17 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     playOne(0);
   }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup, triggerShake, state.awakenedIds]);
 
+  // Verteidigen: MP ausgeben, nächsten Gegnerschaden halbieren, Zug beenden
+  const handleGuard = useCallback(() => {
+    if (!canPlay || player.mp < GUARD_MP_COST || resolvingRef.current) return;
+    AudioService.guard();
+    AudioService.vibrate(20);
+    battle.guard();
+  }, [canPlay, player.mp, battle]);
+
+  // Gegner-Absicht: vorhergesagter Schaden des nächsten Gegnerzugs
+  const incomingDamage = canPlay ? BattleManager.forecastEnemyDamage(state) : 0;
+
   return (
     <div className="battle-arena" ref={arenaRef}>
       <div className="arena-bg-pulse" aria-hidden="true" />
@@ -792,6 +804,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           <div className="arena-enemy-cards-row">
             {enemy.hand.map(c => <EnemyCardMini key={c.instanceId} card={c} />)}
           </div>
+          {canPlay && incomingDamage > 0 && (
+            <div className="arena-enemy-intent">
+              <span className="arena-enemy-intent__label">⚔ Nächster Angriff</span>
+              <span className="arena-enemy-intent__value">~{incomingDamage.toLocaleString('de-DE')}</span>
+            </div>
+          )}
           {/* Tactical Overlay */}
           {tactical.tactical && (
             <TacticalOverlay tacticalState={tactical.tactical} />
@@ -888,6 +906,19 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
               <span className="tactical-action-hint">{tactical.cleanseUsed}/2 · Flüche entfernen</span>
             </button>
           </div>
+        )}
+
+        {/* Verteidigen (nur Nicht-Taktik-Kämpfe) */}
+        {canPlay && !tactical.tactical && (
+          <button
+            className="arena-guard-btn"
+            onClick={handleGuard}
+            disabled={player.mp < GUARD_MP_COST}
+            title={player.mp < GUARD_MP_COST ? `Zu wenig MP (${GUARD_MP_COST})` : undefined}
+          >
+            🛡 Verteidigen
+            <span className="arena-guard-btn__hint">−50% Schaden · {GUARD_MP_COST} MP</span>
+          </button>
         )}
 
         {/* End-Turn */}

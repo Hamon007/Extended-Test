@@ -653,6 +653,65 @@
 @keyframes end-pulse { 0%,100%{box-shadow:0 0 10px rgba(201,168,76,0.3);} 50%{box-shadow:0 0 20px rgba(201,168,76,0.55);} }
 .arena-end-turn--disabled { opacity: 0.45; cursor: not-allowed; }
 
+/* ── Verteidigen-Button ──────────────────────────────────────── */
+.arena-guard-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #8ec5ff;
+  background: linear-gradient(135deg, #11202e, #16283a);
+  border: 1px solid #2f5a82;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+.arena-guard-btn:hover:not(:disabled) {
+  border-color: #4a90d9;
+  box-shadow: 0 0 8px rgba(74,144,217,0.3);
+}
+.arena-guard-btn:active:not(:disabled) { opacity: 0.78; }
+.arena-guard-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.5); }
+.arena-guard-btn__hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  letter-spacing: 0;
+  color: #6fa8d6;
+  opacity: 0.8;
+}
+
+/* ── Gegner-Absicht (Intent-Telegraph) ───────────────────────── */
+.arena-enemy-intent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(204,34,0,0.12);
+  border: 1px solid rgba(204,34,0,0.35);
+  align-self: flex-start;
+}
+.arena-enemy-intent__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  color: #ff9a7a;
+}
+.arena-enemy-intent__value {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ff6644;
+  text-shadow: 0 0 8px rgba(255,68,0,0.4);
+}
+
 /* ── Ergebnis-Overlay ─────────────────────────────────────── */
 .battle-result-overlay {
   position: absolute;
