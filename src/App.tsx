@@ -122,8 +122,13 @@ const App: React.FC = () => {
     setStack(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
   };
 
+  // Universelles Tap-Feedback: jeder Button im React-Baum (inkl. Portale)
+  const handleRootTap = (e: React.MouseEvent) => {
+    const el = (e.target as HTMLElement).closest('button, [role="button"]');
+    if (el && !(el as HTMLButtonElement).disabled) AudioService.tap();
+  };
+
   const navTo = (target: string) => {
-    AudioService.tap();
     switch (target) {
       case 'gacha':    goTo('gacha'); break;
       case 'menu':     goTo('menu'); break;
@@ -131,6 +136,7 @@ const App: React.FC = () => {
       case 'guild':    goTo('guild'); break;
       case 'quests':   goTo('quests'); break;
       case 'fusion':   goTo('fusion'); break;
+      case 'deck':     goTo('deck'); break;
     }
   };
 
@@ -151,7 +157,7 @@ const App: React.FC = () => {
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="app">
+    <div className="app" onClickCapture={handleRootTap}>
       {dailyToast !== null && screen === 'main' && (
         <div className="daily-toast" role="status">
           ☀️ Tages-Bonus! <strong>+{dailyToast} 💎</strong>
@@ -161,11 +167,12 @@ const App: React.FC = () => {
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
       <div className="app-content">
+       <div className="app-screen-fade" key={screen}>
         {screen === 'title' && (
           <TitleScreen onEnter={() => goTo('main')} onAccountPress={() => setAuthOpen(true)} />
         )}
         {screen === 'main' && (
-          <MainScreen onBack={goBack} />
+          <MainScreen onBack={goBack} onNavigate={navTo} />
         )}
         {screen === 'gacha' && (
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -208,6 +215,7 @@ const App: React.FC = () => {
         {screen === 'settings' && (
           <SettingsScreen onBack={goBack} />
         )}
+       </div>
       </div>
 
       {/* ── Dev-Modus-Badge ── */}

@@ -6,6 +6,8 @@ import { ActivityFeedService, type FeedEvent } from '../services/ActivityFeedSer
 import { AuthService } from '../services/AuthService';
 import type { AccountState } from '../types/AccountTypes';
 import { CardDatabase } from '../services/CardDatabase';
+import { TowerService } from '../services/TowerService';
+import { QuestService } from '../services/QuestService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -14,6 +16,7 @@ import './MainScreen.css';
 
 interface MainScreenProps {
   onBack: () => void;
+  onNavigate?: (target: string) => void;
 }
 
 // ── Konstanten ────────────────────────────────────────────────
@@ -71,7 +74,7 @@ function formatCountdown(ms: number): string {
 
 // ── Haupt-Komponente ──────────────────────────────────────────
 
-const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
+const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [detailCard,    setDetailCard]    = useState<Card | null>(null);
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
@@ -83,6 +86,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
   const [feedEvents,    setFeedEvents]    = useState<FeedEvent[]>([]);
   const [feedIndex,     setFeedIndex]     = useState(0);
   const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
+  const [towerFloor,    setTowerFloor]    = useState(() => TowerService.getFloor());
+  const [questBadge,    setQuestBadge]    = useState(0);
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
@@ -134,6 +139,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
       setEnergy(EnergyService.load());
       setEnergyMax(EnergyService.getMax());
       setProfileCardId(localStorage.getItem('ci_profile_card_id') ?? 'azazel');
+      setTowerFloor(TowerService.getFloor());
+      const claimable = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
+        .filter(q => q.progress.completed && !q.progress.claimed).length;
+      setQuestBadge(claimable);
     };
     refresh();
     window.addEventListener('focus', refresh);
@@ -243,6 +252,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
         </div>
       </div>
 
+      {/* ── Primärer Call-to-Action ── */}
+      {onNavigate && (
+        <button
+          className={`main-cta ${energy.energy < 1 ? 'main-cta--empty' : ''}`}
+          onClick={() => onNavigate('battle')}
+        >
+          <span className="main-cta__icon">🗼</span>
+          <span className="main-cta__text">
+            <span className="main-cta__title">{energy.energy < 1 ? 'TURM DER PRÜFUNG' : 'IN DEN TURM'}</span>
+            <span className="main-cta__sub">
+              Etage {towerFloor} · {energy.energy < 1 ? 'Keine Energie' : `${energy.energy}/${energyMax} ⚡`}
+            </span>
+          </span>
+          <span className="main-cta__arrow">▶</span>
+        </button>
+      )}
+
       {/* ── Live-Ereignisse Banner ── */}
       <div className={`main-infobanner${feedEvents.length > 0 ? ' main-infobanner--live' : ''}`}>
         {feedEvents.length > 0 ? (
@@ -300,11 +326,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack }) => {
 
         {/* Rechte Seite */}
         <div className="main-card__right">
-          <button className="main-card__action-btn" onClick={() => {}}>
-            💎 Relics kaufen
+          <button
+            className="main-card__action-btn"
+            onClick={() => onNavigate?.('deck')}
+          >
+            📋 Deck bauen
           </button>
-          <button className="main-card__action-btn" onClick={() => {}}>
-            📜 Updates <span className="main-card__badge">③</span>
+          <button
+            className="main-card__action-btn"
+            onClick={() => onNavigate?.('quests')}
+          >
+            📜 Quests {questBadge > 0 && <span className="main-card__badge">{questBadge}</span>}
           </button>
           <div className="main-card__divider" />
           <div className="main-card__status">
