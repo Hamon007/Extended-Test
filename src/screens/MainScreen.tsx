@@ -13,6 +13,7 @@ import { ExpeditionService } from '../services/ExpeditionService';
 import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
 import { OfflineIncomeService, type OfflineResult } from '../services/OfflineIncomeService';
+import { LuckySpinService } from '../services/LuckySpinService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -95,6 +96,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [questBadge,    setQuestBadge]    = useState(0);
   const [achBadge,      setAchBadge]      = useState(0);
   const [expBadge,      setExpBadge]      = useState(0);
+  const [spinBadge,     setSpinBadge]     = useState(() => LuckySpinService.canSpin());
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
@@ -165,6 +167,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setQuestBadge(claimable);
       setAchBadge(AchievementService.getUnclaimedCount());
       setExpBadge(ExpeditionService.getCompleted().length);
+      setSpinBadge(LuckySpinService.canSpin());
       setRegenMs(EnergyService.msUntilNextRegen());
     };
     refresh();
@@ -429,6 +432,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             onClick={() => onNavigate?.('shop')}
           >
             🛒 Laden
+          </button>
+          <button
+            className={`main-card__action-btn ${spinBadge ? 'main-card__action-btn--spin' : ''}`}
+            onClick={() => onNavigate?.('lucky_spin')}
+          >
+            🎰 Glücksrad {spinBadge && <span className="main-card__badge main-card__badge--gold">!</span>}
           </button>
           <div className="main-card__divider" />
           <div className="main-card__status">

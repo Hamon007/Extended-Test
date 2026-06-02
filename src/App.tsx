@@ -27,6 +27,7 @@ import AchievementScreen         from './screens/AchievementScreen';
 import ExpeditionScreen          from './screens/ExpeditionScreen';
 import SeasonScreen              from './screens/SeasonScreen';
 import ShopScreen               from './screens/ShopScreen';
+import LuckySpinScreen          from './screens/LuckySpinScreen';
 import LoginStreakPopup           from './components/LoginStreakPopup';
 import AchievementToast, { showAchievementToast } from './components/AchievementToast';
 import { DevModeService }        from './services/DevModeService';
@@ -170,6 +171,7 @@ const App: React.FC = () => {
       case 'expedition':    goTo('expedition'); break;
       case 'season':        goTo('season'); break;
       case 'shop':          goTo('shop'); break;
+      case 'lucky_spin':    goTo('lucky_spin'); break;
     }
   };
 
@@ -276,6 +278,9 @@ const App: React.FC = () => {
         )}
         {screen === 'shop' && (
           <ShopScreen onBack={goBack} />
+        )}
+        {screen === 'lucky_spin' && (
+          <LuckySpinScreen onBack={goBack} />
         )}
        </div>
       </div>

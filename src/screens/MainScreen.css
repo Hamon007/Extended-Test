@@ -919,3 +919,15 @@
   color: var(--text-dim);
   flex-shrink: 0;
 }
+
+.main-card__action-btn--spin {
+  background: linear-gradient(135deg, rgba(80, 0, 120, 0.4), rgba(150, 0, 80, 0.3));
+  border-color: rgba(200, 100, 255, 0.5);
+  color: #d4b4ff;
+  animation: spinBtnPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes spinBtnPulse {
+  from { box-shadow: none; }
+  to   { box-shadow: 0 0 8px rgba(200, 100, 255, 0.4); }
+}
