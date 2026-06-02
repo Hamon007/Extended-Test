@@ -382,3 +382,100 @@
   white-space: nowrap;
   width: 100%;
 }
+
+/* ── Relikte ────────────────────────────────────────────────── */
+.profile-relics {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.profile-relics__count {
+  font-size: 9px;
+  color: #8a6890;
+  font-family: 'Cinzel', serif;
+}
+
+.profile-relics__empty {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #5a4860;
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed rgba(90,72,96,0.4);
+  border-radius: 8px;
+}
+
+.profile-relics__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.profile-relic {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.profile-relic--unlocked {
+  background: linear-gradient(135deg, rgba(40,10,80,0.6), rgba(20,5,50,0.6));
+  border-color: rgba(124,77,255,0.4);
+}
+
+.profile-relic--locked {
+  background: rgba(0,0,0,0.2);
+  border-color: rgba(60,40,70,0.4);
+  opacity: 0.7;
+}
+
+.profile-relic__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.profile-relic__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-relic__name {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #e8d5b0;
+  margin-bottom: 2px;
+}
+
+.profile-relic--locked .profile-relic__name { color: #5a4860; }
+
+.profile-relic__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: #b39ddb;
+  font-style: italic;
+}
+
+.profile-relic__unlock {
+  font-family: 'EB Garamond', serif;
+  font-size: 9px;
+  color: #5a4860;
+  font-style: italic;
+}
+
+.profile-relics__locked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-relics__more {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #5a4860;
+  text-align: center;
+  padding: 4px;
+}

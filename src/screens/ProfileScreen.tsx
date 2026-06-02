@@ -3,6 +3,7 @@ import { AuthService } from '../services/AuthService';
 import { ProfileService, type Profile, canChangeUsername, nextChangeDate } from '../services/ProfileService';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
+import { RelicService } from '../services/RelicService';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
@@ -192,6 +193,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
               })}
             </div>
 
+            {/* ── Relikte ── */}
+            <RelicsSection />
+
             {/* ── Profilkarte Auswahl ── */}
             {uniqueCardInstances.length > 0 && (
               <div className="profile-card-section">
@@ -229,6 +233,59 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
           </>
         )}
       </div>
+    </div>
+  );
+};
+
+// ── Relikte-Sektion ───────────────────────────────────────────
+
+const RelicsSection: React.FC = () => {
+  const unlocked = RelicService.getUnlocked();
+  const totalRelics = RelicService.RELIC_DEFS.length;
+  const lockedRelics = RelicService.RELIC_DEFS.filter(r => !RelicService.isUnlocked(r.id));
+
+  return (
+    <div className="profile-relics">
+      <div className="profile-section-title">
+        Relikte <span className="profile-relics__count">({unlocked.length}/{totalRelics})</span>
+      </div>
+
+      {unlocked.length === 0 && (
+        <div className="profile-relics__empty">
+          Gewinne Kämpfe und sammle Achievements um Relikte freizuschalten.
+        </div>
+      )}
+
+      {unlocked.length > 0 && (
+        <div className="profile-relics__grid">
+          {unlocked.map(r => (
+            <div key={r.id} className="profile-relic profile-relic--unlocked">
+              <span className="profile-relic__icon">{r.icon}</span>
+              <div className="profile-relic__info">
+                <div className="profile-relic__name">{r.name}</div>
+                <div className="profile-relic__desc">{r.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {lockedRelics.length > 0 && (
+        <div className="profile-relics__locked-list">
+          {lockedRelics.slice(0, 3).map(r => (
+            <div key={r.id} className="profile-relic profile-relic--locked">
+              <span className="profile-relic__icon">🔒</span>
+              <div className="profile-relic__info">
+                <div className="profile-relic__name">{r.name}</div>
+                <div className="profile-relic__unlock">{r.unlockFrom}</div>
+              </div>
+            </div>
+          ))}
+          {lockedRelics.length > 3 && (
+            <div className="profile-relics__more">+{lockedRelics.length - 3} weitere Relikte …</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

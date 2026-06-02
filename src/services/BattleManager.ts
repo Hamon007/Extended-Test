@@ -39,6 +39,7 @@ import { LeaderService, type LeaderBonus }     from './LeaderService';
 import { FormationService, type FormationResult } from './FormationService';
 import { AwakeningService }                    from './AwakeningService';
 import { CardBondService }                     from './CardBondService';
+import { RelicService }                        from './RelicService';
 import type { DailyModifier }                  from './DailyTrialService';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
@@ -121,9 +122,11 @@ function buildPlayerSide(
   });
 
   // Hand zeigt nur HAND_LIMIT Karten; Rest wandert in den Nachzieh-Stapel.
+  const relicHpBonus = Math.round(PLAYER_HP_BASE * RelicService.totalBonusStartHpPct());
+  const playerHp = PLAYER_HP_BASE + relicHpBonus;
   return {
-    hp:      PLAYER_HP_BASE,
-    hpMax:   PLAYER_HP_BASE,
+    hp:      playerHp,
+    hpMax:   playerHp,
     mp:      PLAYER_MP_START,
     mpMax:   PLAYER_MP_MAX,
     mpRegen: PLAYER_MP_REGEN,
@@ -310,6 +313,7 @@ function playPlayerCard(
   const formationMult = FormationService.damageMultiplier(state.formation ?? null, card.card);
   const dailyMult     = applyDailyDamageMod(card.card?.element, state.dailyModifier ?? null);
   const bondMult      = card.card ? CardBondService.getAtkMultiplier(card.card.id) : 1.0;
+  const relicAtkMult  = 1 + RelicService.totalAtkBonus();
 
   // Awakening-Check
   let awakeningMult = 1.0;
@@ -335,7 +339,7 @@ function playPlayerCard(
   const isSuper = isAwakened && comboCount >= 3;
   const superMult = isSuper ? 3.0 : 1.0;
 
-  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * awakeningMult * superMult;
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * relicAtkMult * awakeningMult * superMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
   // Karte in der Hand als gespielt markieren (bleibt sichtbar mit ✓-Overlay).

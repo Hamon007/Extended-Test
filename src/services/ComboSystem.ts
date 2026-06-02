@@ -25,6 +25,7 @@ import {
   SYNERGY_BONUS_MS,
   SYNERGY_DAMAGE_BONUS,
 } from '../types/ComboTypes';
+import { RelicService } from './RelicService';
 
 // ── Combo-Multiplikator ───────────────────────────────────────
 
@@ -103,7 +104,8 @@ function calculate(
   // Gesamtmultiplikator: Combo × (1 + additive Boni)
   const totalMultiplier = comboMultiplier * (1 + synergyBonus + elementBonus);
   const finalDamage     = Math.max(1, Math.round(baseDamage * totalMultiplier));
-  const windowExtension = hasSynergy ? SYNERGY_BONUS_MS : 0;
+  const relicWindowBonus = RelicService.totalComboWindowBonus();
+  const windowExtension = (hasSynergy ? SYNERGY_BONUS_MS : 0) + relicWindowBonus;
 
   return {
     baseDamage,

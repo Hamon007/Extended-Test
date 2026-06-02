@@ -7,6 +7,21 @@
  */
 
 import { SaveService } from './SaveService';
+import { RelicService } from './RelicService';
+
+// Achievement → Relic mapping (unlocking an achievement also unlocks a relic)
+const ACHIEVEMENT_RELIC: Partial<Record<AchievementId, string>> = {
+  first_win:      'golden_eye',
+  wins_10:        'bloody_blade',
+  wins_50:        'iron_will',
+  first_ssr:      'element_soul',
+  tower_10:       'tower_spirit',
+  win_streak_5:   'victor_spirit',
+  pvp_first_win:  'eternal_warrior',
+  cards_20:       'collector_greed',
+  first_lr:       'legend_heart',
+  combo_master:   'combo_master_relic',
+};
 
 // Lazy import to avoid circular dependency — set by App.tsx on mount
 let _toastFn: ((def: AchievementDef) => void) | null = null;
@@ -235,6 +250,12 @@ function recordProgress(id: AchievementId, increment = 1): boolean {
 
   // Fire toast notification when newly unlocked
   if (newlyUnlocked && _toastFn) _toastFn(def);
+
+  // Unlock associated relic
+  if (newlyUnlocked) {
+    const relicId = ACHIEVEMENT_RELIC[id];
+    if (relicId) RelicService.unlock(relicId);
+  }
 
   return newlyUnlocked;
 }

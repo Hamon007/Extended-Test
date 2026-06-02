@@ -18,6 +18,7 @@ import { EnergyService } from './EnergyService';
 import { AccountProgressionService } from './AccountProgressionService';
 import { ActivityFeedService } from './ActivityFeedService';
 import { WinStreakService } from './WinStreakService';
+import { RelicService } from './RelicService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -74,8 +75,10 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     // Win-Streak vor Belohnungsberechnung erhöhen, damit der neue Multiplikator zählt
     const newStreak = WinStreakService.incrementOnVictory();
     const streakReward = WinStreakService.getRewardMultiplier(newStreak);
-    const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier);
-    const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier);
+    const relicCrystalBonus = 1 + RelicService.totalCrystalBonus();
+    const relicXpBonus      = 1 + RelicService.totalXpBonus();
+    const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier * relicCrystalBonus);
+    const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier * relicXpBonus);
 
     const newCards = rollRewardCards(enemy, state.totalPulls);
 
