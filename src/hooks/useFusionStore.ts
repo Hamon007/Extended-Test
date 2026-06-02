@@ -15,6 +15,7 @@ import { CardDatabase } from '../services/CardDatabase';
 import { FusionSystem, type FusionGroup, type FusionError } from '../services/FusionSystem';
 import { AwakeningSystem, type AwakenError } from '../services/AwakeningSystem';
 import { ActivityFeedService } from '../services/ActivityFeedService';
+import { AchievementService } from '../services/AchievementService';
 
 export interface LastFusion {
   cardId: string;
@@ -56,7 +57,9 @@ export function useFusionStore(): FusionStore {
     SaveService.saveGachaState(outcome.nextState);
     setState(outcome.nextState);
     setLastFusion({ cardId, from: outcome.fromRarity, to: outcome.toRarity });
+    AchievementService.recordProgress('first_fusion');
     if (outcome.toRarity === 'LR') {
+      AchievementService.recordProgress('first_lr');
       const card = CardDatabase.getById(cardId);
       ActivityFeedService.post('fusion_lr', { cardName: card?.name ?? cardId });
     }
@@ -72,6 +75,7 @@ export function useFusionStore(): FusionStore {
     SaveService.saveGachaState(outcome.nextState);
     setState(outcome.nextState);
     setLastAwakening({ fromName: outcome.fromName, toName: outcome.awakenedCard.name });
+    AchievementService.recordProgress('first_awakening');
     ActivityFeedService.post('awaken', { fromName: outcome.fromName, toName: outcome.awakenedCard.name });
   }, [state]);
 

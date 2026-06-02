@@ -227,6 +227,7 @@ const SingleResult: React.FC<SingleResultProps> = ({
       <div
         className="result-single__card"
         style={{ '--rc': rarityColor } as React.CSSProperties}
+        data-rarity={instance.rarity}
         onClick={() => onCardClick(instance.cardId)}
         role="button"
         tabIndex={0}
@@ -364,6 +365,7 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, onCardClick 
     <div
       className={`multi-card ${visible ? 'multi-card--visible' : ''}`}
       style={{ '--rc': rarityColor } as React.CSSProperties}
+      data-rarity={visible ? instance.rarity : undefined}
       onClick={() => visible && onCardClick(instance.cardId)}
       role={visible ? 'button' : undefined}
       tabIndex={visible ? 0 : undefined}

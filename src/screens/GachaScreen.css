@@ -761,3 +761,77 @@
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── LR / MR Karten-Spezialeffekte ─────────────────────────── */
+
+/* LR: Regenbogen-Shimmer-Border */
+.result-single__card[data-rarity="LR"],
+.result-single__card[data-rarity="LR+"],
+.result-single__card[data-rarity="LR++"],
+.result-single__card[data-rarity="LR+++"] {
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  animation: card-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+             lr-rainbow-border 3s linear infinite 0.5s;
+  box-shadow:
+    0 0 40px rgba(255, 100, 200, 0.5),
+    0 0 80px rgba(100, 200, 255, 0.3),
+    0 0 120px rgba(255, 215, 0, 0.2);
+}
+
+@keyframes lr-rainbow-border {
+  0%   { box-shadow: 0 0 30px #ff006688, 0 0 60px #ff006644; border-color: #ff0066; }
+  16%  { box-shadow: 0 0 30px #ff990088, 0 0 60px #ff990044; border-color: #ff9900; }
+  33%  { box-shadow: 0 0 30px #ffff0088, 0 0 60px #ffff0044; border-color: #ffd700; }
+  50%  { box-shadow: 0 0 30px #00ff9988, 0 0 60px #00ff9944; border-color: #00ff99; }
+  66%  { box-shadow: 0 0 30px #0099ff88, 0 0 60px #0099ff44; border-color: #0099ff; }
+  83%  { box-shadow: 0 0 30px #cc00ff88, 0 0 60px #cc00ff44; border-color: #cc00ff; }
+  100% { box-shadow: 0 0 30px #ff006688, 0 0 60px #ff006644; border-color: #ff0066; }
+}
+
+/* MR: Gold-Puls */
+.result-single__card[data-rarity="MR"],
+.result-single__card[data-rarity="MR+"],
+.result-single__card[data-rarity="MR++"] {
+  animation: card-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+             mr-gold-pulse 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes mr-gold-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255,200,0,0.4), 0 0 40px rgba(255,200,0,0.2);
+    border-color: #ffd700;
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255,200,0,0.7), 0 0 80px rgba(255,200,0,0.35);
+    border-color: #fff;
+  }
+}
+
+/* Multi-Karten: Seltenheits-Leuchtrahmen */
+.multi-card[data-rarity="LR"],
+.multi-card[data-rarity="LR+"],
+.multi-card[data-rarity="LR++"],
+.multi-card[data-rarity="LR+++"] {
+  animation: multi-card-reveal 0.4s ease-out, lr-rainbow-border 3s linear infinite 0.4s;
+}
+
+.multi-card[data-rarity="MR"],
+.multi-card[data-rarity="MR+"],
+.multi-card[data-rarity="MR++"] {
+  animation: multi-card-reveal 0.4s ease-out, mr-gold-pulse 2s ease-in-out infinite 0.4s;
+}
+
+/* SSR-Karten: Silber-Glimmer */
+.result-single__card[data-rarity="SSR"],
+.result-single__card[data-rarity="SSR+"],
+.multi-card[data-rarity="SSR"],
+.multi-card[data-rarity="SSR+"] {
+  animation: card-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+             ssr-silver-pulse 2.5s ease-in-out infinite 0.5s;
+}
+
+@keyframes ssr-silver-pulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(180,200,255,0.4); }
+  50%       { box-shadow: 0 0 32px rgba(180,200,255,0.7), 0 0 60px rgba(100,150,255,0.3); }
+}

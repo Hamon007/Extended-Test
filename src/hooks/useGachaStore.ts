@@ -12,6 +12,7 @@ import { GachaSystem, type PullError } from '../services/GachaSystem';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import { ActivityFeedService } from '../services/ActivityFeedService';
+import { AchievementService } from '../services/AchievementService';
 
 export interface GachaStore {
   state:       GachaState;
@@ -53,11 +54,17 @@ export function useGachaStore(): GachaStore {
         setLastSingle({ ...outcome.result, instance });
         setLastMulti(null);
         persist(outcome.nextState);
-        const r = instance;
-        if (r.rarity === 'SSR' || r.rarity === 'MR') {
-          const card = CardDatabase.getById(r.cardId);
-          ActivityFeedService.post(r.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.cardId });
+        // Achievements
+        if (instance.rarity === 'SSR' || instance.rarity === 'MR') {
+          AchievementService.recordProgress('first_ssr');
+          const card = CardDatabase.getById(instance.cardId);
+          ActivityFeedService.post(instance.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? instance.cardId });
         }
+        if (instance.rarity === 'LR') AchievementService.recordProgress('first_lr');
+        // Card collection achievements
+        const totalCards = outcome.nextState.inventory.length;
+        if (totalCards >= 20) AchievementService.recordProgress('cards_20');
+        if (totalCards >= 50) AchievementService.recordProgress('cards_50');
       } else {
         setError(outcome.error);
       }
@@ -86,10 +93,15 @@ export function useGachaStore(): GachaStore {
         persist(outcome.nextState);
         for (const r of updatedResults) {
           if (r.instance.rarity === 'SSR' || r.instance.rarity === 'MR') {
+            AchievementService.recordProgress('first_ssr');
             const card = CardDatabase.getById(r.instance.cardId);
             ActivityFeedService.post(r.instance.rarity === 'MR' ? 'pull_mr' : 'pull_ssr', { cardName: card?.name ?? r.instance.cardId });
           }
+          if (r.instance.rarity === 'LR') AchievementService.recordProgress('first_lr');
         }
+        const totalCards = outcome.nextState.inventory.length;
+        if (totalCards >= 20) AchievementService.recordProgress('cards_20');
+        if (totalCards >= 50) AchievementService.recordProgress('cards_50');
       } else {
         setError(outcome.error);
       }

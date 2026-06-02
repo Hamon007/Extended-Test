@@ -349,6 +349,23 @@
   justify-content: center;
 }
 
+.main-card__badge--gold {
+  background: linear-gradient(135deg, #8a4a00, #d4820a);
+  border: 1px solid #ffd700;
+}
+
+.main-res-regen {
+  font-size:   0.5rem;
+  color:       #ff9900;
+  margin-left: 0.3em;
+  animation:   regen-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes regen-blink {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1.0; }
+}
+
 .main-card__divider {
   height: 1px;
   background: var(--border);

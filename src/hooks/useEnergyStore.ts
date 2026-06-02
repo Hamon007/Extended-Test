@@ -21,12 +21,9 @@ export function useEnergyStore(): EnergyStore {
   const [max,   setMax]   = useState<number>(() => EnergyService.getMax());
 
   const consume = useCallback(() => {
-    const next = EnergyService.consume();
-    if (next) {
-      setState(next);
-      return true;
-    }
-    return false;
+    const ok = EnergyService.consume();
+    if (ok) setState(EnergyService.load());
+    return ok;
   }, []);
 
   const usePotion = useCallback(() => {

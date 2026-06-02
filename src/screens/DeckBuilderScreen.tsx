@@ -7,6 +7,7 @@ import type { CardInstance } from '../types/GachaTypes';
 import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
 import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
+import { AchievementService } from '../services/AchievementService';
 import './DeckBuilderScreen.css';
 
 type SortKey = 'rarity' | 'name' | 'atk' | 'hp' | 'mp';
@@ -81,6 +82,7 @@ const DeckBuilderScreen: React.FC = () => {
   function handleSave() {
     saveDeck();
     showToast('✓ Deck gespeichert');
+    if (deck.uuids.length >= DECK_SIZE) AchievementService.recordProgress('deck_complete');
   }
 
   function handleRename() {

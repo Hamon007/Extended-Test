@@ -10,6 +10,19 @@ import { SaveService }          from '../services/SaveService';
 import { ComboSystem }          from '../services/ComboSystem';
 import { ProgressionService }   from '../services/ProgressionService';
 import { QuestService }         from '../services/QuestService';
+import { LeaderService }        from '../services/LeaderService';
+import { FormationService }     from '../services/FormationService';
+import { DailyTrialService } from '../services/DailyTrialService';
+import { WinStreakService }  from '../services/WinStreakService';
+import { TowerEventService, type TowerEvent } from '../services/TowerEventService';
+import { CardDatabase }         from '../services/CardDatabase';
+import { AudioService }         from '../services/AudioService';
+import { PvpService } from '../services/PvpService';
+import { AchievementService } from '../services/AchievementService';
+import { TowerLore }            from '../data/towerLore';
+import { BattleManager, type BattleMeta } from '../services/BattleManager';
+import { GUARD_MP_COST }        from '../config/GameConfig';
+import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
 import VictoryScreen            from './VictoryScreen';
 import DefeatScreen             from './DefeatScreen';
@@ -33,8 +46,15 @@ const BattleScreen: React.FC = () => {
   const [tacticalConfig, setTacticalConfig] = useState<TacticalEnemyConfig | null>(null);
   const [isTowerMode,    setIsTowerMode]    = useState(false);
   const [towerFloor,     setTowerFloor]     = useState(() => TowerService.getFloor());
+  const [loreOverlay,    setLoreOverlay]    = useState<{ floor: number; type: 'normal'|'elite'|'boss' } | null>(null);
+  const [pendingMeta,    setPendingMeta]    = useState<{ enemy: EnemyData; meta: BattleMeta; tact: TacticalEnemyConfig | null } | null>(null);
+  const [towerEvent,     setTowerEvent]     = useState<TowerEvent | null>(null);
+  const [eventToast,     setEventToast]     = useState('');
+  const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
+  const [isPvpMode,      setIsPvpMode]      = useState(false);
   const highestFloor = TowerService.getHighestFloor();
-  const rewardApplied = useRef(false);
+  const rewardApplied  = useRef(false);
+  const pvpConsumedRef = useRef(false);
 
   const inventory     = useMemo(() => SaveService.loadGachaState().inventory, []);
   const deckInstances = useMemo(() => {
@@ -46,6 +66,31 @@ const BattleScreen: React.FC = () => {
 
   const deckComplete = deckInstances.length === DECK_SIZE;
 
+  // Deck-Karten als Card-Objekte (für Leader/Formation)
+  const deckCards: Card[] = useMemo(
+    () => deckInstances
+      .map(inst => CardDatabase.getById(inst.cardId))
+      .filter((c): c is Card => !!c),
+    [deckInstances],
+  );
+
+  const leaderBonus = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
+  const formation   = useMemo(() => FormationService.compute(deckCards), [deckCards]);
+
+  // Tagesprüfung
+  const dailyTrial = useMemo(() => DailyTrialService.today(), []);
+  const dailyDone  = DailyTrialService.isCompleted();
+
+  // PvP: Automatisch starten wenn ein Gegner anstehend ist
+  useEffect(() => {
+    if (pvpConsumedRef.current) return;
+    const pending = PvpService.consumePendingBattle();
+    if (!pending) return;
+    pvpConsumedRef.current = true;
+    setIsPvpMode(true);
+    battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Belohnungen einmalig anwenden wenn Battle endet
   useEffect(() => {
     if (!battle.state?.result || rewardApplied.current) return;
@@ -56,7 +101,7 @@ const BattleScreen: React.FC = () => {
     );
     setRewardDetails(details);
 
-    // Aufgaben-Fortschritt
+    // Aufgaben-Fortschritt + Achievements
     if (battle.state.result.outcome === 'victory') {
       QuestService.recordEvent('win_battles');
       if (isTowerMode) {
@@ -65,6 +110,30 @@ const BattleScreen: React.FC = () => {
           if (TowerService.isBossFloor(towerFloor)) QuestService.recordEvent('defeat_boss');
           else QuestService.recordEvent('defeat_elite');
         }
+        // Tower achievements
+        if (towerFloor >= 10) AchievementService.recordProgress('tower_10');
+        if (towerFloor >= 30) AchievementService.recordProgress('tower_30');
+        if (towerFloor >= 50) AchievementService.recordProgress('tower_50');
+      }
+      // Battle win achievements
+      AchievementService.recordProgress('first_win');
+      AchievementService.recordProgress('wins_10');
+      AchievementService.recordProgress('wins_50');
+      AchievementService.recordProgress('wins_100');
+      // Win streak achievements
+      const streak = WinStreakService.get();
+      if (streak >= 5)  AchievementService.recordProgress('win_streak_5');
+      if (streak >= 10) AchievementService.recordProgress('win_streak_10');
+    }
+
+    // PvP: Ergebnis speichern + Achievements
+    if (isPvpMode) {
+      void PvpService.recordResult(
+        battle.state.result.outcome === 'victory' ? 'win' : 'loss'
+      );
+      if (battle.state.result.outcome === 'victory') {
+        AchievementService.recordProgress('pvp_first_win');
+        AchievementService.recordProgress('pvp_10_wins');
       }
     }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -79,6 +148,9 @@ const BattleScreen: React.FC = () => {
     setRewardDetails(null);
     setTacticalConfig(null);
     setIsTowerMode(false);
+    setIsPvpMode(false);
+    pvpConsumedRef.current = false;
+    setWinStreak(WinStreakService.get());
     rewardApplied.current = false;
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
@@ -100,48 +172,202 @@ const BattleScreen: React.FC = () => {
   // ── Turm-Start ────────────────────────────────────────────
   const noEnergy = energy.energy < 1;
 
+  const isBoss = TowerService.isBossFloor(towerFloor);
+
+  const buildTowerEnemy = (cursed: boolean, tripleReward: boolean): { enemy: EnemyData; tact: TacticalEnemyConfig | null } => {
+    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
+    const cursedMult = cursed ? 1.5 : 1.0;
+    const rewardMult = tripleReward ? 3.0 : cursed ? 2.5 : 1.0;
+    if (tactEnemy) {
+      const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0]!;
+      const enemy: EnemyData = {
+        ...base,
+        id:    tactEnemy.id,
+        name:  cursed ? `Verfluchter ${tactEnemy.name}` : tactEnemy.name,
+        title: tactEnemy.title,
+        stats: {
+          hp:      Math.round(base.stats.hp * (1 + towerFloor * 0.15) * cursedMult),
+          mpMax:   base.stats.mpMax,
+          mpRegen: base.stats.mpRegen,
+        },
+        cards: base.cards.map(c => ({ ...c, atk: Math.round(c.atk * (1 + towerFloor * 0.1) * cursedMult) })),
+        rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2) * rewardMult),
+        rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2) * rewardMult),
+      };
+      return { enemy, tact: tactEnemy };
+    }
+    const all = EnemyDatabase.getAll();
+    const r = all[Math.floor(Math.random() * all.length)]!;
+    const enemy: EnemyData = cursed || tripleReward ? {
+      ...r,
+      name: cursed ? `Verfluchter ${r.name}` : r.name,
+      stats: { ...r.stats, hp: Math.round(r.stats.hp * cursedMult) },
+      cards: r.cards.map(c => ({ ...c, atk: Math.round(c.atk * cursedMult) })),
+      rewardXp:       Math.round(r.rewardXp * rewardMult),
+      rewardCrystals: Math.round(r.rewardCrystals * rewardMult),
+    } : r;
+    return { enemy, tact: null };
+  };
+
+  const startFloorBattle = (cursed = false, tripleReward = false) => {
+    const { enemy, tact } = buildTowerEnemy(cursed, tripleReward);
+    const meta: BattleMeta = { leaderBonus, formation };
+    const type = isBoss ? 'boss' : tact ? 'elite' : 'normal';
+    setPendingMeta({ enemy, meta, tact });
+    setLoreOverlay({ floor: towerFloor, type });
+  };
+
   const handleTowerStart = () => {
     if (!deckComplete) return;
     if (!energy.consume()) return;
     setIsTowerMode(true);
 
-    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
-    if (tactEnemy) {
-      setTacticalConfig(tactEnemy);
-      const base = EnemyDatabase.getFirst() ?? EnemyDatabase.getAll()[0];
-      if (!base) return;
-      const scaledEnemy: EnemyData = {
-        ...base,
-        id:    tactEnemy.id,
-        name:  tactEnemy.name,
-        title: tactEnemy.title,
-        stats: {
-          hp:      Math.round(base.stats.hp      * (1 + towerFloor * 0.15)),
-          mpMax:   base.stats.mpMax,
-          mpRegen: base.stats.mpRegen,
-        },
-        cards: base.cards.map(c => ({
-          ...c,
-          atk: Math.round(c.atk * (1 + towerFloor * 0.1)),
-        })),
-        rewardXp:       Math.round(base.rewardXp      * (1 + towerFloor * 0.2)),
-        rewardCrystals: Math.round(base.rewardCrystals * (1 + towerFloor * 0.2)),
-      };
-      battle.startBattle(deckInstances, scaledEnemy);
-    } else {
-      setTacticalConfig(null);
-      const all = EnemyDatabase.getAll();
-      const random = all[Math.floor(Math.random() * all.length)];
-      if (random) battle.startBattle(deckInstances, random);
+    // Würfle ein Zufalls-Ereignis
+    const ev = TowerEventService.rollEvent();
+    if (ev) {
+      setTowerEvent(ev);
+      return;
     }
+    startFloorBattle();
   };
 
-  const isBoss = TowerService.isBossFloor(towerFloor);
+  const handleEventChoice = (kind: 'continue' | 'merchant_crystals' | 'merchant_potions' | 'merchant_card' | 'fight') => {
+    if (!towerEvent) return;
+    switch (towerEvent.kind) {
+      case 'treasure': {
+        const reward = TowerEventService.claimTreasure();
+        setEventToast(`Truhe geöffnet: ${reward}`);
+        setTimeout(() => setEventToast(''), 2800);
+        setTowerEvent(null);
+        startFloorBattle();
+        break;
+      }
+      case 'merchant': {
+        if (kind === 'merchant_crystals') {
+          const r = TowerEventService.acceptMerchant('crystals');
+          setEventToast(`Händler: ${r}`);
+        } else if (kind === 'merchant_potions') {
+          const r = TowerEventService.acceptMerchant('potions');
+          setEventToast(`Händler: ${r}`);
+        } else if (kind === 'merchant_card') {
+          const r = TowerEventService.acceptMerchant('small_crystal_card');
+          setEventToast(`Händler: ${r}`);
+        }
+        setTimeout(() => setEventToast(''), 2800);
+        setTowerEvent(null);
+        startFloorBattle();
+        break;
+      }
+      case 'stranger': {
+        setTowerEvent(null);
+        startFloorBattle(false, true);
+        break;
+      }
+      case 'cursed': {
+        setTowerEvent(null);
+        startFloorBattle(true, false);
+        break;
+      }
+    }
+    void kind;
+  };
+
+  const handleDailyTrialStart = () => {
+    if (!deckComplete) return;
+    if (dailyDone) return;
+    if (!energy.consume()) return;
+    setIsTowerMode(false);
+    setTacticalConfig(null);
+
+    const all = EnemyDatabase.getAll();
+    let enemy = all[Math.floor(Math.random() * all.length)];
+    if (!enemy) return;
+
+    // Boost rewards for the daily trial
+    enemy = {
+      ...enemy,
+      rewardXp:       Math.round(enemy.rewardXp       + dailyTrial.rewardXp),
+      rewardCrystals: Math.round(enemy.rewardCrystals + dailyTrial.rewardCrystals),
+    };
+
+    const meta: BattleMeta = {
+      leaderBonus,
+      formation,
+      dailyModifier: dailyTrial.modifier,
+      maxRounds:     dailyTrial.modifier.kind === 'time_trial' ? dailyTrial.modifier.maxRounds : undefined,
+    };
+    battle.startBattle(deckInstances, enemy, meta);
+    DailyTrialService.markCompleted();
+  };
+
+  const confirmLore = () => {
+    if (!pendingMeta) return;
+    setTacticalConfig(pendingMeta.tact);
+    battle.startBattle(deckInstances, pendingMeta.enemy, pendingMeta.meta);
+    setLoreOverlay(null);
+    setPendingMeta(null);
+  };
+
+  // ── Event-Overlay ──
+  if (towerEvent) {
+    return (
+      <div className="lore-overlay">
+        <div className="lore-overlay__box">
+          <div className="event-overlay__icon">{towerEvent.icon}</div>
+          <h2 className="lore-overlay__subtitle">{towerEvent.title}</h2>
+          <p className="lore-overlay__text">{towerEvent.description}</p>
+
+          {towerEvent.kind === 'merchant' && (
+            <div className="event-overlay__choices">
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_crystals')}>+300 💎</button>
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_potions')}>+3 🧪 Tränke</button>
+              <button className="event-overlay__choice" onClick={() => handleEventChoice('merchant_card')}>+1 💎 Karte (Klein)</button>
+            </div>
+          )}
+          {towerEvent.kind === 'treasure' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('continue')}>▶ Truhe öffnen</button>
+          )}
+          {towerEvent.kind === 'stranger' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('fight')}>⚔ Herausforderung annehmen — Belohnung ×3</button>
+          )}
+          {towerEvent.kind === 'cursed' && (
+            <button className="lore-overlay__btn" onClick={() => handleEventChoice('fight')}>⚔ Trotzdem kämpfen — Belohnung ×2,5</button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Lore-Overlay ──
+  if (loreOverlay) {
+    const lore = TowerLore.forFloor(loreOverlay.floor, loreOverlay.type);
+    return (
+      <div className="lore-overlay">
+        <div className="lore-overlay__box">
+          <div className="lore-overlay__floor">ETAGE {loreOverlay.floor}</div>
+          <h2 className="lore-overlay__subtitle">{lore.subtitle}</h2>
+          <p className="lore-overlay__text">{lore.text}</p>
+          <button className="lore-overlay__btn" onClick={confirmLore}>
+            ▶ Etage betreten
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const streakReward = WinStreakService.getRewardMultiplier(winStreak);
 
   return (
     <div className="battle-screen--select">
+      {eventToast && <div className="event-toast">{eventToast}</div>}
+
       <div className="battle-select-header">
         <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
+        {winStreak >= 1 && (
+          <div className={`battle-streak-chip ${winStreak >= 5 ? 'battle-streak-chip--hot' : ''}`}>
+            🔥 {winStreak}{streakReward.multiplier > 1.0 && <> · ×{streakReward.multiplier.toFixed(1)}</>}
+          </div>
+        )}
       </div>
 
       {/* Etagen-Info */}
@@ -161,6 +387,50 @@ const BattleScreen: React.FC = () => {
               : 'Steige höher. Werde stärker. Bezwinge den Turm.'}
           </div>
         </div>
+      </div>
+
+      {/* Leader-Karte + Formation */}
+      {leaderBonus && (
+        <div className="battle-meta-box">
+          <div className="battle-meta-box__title">⚜ Anführer & Formation</div>
+          <div className="battle-meta-box__row">
+            <span className="battle-meta-box__icon">👑</span>
+            <span className="battle-meta-box__main">{leaderBonus.leaderName}</span>
+            <span className="battle-meta-box__bonus">
+              +{Math.round(leaderBonus.elementDamageBoost * 100)}% {leaderBonus.element}
+            </span>
+          </div>
+          {formation.bonuses.length === 0 && (
+            <div className="battle-meta-box__hint">Mind. 3 Karten mit gleichem Tag für eine Formation</div>
+          )}
+          {formation.bonuses.map(f => (
+            <div key={f.tag} className="battle-meta-box__row">
+              <span className="battle-meta-box__icon">✦</span>
+              <span className="battle-meta-box__main">{f.label} ({f.count}×)</span>
+              <span className="battle-meta-box__bonus">+{Math.round(f.damageBoost * 100)}% Schaden</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Tages-Prüfung */}
+      <div className={`battle-daily-trial ${dailyDone ? 'battle-daily-trial--done' : ''}`}>
+        <div className="battle-daily-trial__header">
+          <span className="battle-daily-trial__icon">☀️</span>
+          <span className="battle-daily-trial__title">TAGESPRÜFUNG · {dailyTrial.title}</span>
+          {dailyDone && <span className="battle-daily-trial__done-tag">✓</span>}
+        </div>
+        <div className="battle-daily-trial__desc">{dailyTrial.description}</div>
+        <div className="battle-daily-trial__rewards">
+          💎 +{dailyTrial.rewardCrystals} · ✦ +{dailyTrial.rewardXp} XP
+        </div>
+        <button
+          className={`battle-daily-trial__btn ${dailyDone || !deckComplete || noEnergy ? 'battle-start-btn--disabled' : ''}`}
+          disabled={dailyDone || !deckComplete || noEnergy}
+          onClick={handleDailyTrialStart}
+        >
+          {dailyDone ? 'Heute bereits absolviert' : '⚔ Prüfung starten'}
+        </button>
       </div>
 
       {/* Energie / Ausdauertränke */}
@@ -208,6 +478,64 @@ const BattleScreen: React.FC = () => {
   );
 };
 
+// ── Element-Daten ─────────────────────────────────────────────
+
+const ELEMENT_META: Record<string, { color: string; glow: string; icon: string }> = {
+  fire:      { color: '#ff5500', glow: 'rgba(255,85,0,0.45)',    icon: '🔥' },
+  ice:       { color: '#00aaff', glow: 'rgba(0,170,255,0.35)',   icon: '❄️' },
+  dark:      { color: '#9900ff', glow: 'rgba(153,0,255,0.4)',    icon: '🌑' },
+  light:     { color: '#ffee00', glow: 'rgba(255,238,0,0.35)',   icon: '☀️' },
+  earth:     { color: '#44aa22', glow: 'rgba(68,170,34,0.35)',   icon: '🌿' },
+  water:     { color: '#0066ff', glow: 'rgba(0,102,255,0.35)',   icon: '💧' },
+  lightning: { color: '#ffff00', glow: 'rgba(255,255,0,0.4)',    icon: '⚡' },
+  wind:      { color: '#00ddaa', glow: 'rgba(0,221,170,0.35)',   icon: '🌪️' },
+  void:      { color: '#cc00ff', glow: 'rgba(204,0,255,0.4)',    icon: '🔮' },
+  death:     { color: '#888888', glow: 'rgba(136,136,136,0.3)',  icon: '💀' },
+  chaos:     { color: '#ff0044', glow: 'rgba(255,0,68,0.45)',    icon: '🔱' },
+};
+
+// ── Gegner-Portrait ───────────────────────────────────────────
+
+const EnemyPortrait: React.FC<{
+  enemyData:   EnemyData;
+  isHit:       boolean;
+  isDead:      boolean;
+  isAttacking: boolean;
+}> = ({ enemyData, isHit, isDead, isAttacking }) => {
+  const meta = ELEMENT_META[enemyData.element] ?? { color: '#888888', glow: 'rgba(136,136,136,0.3)', icon: '👹' };
+  return (
+    <div
+      className={`enemy-portrait
+        ${isHit                                    ? 'enemy-portrait--hit'       : ''}
+        ${isDead                                   ? 'enemy-portrait--dead'      : ''}
+        ${isAttacking && !isHit && !isDead ? 'enemy-portrait--attacking' : ''}
+      `}
+      style={{ '--elem-color': meta.color, '--elem-glow': meta.glow } as React.CSSProperties}
+    >
+      <div className="enemy-portrait__ring" />
+      <div className="enemy-portrait__body">
+        <span className="enemy-portrait__icon">{isDead ? '💀' : meta.icon}</span>
+      </div>
+    </div>
+  );
+};
+
+// ── Schwimmende Schadenszahlen ─────────────────────────────────
+
+const FloatDmgNumber: React.FC<{ popup: DamagePopup }> = ({ popup }) => {
+  const tier     = popup.isCrit ? 'crit' : popup.damage >= 50_000 ? 'super' : popup.damage >= 10_000 ? 'high' : 'normal';
+  const elemClass = popup.element ? `dmg-number--${popup.element}` : '';
+  return (
+    <div
+      className={`dmg-number dmg-number--${tier} ${elemClass}`}
+      style={{ left: `${popup.xPct}%`, bottom: `${20 + (popup.yOffset ?? 0)}px` }}
+      aria-hidden="true"
+    >
+      {popup.damage.toLocaleString('de-DE')}
+    </div>
+  );
+};
+
 // ── Battle-Arena ──────────────────────────────────────────────
 
 interface BattleArenaProps {
@@ -221,8 +549,105 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const tactical = useTacticalStore(tacticalConfig ?? null);
   const [popups,      setPopups]      = useState<DamagePopup[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [synergyToast, setSynergyToast] = useState<{ a: string; b: string } | null>(null);
+  const [synergyToast, setSynergyToast] = useState<{ a: string; b: string; count: number } | null>(null);
+  const [awakeningToast, setAwakeningToast] = useState<string | null>(null);
+  const [superToast,     setSuperToast]     = useState<{ name: string; quote: string; damage: number } | null>(null);
+  const [critFlash,      setCritFlash]      = useState(false);
+  const [enemyHit,       setEnemyHit]       = useState(false);
+  const lastAwakenedCount = useRef(0);
+  const lastLogId         = useRef(0);
+  const lastEnemyHpRef    = useRef(state.enemy.hp);
+  const lastPlayerHpRef   = useRef(state.player.hp);
+  const wasBreakingRef    = useRef(false);
+  const resultSoundRef    = useRef(false);
+  const resolvingRef      = useRef(false);
+  const arenaRef          = useRef<HTMLDivElement>(null);
   const popupId = React.useRef(0);
+
+  // Screen-Shake via Web Animations API (retriggert zuverlässig).
+  const triggerShake = useCallback((level: 1 | 2) => {
+    const el = arenaRef.current;
+    if (!el) return;
+    const amp = level === 2 ? 8 : 3.5;
+    el.animate(
+      [
+        { transform: 'translate(0,0)' },
+        { transform: `translate(${amp}px, ${-amp * 0.7}px)` },
+        { transform: `translate(${-amp * 0.8}px, ${amp * 0.6}px)` },
+        { transform: `translate(${amp * 0.5}px, ${amp * 0.3}px)` },
+        { transform: 'translate(0,0)' },
+      ],
+      { duration: level === 2 ? 340 : 170, easing: 'ease-out' },
+    );
+  }, []);
+
+  // Gegner-Treffer-Reaktion (Portrait-Shake)
+  useEffect(() => {
+    if (state.enemy.hp < lastEnemyHpRef.current) {
+      setEnemyHit(true);
+      setTimeout(() => setEnemyHit(false), 460);
+    }
+    lastEnemyHpRef.current = state.enemy.hp;
+  }, [state.enemy.hp]);
+
+  // Spieler nimmt Schaden → Einschlag-Sound, Haptik, harter Shake
+  useEffect(() => {
+    if (state.player.hp < lastPlayerHpRef.current) {
+      AudioService.enemyHit();
+      AudioService.vibrate(40);
+      triggerShake(2);
+    }
+    lastPlayerHpRef.current = state.player.hp;
+  }, [state.player.hp, triggerShake]);
+
+  // Combo gebrochen → dumpfer Sound
+  useEffect(() => {
+    if (combo.isBreaking && !wasBreakingRef.current) AudioService.comboBreak();
+    wasBreakingRef.current = combo.isBreaking;
+  }, [combo.isBreaking]);
+
+  // Sieg / Niederlage → Fanfare
+  useEffect(() => {
+    if (state.result && !resultSoundRef.current) {
+      resultSoundRef.current = true;
+      if (state.result.outcome === 'victory') { AudioService.victory(); AudioService.vibrate([20, 40, 20, 40, 60]); }
+      else AudioService.defeat();
+    }
+  }, [state.result]);
+
+  // Super-Attack-Toast + Critical-Flash basierend auf neuestem Log-Eintrag
+  useEffect(() => {
+    const lastLog = state.log[state.log.length - 1];
+    if (!lastLog || lastLog.id === lastLogId.current) return;
+    lastLogId.current = lastLog.id;
+    if (lastLog.isSuper && lastLog.quote) {
+      setSuperToast({ name: lastLog.cardName, quote: lastLog.quote, damage: lastLog.damage });
+      AudioService.super();
+      AudioService.vibrate([30, 40, 60]);
+      triggerShake(2);
+      setTimeout(() => setSuperToast(null), 2800);
+    }
+    if (lastLog.actor === 'player' && lastLog.damage >= 10_000) {
+      setCritFlash(true);
+      setTimeout(() => setCritFlash(false), 600);
+    }
+  }, [state.log]);
+
+  // Awakening-Toast wenn neue Karte erwacht
+  useEffect(() => {
+    const current = state.awakenedIds?.length ?? 0;
+    if (current > lastAwakenedCount.current) {
+      const newestId = state.awakenedIds?.[current - 1];
+      const card = newestId ? state.player.hand.concat(state.player.deck).find(c => c.sourceId === newestId)?.card : null;
+      if (card) {
+        setAwakeningToast(`${card.name} ERWACHT!`);
+        AudioService.awaken();
+        AudioService.vibrate([20, 30, 40]);
+        setTimeout(() => setAwakeningToast(null), 2400);
+      }
+    }
+    lastAwakenedCount.current = current;
+  }, [state.awakenedIds?.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { player, enemy, round, phase, log, result, enemyData } = state;
   const canPlay   = phase === 'player_turn' && !result;
@@ -244,6 +669,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   // Karte in Auswahl ein-/ausschalten
   const handleToggleCard = useCallback((card: BattleCard) => {
     if (!canPlay || card.played || card.destroyed || card.mpCost > player.mp) return;
+    AudioService.tap();
     setSelectedIds(prev =>
       prev.includes(card.instanceId)
         ? prev.filter(id => id !== card.instanceId)
@@ -251,60 +677,115 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     );
   }, [canPlay, player.mp]);
 
-  // Alle ausgewählten Karten in Reihenfolge ausspielen
+  // Ausgewählte Karten NACHEINANDER ausspielen — jede schlägt mit
+  // eigenem Sound, Schadenszahl, Shake und Haptik ein (Combo-Flurry).
+  const STAGGER_MS = 230;
   const handlePlaySelected = useCallback(() => {
-    if (!canPlay || selectedIds.length === 0) return;
+    if (!canPlay || selectedIds.length === 0 || resolvingRef.current) return;
 
-    // Combo-Zähler lokal hochzählen (Refs in useComboStore immer aktuell)
+    // Karten zum Zeitpunkt des Klicks auflösen (Render-Hand)
+    const queue = selectedIds
+      .map(id => player.hand.find(c => c.instanceId === id))
+      .filter((c): c is BattleCard => !!c && !c.played && !c.destroyed);
+    if (queue.length === 0) { setSelectedIds([]); return; }
+
+    resolvingRef.current = true;
+    setSelectedIds([]);
+    AudioService.unlock();
+
     let localComboCount = combo.isActive ? combo.count : 0;
-    let lastCard = combo.lastCard;
+    let lastCard: BattleCard | null = null;
+    const synergyPairs: Array<{ a: string; b: string }> = [];
 
-    for (const instanceId of selectedIds) {
-      const card = player.hand.find(c => c.instanceId === instanceId);
-      if (!card || card.played || card.destroyed) continue;
+    const playOne = (idx: number) => {
+      if (idx >= queue.length) {
+        // Synergie-Toast nach Abschluss des Flurry
+        if (synergyPairs.length > 0) {
+          const count = synergyPairs.length;
+          setSynergyToast({ a: synergyPairs[0].a, b: synergyPairs[count - 1].b, count });
+          setTimeout(() => setSynergyToast(null), 2400);
+          QuestService.recordEvent('use_synergy', count);
+        }
+        resolvingRef.current = false;
+        return;
+      }
 
+      const card = queue[idx];
       localComboCount = Math.min(5, localComboCount + 1);
       const calc = ComboSystem.calculate(
-        card.atk,
-        localComboCount,
-        lastCard,
-        card,
-        enemyData.element,
+        card.atk, localComboCount, lastCard, card, enemyData.element,
       );
 
       combo.onCardPlayed(card, calc.windowExtension);
       if (localComboCount >= 2) QuestService.recordEvent('play_combos');
-
-      if (tacticalConfig && tactical.tactical) {
-        // Tactical mode: use playTacticalCard which applies tactical multiplier
-        tactical.playTacticalCard(card, localComboCount);
-      } else {
-        battle.playCard(card.instanceId, calc.totalMultiplier);
+      if (localComboCount >= 5) {
+        AchievementService.recordProgress('combo_5');
+        AchievementService.recordProgress('combo_master');
       }
+
+      const damageMultiplier = (tacticalConfig && tactical.tactical)
+        ? tactical.playTacticalCard(card, localComboCount)
+        : calc.totalMultiplier;
+
+      battle.playCard(card.instanceId, damageMultiplier, localComboCount);
+
+      const dmg    = Math.max(1, Math.round(card.atk * damageMultiplier));
+      const isCrit = localComboCount >= 4 || (state.awakenedIds?.includes(card.sourceId) ?? false);
 
       addPopup({
-        damage:     calc.finalDamage,
+        damage:     dmg,
         combo:      localComboCount,
-        multiplier: calc.totalMultiplier,
+        multiplier: damageMultiplier,
         hasSynergy: calc.hasSynergy,
         hasElement: calc.hasElementAdv,
-        xPct:       20 + Math.random() * 60,
+        xPct:       38 + Math.random() * 24,
+        element:    card.card?.element,
+        isCrit,
+        yOffset:    idx * 6,
       });
 
-      if (calc.hasSynergy && lastCard) {
-        setSynergyToast({ a: lastCard.name, b: card.name });
-        setTimeout(() => setSynergyToast(null), 2200);
-        QuestService.recordEvent('use_synergy');
+      // ── Audio + Juice ──
+      AudioService.cardPlay();
+      AudioService.combo(localComboCount);
+      if (isCrit) {
+        AudioService.crit();
+        AudioService.vibrate(28);
+        triggerShake(2);
+      } else {
+        AudioService.hit(Math.min(1, dmg / 25_000));
+        AudioService.vibrate(12);
+        triggerShake(1);
       }
+      if (calc.hasSynergy) AudioService.synergy();
 
+      if (calc.hasSynergy && lastCard) synergyPairs.push({ a: lastCard.name, b: card.name });
       lastCard = card;
-    }
 
-    setSelectedIds([]);
-  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup]);
+      setTimeout(() => playOne(idx + 1), STAGGER_MS);
+    };
+
+    playOne(0);
+  }, [canPlay, selectedIds, player.hand, combo, enemyData.element, battle, tacticalConfig, tactical, addPopup, triggerShake, state.awakenedIds]);
+
+  // Verteidigen: MP ausgeben, nächsten Gegnerschaden halbieren, Zug beenden
+  const handleGuard = useCallback(() => {
+    if (!canPlay || player.mp < GUARD_MP_COST || resolvingRef.current) return;
+    AudioService.guard();
+    AudioService.vibrate(20);
+    battle.guard();
+  }, [canPlay, player.mp, battle]);
+
+  // Gegner-Absicht: vorhergesagter Schaden des nächsten Gegnerzugs
+  const incomingDamage = canPlay ? BattleManager.forecastEnemyDamage(state) : 0;
 
   return (
-    <div className="battle-arena">
+    <div className="battle-arena" ref={arenaRef}>
+      <div className="arena-bg-pulse" aria-hidden="true" />
+
+      {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}
+      <div className="damage-numbers-layer">
+        {popups.map(p => <FloatDmgNumber key={p.id} popup={p} />)}
+      </div>
 
       {/* Topbar */}
       <div className="arena-topbar">
@@ -321,15 +802,45 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       {/* Synergie-Toast */}
       {synergyToast && (
         <div className="arena-synergy-toast">
-          <span className="arena-synergy-toast__icon">⭐</span>
-          <span className="arena-synergy-toast__text">SYNERGIE</span>
+          <span className="arena-synergy-toast__icon">{synergyToast.count > 1 ? '✨' : '⭐'}</span>
+          <span className="arena-synergy-toast__text">
+            {synergyToast.count > 1 ? `×${synergyToast.count} SYNERGIE` : 'SYNERGIE'}
+          </span>
           <span className="arena-synergy-toast__cards">{synergyToast.a} + {synergyToast.b}</span>
         </div>
       )}
 
+      {/* Awakening-Toast */}
+      {awakeningToast && (
+        <div className="arena-awakening-toast">
+          <span className="arena-awakening-toast__icon">🔥</span>
+          <span className="arena-awakening-toast__text">{awakeningToast}</span>
+        </div>
+      )}
+
+      {/* Super-Attack-Overlay */}
+      {superToast && (
+        <div className="arena-super-overlay">
+          <div className="arena-super-overlay__inner">
+            <div className="arena-super-overlay__label">▼ SUPER-ANGRIFF ▼</div>
+            <div className="arena-super-overlay__name">{superToast.name}</div>
+            <div className="arena-super-overlay__quote">„{superToast.quote}"</div>
+            <div className="arena-super-overlay__damage">{superToast.damage.toLocaleString('de-DE')} SCHADEN</div>
+          </div>
+        </div>
+      )}
+
+      {/* Critical Flash */}
+      {critFlash && <div className="arena-crit-flash" />}
+
       {/* Gegner oben */}
       <div className="arena-enemy-zone">
-        <div className="arena-enemy-portrait"><span>💀</span></div>
+        <EnemyPortrait
+          enemyData={enemyData}
+          isHit={enemyHit}
+          isDead={enemy.hp <= 0}
+          isAttacking={phase === 'enemy_turn'}
+        />
         <div className="arena-enemy-info">
           <div className="arena-enemy-name">{enemyData.name}</div>
           <HpBar current={enemy.hp} max={enemy.hpMax} color="#cc2200" />
@@ -337,6 +848,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           <div className="arena-enemy-cards-row">
             {enemy.hand.map(c => <EnemyCardMini key={c.instanceId} card={c} />)}
           </div>
+          {canPlay && incomingDamage > 0 && (
+            <div className="arena-enemy-intent">
+              <span className="arena-enemy-intent__label">⚔ Nächster Angriff</span>
+              <span className="arena-enemy-intent__value">~{incomingDamage.toLocaleString('de-DE')}</span>
+            </div>
+          )}
           {/* Tactical Overlay */}
           {tactical.tactical && (
             <TacticalOverlay tacticalState={tactical.tactical} />
@@ -357,7 +874,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             isBreaking={combo.isBreaking}
             isMaxCombo={combo.isMaxCombo}
             lastCard={combo.lastCard}
-            popups={popups}
+            popups={[]}
           />
         </div>
       </div>
@@ -435,6 +952,19 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           </div>
         )}
 
+        {/* Verteidigen (nur Nicht-Taktik-Kämpfe) */}
+        {canPlay && !tactical.tactical && (
+          <button
+            className="arena-guard-btn"
+            onClick={handleGuard}
+            disabled={player.mp < GUARD_MP_COST}
+            title={player.mp < GUARD_MP_COST ? `Zu wenig MP (${GUARD_MP_COST})` : undefined}
+          >
+            🛡 Verteidigen
+            <span className="arena-guard-btn__hint">−50% Schaden · {GUARD_MP_COST} MP</span>
+          </button>
+        )}
+
         {/* End-Turn */}
         <button
           className={`arena-end-turn
@@ -457,9 +987,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 // ── HP/MP-Balken ──────────────────────────────────────────────
 
 const HpBar: React.FC<{ current: number; max: number; color: string }> = ({ current, max, color }) => {
-  const pct = max > 0 ? Math.max(0, (current / max) * 100) : 0;
+  const pct      = max > 0 ? Math.max(0, (current / max) * 100) : 0;
+  const isDanger = pct > 0 && pct < 25;
   return (
-    <div className="battle-bar">
+    <div className={`battle-bar ${isDanger ? 'battle-bar--danger' : ''}`}>
       <div className="battle-bar__fill" style={{ width: `${pct}%`, background: color }} />
       <span className="battle-bar__label">
         {current.toLocaleString('de-DE')} / {max.toLocaleString('de-DE')}
@@ -491,8 +1022,16 @@ interface PlayerHandCardProps {
 const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   card, canPlay, playerMp, selectIndex, onToggle,
 }) => {
-  const [imgErr, setImgErr] = useState(false);
+  const [imgErr,    setImgErr]   = useState(false);
+  const [striking,  setStriking] = useState(false);
   const touchStartY = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (card.played) {
+      setStriking(true);
+      setTimeout(() => setStriking(false), 460);
+    }
+  }, [card.played]);
 
   const noMp       = card.mpCost > playerMp;
   const blocked    = card.played || card.destroyed || !canPlay || noMp;
@@ -521,11 +1060,12 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   return (
     <div
       className={`hand-card
-        ${isSelected     ? 'hand-card--selected'  : ''}
-        ${card.played    ? 'hand-card--played'    : ''}
-        ${card.destroyed ? 'hand-card--destroyed' : ''}
-        ${noMp && !card.played ? 'hand-card--no-mp' : ''}
-        ${!blocked && !isSelected ? 'hand-card--playable' : ''}
+        ${striking                                ? 'hand-card--striking'  : ''}
+        ${isSelected                              ? 'hand-card--selected'  : ''}
+        ${card.played                             ? 'hand-card--played'    : ''}
+        ${card.destroyed                          ? 'hand-card--destroyed' : ''}
+        ${noMp && !card.played                    ? 'hand-card--no-mp'     : ''}
+        ${!blocked && !isSelected && !striking    ? 'hand-card--playable'  : ''}
       `}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={handleClick}
@@ -579,12 +1119,20 @@ const BattleLog: React.FC<{ entries: BattleState['log'] }> = ({ entries }) => {
   return (
     <div className="battle-log">
       {visible.map(e => (
-        <div key={e.id} className={`battle-log__entry battle-log__entry--${e.actor}`}>
-          {e.text}
-          {e.damage > 0 && (
-            <span className={`battle-log__dmg battle-log__dmg--${e.actor}`}>
-              -{e.damage.toLocaleString('de-DE')}
-            </span>
+        <div
+          key={e.id}
+          className={`battle-log__entry battle-log__entry--${e.actor} ${e.isSuper ? 'battle-log__entry--super' : ''}`}
+        >
+          <div className="battle-log__main">
+            <span>{e.text}</span>
+            {e.damage > 0 && (
+              <span className={`battle-log__dmg battle-log__dmg--${e.actor}`}>
+                -{e.damage.toLocaleString('de-DE')}
+              </span>
+            )}
+          </div>
+          {e.quote && (
+            <div className="battle-log__quote">„{e.quote}"</div>
           )}
         </div>
       ))}
