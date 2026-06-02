@@ -25,6 +25,7 @@ import SettingsScreen            from './screens/SettingsScreen';
 import PvpScreen                 from './screens/PvpScreen';
 import AchievementScreen         from './screens/AchievementScreen';
 import ExpeditionScreen          from './screens/ExpeditionScreen';
+import SeasonScreen              from './screens/SeasonScreen';
 import LoginStreakPopup           from './components/LoginStreakPopup';
 import AchievementToast, { showAchievementToast } from './components/AchievementToast';
 import { DevModeService }        from './services/DevModeService';
@@ -166,6 +167,7 @@ const App: React.FC = () => {
       case 'pvp':           goTo('pvp'); break;
       case 'achievements':  goTo('achievements'); break;
       case 'expedition':    goTo('expedition'); break;
+      case 'season':        goTo('season'); break;
     }
   };
 
@@ -184,6 +186,7 @@ const App: React.FC = () => {
     if (target === 'pvp')          goTo('pvp');
     if (target === 'achievements') goTo('achievements');
     if (target === 'expedition')   goTo('expedition');
+    if (target === 'season')       goTo('season');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -264,6 +267,9 @@ const App: React.FC = () => {
         )}
         {screen === 'expedition' && (
           <ExpeditionScreen onBack={goBack} />
+        )}
+        {screen === 'season' && (
+          <SeasonScreen onBack={goBack} />
         )}
        </div>
       </div>

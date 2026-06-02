@@ -385,6 +385,13 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           >
             ⚔ Expeditionen {expBadge > 0 && <span className="main-card__badge main-card__badge--purple">{expBadge}</span>}
           </button>
+          <button
+            className="main-card__action-btn"
+            onClick={() => onNavigate?.('season')}
+            style={{ color: SeasonService.RANK_COLORS[seasonRank] }}
+          >
+            {SeasonService.RANK_ICONS[seasonRank]} Saison-Rang
+          </button>
           <div className="main-card__divider" />
           <div className="main-card__status">
             <div className="main-card__status-title">Status</div>

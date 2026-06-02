@@ -1,0 +1,277 @@
+/* ── SeasonScreen ────────────────────────────────────────────── */
+
+.season-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Header */
+.season-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.season-header__back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.season-header__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+.season-header__days {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  color: var(--gold-dark);
+  opacity: 0.8;
+}
+
+/* Hero Section */
+@keyframes rankGlow {
+  0%, 100% { box-shadow: 0 0 12px 2px currentColor; }
+  50%       { box-shadow: 0 0 28px 8px currentColor; }
+}
+
+.season-hero {
+  margin: 12px 12px 0;
+  padding: 18px 16px;
+  border: 2px solid;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.season-hero__icon {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px currentColor);
+  animation: rankGlow 2s ease-in-out infinite;
+}
+
+.season-hero__name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.season-hero__sp {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.season-hero__progress-wrap {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.season-hero__progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.season-hero__progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+.season-hero__progress-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  margin-top: 3px;
+}
+
+.season-hero__max {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Section title */
+.season-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--gold-dark);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px 12px 4px;
+  opacity: 0.75;
+}
+
+/* Rank Ladder */
+.season-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 12px;
+}
+
+.season-rung {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+
+.season-rung--done {
+  opacity: 0.7;
+}
+
+.season-rung--current {
+  opacity: 1;
+  border-width: 2px;
+  background: rgba(255,255,255,0.06);
+}
+
+.season-rung__icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.season-rung__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  flex: 1;
+  color: var(--text-dim);
+}
+
+.season-rung__sp {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--text);
+  opacity: 0.55;
+}
+
+.season-rung__reward {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--gold-dark);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Season Reward Card */
+.season-reward-card {
+  margin: 0 12px;
+  padding: 14px 16px;
+  border: 2px solid;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.season-reward-card__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.season-reward-card__crystals {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.season-reward-card__hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--gold-dark);
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* SP Sources Table */
+.season-sp-table {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 12px;
+}
+
+.season-sp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.season-sp-row__icon {
+  font-size: 0.9rem;
+  width: 20px;
+  text-align: center;
+}
+
+.season-sp-row__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  flex: 1;
+}
+
+.season-sp-row__sp {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold);
+}
+
+/* Footer */
+.season-footer {
+  margin: 16px 12px 20px;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: var(--text);
+  opacity: 0.35;
+  text-align: center;
+}

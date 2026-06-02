@@ -23,6 +23,7 @@ const MENU_ITEMS: { icon: string; label: string; target: string | null }[] = [
   { icon: '⚔️', label: 'PvP Rangliste',      target: 'pvp' },
   { icon: '🏆', label: 'Achievements',       target: 'achievements' },
   { icon: '⚔', label: 'Expeditionen',       target: 'expedition' },
+  { icon: '🏅', label: 'Saison-Rang',        target: 'season' },
   { icon: '🔀', label: 'Handel',             target: 'trade' },
   { icon: '⚙️', label: 'Einstellungen',      target: 'settings' },
   { icon: 'ℹ️', label: 'Über das Spiel',     target: null },
