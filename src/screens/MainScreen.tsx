@@ -97,6 +97,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [achBadge,      setAchBadge]      = useState(0);
   const [expBadge,      setExpBadge]      = useState(0);
   const [spinBadge,     setSpinBadge]     = useState(() => LuckySpinService.canSpin());
+  const [dailyChecks,   setDailyChecks]   = useState(() => ({
+    spin:        LuckySpinService.canSpin() ? false : true,
+    login:       !DailyLoginService.canClaim(),
+    dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
+    totalQuests: QuestService.getDailyQuests().length,
+  }));
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
@@ -167,7 +173,14 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setQuestBadge(claimable);
       setAchBadge(AchievementService.getUnclaimedCount());
       setExpBadge(ExpeditionService.getCompleted().length);
-      setSpinBadge(LuckySpinService.canSpin());
+      const canSpin = LuckySpinService.canSpin();
+      setSpinBadge(canSpin);
+      setDailyChecks({
+        spin:        !canSpin,
+        login:       !DailyLoginService.canClaim(),
+        dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
+        totalQuests: QuestService.getDailyQuests().length,
+      });
       setRegenMs(EnergyService.msUntilNextRegen());
     };
     refresh();
@@ -472,6 +485,29 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               })()}
             </div>
             <div className="main-card__season-days">Saison endet in {SeasonService.getDaysLeft()} Tagen</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Tagesaufgaben-Widget ── */}
+      <div className="main-daily-widget">
+        <div className="main-daily-widget__title">⚡ Heute erledigen</div>
+        <div className="main-daily-widget__items">
+          <div className={`main-daily-item ${dailyChecks.login ? 'main-daily-item--done' : ''}`}>
+            <span className="main-daily-item__check">{dailyChecks.login ? '✓' : '○'}</span>
+            <span className="main-daily-item__label">Täglicher Login</span>
+          </div>
+          <div className={`main-daily-item ${dailyChecks.spin ? 'main-daily-item--done' : ''}`}
+            onClick={() => onNavigate?.('lucky_spin')} style={{ cursor: 'pointer' }}>
+            <span className="main-daily-item__check">{dailyChecks.spin ? '✓' : '○'}</span>
+            <span className="main-daily-item__label">Glücksrad drehen</span>
+          </div>
+          <div className={`main-daily-item ${dailyChecks.dailyQuests >= dailyChecks.totalQuests ? 'main-daily-item--done' : ''}`}
+            onClick={() => onNavigate?.('quests')} style={{ cursor: 'pointer' }}>
+            <span className="main-daily-item__check">
+              {dailyChecks.dailyQuests >= dailyChecks.totalQuests ? '✓' : `${dailyChecks.dailyQuests}/${dailyChecks.totalQuests}`}
+            </span>
+            <span className="main-daily-item__label">Tagesquests abgeschlossen</span>
           </div>
         </div>
       </div>
