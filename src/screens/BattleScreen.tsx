@@ -122,7 +122,25 @@ const BattleScreen: React.FC = () => {
       battle.state.result,
       battle.state.enemyData,
     );
-    setRewardDetails({ ...details, maxCombo, totalDamage, bondLevelUps });
+
+    // Performance grade (victory only)
+    let grade: RewardDetails['grade'] | undefined;
+    const playerHpPct = battle.state.player.hpMax > 0
+      ? battle.state.player.hp / battle.state.player.hpMax
+      : 0;
+    const roundsElapsed = battle.state.round;
+    if (details.isVictory) {
+      const score = playerHpPct * 40 + Math.min(40, (maxCombo / 10) * 40) + Math.max(0, (10 - roundsElapsed) * 2);
+      if (score >= 95)      grade = 'SSS';
+      else if (score >= 80) grade = 'SS';
+      else if (score >= 65) grade = 'S';
+      else if (score >= 45) grade = 'A';
+      else if (score >= 30) grade = 'B';
+      else if (score >= 15) grade = 'C';
+      else                  grade = 'D';
+    }
+
+    setRewardDetails({ ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, roundsElapsed, grade });
 
     // Aufgaben-Fortschritt + Achievements
     if (battle.state.result.outcome === 'victory') {

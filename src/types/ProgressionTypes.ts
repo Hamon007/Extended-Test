@@ -40,6 +40,10 @@ export interface RewardDetails {
   maxCombo?:        number;
   totalDamage?:     number;
   bondLevelUps?:    BondLevelUp[];
+  // Performance grade
+  playerHpPct?:     number;   // HP% remaining at battle end (0-1)
+  roundsElapsed?:   number;   // rounds used
+  grade?:           'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

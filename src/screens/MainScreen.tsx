@@ -403,6 +403,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           >
             {SeasonService.RANK_ICONS[seasonRank]} Saison-Rang
           </button>
+          <button
+            className="main-card__action-btn main-card__action-btn--shop"
+            onClick={() => onNavigate?.('shop')}
+          >
+            🛒 Laden
+          </button>
           <div className="main-card__divider" />
           <div className="main-card__status">
             <div className="main-card__status-title">Status</div>

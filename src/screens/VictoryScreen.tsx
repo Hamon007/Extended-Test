@@ -33,10 +33,17 @@ const CountUp: React.FC<{ target: number; prefix?: string; suffix?: string; dura
   return <>{prefix}{value.toLocaleString('de-DE')}{suffix}</>;
 };
 
+const GRADE_COLORS: Record<string, string> = {
+  D: '#9e9e9e', C: '#8bc34a', B: '#03a9f4', A: '#9c27b0',
+  S: '#ff9800', SS: '#f44336', SSS: '#ffd700',
+};
+
 const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
   const maxCombo    = details.maxCombo    ?? 0;
   const totalDamage = details.totalDamage ?? 0;
   const bondUps     = details.bondLevelUps ?? [];
+  const grade       = details.grade;
+  const gradeColor  = grade ? GRADE_COLORS[grade] : undefined;
 
   return (
     <div className="victory-screen">
@@ -52,6 +59,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
         {/* Trophy + Titel */}
         <div className="victory-trophy">🏆</div>
         <h1 className="victory-title">SIEG!</h1>
+
+        {/* Performance Grade */}
+        {grade && (
+          <div className="victory-grade" style={{ color: gradeColor, textShadow: `0 0 20px ${gradeColor}` }}>
+            {grade}
+          </div>
+        )}
+
         <div className="victory-divider" />
 
         {/* Battle-Stats */}
