@@ -89,6 +89,67 @@
   color: var(--gold);
 }
 
+/* ── Kristall-Leiste ─────────────────────────────────────────── */
+
+.main-crystal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(15,8,20,0.95) 0%, rgba(25,14,10,0.95) 100%);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  flex-shrink: 0;
+}
+
+.main-crystal-bar__icon {
+  font-size: 1rem;
+}
+
+.main-crystal-bar__val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--gold-bright);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.main-crystal-bar__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--gold-dark);
+  opacity: 0.65;
+  flex: 1;
+}
+
+.main-crystal-bar__shop-btn,
+.main-crystal-bar__gacha-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.main-crystal-bar__shop-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.main-crystal-bar__gacha-btn {
+  background: linear-gradient(90deg, #3a0060, #1a0040);
+  border: 1px solid #6a2090;
+  color: #e080ff;
+}
+
+.main-crystal-bar__shop-btn:active,
+.main-crystal-bar__gacha-btn:active {
+  opacity: 0.7;
+}
+
 /* ── Ressourcen-Balken ───────────────────────────────────────── */
 
 .main-resources {

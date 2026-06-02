@@ -98,6 +98,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
+  const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -156,6 +157,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setAccount(SaveService.loadAccountState());
       setEnergy(EnergyService.load());
       setEnergyMax(EnergyService.getMax());
+      setCrystals(SaveService.loadGachaState().crystals);
       setProfileCardId(localStorage.getItem('ci_profile_card_id') ?? 'azazel');
       setTowerFloor(TowerService.getFloor());
       const claimable = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
@@ -231,6 +233,25 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <span className="main-topbar__countdown-value">{formatCountdown(countdown)}</span>
         </div>
         <button className="main-topbar__refresh" onClick={handleRefresh} aria-label="Aktualisieren">↺</button>
+      </div>
+
+      {/* ── Kristall-Leiste ── */}
+      <div className="main-crystal-bar">
+        <span className="main-crystal-bar__icon">💎</span>
+        <span className="main-crystal-bar__val">{crystals.toLocaleString('de-DE')}</span>
+        <span className="main-crystal-bar__label">Kristalle</span>
+        <button
+          className="main-crystal-bar__shop-btn"
+          onClick={() => onNavigate?.('shop')}
+        >
+          🛒 Laden
+        </button>
+        <button
+          className="main-crystal-bar__gacha-btn"
+          onClick={() => onNavigate?.('gacha')}
+        >
+          ✨ Beschwören
+        </button>
       </div>
 
       {/* ── Ressourcen-Balken ── */}
