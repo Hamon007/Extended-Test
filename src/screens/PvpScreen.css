@@ -1,0 +1,250 @@
+/* ── PvP Screen ────────────────────────────────────────────── */
+
+.pvp-screen {
+  display:        flex;
+  flex-direction: column;
+  height:         100%;
+  overflow:       hidden;
+  background:     linear-gradient(180deg, #0e0a1a 0%, #1a0e2e 100%);
+  color:          #e8d5b0;
+  font-family:    var(--font-main, 'Georgia', serif);
+  position:       relative;
+}
+
+/* ── Header ── */
+
+.pvp-header {
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  padding:         0.75rem 1rem;
+  background:      linear-gradient(90deg, #1a0e2e, #2a1a4a, #1a0e2e);
+  border-bottom:   1px solid #3d2460;
+  flex-shrink:     0;
+}
+
+.pvp-header__back {
+  background:    transparent;
+  border:        1px solid #5a3a8a;
+  color:         #c09060;
+  padding:       0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size:     0.85rem;
+  cursor:        pointer;
+}
+
+.pvp-header__title {
+  flex:        1;
+  text-align:  center;
+  margin:      0;
+  font-size:   1.2rem;
+  color:       #ffd700;
+  text-shadow: 0 0 10px rgba(255,215,0,0.4);
+}
+
+.pvp-header__refresh {
+  background:    transparent;
+  border:        1px solid #5a3a8a;
+  color:         #a080c0;
+  padding:       0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size:     1rem;
+  cursor:        pointer;
+  transition:    transform 0.2s;
+}
+
+.pvp-header__refresh:not(:disabled):hover { transform: rotate(90deg); }
+.pvp-header__refresh:disabled { opacity: 0.4; }
+
+/* ── Eigene Bilanz ── */
+
+.pvp-my-record {
+  display:         flex;
+  align-items:     center;
+  gap:             0.75rem;
+  padding:         0.6rem 1rem;
+  background:      rgba(255,215,0,0.06);
+  border-bottom:   1px solid #3d2460;
+  flex-shrink:     0;
+  flex-wrap:       wrap;
+}
+
+.pvp-my-record__label {
+  font-size:  0.75rem;
+  color:      #a080c0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pvp-my-record__wins   { font-size: 0.85rem; color: #4caf80; }
+.pvp-my-record__losses { font-size: 0.85rem; color: #e05555; }
+
+/* ── Rang-Badge ── */
+
+.pvp-rank-badge {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           0.3rem;
+  font-size:     0.72rem;
+  font-weight:   700;
+  padding:       0.2rem 0.5rem;
+  border:        1px solid currentColor;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space:   nowrap;
+}
+
+/* ── Info-Text ── */
+
+.pvp-info {
+  font-size:   0.8rem;
+  color:       #8a6a9a;
+  text-align:  center;
+  margin:      0.5rem 1rem 0;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+/* ── Lade-Zustand ── */
+
+.pvp-loading {
+  flex:           1;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  justify-content: center;
+  gap:            0.75rem;
+  color:          #8a6a9a;
+}
+
+.pvp-loading__icon {
+  font-size:  2.5rem;
+  animation:  pvp-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pvp-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50%       { opacity: 1.0; transform: scale(1.1); }
+}
+
+/* ── Fehler ── */
+
+.pvp-error {
+  flex:        1;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  text-align:  center;
+  color:       #e05555;
+  font-size:   0.9rem;
+  padding:     1.5rem;
+  line-height: 1.5;
+}
+
+/* ── Liste ── */
+
+.pvp-list {
+  flex:       1;
+  overflow-y: auto;
+  padding:    0.5rem 0.75rem;
+  display:    flex;
+  flex-direction: column;
+  gap:        0.5rem;
+}
+
+/* ── Gegner-Zeile ── */
+
+.pvp-row {
+  display:       flex;
+  align-items:   center;
+  gap:           0.6rem;
+  padding:       0.65rem 0.8rem;
+  background:    rgba(255,255,255,0.04);
+  border:        1px solid rgba(90,58,138,0.4);
+  border-radius: 10px;
+  transition:    background 0.15s, border-color 0.15s;
+}
+
+.pvp-row:hover {
+  background:   rgba(255,255,255,0.07);
+  border-color: rgba(160,100,220,0.5);
+}
+
+.pvp-row__rank {
+  font-size:   0.9rem;
+  font-weight: 700;
+  color:       #ffd700;
+  min-width:   2rem;
+  text-align:  center;
+}
+
+.pvp-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pvp-row__name {
+  font-size:     0.95rem;
+  font-weight:   600;
+  color:         #e8d5b0;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.pvp-row__meta {
+  font-size: 0.72rem;
+  color:     #8a6a9a;
+  margin-top: 0.15rem;
+}
+
+.pvp-row__right {
+  display:        flex;
+  flex-direction: column;
+  align-items:    flex-end;
+  gap:            0.35rem;
+  flex-shrink:    0;
+}
+
+.pvp-row__btn {
+  background:    linear-gradient(135deg, #6a1a8a, #9a3aba);
+  border:        1px solid #c060e0;
+  color:         #fff;
+  font-size:     0.78rem;
+  font-weight:   700;
+  padding:       0.35rem 0.7rem;
+  border-radius: 8px;
+  cursor:        pointer;
+  white-space:   nowrap;
+  transition:    transform 0.1s, opacity 0.2s;
+}
+
+.pvp-row__btn:not(:disabled):hover  { transform: scale(1.05); }
+.pvp-row__btn:not(:disabled):active { transform: scale(0.97); }
+.pvp-row__btn:disabled              { opacity: 0.45; cursor: default; }
+
+/* ── Toast ── */
+
+.pvp-toast {
+  position:      absolute;
+  bottom:        4.5rem;
+  left:          50%;
+  transform:     translateX(-50%);
+  background:    rgba(106, 26, 138, 0.9);
+  border:        1px solid #c060e0;
+  border-radius: 12px;
+  color:         #fff;
+  font-size:     0.9rem;
+  font-weight:   600;
+  padding:       0.6rem 1.2rem;
+  white-space:   nowrap;
+  pointer-events: none;
+  animation:     pvp-toast-in 0.3s ease-out;
+  z-index:       100;
+}
+
+@keyframes pvp-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+}

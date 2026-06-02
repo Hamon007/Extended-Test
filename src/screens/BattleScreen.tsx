@@ -17,6 +17,7 @@ import { WinStreakService }  from '../services/WinStreakService';
 import { TowerEventService, type TowerEvent } from '../services/TowerEventService';
 import { CardDatabase }         from '../services/CardDatabase';
 import { AudioService }         from '../services/AudioService';
+import { PvpService } from '../services/PvpService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -49,8 +50,10 @@ const BattleScreen: React.FC = () => {
   const [towerEvent,     setTowerEvent]     = useState<TowerEvent | null>(null);
   const [eventToast,     setEventToast]     = useState('');
   const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
+  const [isPvpMode,      setIsPvpMode]      = useState(false);
   const highestFloor = TowerService.getHighestFloor();
-  const rewardApplied = useRef(false);
+  const rewardApplied  = useRef(false);
+  const pvpConsumedRef = useRef(false);
 
   const inventory     = useMemo(() => SaveService.loadGachaState().inventory, []);
   const deckInstances = useMemo(() => {
@@ -77,6 +80,16 @@ const BattleScreen: React.FC = () => {
   const dailyTrial = useMemo(() => DailyTrialService.today(), []);
   const dailyDone  = DailyTrialService.isCompleted();
 
+  // PvP: Automatisch starten wenn ein Gegner anstehend ist
+  useEffect(() => {
+    if (pvpConsumedRef.current) return;
+    const pending = PvpService.consumePendingBattle();
+    if (!pending) return;
+    pvpConsumedRef.current = true;
+    setIsPvpMode(true);
+    battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Belohnungen einmalig anwenden wenn Battle endet
   useEffect(() => {
     if (!battle.state?.result || rewardApplied.current) return;
@@ -98,6 +111,13 @@ const BattleScreen: React.FC = () => {
         }
       }
     }
+
+    // PvP: Ergebnis speichern
+    if (isPvpMode) {
+      void PvpService.recordResult(
+        battle.state.result.outcome === 'victory' ? 'win' : 'loss'
+      );
+    }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {
@@ -110,6 +130,8 @@ const BattleScreen: React.FC = () => {
     setRewardDetails(null);
     setTacticalConfig(null);
     setIsTowerMode(false);
+    setIsPvpMode(false);
+    pvpConsumedRef.current = false;
     setWinStreak(WinStreakService.get());
     rewardApplied.current = false;
     energy.refresh();

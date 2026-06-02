@@ -22,6 +22,7 @@ import FriendsScreen             from './screens/FriendsScreen';
 import InventoryScreen           from './screens/InventoryScreen';
 import QuestScreen               from './screens/QuestScreen';
 import SettingsScreen            from './screens/SettingsScreen';
+import PvpScreen                 from './screens/PvpScreen';
 import { DevModeService }        from './services/DevModeService';
 import { TradeService }          from './services/TradeService';
 import { AudioService }          from './services/AudioService';
@@ -137,6 +138,7 @@ const App: React.FC = () => {
       case 'quests':   goTo('quests'); break;
       case 'fusion':   goTo('fusion'); break;
       case 'deck':     goTo('deck'); break;
+      case 'pvp':      goTo('pvp'); break;
     }
   };
 
@@ -152,6 +154,7 @@ const App: React.FC = () => {
     if (target === 'inventory') goTo('inventory');
     if (target === 'quests')    goTo('quests');
     if (target === 'settings')  goTo('settings');
+    if (target === 'pvp')       goTo('pvp');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -214,6 +217,9 @@ const App: React.FC = () => {
         )}
         {screen === 'settings' && (
           <SettingsScreen onBack={goBack} />
+        )}
+        {screen === 'pvp' && (
+          <PvpScreen onBack={goBack} onStartBattle={() => goTo('battle')} />
         )}
        </div>
       </div>

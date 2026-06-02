@@ -1,0 +1,175 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { PvpService, type PvpOpponent, rankLabel, rankColor } from '../services/PvpService';
+import { AudioService } from '../services/AudioService';
+import './PvpScreen.css';
+
+interface Props {
+  onBack:        () => void;
+  onStartBattle: () => void;
+}
+
+// ── Rang-Icon ─────────────────────────────────────────────────
+
+function RankBadge({ rating }: { rating: number }) {
+  const label = rankLabel(rating);
+  const color = rankColor(rating);
+  const icon =
+    rating >= 2000 ? '🔥' :
+    rating >= 1000 ? '💎' :
+    rating >= 500  ? '🪙' :
+    rating >= 200  ? '⚜️' :
+    rating >= 50   ? '🛡' : '⚔️';
+
+  return (
+    <span className="pvp-rank-badge" style={{ borderColor: color, color }}>
+      {icon} {label}
+    </span>
+  );
+}
+
+// ── Gegner-Zeile ──────────────────────────────────────────────
+
+function OpponentRow({
+  opponent,
+  rank,
+  onChallenge,
+  loading,
+}: {
+  opponent:    PvpOpponent;
+  rank:        number;
+  onChallenge: (o: PvpOpponent) => void;
+  loading:     boolean;
+}) {
+  const ratio = opponent.pvpWins + opponent.pvpLosses > 0
+    ? Math.round((opponent.pvpWins / (opponent.pvpWins + opponent.pvpLosses)) * 100)
+    : 0;
+
+  return (
+    <div className="pvp-row">
+      <div className="pvp-row__rank">#{rank}</div>
+
+      <div className="pvp-row__info">
+        <div className="pvp-row__name">{opponent.displayName}</div>
+        <div className="pvp-row__meta">
+          Lv.{opponent.accountLevel} · {opponent.pvpWins}S {opponent.pvpLosses}N
+          {opponent.pvpWins + opponent.pvpLosses > 0 && ` · ${ratio}% WR`}
+        </div>
+      </div>
+
+      <div className="pvp-row__right">
+        <RankBadge rating={opponent.rating} />
+        <button
+          className="pvp-row__btn"
+          onClick={() => onChallenge(opponent)}
+          disabled={loading}
+        >
+          ⚔ Angreifen
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Haupt-Screen ──────────────────────────────────────────────
+
+const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
+  const [opponents, setOpponents] = useState<PvpOpponent[]>([]);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState('');
+  const [attacking, setAttacking] = useState(false);
+  const [toast,     setToast]     = useState('');
+
+  const myRecord = PvpService.getMyRecord();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const list = await PvpService.fetchLeaderboard();
+      setOpponents(list);
+      if (list.length === 0) setError('Keine Gegner gefunden. Bitte melde dich an und stelle ein Deck auf, um hier zu erscheinen.');
+    } catch {
+      setError('Rangliste konnte nicht geladen werden.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const handleChallenge = useCallback((opponent: PvpOpponent) => {
+    if (attacking) return;
+    setAttacking(true);
+
+    const enemy = PvpService.buildEnemyFromOpponent(opponent);
+    PvpService.setPendingBattle(enemy, opponent);
+
+    AudioService.super();
+    AudioService.vibrate([30, 40, 60]);
+
+    setToast(`⚔ Herausforderung an ${opponent.displayName}!`);
+    setTimeout(() => {
+      setToast('');
+      onStartBattle();
+    }, 900);
+  }, [attacking, onStartBattle]);
+
+  return (
+    <div className="pvp-screen">
+
+      {/* ── Header ── */}
+      <div className="pvp-header">
+        <button className="pvp-header__back" onClick={onBack}>← Zurück</button>
+        <h1 className="pvp-header__title">⚔ PvP Rangliste</h1>
+        <button className="pvp-header__refresh" onClick={load} disabled={loading}>↺</button>
+      </div>
+
+      {/* ── Eigene Bilanz ── */}
+      <div className="pvp-my-record">
+        <span className="pvp-my-record__label">Meine Bilanz</span>
+        <span className="pvp-my-record__wins">✔ {myRecord.wins} Siege</span>
+        <span className="pvp-my-record__losses">✘ {myRecord.losses} Niederlagen</span>
+        <RankBadge rating={myRecord.wins * 100 - myRecord.losses * 20} />
+      </div>
+
+      {/* ── Hinweistext ── */}
+      <p className="pvp-info">
+        Greife das gespeicherte Deck eines anderen Spielers an.
+        Die KI spielt seine Karten — du entscheidest die Taktik!
+      </p>
+
+      {/* ── Inhalt ── */}
+      {loading && (
+        <div className="pvp-loading">
+          <span className="pvp-loading__icon">⚔</span>
+          <p>Lade Rangliste …</p>
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="pvp-error">{error}</div>
+      )}
+
+      {!loading && !error && (
+        <div className="pvp-list">
+          {opponents.map((opp, i) => (
+            <OpponentRow
+              key={opp.userId}
+              opponent={opp}
+              rank={i + 1}
+              onChallenge={handleChallenge}
+              loading={attacking}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ── Toast ── */}
+      {toast && (
+        <div className="pvp-toast" role="status">{toast}</div>
+      )}
+    </div>
+  );
+};
+
+export default PvpScreen;
