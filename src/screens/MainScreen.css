@@ -804,3 +804,57 @@
 .login-bonus-close:active {
   opacity: 0.7;
 }
+
+/* ── Offline Income Toast ─────────────────────────────────────── */
+
+@keyframes offlineSlideIn {
+  from { transform: translateY(-60px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.offline-toast {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9998;
+  background: linear-gradient(90deg, #0d1a2e, #1a0d1a);
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  animation: offlineSlideIn 0.4s ease both;
+}
+
+.offline-toast__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.offline-toast__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.offline-toast__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.offline-toast__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.offline-toast__close {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}

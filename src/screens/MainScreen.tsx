@@ -12,6 +12,7 @@ import { AchievementService } from '../services/AchievementService';
 import { ExpeditionService } from '../services/ExpeditionService';
 import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
+import { OfflineIncomeService, type OfflineResult } from '../services/OfflineIncomeService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -96,6 +97,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [expBadge,      setExpBadge]      = useState(0);
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
+  const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -166,6 +168,15 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     refresh();
     window.addEventListener('focus', refresh);
     return () => window.removeEventListener('focus', refresh);
+  }, []);
+
+  // Offline Income — claim crystals earned while away
+  useEffect(() => {
+    const result = OfflineIncomeService.claim();
+    if (result) {
+      setOfflineResult(result);
+      setAccount(SaveService.loadAccountState());
+    }
   }, []);
 
   // Daily Login Bonus — auto-claim on mount and show modal
@@ -447,6 +458,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
 
       {/* ── Kartendetail-Modal ── */}
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
+
+      {/* ── Offline Einkommens-Toast ── */}
+      {offlineResult && !loginReward && (
+        <div className="offline-toast" onClick={() => setOfflineResult(null)}>
+          <span className="offline-toast__icon">🌙</span>
+          <div className="offline-toast__text">
+            <span className="offline-toast__title">Willkommen zurück!</span>
+            <span className="offline-toast__sub">
+              +{offlineResult.crystals} 💎 in {offlineResult.hours}h verdient
+            </span>
+          </div>
+          <span className="offline-toast__close">✕</span>
+        </div>
+      )}
 
       {/* ── Täglicher Login-Bonus Modal ── */}
       {loginReward && (
