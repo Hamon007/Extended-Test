@@ -570,6 +570,8 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [superToast,     setSuperToast]     = useState<{ name: string; quote: string; damage: number } | null>(null);
   const [critFlash,      setCritFlash]      = useState(false);
   const [enemyHit,       setEnemyHit]       = useState(false);
+  const [limitBreakUsed,   setLimitBreakUsed]   = useState(false);
+  const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
   const lastAwakenedCount = useRef(0);
   const lastLogId         = useRef(0);
   const lastEnemyHpRef    = useRef(state.enemy.hp);
@@ -791,6 +793,53 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     battle.guard();
   }, [canPlay, player.mp, battle]);
 
+  // LIMIT BREAK: vernichtender Angriff wenn Gegner-HP < 20%
+  const enemyHpPct    = state.enemy.hpMax > 0 ? state.enemy.hp / state.enemy.hpMax : 1;
+  const canLimitBreak = canPlay && !limitBreakUsed && enemyHpPct < 0.20 && player.mp >= 10 && !resolvingRef.current;
+
+  const handleLimitBreak = useCallback(() => {
+    if (!canLimitBreak) return;
+    setLimitBreakUsed(true);
+    setLimitBreakAnim(true);
+    AudioService.super();
+    AudioService.vibrate([30, 50, 80, 50, 30]);
+    triggerShake(2);
+    setTimeout(() => setLimitBreakAnim(false), 1800);
+
+    // Schaden = (Summe aller Hand-ATK) × 4 × (MP-Verhältnis)
+    const totalAtk = player.hand.reduce((s, c) => s + c.atk, 0);
+    const mpRatio  = player.mp / player.mpMax;
+    const damage   = Math.round(totalAtk * 4 * (0.5 + mpRatio));
+
+    // Alle MP verbrauchen und Schaden setzen
+    for (const card of player.hand.filter(c => !c.played)) {
+      battle.playCard(card.instanceId, 0, 0); // MP-frei ausspielen (nullschaden aus playCard)
+    }
+    // Direkten Schaden über mehrere playCard-Calls simulieren wäre komplex.
+    // Stattdessen: fake popup + manuell via state
+    addPopup({
+      damage,
+      combo:      5,
+      multiplier: 4,
+      hasSynergy: true,
+      hasElement: true,
+      xPct:       50,
+      isCrit:     true,
+      yOffset:    0,
+    });
+
+    // Schaden auf Gegner anwenden über mehrfache playCard (wenig elegant aber sicher)
+    // Der Trick: wir spielen alle Karten mit massivem Multiplikator
+    const hand = [...player.hand];
+    const perCard = hand.length > 0 ? damage / hand.length : damage;
+    for (const card of hand) {
+      if (!card.played) {
+        const mult = perCard / Math.max(1, card.atk);
+        battle.playCard(card.instanceId, mult, 5);
+      }
+    }
+  }, [canLimitBreak, player.hand, player.mp, player.mpMax, battle, addPopup, triggerShake]);
+
   // Gegner-Absicht: vorhergesagter Schaden des nächsten Gegnerzugs
   const incomingDamage = canPlay ? BattleManager.forecastEnemyDamage(state) : 0;
 
@@ -848,6 +897,14 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
       {/* Critical Flash */}
       {critFlash && <div className="arena-crit-flash" />}
+
+      {/* Limit Break Animation */}
+      {limitBreakAnim && (
+        <div className="arena-limit-overlay">
+          <div className="arena-limit-overlay__text">⚡ LIMIT BREAK ⚡</div>
+          <div className="arena-limit-overlay__sub">VERNICHTENDE KRAFT ENTFESSELT!</div>
+        </div>
+      )}
 
       {/* Gegner oben */}
       <div className="arena-enemy-zone">
@@ -935,6 +992,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         {selectedIds.length > 0 && canPlay && (
           <button className="arena-play-selected" onClick={handlePlaySelected}>
             ⚔ {selectedIds.length} Karte{selectedIds.length > 1 ? 'n' : ''} ausspielen
+          </button>
+        )}
+
+        {/* LIMIT BREAK */}
+        {canLimitBreak && (
+          <button className="arena-limit-break" onClick={handleLimitBreak}>
+            ⚡ LIMIT BREAK ⚡
           </button>
         )}
 
