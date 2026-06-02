@@ -11,6 +11,7 @@ import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
 import { ExpeditionService } from '../services/ExpeditionService';
 import { SeasonService } from '../services/SeasonService';
+import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -94,6 +95,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [achBadge,      setAchBadge]      = useState(0);
   const [expBadge,      setExpBadge]      = useState(0);
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
+  const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -164,6 +166,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     refresh();
     window.addEventListener('focus', refresh);
     return () => window.removeEventListener('focus', refresh);
+  }, []);
+
+  // Daily Login Bonus — auto-claim on mount and show modal
+  useEffect(() => {
+    const reward = DailyLoginService.claim();
+    if (reward) {
+      setLoginReward(reward);
+      // Refresh crystals/energy display after claim
+      setAccount(SaveService.loadAccountState());
+      setEnergy(EnergyService.load());
+    }
   }, []);
 
   // Deck-Stats laden
@@ -427,6 +440,46 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
 
       {/* ── Kartendetail-Modal ── */}
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
+
+      {/* ── Täglicher Login-Bonus Modal ── */}
+      {loginReward && (
+        <div className="login-bonus-overlay" onClick={() => setLoginReward(null)}>
+          <div className="login-bonus-modal" onClick={e => e.stopPropagation()}>
+            <div className="login-bonus-header">
+              <div className="login-bonus-star">✦</div>
+              <div className="login-bonus-title">Tägliche Belohnung</div>
+              <div className="login-bonus-subtitle">Tag {loginReward.day} von 7</div>
+            </div>
+            <div className="login-bonus-dots">
+              {DailyLoginService.DAY_REWARDS.map(r => (
+                <div
+                  key={r.day}
+                  className={`login-bonus-dot ${r.day < loginReward.day ? 'login-bonus-dot--done' : r.day === loginReward.day ? 'login-bonus-dot--today' : ''}`}
+                >
+                  {r.day < loginReward.day ? '✓' : r.day === loginReward.day ? loginReward.day : r.day}
+                </div>
+              ))}
+            </div>
+            <div className="login-bonus-reward">
+              {loginReward.crystals > 0 && (
+                <div className="login-bonus-item">
+                  <span className="login-bonus-item__icon">💎</span>
+                  <span className="login-bonus-item__val">+{loginReward.crystals}</span>
+                </div>
+              )}
+              {loginReward.potions > 0 && (
+                <div className="login-bonus-item">
+                  <span className="login-bonus-item__icon">🧪</span>
+                  <span className="login-bonus-item__val">+{loginReward.potions}</span>
+                </div>
+              )}
+            </div>
+            <button className="login-bonus-close" onClick={() => setLoginReward(null)}>
+              Einsammeln ✦
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
