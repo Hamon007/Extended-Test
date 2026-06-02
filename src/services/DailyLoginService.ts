@@ -9,6 +9,7 @@
 
 import { SaveService } from './SaveService';
 import { EnergyService } from './EnergyService';
+import { AchievementService } from './AchievementService';
 
 const KEY = 'ci_daily_login';
 
@@ -102,6 +103,10 @@ function claim(): DayReward | null {
   if (reward.potions > 0) {
     EnergyService.addPotions(reward.potions);
   }
+
+  // Login achievements
+  if (newSt.streakDay >= 7) AchievementService.recordProgress('login_7');
+  AchievementService.recordProgress('login_30', 1);
 
   return reward;
 }

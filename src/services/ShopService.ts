@@ -13,6 +13,7 @@ import { EnergyService }   from './EnergyService';
 import { SeasonService }   from './SeasonService';
 import { AccountProgressionService } from './AccountProgressionService';
 import { QuestService } from './QuestService';
+import { AchievementService } from './AchievementService';
 
 const PURCHASE_KEY = 'ci_shop_purchases';
 
@@ -183,8 +184,10 @@ function purchase(item: ShopItem): { ok: boolean; reason?: string } {
   // Apply effect
   applyEffect(item.id);
 
-  // Quest tracking
+  // Quest + achievement tracking
   QuestService.recordEvent('shop_purchase');
+  AchievementService.recordProgress('shop_first');
+  AchievementService.recordProgress('shop_regular');
 
   // Track purchase
   const rec = loadRecord();

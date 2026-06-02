@@ -3,6 +3,7 @@ import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import { ExpeditionService, type ActiveExpedition, type ExpeditionDef } from '../services/ExpeditionService';
 import { QuestService } from '../services/QuestService';
+import { AchievementService } from '../services/AchievementService';
 import { RARITY_COLOR } from '../types/Card';
 import './ExpeditionScreen.css';
 
@@ -47,6 +48,8 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
     if (reward.crystalCards > 0) parts.push(`💎Karte +${reward.crystalCards}`);
     showToast(`${exp.cardName} kehrt zurück! ${parts.join(' · ')}`);
     QuestService.recordEvent('complete_expedition');
+    AchievementService.recordProgress('expedition_first');
+    AchievementService.recordProgress('expedition_master');
     setActive(ExpeditionService.getActive());
   };
 

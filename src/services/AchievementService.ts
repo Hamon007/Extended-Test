@@ -53,7 +53,18 @@ export type AchievementId =
   | 'streak_30'
   | 'first_fusion'
   | 'win_streak_5'
-  | 'win_streak_10';
+  | 'win_streak_10'
+  | 'shop_first'
+  | 'shop_regular'
+  | 'expedition_first'
+  | 'expedition_master'
+  | 'season_fighter'
+  | 'season_champion'
+  | 'season_legend'
+  | 'login_7'
+  | 'login_30'
+  | 'combo_10'
+  | 'tower_100';
 
 export interface AchievementDef {
   id:          AchievementId;
@@ -194,6 +205,66 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     id: 'pvp_10_wins', title: 'Arena-Rivale', icon: '🎖️',
     description: '10 PvP-Kämpfe gewonnen.',
     crystals: 500, targetValue: 10, category: 'social',
+  },
+  // ── Shop ──
+  {
+    id: 'shop_first', title: 'Erster Kauf', icon: '🛒',
+    description: 'Kaufe deinen ersten Artikel im Laden.',
+    crystals: 150, category: 'progression',
+  },
+  {
+    id: 'shop_regular', title: 'Stammkunde', icon: '🏪',
+    description: '10 Artikel im Laden gekauft.',
+    crystals: 400, targetValue: 10, category: 'progression',
+  },
+  // ── Expedition ──
+  {
+    id: 'expedition_first', title: 'Aufbruch ins Unbekannte', icon: '⚔',
+    description: 'Schließe deine erste Expedition ab.',
+    crystals: 200, category: 'progression',
+  },
+  {
+    id: 'expedition_master', title: 'Expeditionsmeister', icon: '🗺️',
+    description: '10 Expeditionen abgeschlossen.',
+    crystals: 800, targetValue: 10, category: 'progression',
+  },
+  // ── Season Ranks ──
+  {
+    id: 'season_fighter', title: 'Kämpfer', icon: '◆',
+    description: 'Erreiche den Saison-Rang "Kämpfer".',
+    crystals: 200, category: 'progression',
+  },
+  {
+    id: 'season_champion', title: 'Champion der Saison', icon: '🏅',
+    description: 'Erreiche den Saison-Rang "Champion".',
+    crystals: 1000, category: 'progression',
+  },
+  {
+    id: 'season_legend', title: 'Lebende Legende', icon: '🔥',
+    description: 'Erreiche den Saison-Rang "Legende".',
+    crystals: 3000, category: 'progression',
+  },
+  // ── Login Streak ──
+  {
+    id: 'login_7', title: 'Treuer Kämpfer', icon: '📅',
+    description: '7 Tage in Folge eingeloggt.',
+    crystals: 500, targetValue: 7, category: 'progression',
+  },
+  {
+    id: 'login_30', title: 'Geweihter des Turms', icon: '🌟',
+    description: '30 Tage insgesamt eingeloggt.',
+    crystals: 2500, targetValue: 30, category: 'progression',
+  },
+  // ── Extended Combat ──
+  {
+    id: 'combo_10', title: 'Kombo-Gott', icon: '💥',
+    description: 'Erreiche eine 10er-Kombo in einem Kampf.',
+    crystals: 600, category: 'combat',
+  },
+  {
+    id: 'tower_100', title: 'Ewiger Aufsteiger', icon: '🗼',
+    description: 'Erreiche Etage 100 im Turm.',
+    crystals: 5000, category: 'progression',
   },
 ];
 

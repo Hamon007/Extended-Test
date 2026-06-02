@@ -173,7 +173,17 @@ const BattleScreen: React.FC = () => {
           : SeasonService.SP_REWARDS.tower_win;
         SeasonService.addSp(spAmount);
         QuestService.recordEvent('earn_sp', spAmount);
+        // Season rank achievements
+        const updatedState = SeasonService.load();
+        const spNow = updatedState.sp;
+        if (spNow >= 100)  AchievementService.recordProgress('season_fighter');
+        if (spNow >= 1500) AchievementService.recordProgress('season_champion');
+        if (spNow >= 6000) AchievementService.recordProgress('season_legend');
       }
+      // Combat milestones
+      if (towerFloor >= 100) AchievementService.recordProgress('tower_100');
+      const maxComboCheck = battle.state.maxComboReached ?? 0;
+      if (maxComboCheck >= 10) AchievementService.recordProgress('combo_10');
     }
 
     // PvP: Ergebnis speichern + Achievements
