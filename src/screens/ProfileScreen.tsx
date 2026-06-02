@@ -207,6 +207,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                         className={`profile-card-chip${isSelected ? ' profile-card-chip--selected' : ''}`}
                         onClick={() => {
                           localStorage.setItem('ci_profile_card_id', inst.cardId);
+                          void SaveService.uploadSave();
                           setSelectedCardId(inst.cardId);
                         }}
                       >

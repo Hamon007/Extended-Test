@@ -5,6 +5,7 @@
 
 import type { TacticalEnemyConfig } from '../types/TacticalBattleTypes';
 import { ELITE_ARCHETYPES, BOSS_ARCHETYPES } from '../data/tacticalEnemies';
+import { SaveService } from './SaveService';
 
 const KEY = 'ci_tower_floor';
 
@@ -14,6 +15,7 @@ export const TowerService = {
   },
   setFloor(n: number): void {
     localStorage.setItem(KEY, String(n));
+    void SaveService.uploadSave();
   },
   advanceFloor(): number {
     const next = TowerService.getFloor() + 1;
@@ -51,6 +53,9 @@ export const TowerService = {
   },
   updateHighestFloor(floor: number): void {
     const current = TowerService.getHighestFloor();
-    if (floor > current) localStorage.setItem('ci_tower_highest_floor', String(floor));
+    if (floor > current) {
+      localStorage.setItem('ci_tower_highest_floor', String(floor));
+      void SaveService.uploadSave();
+    }
   },
 };

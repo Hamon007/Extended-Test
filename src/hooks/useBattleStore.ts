@@ -10,15 +10,16 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { BattleState } from '../types/BattleTypes';
 import type { EnemyData } from '../types/BattleTypes';
 import type { CardInstance } from '../types/GachaTypes';
-import { BattleManager } from '../services/BattleManager';
+import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { ENEMY_TURN_DELAY_MS, ROUND_END_DELAY_MS } from '../config/GameConfig';
 
 export interface BattleStore {
   state:          BattleState | null;
   isEnemyActing:  boolean;
-  startBattle:    (instances: CardInstance[], enemy: EnemyData) => void;
-  playCard:       (instanceId: string, damageMultiplier?: number) => void;
+  startBattle:    (instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => void;
+  playCard:       (instanceId: string, damageMultiplier?: number, comboCount?: number) => void;
   endTurn:        () => void;
+  guard:          () => void;
   resetBattle:    () => void;
 }
 
@@ -55,18 +56,22 @@ export function useBattleStore(): BattleStore {
     }
   }, [state?.phase, state?.round]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const startBattle = useCallback((instances: CardInstance[], enemy: EnemyData) => {
+  const startBattle = useCallback((instances: CardInstance[], enemy: EnemyData, meta?: BattleMeta) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    setState(BattleManager.initBattle(instances, enemy));
+    setState(BattleManager.initBattle(instances, enemy, meta));
     setIsEnemyActing(false);
   }, []);
 
-  const playCard = useCallback((instanceId: string, damageMultiplier = 1.0) => {
-    setState(prev => prev ? BattleManager.playPlayerCard(prev, instanceId, damageMultiplier) : null);
+  const playCard = useCallback((instanceId: string, damageMultiplier = 1.0, comboCount = 1) => {
+    setState(prev => prev ? BattleManager.playPlayerCard(prev, instanceId, damageMultiplier, comboCount) : null);
   }, []);
 
   const endTurn = useCallback(() => {
     setState(prev => prev ? BattleManager.endPlayerTurn(prev) : null);
+  }, []);
+
+  const guard = useCallback(() => {
+    setState(prev => prev ? BattleManager.guardAndEndTurn(prev) : null);
   }, []);
 
   const resetBattle = useCallback(() => {
@@ -75,5 +80,5 @@ export function useBattleStore(): BattleStore {
     setIsEnemyActing(false);
   }, []);
 
-  return { state, isEnemyActing, startBattle, playCard, endTurn, resetBattle };
+  return { state, isEnemyActing, startBattle, playCard, endTurn, guard, resetBattle };
 }

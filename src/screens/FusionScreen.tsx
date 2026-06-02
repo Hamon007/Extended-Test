@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFusionStore } from '../hooks/useFusionStore';
 import { FusionSystem, type FusionGroup } from '../services/FusionSystem';
 import { AwakeningSystem } from '../services/AwakeningSystem';
+import { AudioService } from '../services/AudioService';
 import { RARITY_COLOR } from '../types/Card';
 import type { CardStats } from '../types/Card';
 import './FusionScreen.css';
@@ -13,7 +14,6 @@ interface FusionScreenProps {
 const ERROR_LABEL: Record<string, string> = {
   MAXED:                 'Karte ist bereits auf Maximalstufe (LR).',
   NOT_ENOUGH_DUPLICATES: 'Nicht genug Duplikate.',
-  NOT_ENOUGH_CRYSTALS:   'Nicht genug Kristalle.',
   NOT_FOUND:             'Karte nicht gefunden.',
   CANNOT_AWAKEN:         'Diese Karte kann nicht erwachen.',
 };
@@ -177,7 +177,9 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
         {isMaxed && canAwaken && (
           <div className="fusion-row__req">
             <span className="fusion-row__awaken-target">→ {awakenInfo.awakenedCard?.name}</span>
-            <span className="fusion-row__cost">💎 {AwakeningSystem.AWAKENING_CRYSTAL_COST.toLocaleString('de-DE')}</span>
+            <span className={duplicatesAvailable >= 1 ? 'fusion-req--ok' : 'fusion-req--miss'}>
+              1 LR Kopie nötig · {duplicatesAvailable} verfügbar
+            </span>
           </div>
         )}
       </div>
@@ -196,6 +198,7 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
         <button
           className="fusion-row__btn fusion-row__btn--awaken"
           onClick={onAwaken}
+          disabled={duplicatesAvailable < 1}
         >
           ✦ ERWACHEN
         </button>
@@ -234,6 +237,7 @@ interface OverlayProps {
 }
 
 const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) => {
+  useEffect(() => { AudioService.reveal(0.7); AudioService.vibrate([15, 25, 40]); }, []);
   const toColor = RARITY_COLOR[lastFusion.to as keyof typeof RARITY_COLOR] ?? '#f0d080';
   return (
     <div className="fusion-overlay" onClick={onClose}>
@@ -259,6 +263,7 @@ interface AwakenOverlayProps {
 }
 
 const AwakenResultOverlay: React.FC<AwakenOverlayProps> = ({ lastAwakening, onClose }) => {
+  useEffect(() => { AudioService.awaken(); AudioService.vibrate([20, 30, 50, 30, 60]); }, []);
   const lrColor = RARITY_COLOR.LR;
   return (
     <div className="fusion-overlay" onClick={onClose}>

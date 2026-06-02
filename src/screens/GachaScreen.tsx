@@ -9,6 +9,7 @@ import {
 } from '../types/GachaTypes';
 import { RARITY_COLOR } from '../types/Card';
 import { GachaSystem } from '../services/GachaSystem';
+import { AudioService } from '../services/AudioService';
 import CardDetailModal from '../components/CardDetailModal';
 import './GachaScreen.css';
 
@@ -16,6 +17,13 @@ const ERROR_LABEL: Record<string, string> = {
   NOT_ENOUGH_CRYSTALS: 'Nicht genug Kristalle.',
   DB_EMPTY:            'Keine Karten in der Datenbank.',
 };
+
+/** Reveal-Glanz-Intensität nach Hauptstufe (0..1). */
+function rarityIntensity(rarity: string): number {
+  const major = rarity.replace(/\+/g, '');
+  const map: Record<string, number> = { N: 0.25, R: 0.4, SR: 0.6, SSR: 0.8, MR: 0.95, LR: 1 };
+  return map[major] ?? 0.4;
+}
 
 const GachaScreen: React.FC = () => {
   const store = useGachaStore();
@@ -222,6 +230,10 @@ const SingleResult: React.FC<SingleResultProps> = ({
   const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
   const [imgError, setImgError] = useState(false);
 
+  useEffect(() => {
+    AudioService.reveal(rarityIntensity(instance.rarity));
+  }, [instance.uuid]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="result-single">
       <div
@@ -301,9 +313,11 @@ const MultiResult: React.FC<MultiResultProps> = ({
 
   useEffect(() => {
     if (allRevealed) return;
-    const t = setTimeout(() => setRevealed(r => r + 1), 120);
+    const next = results[revealed];
+    if (next) AudioService.reveal(rarityIntensity(next.instance.rarity));
+    const t = setTimeout(() => setRevealed(r => r + 1), 220);
     return () => clearTimeout(t);
-  }, [revealed, allRevealed]);
+  }, [revealed, allRevealed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="result-multi">

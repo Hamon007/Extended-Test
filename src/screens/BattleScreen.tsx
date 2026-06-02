@@ -136,6 +136,13 @@ const BattleScreen: React.FC = () => {
         AchievementService.recordProgress('pvp_10_wins');
       }
     }
+
+    // PvP: Ergebnis speichern
+    if (isPvpMode) {
+      void PvpService.recordResult(
+        battle.state.result.outcome === 'victory' ? 'win' : 'loss'
+      );
+    }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {

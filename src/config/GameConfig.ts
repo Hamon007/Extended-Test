@@ -23,6 +23,10 @@ export const ENEMY_TURN_DELAY_MS = 800;  // Pause vor Gegnerzug (UX)
 export const ROUND_END_DELAY_MS  = 600;  // Pause nach Gegnerzug
 export const ACCOUNT_CONSOLATION_XP = 10; // Trost-XP bei Niederlage
 
+// Verteidigen: MP-Kosten und Schadensreduktion des nächsten Gegnerzugs
+export const GUARD_MP_COST    = 50;
+export const GUARD_REDUCTION  = 0.5;     // eingehender Schaden ×0,5 in Guard-Haltung
+
 // ── Combo ─────────────────────────────────────────────────────
 
 export const COMBO_WINDOW_MS   = 1_500;  // Basis-Fenster in ms
@@ -48,7 +52,7 @@ export const PULL_COST_SINGLE  = 100;
 export const PULL_COST_MULTI   = 1_000;
 export const MULTI_PULL_COUNT  = 10;
 export const PITY_THRESHOLD    = 100;       // Pull 100 garantiert SSR
-export const STARTING_CRYSTALS = 999_999;   // Alpha: unbegrenzt
+export const STARTING_CRYSTALS = 5_000;
 
 // ── Economy / Belohnungen ─────────────────────────────────────
 
@@ -71,7 +75,7 @@ export const POTION_RESTORE    = 1;
 
 /** Maximales Level je Hauptstufe */
 export const LEVEL_CAP_BY_MAJOR: Record<string, number> = {
-  N: 20, R: 30, SR: 40, SSR: 50, MR: 60, LR: 70,
+  N: 20, R: 30, SR: 40, SSR: 50, MR: 60, LR: 80,
 };
 
 /** XP, die eine Kristallkarte gewährt */
@@ -82,9 +86,9 @@ export const CRYSTAL_CARD_XP = {
 } as const;
 
 export const XP_PER_LEVEL_FACTOR    = 100;    // xpToNext(L) = L × 100
-export const LEVEL_ATK_BONUS_PER_LV = 0.005;  // +0,5 % ATK je Level über 1
-export const LEVEL_DEF_BONUS_PER_LV = 0.005;  // +0,5 % DEF je Level über 1
-export const LEVEL_HP_BONUS_PER_LV  = 0.003;  // +0,3 % HP  je Level über 1
+export const LEVEL_ATK_BONUS_PER_LV = 0.007;  // +0,7 % ATK je Level über 1
+export const LEVEL_DEF_BONUS_PER_LV = 0.007;  // +0,7 % DEF je Level über 1
+export const LEVEL_HP_BONUS_PER_LV  = 0.005;  // +0,5 % HP  je Level über 1
 
 /** Basis-XP beim Opfern einer Karte nach Hauptstufe */
 export const SACRIFICE_XP_BASE: Record<string, number> = {

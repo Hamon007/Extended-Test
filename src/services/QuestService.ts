@@ -193,6 +193,7 @@ export const QuestService = {
 
   saveState(state: QuestState): void {
     localStorage.setItem(QUEST_KEY, JSON.stringify(state));
+    void SaveService.uploadSave();
   },
 
   getOrRefreshState(): QuestState {

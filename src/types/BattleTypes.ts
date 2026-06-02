@@ -3,6 +3,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Card } from './Card';
+import type { LeaderBonus }      from '../services/LeaderService';
+import type { FormationResult }  from '../services/FormationService';
+import type { DailyModifier }    from '../services/DailyTrialService';
 
 // ── Rohdaten aus enemies.json ─────────────────────────────────────────────────
 
@@ -81,6 +84,13 @@ export interface BattleState {
   log:     BattleLogEntry[];
   result:  BattleResult | null;
   enemyData: EnemyData;   // Rohdaten für Anzeige
+  // ── Meta-Bonusse ──
+  leaderBonus?:    LeaderBonus | null;
+  formation?:      FormationResult | null;
+  dailyModifier?:  DailyModifier | null;
+  maxRounds?:      number;                  // overrides MAX_ROUNDS if set
+  awakenedIds?:    string[];                // sourceIds awakened this battle (persisted)
+  guarding?:       boolean;                 // Verteidigungs-Haltung: halbiert nächsten Gegnerschaden
 }
 
 export type BattlePhase =
@@ -106,6 +116,8 @@ export interface BattleLogEntry {
   damage:    number;
   mpSpent:   number;
   text:      string;
+  quote?:    string;
+  isSuper?:  boolean;
 }
 
 // ── Konstanten (Werte zentral in GameConfig.ts) ───────────────────────────────
