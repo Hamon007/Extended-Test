@@ -42,6 +42,7 @@ export interface RewardDetails {
   bondLevelUps?:    BondLevelUp[];
   // Performance grade
   playerHpPct?:     number;   // HP% remaining at battle end (0-1)
+  enemyHpPct?:      number;   // Enemy HP% at battle end (defeat only)
   roundsElapsed?:   number;   // rounds used
   grade?:           'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
   // Streak milestone

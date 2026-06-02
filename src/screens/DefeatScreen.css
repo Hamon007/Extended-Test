@@ -154,3 +154,55 @@
   border-color: #c9a84c;
   box-shadow: 0 0 10px rgba(201,168,76,0.25);
 }
+
+/* ── Defeat Stats ────────────────────────────────────────── */
+.defeat-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 4px 0 12px;
+}
+
+.defeat-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.defeat-stat__icon {
+  font-size: 1.1rem;
+}
+
+.defeat-stat__value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: #e0ccff;
+  font-weight: 700;
+}
+
+.defeat-stat__label {
+  font-size: 0.65rem;
+  color: #8b80a0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Close Call Badge ────────────────────────────────────── */
+.defeat-close-badge {
+  background: linear-gradient(90deg, rgba(255,80,0,0.15), rgba(255,200,0,0.15));
+  border: 1px solid rgba(255, 160, 0, 0.5);
+  border-radius: 20px;
+  color: #ffb300;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  padding: 5px 14px;
+  margin: 4px 0 8px;
+  animation: closePulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes closePulse {
+  from { box-shadow: 0 0 6px rgba(255, 160, 0, 0.3); }
+  to   { box-shadow: 0 0 16px rgba(255, 160, 0, 0.7); }
+}

@@ -174,8 +174,12 @@ const BattleScreen: React.FC = () => {
       else                  grade = 'D';
     }
 
+    const enemyHpPct = battle.state.enemy.hpMax > 0
+      ? battle.state.enemy.hp / battle.state.enemy.hpMax
+      : 0;
+
     // Apply Fortune rune crystal multiplier
-    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, roundsElapsed, grade };
+    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade };
     if (crystalRuneMultRef.current > 1.0 && details.isVictory) {
       const boosted = Math.round(details.crystalsGained * crystalRuneMultRef.current);
       const extra = boosted - details.crystalsGained;
