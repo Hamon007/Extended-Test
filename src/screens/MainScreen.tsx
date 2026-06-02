@@ -9,6 +9,7 @@ import { CardDatabase } from '../services/CardDatabase';
 import { TowerService } from '../services/TowerService';
 import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
+import { ExpeditionService } from '../services/ExpeditionService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -90,6 +91,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [towerFloor,    setTowerFloor]    = useState(() => TowerService.getFloor());
   const [questBadge,    setQuestBadge]    = useState(0);
   const [achBadge,      setAchBadge]      = useState(0);
+  const [expBadge,      setExpBadge]      = useState(0);
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
@@ -153,6 +155,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         .filter(q => q.progress.completed && !q.progress.claimed).length;
       setQuestBadge(claimable);
       setAchBadge(AchievementService.getUnclaimedCount());
+      setExpBadge(ExpeditionService.getCompleted().length);
       setRegenMs(EnergyService.msUntilNextRegen());
     };
     refresh();
@@ -359,6 +362,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             onClick={() => onNavigate?.('achievements')}
           >
             🏆 Erfolge {achBadge > 0 && <span className="main-card__badge main-card__badge--gold">{achBadge}</span>}
+          </button>
+          <button
+            className="main-card__action-btn"
+            onClick={() => onNavigate?.('expedition')}
+          >
+            ⚔ Expeditionen {expBadge > 0 && <span className="main-card__badge main-card__badge--purple">{expBadge}</span>}
           </button>
           <div className="main-card__divider" />
           <div className="main-card__status">

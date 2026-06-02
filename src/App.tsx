@@ -24,6 +24,7 @@ import QuestScreen               from './screens/QuestScreen';
 import SettingsScreen            from './screens/SettingsScreen';
 import PvpScreen                 from './screens/PvpScreen';
 import AchievementScreen         from './screens/AchievementScreen';
+import ExpeditionScreen          from './screens/ExpeditionScreen';
 import LoginStreakPopup           from './components/LoginStreakPopup';
 import AchievementToast, { showAchievementToast } from './components/AchievementToast';
 import { DevModeService }        from './services/DevModeService';
@@ -164,6 +165,7 @@ const App: React.FC = () => {
       case 'deck':     goTo('deck'); break;
       case 'pvp':           goTo('pvp'); break;
       case 'achievements':  goTo('achievements'); break;
+      case 'expedition':    goTo('expedition'); break;
     }
   };
 
@@ -181,6 +183,7 @@ const App: React.FC = () => {
     if (target === 'settings')  goTo('settings');
     if (target === 'pvp')          goTo('pvp');
     if (target === 'achievements') goTo('achievements');
+    if (target === 'expedition')   goTo('expedition');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -258,6 +261,9 @@ const App: React.FC = () => {
         )}
         {screen === 'achievements' && (
           <AchievementScreen onBack={goBack} />
+        )}
+        {screen === 'expedition' && (
+          <ExpeditionScreen onBack={goBack} />
         )}
        </div>
       </div>

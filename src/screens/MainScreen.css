@@ -419,6 +419,11 @@
   border: 1px solid #ffd700;
 }
 
+.main-card__badge--purple {
+  background: linear-gradient(135deg, #4a1a8a, #7c4dff);
+  border: 1px solid #b39ddb;
+}
+
 .main-res-regen {
   font-size:   0.5rem;
   color:       #ff9900;
