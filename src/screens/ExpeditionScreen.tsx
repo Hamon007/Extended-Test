@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import { ExpeditionService, type ActiveExpedition, type ExpeditionDef } from '../services/ExpeditionService';
+import { QuestService } from '../services/QuestService';
 import { RARITY_COLOR } from '../types/Card';
 import './ExpeditionScreen.css';
 
@@ -45,6 +46,7 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
     if (reward.potions > 0) parts.push(`🧪 +${reward.potions}`);
     if (reward.crystalCards > 0) parts.push(`💎Karte +${reward.crystalCards}`);
     showToast(`${exp.cardName} kehrt zurück! ${parts.join(' · ')}`);
+    QuestService.recordEvent('complete_expedition');
     setActive(ExpeditionService.getActive());
   };
 

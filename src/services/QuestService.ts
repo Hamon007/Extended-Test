@@ -13,7 +13,11 @@ export type QuestType =
   | 'win_no_damage'
   | 'play_combos'
   | 'collect_cards'
-  | 'use_synergy';
+  | 'use_synergy'
+  | 'shop_purchase'
+  | 'win_streak_3'
+  | 'complete_expedition'
+  | 'earn_sp';
 
 export interface QuestDefinition {
   id:          string;
@@ -87,6 +91,33 @@ const DAILY_QUEST_POOL: QuestDefinition[] = [
     crystalReward: 200,
     xpReward: 250,
   },
+  {
+    id: 'daily_shop',
+    title: 'Händler',
+    description: 'Kaufe einen Artikel im Laden',
+    type: 'shop_purchase',
+    target: 1,
+    crystalReward: 100,
+    xpReward: 120,
+  },
+  {
+    id: 'daily_streak',
+    title: 'Siegesserie',
+    description: 'Gewinne 3 Kämpfe in Folge',
+    type: 'win_streak_3',
+    target: 1,
+    crystalReward: 150,
+    xpReward: 200,
+  },
+  {
+    id: 'daily_sp',
+    title: 'Saison-Grind',
+    description: 'Verdiene 30 Saison-Punkte',
+    type: 'earn_sp',
+    target: 30,
+    crystalReward: 130,
+    xpReward: 150,
+  },
 ];
 
 const WEEKLY_QUEST_POOL: QuestDefinition[] = [
@@ -143,6 +174,33 @@ const WEEKLY_QUEST_POOL: QuestDefinition[] = [
     target: 10,
     crystalReward: 600,
     xpReward: 800,
+  },
+  {
+    id: 'weekly_expedition_2',
+    title: 'Abenteuerer',
+    description: 'Schließe 2 Expeditionen ab',
+    type: 'complete_expedition',
+    target: 2,
+    crystalReward: 400,
+    xpReward: 600,
+  },
+  {
+    id: 'weekly_sp_100',
+    title: 'Saison-Krieger',
+    description: 'Verdiene 100 Saison-Punkte diese Woche',
+    type: 'earn_sp',
+    target: 100,
+    crystalReward: 500,
+    xpReward: 700,
+  },
+  {
+    id: 'weekly_shop_5',
+    title: 'Stammkunde',
+    description: 'Kaufe 5 Artikel im Laden',
+    type: 'shop_purchase',
+    target: 5,
+    crystalReward: 350,
+    xpReward: 500,
   },
 ];
 

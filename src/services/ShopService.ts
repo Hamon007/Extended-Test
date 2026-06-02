@@ -12,6 +12,7 @@ import { SaveService }     from './SaveService';
 import { EnergyService }   from './EnergyService';
 import { SeasonService }   from './SeasonService';
 import { AccountProgressionService } from './AccountProgressionService';
+import { QuestService } from './QuestService';
 
 const PURCHASE_KEY = 'ci_shop_purchases';
 
@@ -181,6 +182,9 @@ function purchase(item: ShopItem): { ok: boolean; reason?: string } {
 
   // Apply effect
   applyEffect(item.id);
+
+  // Quest tracking
+  QuestService.recordEvent('shop_purchase');
 
   // Track purchase
   const rec = loadRecord();

@@ -160,18 +160,19 @@ const BattleScreen: React.FC = () => {
       AchievementService.recordProgress('wins_50');
       AchievementService.recordProgress('wins_100');
       const streak = WinStreakService.get();
+      if (streak >= 3)  QuestService.recordEvent('win_streak_3');
       if (streak >= 5)  AchievementService.recordProgress('win_streak_5');
       if (streak >= 10) AchievementService.recordProgress('win_streak_10');
 
-      // Season Points
+      // Season Points + SP quest
       if (isTowerMode) {
         const isBossFloor = TowerService.isBossFloor(towerFloor);
         const isElite = tacticalConfig && !isBossFloor;
-        SeasonService.addSp(
-          isBossFloor ? SeasonService.SP_REWARDS.boss_win
+        const spAmount = isBossFloor ? SeasonService.SP_REWARDS.boss_win
           : isElite ? SeasonService.SP_REWARDS.elite_win
-          : SeasonService.SP_REWARDS.tower_win
-        );
+          : SeasonService.SP_REWARDS.tower_win;
+        SeasonService.addSp(spAmount);
+        QuestService.recordEvent('earn_sp', spAmount);
       }
     }
 
@@ -184,8 +185,10 @@ const BattleScreen: React.FC = () => {
         AchievementService.recordProgress('pvp_first_win');
         AchievementService.recordProgress('pvp_10_wins');
         SeasonService.addSp(SeasonService.SP_REWARDS.pvp_win);
+        QuestService.recordEvent('earn_sp', SeasonService.SP_REWARDS.pvp_win);
       } else {
         SeasonService.addSp(SeasonService.SP_REWARDS.pvp_loss);
+        QuestService.recordEvent('earn_sp', SeasonService.SP_REWARDS.pvp_loss);
       }
     }
 
@@ -390,6 +393,7 @@ const BattleScreen: React.FC = () => {
     DailyTrialService.markCompleted();
     // Season SP for daily trial (awarded on start, not win, to encourage attempts)
     SeasonService.addSp(SeasonService.SP_REWARDS.daily_trial);
+    QuestService.recordEvent('earn_sp', SeasonService.SP_REWARDS.daily_trial);
   };
 
   const confirmLore = () => {
