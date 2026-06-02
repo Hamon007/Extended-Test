@@ -4,6 +4,10 @@ import { ProfileService, type Profile, canChangeUsername, nextChangeDate } from 
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
 import { RelicService } from '../services/RelicService';
+import { BattleStatsService } from '../services/BattleStatsService';
+import { TowerService } from '../services/TowerService';
+import { SeasonService } from '../services/SeasonService';
+import { DailyLoginService } from '../services/DailyLoginService';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
@@ -27,8 +31,13 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
   const isLoggedIn = AuthService.isLoggedIn;
 
   // Stats from local save
-  const gacha   = useMemo(() => SaveService.loadGachaState(),  []);
-  const account = useMemo(() => SaveService.loadAccountState(), []);
+  const gacha        = useMemo(() => SaveService.loadGachaState(),  []);
+  const account      = useMemo(() => SaveService.loadAccountState(), []);
+  const battleStats  = useMemo(() => BattleStatsService.load(), []);
+  const towerHighest = useMemo(() => TowerService.getHighestFloor(), []);
+  const seasonState  = useMemo(() => SeasonService.load(), []);
+  const seasonRank   = useMemo(() => SeasonService.getRankForSp(seasonState.sp), [seasonState.sp]);
+  const loginState   = useMemo(() => DailyLoginService.load(), []);
   const totalCards  = CardDatabase.count();
   const uniqueOwned = new Set(gacha.inventory.map(i => i.cardId)).size;
 
@@ -166,6 +175,66 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
               <div className="profile-stat">
                 <span className="profile-stat__val">{uniqueOwned}<span className="profile-stat__sub">/{totalCards}</span></span>
                 <span className="profile-stat__label">Karten</span>
+              </div>
+            </div>
+
+            {/* ── Kampf-Statistiken ── */}
+            <div className="profile-section-title">Kampf-Rekorde</div>
+            <div className="profile-battle-stats">
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">⚔️</span>
+                <span className="profile-bstat__val">{battleStats.totalBattles.toLocaleString('de-DE')}</span>
+                <span className="profile-bstat__label">Kämpfe gesamt</span>
+              </div>
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">🏆</span>
+                <span className="profile-bstat__val">
+                  {battleStats.totalBattles > 0
+                    ? `${Math.round((battleStats.totalWins / battleStats.totalBattles) * 100)}%`
+                    : '—'}
+                </span>
+                <span className="profile-bstat__label">Siegesrate</span>
+              </div>
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">🗼</span>
+                <span className="profile-bstat__val">{towerHighest}</span>
+                <span className="profile-bstat__label">Höchste Etage</span>
+              </div>
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">⚡</span>
+                <span className="profile-bstat__val">{battleStats.bestCombo}</span>
+                <span className="profile-bstat__label">Bester Combo</span>
+              </div>
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">🔥</span>
+                <span className="profile-bstat__val">{battleStats.bestWinStreak}</span>
+                <span className="profile-bstat__label">Längste Serie</span>
+              </div>
+              <div className="profile-bstat">
+                <span className="profile-bstat__icon">💥</span>
+                <span className="profile-bstat__val">{(battleStats.totalDamage / 1_000_000).toFixed(1)}M</span>
+                <span className="profile-bstat__label">Gesamtschaden</span>
+              </div>
+            </div>
+
+            {/* ── Saison-Profil ── */}
+            <div className="profile-section-title">Saisonstatus</div>
+            <div className="profile-season-row">
+              <span className="profile-season-icon" style={{ color: SeasonService.RANK_COLORS[seasonRank] }}>
+                {SeasonService.RANK_ICONS[seasonRank]}
+              </span>
+              <div className="profile-season-info">
+                <div className="profile-season-name" style={{ color: SeasonService.RANK_COLORS[seasonRank] }}>
+                  {seasonRank}
+                </div>
+                <div className="profile-season-detail">
+                  {seasonState.sp} SP · Saison {seasonState.seasonNumber} · {SeasonService.getDaysLeft()}T verbleibend
+                </div>
+              </div>
+              <div className="profile-season-streak">
+                <span className="profile-season-streak__icon">📅</span>
+                <span className="profile-season-streak__val">{loginState.totalDays}</span>
+                <span className="profile-season-streak__label">Login-Tage</span>
               </div>
             </div>
 

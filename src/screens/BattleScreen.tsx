@@ -22,6 +22,7 @@ import { AchievementService } from '../services/AchievementService';
 import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
+import { BattleStatsService } from '../services/BattleStatsService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -169,6 +170,20 @@ const BattleScreen: React.FC = () => {
         SeasonService.addSp(SeasonService.SP_REWARDS.pvp_loss);
       }
     }
+
+    // Lifetime battle stats
+    const victory = battle.state.result.outcome === 'victory';
+    const lifetimeDamage = battle.state.log
+      .filter(e => e.actor === 'player')
+      .reduce((s, e) => s + e.damage, 0);
+    BattleStatsService.recordBattle({
+      victory,
+      isPvp:    isPvpMode,
+      isTower:  isTowerMode,
+      damage:   lifetimeDamage,
+      combo:    battle.state.maxComboReached ?? 0,
+      winStreak: WinStreakService.get(),
+    });
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {
