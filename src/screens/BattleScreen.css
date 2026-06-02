@@ -1773,3 +1773,42 @@
 .milestone-modal__close:active {
   opacity: 0.7;
 }
+
+/* ── Enemy Taunt Bubble ──────────────────────────────────── */
+.enemy-taunt-bubble {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  background: rgba(10, 5, 20, 0.88);
+  border: 1px solid rgba(180, 120, 255, 0.5);
+  border-radius: 12px;
+  padding: 10px 18px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 4px 24px rgba(140, 60, 255, 0.35);
+  animation: tauntSlideIn 0.35s ease forwards;
+  pointer-events: none;
+}
+
+.enemy-taunt-bubble__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: #e0ccff;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  text-align: center;
+  display: block;
+}
+
+@keyframes tauntSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

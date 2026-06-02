@@ -23,6 +23,7 @@ import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
 import { BattleStatsService } from '../services/BattleStatsService';
+import { EnemyTauntService } from '../services/EnemyTauntService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -57,6 +58,8 @@ const BattleScreen: React.FC = () => {
   const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
   const [isPvpMode,      setIsPvpMode]      = useState(false);
   const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
+  const [enemyTaunt,     setEnemyTaunt]     = useState<string | null>(null);
+  const lowHpTauntFired = useRef(false);
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
@@ -95,6 +98,35 @@ const BattleScreen: React.FC = () => {
     setIsPvpMode(true);
     battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Enemy taunt on battle start
+  useEffect(() => {
+    if (!battle.state || battle.state.result) return;
+    lowHpTauntFired.current = false;
+    const tier = TowerService.isBossFloor(towerFloor) ? 'boss'
+      : tacticalConfig ? 'elite'
+      : 'normal';
+    const taunt = EnemyTauntService.getTaunt('battle_start', tier);
+    setEnemyTaunt(taunt);
+    const id = setTimeout(() => setEnemyTaunt(null), 3000);
+    return () => clearTimeout(id);
+  }, [!!battle.state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Enemy low-HP taunt (fires once when enemy drops below 30%)
+  useEffect(() => {
+    if (!battle.state || battle.state.result || lowHpTauntFired.current) return;
+    const { hp, hpMax } = battle.state.enemy;
+    if (hpMax > 0 && hp / hpMax < 0.3) {
+      lowHpTauntFired.current = true;
+      const tier = TowerService.isBossFloor(towerFloor) ? 'boss'
+        : tacticalConfig ? 'elite'
+        : 'normal';
+      const taunt = EnemyTauntService.getTaunt('low_hp', tier);
+      setEnemyTaunt(taunt);
+      const id = setTimeout(() => setEnemyTaunt(null), 3500);
+      return () => clearTimeout(id);
+    }
+  }, [battle.state?.enemy.hp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Belohnungen einmalig anwenden wenn Battle endet
   useEffect(() => {
@@ -139,6 +171,14 @@ const BattleScreen: React.FC = () => {
       else if (score >= 15) grade = 'C';
       else                  grade = 'D';
     }
+
+    // Result taunt (shown briefly on victory/defeat screen)
+    const resultTier = TowerService.isBossFloor(towerFloor) ? 'boss'
+      : tacticalConfig ? 'elite'
+      : 'normal';
+    const resultTrigger = details.isVictory ? 'player_victory' : 'enemy_victory';
+    setEnemyTaunt(EnemyTauntService.getTaunt(resultTrigger, resultTier));
+    setTimeout(() => setEnemyTaunt(null), 4000);
 
     setRewardDetails({ ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, roundsElapsed, grade });
 
@@ -237,6 +277,13 @@ const BattleScreen: React.FC = () => {
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
 
+  // ── Enemy Taunt bubble ────────────────────────────────────
+  const tauntBubble = enemyTaunt ? (
+    <div className="enemy-taunt-bubble">
+      <span className="enemy-taunt-bubble__text">💬 {enemyTaunt}</span>
+    </div>
+  ) : null;
+
   // ── Tower Milestone Overlay (shown over any screen) ──────
   const milestoneOverlay = towerMilestone ? (
     <div className="milestone-overlay" onClick={() => setTowerMilestone(null)}>
@@ -263,13 +310,19 @@ const BattleScreen: React.FC = () => {
           <DefeatScreen details={rewardDetails} onReturnToSelect={handleContinue} />
         )}
         {milestoneOverlay}
+        {tauntBubble}
       </>
     );
   }
 
   // ── Laufender Kampf ───────────────────────────────────────
   if (battle.state) {
-    return <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />;
+    return (
+      <>
+        <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />
+        {tauntBubble}
+      </>
+    );
   }
 
   // ── Turm-Start ────────────────────────────────────────────
