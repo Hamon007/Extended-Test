@@ -1,0 +1,215 @@
+/* ── ShopScreen ──────────────────────────────────────────────── */
+
+.shop-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text);
+}
+
+/* Header */
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-mid);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.shop-header__back {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.shop-header__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  margin: 0;
+}
+
+.shop-header__crystals {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+/* Toast */
+@keyframes shopToastSlide {
+  0%   { transform: translateY(-10px); opacity: 0; }
+  15%  { transform: translateY(0);     opacity: 1; }
+  80%  { transform: translateY(0);     opacity: 1; }
+  100% { transform: translateY(-10px); opacity: 0; }
+}
+
+.shop-toast {
+  background: rgba(19,13,16,0.95);
+  border: 1px solid var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+  padding: 8px 16px;
+  text-align: center;
+  animation: shopToastSlide 2.5s ease both;
+  flex-shrink: 0;
+}
+
+/* Body */
+.shop-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+}
+
+/* Section */
+.shop-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.shop-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.shop-section-sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.68rem;
+  color: var(--text);
+  opacity: 0.45;
+}
+
+.shop-daily-badge {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: var(--gold-dark);
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+/* Items list */
+.shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 10px;
+  transition: border-color 0.15s;
+}
+
+.shop-item:not(.shop-item--disabled):hover {
+  border-color: var(--gold-dark);
+}
+
+.shop-item--disabled {
+  opacity: 0.45;
+}
+
+.shop-item__icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+
+.shop-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shop-item__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.shop-item__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: var(--text);
+  opacity: 0.55;
+  margin-top: 1px;
+}
+
+.shop-item__bought {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: var(--gold-dark);
+  margin-top: 2px;
+}
+
+.shop-item__buy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: linear-gradient(160deg, #2d1a00, #1a1000);
+  border: 1px solid var(--gold-dark);
+  border-radius: 5px;
+  padding: 7px 12px;
+  cursor: pointer;
+  min-width: 74px;
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.shop-item__buy:not(:disabled):active {
+  background: linear-gradient(160deg, #5a3300, #2d1a00);
+  border-color: var(--gold);
+}
+
+.shop-item__buy:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shop-item__cost {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.shop-item__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.62rem;
+  color: var(--text);
+  opacity: 0.65;
+}
+
+/* Footer */
+.shop-footer {
+  margin-top: 20px;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: var(--text);
+  opacity: 0.3;
+  text-align: center;
+  line-height: 1.8;
+  padding-bottom: 20px;
+}

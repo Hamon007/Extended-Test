@@ -19,7 +19,8 @@ export type Screen =
   | 'pvp'
   | 'achievements'
   | 'expedition'
-  | 'season';
+  | 'season'
+  | 'shop';
 
 const shortcutScreens: Record<string, Screen> = {
   gacha:  'gacha',

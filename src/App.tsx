@@ -26,6 +26,7 @@ import PvpScreen                 from './screens/PvpScreen';
 import AchievementScreen         from './screens/AchievementScreen';
 import ExpeditionScreen          from './screens/ExpeditionScreen';
 import SeasonScreen              from './screens/SeasonScreen';
+import ShopScreen               from './screens/ShopScreen';
 import LoginStreakPopup           from './components/LoginStreakPopup';
 import AchievementToast, { showAchievementToast } from './components/AchievementToast';
 import { DevModeService }        from './services/DevModeService';
@@ -168,6 +169,7 @@ const App: React.FC = () => {
       case 'achievements':  goTo('achievements'); break;
       case 'expedition':    goTo('expedition'); break;
       case 'season':        goTo('season'); break;
+      case 'shop':          goTo('shop'); break;
     }
   };
 
@@ -187,6 +189,7 @@ const App: React.FC = () => {
     if (target === 'achievements') goTo('achievements');
     if (target === 'expedition')   goTo('expedition');
     if (target === 'season')       goTo('season');
+    if (target === 'shop')         goTo('shop');
   };
 
   // ── Render ────────────────────────────────────────────────────
@@ -270,6 +273,9 @@ const App: React.FC = () => {
         )}
         {screen === 'season' && (
           <SeasonScreen onBack={goBack} />
+        )}
+        {screen === 'shop' && (
+          <ShopScreen onBack={goBack} />
         )}
        </div>
       </div>
