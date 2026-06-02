@@ -25,7 +25,7 @@ import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMil
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { TowerLore }            from '../data/towerLore';
-import { BattleManager, type BattleMeta } from '../services/BattleManager';
+import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -60,6 +60,8 @@ const BattleScreen: React.FC = () => {
   const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
   const [enemyTaunt,     setEnemyTaunt]     = useState<string | null>(null);
   const lowHpTauntFired = useRef(false);
+  const [selectedRune, setSelectedRune] = useState<RuneBoost | null>(null);
+  const crystalRuneMultRef = useRef(1.0);
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
@@ -172,6 +174,17 @@ const BattleScreen: React.FC = () => {
       else                  grade = 'D';
     }
 
+    // Apply Fortune rune crystal multiplier
+    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, roundsElapsed, grade };
+    if (crystalRuneMultRef.current > 1.0 && details.isVictory) {
+      const boosted = Math.round(details.crystalsGained * crystalRuneMultRef.current);
+      const extra = boosted - details.crystalsGained;
+      finalDetails = { ...finalDetails, crystalsGained: boosted };
+      const gState = SaveService.loadGachaState();
+      SaveService.saveGachaState({ ...gState, crystals: gState.crystals + extra });
+      crystalRuneMultRef.current = 1.0;
+    }
+
     // Result taunt (shown briefly on victory/defeat screen)
     const resultTier = TowerService.isBossFloor(towerFloor) ? 'boss'
       : tacticalConfig ? 'elite'
@@ -180,7 +193,7 @@ const BattleScreen: React.FC = () => {
     setEnemyTaunt(EnemyTauntService.getTaunt(resultTrigger, resultTier));
     setTimeout(() => setEnemyTaunt(null), 4000);
 
-    setRewardDetails({ ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, roundsElapsed, grade });
+    setRewardDetails(finalDetails);
 
     // Aufgaben-Fortschritt + Achievements
     if (battle.state.result.outcome === 'victory') {
@@ -459,10 +472,24 @@ const BattleScreen: React.FC = () => {
     QuestService.recordEvent('earn_sp', SeasonService.SP_REWARDS.daily_trial);
   };
 
+  const RUNE_COSTS: Record<string, number> = { iron_shield: 80, blood_rage: 100, fortune: 60 };
+
   const confirmLore = () => {
     if (!pendingMeta) return;
+    let meta = pendingMeta.meta;
+    crystalRuneMultRef.current = 1.0;
+    if (selectedRune) {
+      const cost = RUNE_COSTS[selectedRune.type] ?? 0;
+      const gSt = SaveService.loadGachaState();
+      if (gSt.crystals >= cost) {
+        SaveService.saveGachaState({ ...gSt, crystals: gSt.crystals - cost });
+        meta = { ...meta, runeBoost: selectedRune };
+        if (selectedRune.crystalMult) crystalRuneMultRef.current = selectedRune.crystalMult;
+      }
+      setSelectedRune(null);
+    }
     setTacticalConfig(pendingMeta.tact);
-    battle.startBattle(deckInstances, pendingMeta.enemy, pendingMeta.meta);
+    battle.startBattle(deckInstances, pendingMeta.enemy, meta);
     setLoreOverlay(null);
     setPendingMeta(null);
   };
@@ -500,14 +527,43 @@ const BattleScreen: React.FC = () => {
   // ── Lore-Overlay ──
   if (loreOverlay) {
     const lore = TowerLore.forFloor(loreOverlay.floor, loreOverlay.type);
+    const loreCrystals = SaveService.loadGachaState().crystals;
+    const RUNE_OPTIONS: { rune: RuneBoost; cost: number; label: string; desc: string }[] = [
+      { rune: { type: 'iron_shield',  hpMult: 1.25 },    cost: 80,  label: '🛡 Eisenschild',  desc: 'HP +25%' },
+      { rune: { type: 'blood_rage',   atkMult: 1.30 },   cost: 100, label: '🔥 Blutraserei',  desc: 'ATK +30%' },
+      { rune: { type: 'fortune',      crystalMult: 1.5 }, cost: 60,  label: '🍀 Glücksauge',  desc: 'Kristalle ×1.5' },
+    ];
     return (
       <div className="lore-overlay">
         <div className="lore-overlay__box">
           <div className="lore-overlay__floor">ETAGE {loreOverlay.floor}</div>
           <h2 className="lore-overlay__subtitle">{lore.subtitle}</h2>
           <p className="lore-overlay__text">{lore.text}</p>
+
+          <div className="rune-section">
+            <div className="rune-section__title">Kampfrune wählen (optional)</div>
+            <div className="rune-grid">
+              {RUNE_OPTIONS.map(opt => {
+                const canAfford = loreCrystals >= opt.cost;
+                const isChosen  = selectedRune?.type === opt.rune.type;
+                return (
+                  <button
+                    key={opt.rune.type}
+                    className={`rune-btn ${isChosen ? 'rune-btn--active' : ''} ${!canAfford ? 'rune-btn--disabled' : ''}`}
+                    disabled={!canAfford}
+                    onClick={() => setSelectedRune(isChosen ? null : opt.rune)}
+                  >
+                    <span className="rune-btn__label">{opt.label}</span>
+                    <span className="rune-btn__desc">{opt.desc}</span>
+                    <span className="rune-btn__cost">💎 {opt.cost}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <button className="lore-overlay__btn" onClick={confirmLore}>
-            ▶ Etage betreten
+            {selectedRune ? `▶ Mit Rune eintreten (−${RUNE_COSTS[selectedRune.type]} 💎)` : '▶ Etage betreten'}
           </button>
         </div>
       </div>

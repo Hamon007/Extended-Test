@@ -1812,3 +1812,76 @@
     transform: translateX(-50%) translateY(0);
   }
 }
+
+/* ── Pre-Battle Rune Selection ───────────────────────────── */
+.rune-section {
+  margin: 12px 0 8px;
+  width: 100%;
+}
+
+.rune-section__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: #b39ddb;
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.rune-grid {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.rune-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(30, 10, 60, 0.7);
+  border: 1px solid rgba(150, 100, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  min-width: 80px;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.rune-btn:hover:not(.rune-btn--disabled) {
+  border-color: rgba(200, 150, 255, 0.8);
+  background: rgba(60, 20, 100, 0.7);
+  transform: translateY(-2px);
+}
+
+.rune-btn--active {
+  border-color: #c9a84c !important;
+  background: rgba(100, 60, 10, 0.6) !important;
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.4);
+}
+
+.rune-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rune-btn__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #e0ccff;
+  font-weight: 700;
+}
+
+.rune-btn__desc {
+  font-size: 0.65rem;
+  color: #b39ddb;
+}
+
+.rune-btn__cost {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ffd700;
+  margin-top: 2px;
+}

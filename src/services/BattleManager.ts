@@ -207,11 +207,19 @@ function checkResult(state: BattleState): BattleResult | null {
 
 // ── Öffentliche API ───────────────────────────────────────────
 
+export interface RuneBoost {
+  type:       'iron_shield' | 'blood_rage' | 'fortune';
+  hpMult?:   number;
+  atkMult?:  number;
+  crystalMult?: number;
+}
+
 export interface BattleMeta {
   leaderBonus?:    LeaderBonus | null;
   formation?:      FormationResult | null;
   dailyModifier?:  DailyModifier | null;
   maxRounds?:      number;
+  runeBoost?:      RuneBoost | null;
 }
 
 /** Erstellt einen frischen BattleState. */
@@ -246,6 +254,22 @@ function initBattle(
     };
   }
 
+  // Rune boost: iron_shield (HP) or blood_rage (ATK)
+  if (meta.runeBoost?.hpMult) {
+    player = {
+      ...player,
+      hp:    Math.round(player.hp    * meta.runeBoost.hpMult),
+      hpMax: Math.round(player.hpMax * meta.runeBoost.hpMult),
+    };
+  }
+  if (meta.runeBoost?.atkMult) {
+    player = {
+      ...player,
+      hand: player.hand.map(c => ({ ...c, atk: Math.round(c.atk * meta.runeBoost!.atkMult!) })),
+      deck: player.deck.map(c => ({ ...c, atk: Math.round(c.atk * meta.runeBoost!.atkMult!) })),
+    };
+  }
+
   const initialLog: BattleLogEntry[] = [log(0, 'system', '', 0, 0, `Battle gegen ${enemy.name} beginnt! Runde 1`)];
   if (meta.leaderBonus) {
     initialLog.push(log(0, 'system', '', 0, 0,
@@ -260,6 +284,10 @@ function initBattle(
   if (meta.dailyModifier) {
     initialLog.push(log(0, 'system', '', 0, 0,
       `⚠ Tagesprüfung aktiv: ${describeDailyModifier(meta.dailyModifier)}`));
+  }
+  if (meta.runeBoost) {
+    const runeNames: Record<string, string> = { iron_shield: '🛡 Eisenschild', blood_rage: '🔥 Blutraserei', fortune: '🍀 Glücksauge' };
+    initialLog.push(log(0, 'system', '', 0, 0, `${runeNames[meta.runeBoost.type]} aktiv!`));
   }
 
   const state: BattleState = {
