@@ -80,12 +80,18 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier * relicCrystalBonus);
     const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier * relicXpBonus);
 
+    // Streak milestone bonus crystals (triggered exactly on milestone)
+    const STREAK_MILESTONES: Record<number, number> = {
+      3: 50, 5: 150, 10: 400, 15: 800, 20: 1500, 30: 3000, 50: 6000,
+    };
+    const streakBonus = STREAK_MILESTONES[newStreak] ?? 0;
+
     const newCards = rollRewardCards(enemy, state.totalPulls);
 
-    // Kristalle + Karten zum Inventar hinzufügen
+    // Kristalle + Karten zum Inventar hinzufügen (inkl. Streak-Meilenstein)
     const updatedState = {
       ...state,
-      crystals:   state.crystals + boostedCrystals,
+      crystals:   state.crystals + boostedCrystals + streakBonus,
       inventory:  [...state.inventory, ...newCards],
       totalPulls: state.totalPulls + newCards.length,
     };
@@ -127,7 +133,7 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
 
     return {
       isVictory:        true,
-      crystalsGained:   boostedCrystals,
+      crystalsGained:   boostedCrystals + streakBonus,
       xpGained:         boostedXp,
       newCards,
       potionsGained,
@@ -138,6 +144,8 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
         newMaxStamina: accountResult.newState.maxStamina,
         newMaxMana:     accountResult.newState.maxMana,
       } : null,
+      streakMilestoneBonus: streakBonus > 0 ? streakBonus : undefined,
+      winStreak: newStreak,
     };
   }
 

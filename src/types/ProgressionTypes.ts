@@ -44,6 +44,9 @@ export interface RewardDetails {
   playerHpPct?:     number;   // HP% remaining at battle end (0-1)
   roundsElapsed?:   number;   // rounds used
   grade?:           'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
+  // Streak milestone
+  streakMilestoneBonus?: number; // extra crystals from streak milestone (0 = none)
+  winStreak?:       number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
