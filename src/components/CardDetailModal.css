@@ -553,3 +553,43 @@
   opacity: 1;
   filter: drop-shadow(0 0 4px rgba(200,130,255,0.7));
 }
+
+/* ── Card Lore ───────────────────────────────────────────────── */
+
+.detail-bond__lore {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(255,215,0,0.06);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 4px;
+}
+
+.detail-bond__lore-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.detail-bond__lore-text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.detail-bond__lore-locked {
+  margin-top: 8px;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  opacity: 0.45;
+  text-align: center;
+  padding: 6px;
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 3px;
+}

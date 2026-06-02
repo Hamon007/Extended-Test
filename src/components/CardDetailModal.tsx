@@ -4,6 +4,7 @@ import type { Card } from '../types/Card';
 import { RARITY_COLOR, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
 import { CardBondService, BOND_NAMES, BOND_ICONS, BOND_THRESHOLDS, MAX_BOND } from '../services/CardBondService';
+import { CardLoreService } from '../services/CardLoreService';
 import './CardDetailModal.css';
 
 interface Props {
@@ -282,6 +283,20 @@ const BondSection: React.FC<{ cardId: string }> = ({ cardId }) => {
           </span>
         ))}
       </div>
+
+      {/* Lore — unlocked at bond level 2 */}
+      {CardLoreService.isUnlocked(bond.level) ? (
+        <div className="detail-bond__lore">
+          <div className="detail-bond__lore-title">📖 Verborgene Geschichte</div>
+          <div className="detail-bond__lore-text">
+            {CardLoreService.getLore(cardId) ?? CardLoreService.getFallback()}
+          </div>
+        </div>
+      ) : (
+        <div className="detail-bond__lore-locked">
+          🔒 Geschichte enthüllt sich auf Bandstufe {CardLoreService.LORE_UNLOCK_BOND_LEVEL}
+        </div>
+      )}
     </section>
   );
 };
