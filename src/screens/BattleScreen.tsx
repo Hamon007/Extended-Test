@@ -21,6 +21,7 @@ import { PvpService } from '../services/PvpService';
 import { AchievementService } from '../services/AchievementService';
 import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
+import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -54,6 +55,7 @@ const BattleScreen: React.FC = () => {
   const [eventToast,     setEventToast]     = useState('');
   const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
   const [isPvpMode,      setIsPvpMode]      = useState(false);
+  const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
@@ -174,6 +176,9 @@ const BattleScreen: React.FC = () => {
       const next = TowerService.advanceFloor();
       TowerService.updateHighestFloor(next);
       setTowerFloor(next);
+      // Check for floor milestone reward
+      const milestone = TowerMilestoneService.checkFloor(next);
+      if (milestone) setTowerMilestone(milestone);
     }
     battle.resetBattle();
     setRewardDetails(null);
@@ -186,12 +191,33 @@ const BattleScreen: React.FC = () => {
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
 
+  // ── Tower Milestone Overlay (shown over any screen) ──────
+  const milestoneOverlay = towerMilestone ? (
+    <div className="milestone-overlay" onClick={() => setTowerMilestone(null)}>
+      <div className="milestone-modal">
+        <div className="milestone-modal__icon">🏆</div>
+        <div className="milestone-modal__floor">ETAGE {towerMilestone.floor}</div>
+        <div className="milestone-modal__label">{towerMilestone.label}</div>
+        <div className="milestone-modal__reward">
+          <span className="milestone-modal__crystals">+{towerMilestone.crystals.toLocaleString('de-DE')}</span>
+          <span className="milestone-modal__gem">💎</span>
+        </div>
+        <button className="milestone-modal__close" onClick={() => setTowerMilestone(null)}>Weiter ›</button>
+      </div>
+    </div>
+  ) : null;
+
   // ── Victory / Defeat Screens ──────────────────────────────
   if (rewardDetails) {
-    return rewardDetails.isVictory ? (
-      <VictoryScreen details={rewardDetails} onContinue={handleContinue} />
-    ) : (
-      <DefeatScreen details={rewardDetails} onReturnToSelect={handleContinue} />
+    return (
+      <>
+        {rewardDetails.isVictory ? (
+          <VictoryScreen details={rewardDetails} onContinue={handleContinue} />
+        ) : (
+          <DefeatScreen details={rewardDetails} onReturnToSelect={handleContinue} />
+        )}
+        {milestoneOverlay}
+      </>
     );
   }
 
