@@ -10,6 +10,7 @@ import { TowerService } from '../services/TowerService';
 import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
 import { ExpeditionService } from '../services/ExpeditionService';
+import { SeasonService } from '../services/SeasonService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -93,6 +94,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [achBadge,      setAchBadge]      = useState(0);
   const [expBadge,      setExpBadge]      = useState(0);
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
+  const seasonState = SeasonService.load();
+  const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
@@ -384,6 +387,24 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
                 {deckStats ? deckStats.def.toLocaleString('de-DE') : '—'}
               </span>
             </div>
+            <div className="main-card__divider" style={{ margin: '4px 0' }} />
+            <div className="main-card__season-rank" style={{ color: SeasonService.RANK_COLORS[seasonRank] }}>
+              <span className="main-card__season-icon">{SeasonService.RANK_ICONS[seasonRank]}</span>
+              <span className="main-card__season-name">{seasonRank}</span>
+              <span className="main-card__season-sp">{seasonState.sp} SP</span>
+            </div>
+            <div className="main-card__season-bar">
+              {(() => {
+                const { progress, nextRank } = SeasonService.progressToNext(seasonState.sp);
+                return (
+                  <>
+                    <div className="main-card__season-bar-fill" style={{ width: `${progress * 100}%`, background: SeasonService.RANK_COLORS[seasonRank] }} />
+                    {nextRank && <span className="main-card__season-next">{SeasonService.RANK_ICONS[nextRank]}</span>}
+                  </>
+                );
+              })()}
+            </div>
+            <div className="main-card__season-days">Saison endet in {SeasonService.getDaysLeft()} Tagen</div>
           </div>
         </div>
       </div>

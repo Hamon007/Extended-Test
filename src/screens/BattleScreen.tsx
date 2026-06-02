@@ -20,6 +20,7 @@ import { AudioService }         from '../services/AudioService';
 import { PvpService } from '../services/PvpService';
 import { AchievementService } from '../services/AchievementService';
 import { CardBondService }    from '../services/CardBondService';
+import { SeasonService }      from '../services/SeasonService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -140,6 +141,17 @@ const BattleScreen: React.FC = () => {
       const streak = WinStreakService.get();
       if (streak >= 5)  AchievementService.recordProgress('win_streak_5');
       if (streak >= 10) AchievementService.recordProgress('win_streak_10');
+
+      // Season Points
+      if (isTowerMode) {
+        const isBossFloor = TowerService.isBossFloor(towerFloor);
+        const isElite = tacticalConfig && !isBossFloor;
+        SeasonService.addSp(
+          isBossFloor ? SeasonService.SP_REWARDS.boss_win
+          : isElite ? SeasonService.SP_REWARDS.elite_win
+          : SeasonService.SP_REWARDS.tower_win
+        );
+      }
     }
 
     // PvP: Ergebnis speichern + Achievements
@@ -150,6 +162,9 @@ const BattleScreen: React.FC = () => {
       if (battle.state.result.outcome === 'victory') {
         AchievementService.recordProgress('pvp_first_win');
         AchievementService.recordProgress('pvp_10_wins');
+        SeasonService.addSp(SeasonService.SP_REWARDS.pvp_win);
+      } else {
+        SeasonService.addSp(SeasonService.SP_REWARDS.pvp_loss);
       }
     }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -314,6 +329,8 @@ const BattleScreen: React.FC = () => {
     };
     battle.startBattle(deckInstances, enemy, meta);
     DailyTrialService.markCompleted();
+    // Season SP for daily trial (awarded on start, not win, to encourage attempts)
+    SeasonService.addSp(SeasonService.SP_REWARDS.daily_trial);
   };
 
   const confirmLore = () => {

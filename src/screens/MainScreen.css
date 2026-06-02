@@ -475,6 +475,67 @@
   color: var(--gold-bright);
 }
 
+/* ── Season-Rank in Status-Box ──────────────────────────────── */
+
+.main-card__season-rank {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+.main-card__season-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.main-card__season-name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.main-card__season-sp {
+  font-size: 0.6rem;
+  opacity: 0.75;
+  color: var(--text);
+}
+
+.main-card__season-bar {
+  position: relative;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: visible;
+  margin-top: 1px;
+}
+
+.main-card__season-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.main-card__season-next {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.main-card__season-days {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.6rem;
+  color: var(--text);
+  opacity: 0.45;
+  text-align: right;
+  margin-top: 1px;
+}
+
 /* ── Tipp-Bereich ────────────────────────────────────────────── */
 
 .main-tip {
