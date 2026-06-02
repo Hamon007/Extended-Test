@@ -5,6 +5,7 @@ import { RARITY_COLOR, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
 import { CardBondService, BOND_NAMES, BOND_ICONS, BOND_THRESHOLDS, MAX_BOND } from '../services/CardBondService';
 import { CardLoreService } from '../services/CardLoreService';
+import { CardMasteryService } from '../services/CardMasteryService';
 import './CardDetailModal.css';
 
 interface Props {
@@ -230,6 +231,9 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => 
           {/* Kartenband */}
           <BondSection cardId={card.id} />
 
+          {/* Kartenmeisterschaft */}
+          <MasterySection cardId={card.id} />
+
           {/* Ökonomie-Info */}
           <div className="detail-economy">
             {card.globalLimit && (
@@ -297,6 +301,33 @@ const BondSection: React.FC<{ cardId: string }> = ({ cardId }) => {
           🔒 Geschichte enthüllt sich auf Bandstufe {CardLoreService.LORE_UNLOCK_BOND_LEVEL}
         </div>
       )}
+    </section>
+  );
+};
+
+// ── Meisterschafts-Sektion ────────────────────────────────────
+
+const MasterySection: React.FC<{ cardId: string }> = ({ cardId }) => {
+  const info = CardMasteryService.getMasteryInfo(cardId);
+  const pct  = info.nextThreshold
+    ? (info.plays / info.nextThreshold) * 100
+    : 100;
+  return (
+    <section className="detail-section detail-mastery">
+      <h3 className="detail-section__title">
+        ⚔ Meisterschaft
+        {info.atkBonus > 0 && <span className="detail-mastery__atk"> +{info.atkBonus} ATK</span>}
+      </h3>
+      <div className="detail-mastery__stars">{info.stars}</div>
+      <div className="detail-mastery__level">Stufe {info.level}/5</div>
+      <div className="detail-bond__bar-wrap">
+        <div className="detail-bond__bar detail-mastery__bar" style={{ width: `${Math.min(100, pct)}%` }} />
+      </div>
+      <div className="detail-mastery__info">
+        {info.plays} Einsätze
+        {info.nextThreshold && <> · Stufe {info.level + 1} bei {info.nextThreshold}</>}
+        {!info.nextThreshold && <> · Maximale Meisterschaft erreicht!</>}
+      </div>
     </section>
   );
 };

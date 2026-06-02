@@ -40,6 +40,7 @@ import { FormationService, type FormationResult } from './FormationService';
 import { AwakeningService }                    from './AwakeningService';
 import { CardBondService }                     from './CardBondService';
 import { RelicService }                        from './RelicService';
+import { CardMasteryService }                  from './CardMasteryService';
 import type { DailyModifier }                  from './DailyTrialService';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
@@ -105,11 +106,12 @@ function buildPlayerSide(
     const card: Card | undefined = CardDatabase.getById(inst.cardId);
     // Effektive Werte inkl. Fusion (Instanz-Rarität kann über Basis liegen).
     const stats = card ? FusionSystem.getEffectiveStats(card, inst.rarity) : undefined;
+    const masteryBonus: number = CardMasteryService.getAtkBonus(inst.cardId);
     return {
       instanceId: inst.uuid,
       sourceId:   inst.cardId,
       name:       card?.name ?? inst.cardId,
-      atk:        stats?.atk    ?? 0,
+      atk:        (stats?.atk ?? 0) + masteryBonus,
       def:        stats?.def    ?? 0,
       hp:         stats?.hp     ?? 1000,
       hpMax:      stats?.hp     ?? 1000,

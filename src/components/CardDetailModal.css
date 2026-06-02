@@ -593,3 +593,40 @@
   border: 1px dashed rgba(255,255,255,0.1);
   border-radius: 3px;
 }
+
+/* ── Mastery Section ──────────────────────────────────────── */
+.detail-mastery {
+  margin-top: 8px;
+}
+
+.detail-mastery__atk {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ff9800;
+  margin-left: 6px;
+}
+
+.detail-mastery__stars {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: #ffd700;
+  margin: 4px 0 2px;
+}
+
+.detail-mastery__level {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.detail-mastery__bar {
+  background: linear-gradient(90deg, #ff9800, #f44336) !important;
+}
+
+.detail-mastery__info {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}

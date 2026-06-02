@@ -22,6 +22,7 @@ import { AchievementService } from '../services/AchievementService';
 import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
+import { CardMasteryService } from '../services/CardMasteryService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { TowerLore }            from '../data/towerLore';
@@ -144,6 +145,23 @@ const BattleScreen: React.FC = () => {
     // Kartenband-Tracking: Karten die im Deck waren, erhalten Bond-XP
     const deckCardIds = deckInstances.map(i => i.cardId);
     const bondResults = CardBondService.recordBattle(deckCardIds);
+
+    // Karten-Meisterschaft: Spielzähler aus Battle-Log aktualisieren
+    const nameToCardId: Record<string, string> = {};
+    for (const inst of deckInstances) {
+      const card = CardDatabase.getById(inst.cardId);
+      if (card) nameToCardId[card.name] = inst.cardId;
+    }
+    const playCountByCard: Record<string, number> = {};
+    for (const entry of battle.state.log) {
+      if (entry.actor === 'player') {
+        const cardId = nameToCardId[entry.cardName];
+        if (cardId) playCountByCard[cardId] = (playCountByCard[cardId] ?? 0) + 1;
+      }
+    }
+    for (const [cardId, count] of Object.entries(playCountByCard)) {
+      CardMasteryService.recordPlays(cardId, count);
+    }
     const bondLevelUps = bondResults
       .filter(r => r.leveledUp)
       .map(r => ({
