@@ -490,3 +490,66 @@
 .detail-economy__item--limited    { color: #ffcc80; border-color: #e65100; }
 .detail-economy__item--locked     { color: #ef9a9a; border-color: #b71c1c; }
 .detail-economy__item--awakening  { color: #f0d080; border-color: #c9a84c; }
+
+/* ── Kartenband ────────────────────────────────────────────── */
+.detail-bond {
+  background: linear-gradient(135deg, rgba(40,10,80,0.5), rgba(20,5,50,0.5));
+  border: 1px solid rgba(124,77,255,0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 10px 0;
+}
+
+.detail-bond__atk {
+  font-size: 9px;
+  color: #81c784;
+  margin-left: 8px;
+  font-family: 'Cinzel', serif;
+}
+
+.detail-bond__level {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #b39ddb;
+  margin-bottom: 6px;
+}
+
+.detail-bond__bar-wrap {
+  height: 4px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.detail-bond__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #e040fb);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.detail-bond__info {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: #9e7bc0;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
+.detail-bond__stars {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.detail-bond__star {
+  font-size: 1rem;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.detail-bond__star--filled {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(200,130,255,0.7));
+}

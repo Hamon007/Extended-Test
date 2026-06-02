@@ -293,3 +293,107 @@
   box-shadow: 0 0 24px rgba(76,175,80,0.55);
 }
 .victory-btn:active { transform: scale(0.97); }
+
+/* ── Battle-Stats ─────────────────────────────────────────── */
+.victory-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 14px;
+  animation: reward-slide-in 0.4s ease 0.2s both;
+}
+
+.victory-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(20,10,40,0.7);
+  border: 1px solid #3a2858;
+  border-radius: 10px;
+  padding: 10px 18px;
+  min-width: 80px;
+}
+
+.victory-stat--max {
+  border-color: #ff9800;
+  box-shadow: 0 0 12px rgba(255,152,0,0.3);
+}
+
+.victory-stat__icon {
+  font-size: 1.3rem;
+  margin-bottom: 2px;
+}
+
+.victory-stat__value {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0d080;
+}
+
+.victory-stat--max .victory-stat__value { color: #ff9800; }
+
+.victory-stat__label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #8a6890;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ── Bond Level-Ups ───────────────────────────────────────── */
+.victory-bonds {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(40,10,80,0.7), rgba(20,5,50,0.7));
+  border: 1px solid #7c4dff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  animation: bond-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+}
+
+@keyframes bond-appear {
+  from { opacity: 0; transform: scale(0.9) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.victory-bonds__title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #b39ddb;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.victory-bond-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(124,77,255,0.15);
+}
+
+.victory-bond-row:first-of-type { border-top: none; }
+
+.victory-bond-row__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.victory-bond-row__name {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #e8d5b0;
+}
+
+.victory-bond-row__level {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #b39ddb;
+  background: rgba(124,77,255,0.2);
+  border: 1px solid rgba(124,77,255,0.4);
+  border-radius: 10px;
+  padding: 2px 8px;
+}

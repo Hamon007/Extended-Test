@@ -38,6 +38,7 @@ import { FusionSystem } from './FusionSystem';
 import { LeaderService, type LeaderBonus }     from './LeaderService';
 import { FormationService, type FormationResult } from './FormationService';
 import { AwakeningService }                    from './AwakeningService';
+import { CardBondService }                     from './CardBondService';
 import type { DailyModifier }                  from './DailyTrialService';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
@@ -304,10 +305,11 @@ function playPlayerCard(
   if (card.played || card.destroyed)            return state;
   if (state.player.mp < card.mpCost)            return state;
 
-  // Meta-Multiplikatoren: Leader + Formation + Daily + Awakening
+  // Meta-Multiplikatoren: Leader + Formation + Daily + Bond + Awakening
   const leaderMult    = LeaderService.damageMultiplier(state.leaderBonus ?? null, card.card?.element);
   const formationMult = FormationService.damageMultiplier(state.formation ?? null, card.card);
   const dailyMult     = applyDailyDamageMod(card.card?.element, state.dailyModifier ?? null);
+  const bondMult      = card.card ? CardBondService.getAtkMultiplier(card.card.id) : 1.0;
 
   // Awakening-Check
   let awakeningMult = 1.0;
@@ -333,7 +335,7 @@ function playPlayerCard(
   const isSuper = isAwakened && comboCount >= 3;
   const superMult = isSuper ? 3.0 : 1.0;
 
-  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * awakeningMult * superMult;
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * awakeningMult * superMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
   // Karte in der Hand als gespielt markieren (bleibt sichtbar mit ✓-Overlay).
@@ -373,6 +375,7 @@ function playPlayerCard(
     enemy:  newEnemy,
     log:    [...state.log, entry],
     awakenedIds,
+    maxComboReached: Math.max(state.maxComboReached ?? 0, comboCount),
   };
 
   // Sofortiger Sieg-Check

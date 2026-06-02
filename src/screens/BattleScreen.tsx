@@ -19,6 +19,7 @@ import { CardDatabase }         from '../services/CardDatabase';
 import { AudioService }         from '../services/AudioService';
 import { PvpService } from '../services/PvpService';
 import { AchievementService } from '../services/AchievementService';
+import { CardBondService }    from '../services/CardBondService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -95,11 +96,29 @@ const BattleScreen: React.FC = () => {
   useEffect(() => {
     if (!battle.state?.result || rewardApplied.current) return;
     rewardApplied.current = true;
+
+    // Battle-Statistiken aus State
+    const totalDamage = battle.state.log
+      .filter(e => e.actor === 'player')
+      .reduce((sum, e) => sum + e.damage, 0);
+    const maxCombo = battle.state.maxComboReached ?? 0;
+
+    // Kartenband-Tracking: Karten die im Deck waren, erhalten Bond-XP
+    const deckCardIds = deckInstances.map(i => i.cardId);
+    const bondResults = CardBondService.recordBattle(deckCardIds);
+    const bondLevelUps = bondResults
+      .filter(r => r.leveledUp)
+      .map(r => ({
+        cardId:   r.cardId,
+        cardName: CardDatabase.getById(r.cardId)?.name ?? r.cardId,
+        newLevel: r.newLevel,
+      }));
+
     const details = ProgressionService.applyRewards(
       battle.state.result,
       battle.state.enemyData,
     );
-    setRewardDetails(details);
+    setRewardDetails({ ...details, maxCombo, totalDamage, bondLevelUps });
 
     // Aufgaben-Fortschritt + Achievements
     if (battle.state.result.outcome === 'victory') {
@@ -110,17 +129,14 @@ const BattleScreen: React.FC = () => {
           if (TowerService.isBossFloor(towerFloor)) QuestService.recordEvent('defeat_boss');
           else QuestService.recordEvent('defeat_elite');
         }
-        // Tower achievements
         if (towerFloor >= 10) AchievementService.recordProgress('tower_10');
         if (towerFloor >= 30) AchievementService.recordProgress('tower_30');
         if (towerFloor >= 50) AchievementService.recordProgress('tower_50');
       }
-      // Battle win achievements
       AchievementService.recordProgress('first_win');
       AchievementService.recordProgress('wins_10');
       AchievementService.recordProgress('wins_50');
       AchievementService.recordProgress('wins_100');
-      // Win streak achievements
       const streak = WinStreakService.get();
       if (streak >= 5)  AchievementService.recordProgress('win_streak_5');
       if (streak >= 10) AchievementService.recordProgress('win_streak_10');
@@ -135,13 +151,6 @@ const BattleScreen: React.FC = () => {
         AchievementService.recordProgress('pvp_first_win');
         AchievementService.recordProgress('pvp_10_wins');
       }
-    }
-
-    // PvP: Ergebnis speichern
-    if (isPvpMode) {
-      void PvpService.recordResult(
-        battle.state.result.outcome === 'victory' ? 'win' : 'loss'
-      );
     }
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 

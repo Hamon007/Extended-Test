@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CardDatabase } from '../services/CardDatabase';
 import { SaveService } from '../services/SaveService';
+import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
 import { RARITY_COLOR, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Card, Rarity } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -43,9 +44,10 @@ function sortCards(cards: Card[], sort: SortKey): Card[] {
 // ── Haupt-Komponente ──────────────────────────────────────────
 
 const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) => {
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [rarityFilter, setRarityFilter] = useState<Rarity | ''>('');
-  const [sortKey,      setSortKey]      = useState<SortKey>('name');
+  const [selectedCard,    setSelectedCard]    = useState<Card | null>(null);
+  const [rarityFilter,    setRarityFilter]    = useState<Rarity | ''>('');
+  const [sortKey,         setSortKey]         = useState<SortKey>('name');
+  const [milestoneToast,  setMilestoneToast]  = useState<string | null>(null);
 
   // Eigene Karten aus Inventar laden
   const ownedMap = useMemo(() => {
@@ -56,6 +58,16 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
     }
     return map;
   }, []);
+
+  // Meilenstein-Check beim Öffnen der Sammlung
+  useEffect(() => {
+    const results = CollectionMilestoneService.checkAndClaim(ownedMap.size);
+    if (results.length > 0) {
+      const best = results[results.length - 1];
+      setMilestoneToast(`${best.milestone.icon} ${best.milestone.label} — +${best.milestone.crystals.toLocaleString('de-DE')} 💎`);
+      setTimeout(() => setMilestoneToast(null), 4000);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Flache sortierte Liste aller gefilterten Karten — Grundlage für Swipe-Navigation
   const allCards = useMemo(() => {
@@ -87,14 +99,39 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   const ownedUnique = ownedMap.size;
   const visibleCount = allCards.length;
 
+  const { next: nextMilestone } = CollectionMilestoneService.getProgress();
+  const collectionPct = totalCards > 0 ? (ownedUnique / totalCards) * 100 : 0;
+
   return (
     <div className="card-col-screen">
+
+      {/* ── Meilenstein-Toast ── */}
+      {milestoneToast && (
+        <div className="card-col-milestone-toast" role="status">
+          {milestoneToast}
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div className="card-col-header">
         <button className="card-col-header__back" onClick={onBack}>← Zurück</button>
         <h1 className="card-col-header__title">Kartensammlung</h1>
         <span className="card-col-header__count">{ownedUnique} / {totalCards}</span>
+      </div>
+
+      {/* ── Sammlungs-Fortschritt ── */}
+      <div className="card-col-progress">
+        <div className="card-col-progress__bar-wrap">
+          <div className="card-col-progress__bar" style={{ width: `${collectionPct}%` }} />
+        </div>
+        <div className="card-col-progress__info">
+          <span>{collectionPct.toFixed(0)}% gesammelt</span>
+          {nextMilestone && (
+            <span className="card-col-progress__next">
+              Nächster Meilenstein: {nextMilestone.uniqueCards} Karten → +{nextMilestone.crystals.toLocaleString()} 💎
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Filter & Sortierung ── */}

@@ -91,6 +91,7 @@ export interface BattleState {
   maxRounds?:      number;                  // overrides MAX_ROUNDS if set
   awakenedIds?:    string[];                // sourceIds awakened this battle (persisted)
   guarding?:       boolean;                 // Verteidigungs-Haltung: halbiert nächsten Gegnerschaden
+  maxComboReached?: number;                 // Höchster Combo-Count dieser Battle
 }
 
 export type BattlePhase =

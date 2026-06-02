@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Card } from '../types/Card';
 import { RARITY_COLOR, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
+import { CardBondService, BOND_NAMES, BOND_ICONS, BOND_THRESHOLDS, MAX_BOND } from '../services/CardBondService';
 import './CardDetailModal.css';
 
 interface Props {
@@ -225,6 +226,9 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => 
             „{card.quote}"
           </blockquote>
 
+          {/* Kartenband */}
+          <BondSection cardId={card.id} />
+
           {/* Ökonomie-Info */}
           <div className="detail-economy">
             {card.globalLimit && (
@@ -246,6 +250,39 @@ const CardDetailModal: React.FC<Props> = ({ card, onClose, onPrev, onNext }) => 
       </div>
     </div>,
     document.body,
+  );
+};
+
+// ── Kartenband-Sektion ────────────────────────────────────────
+
+const BondSection: React.FC<{ cardId: string }> = ({ cardId }) => {
+  const bond = CardBondService.getCardBond(cardId);
+  const pct  = CardBondService.progressToNext(bond) * 100;
+  const nextThreshold = bond.level < MAX_BOND ? BOND_THRESHOLDS[bond.level + 1] : BOND_THRESHOLDS[MAX_BOND];
+  const atkBonus = Math.round((CardBondService.getAtkMultiplier(cardId) - 1) * 100);
+
+  return (
+    <section className="detail-section detail-bond">
+      <h3 className="detail-section__title">
+        {BOND_ICONS[bond.level] || '◇'} Kartenband
+        {atkBonus > 0 && <span className="detail-bond__atk"> +{atkBonus}% ATK</span>}
+      </h3>
+      <div className="detail-bond__level">{BOND_NAMES[bond.level] || 'Unbekannt'} (Stufe {bond.level}/{MAX_BOND})</div>
+      <div className="detail-bond__bar-wrap">
+        <div className="detail-bond__bar" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="detail-bond__info">
+        {bond.battles} Kämpfe
+        {bond.level < MAX_BOND && <> · Nächste Stufe bei {nextThreshold}</>}
+      </div>
+      <div className="detail-bond__stars">
+        {Array.from({ length: MAX_BOND }).map((_, i) => (
+          <span key={i} className={`detail-bond__star ${i < bond.level ? 'detail-bond__star--filled' : ''}`}>
+            {i < bond.level ? BOND_ICONS[i + 1] : '◇'}
+          </span>
+        ))}
+      </div>
+    </section>
   );
 };
 

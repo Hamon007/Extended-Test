@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { CardDatabase } from '../services/CardDatabase';
 import { RARITY_COLOR } from '../types/Card';
+import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -9,7 +10,34 @@ interface Props {
   onContinue: () => void;
 }
 
+// Animated number counter
+const CountUp: React.FC<{ target: number; prefix?: string; suffix?: string; duration?: number }> = ({
+  target, prefix = '', suffix = '', duration = 800,
+}) => {
+  const [value, setValue] = useState(0);
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (target === 0) return;
+    const start = performance.now();
+    startRef.current = start;
+    const tick = (now: number) => {
+      const pct = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - pct, 3);
+      setValue(Math.round(eased * target));
+      if (pct < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [target, duration]);
+
+  return <>{prefix}{value.toLocaleString('de-DE')}{suffix}</>;
+};
+
 const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
+  const maxCombo    = details.maxCombo    ?? 0;
+  const totalDamage = details.totalDamage ?? 0;
+  const bondUps     = details.bondLevelUps ?? [];
+
   return (
     <div className="victory-screen">
       {/* Hintergrund-Partikel */}
@@ -26,20 +54,60 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
         <h1 className="victory-title">SIEG!</h1>
         <div className="victory-divider" />
 
+        {/* Battle-Stats */}
+        {(totalDamage > 0 || maxCombo > 0) && (
+          <div className="victory-stats">
+            {totalDamage > 0 && (
+              <div className="victory-stat">
+                <span className="victory-stat__icon">⚔</span>
+                <span className="victory-stat__value">
+                  <CountUp target={totalDamage} />
+                </span>
+                <span className="victory-stat__label">Gesamtschaden</span>
+              </div>
+            )}
+            {maxCombo > 0 && (
+              <div className={`victory-stat ${maxCombo >= 5 ? 'victory-stat--max' : ''}`}>
+                <span className="victory-stat__icon">🔥</span>
+                <span className="victory-stat__value">{maxCombo}×</span>
+                <span className="victory-stat__label">Max Combo</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Bond Level-Ups */}
+        {bondUps.length > 0 && (
+          <div className="victory-bonds">
+            <div className="victory-bonds__title">💫 Kartenband gestärkt!</div>
+            {bondUps.map(b => (
+              <div key={b.cardId} className="victory-bond-row">
+                <span className="victory-bond-row__icon">{BOND_ICONS[b.newLevel]}</span>
+                <span className="victory-bond-row__name">{b.cardName}</span>
+                <span className="victory-bond-row__level">{BOND_NAMES[b.newLevel]}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Belohnungen */}
         <div className="victory-rewards">
 
           {/* Kristalle */}
           <div className="reward-row reward-row--crystals">
             <span className="reward-row__label">💎 Kristalle</span>
-            <span className="reward-row__value">+{details.crystalsGained.toLocaleString('de-DE')}</span>
+            <span className="reward-row__value">
+              +<CountUp target={details.crystalsGained} />
+            </span>
           </div>
 
           {/* Account-XP */}
           {(details.accountXpGained ?? 0) > 0 && (
             <div className="reward-row reward-row--xp">
               <span className="reward-row__label">✦ Account-XP</span>
-              <span className="reward-row__value">+{(details.accountXpGained ?? 0).toLocaleString('de-DE')}</span>
+              <span className="reward-row__value">
+                +<CountUp target={details.accountXpGained ?? 0} />
+              </span>
             </div>
           )}
 

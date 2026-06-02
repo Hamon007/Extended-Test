@@ -373,3 +373,71 @@
   font-weight: 700;
   flex-shrink: 0;
 }
+
+/* ── Meilenstein-Toast ─────────────────────────────────────── */
+.card-col-milestone-toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  background: linear-gradient(135deg, rgba(20,10,40,0.97), rgba(40,15,80,0.97));
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 24px rgba(255,215,0,0.4);
+  text-align: center;
+  max-width: min(340px, 90vw);
+  animation: milestone-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes milestone-drop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.85); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* ── Sammlungs-Fortschritt ─────────────────────────────────── */
+.card-col-progress {
+  padding: 6px 14px 10px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.card-col-progress__bar-wrap {
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.card-col-progress__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a84c, #f0d080);
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+.card-col-progress__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6890;
+  letter-spacing: 0.3px;
+}
+
+.card-col-progress__next {
+  color: #c9a84c;
+  text-align: right;
+  flex: 1;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

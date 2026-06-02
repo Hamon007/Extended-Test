@@ -21,6 +21,12 @@ export interface AccountLevelUpInfo {
   newMaxMana:    number;
 }
 
+export interface BondLevelUp {
+  cardId:   string;
+  cardName: string;
+  newLevel: number;
+}
+
 export interface RewardDetails {
   isVictory:        boolean;
   crystalsGained:   number;        // 0 wenn Niederlage (außer Trost)
@@ -30,6 +36,10 @@ export interface RewardDetails {
   defeatReason?:    'hp' | 'rounds';
   accountXpGained?: number;        // Account-XP aus diesem Battle
   accountLevelUp?:  AccountLevelUpInfo | null; // null = kein Level-Up
+  // Battle-Statistiken
+  maxCombo?:        number;
+  totalDamage?:     number;
+  bondLevelUps?:    BondLevelUp[];
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
