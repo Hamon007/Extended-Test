@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGachaStore } from '../hooks/useGachaStore';
 import { CardDatabase } from '../services/CardDatabase';
 import type { Card } from '../types/Card';
-import type { PullResult } from '../types/GachaTypes';
+import type { PullResult, CardInstance } from '../types/GachaTypes';
 import {
   PULL_COST_SINGLE, PULL_COST_MULTI,
   PITY_THRESHOLD, DROP_RATES,
@@ -65,6 +65,11 @@ const GachaScreen: React.FC = () => {
 
       {/* ── Pity-Anzeige ── */}
       <PityBar pity={state.pityCounter} total={state.totalPulls} />
+
+      {/* ── Pull-History ── */}
+      {state.inventory.length > 0 && (
+        <PullHistoryStrip inventory={state.inventory} />
+      )}
 
       {showResult ? (
         <>
@@ -154,6 +159,46 @@ const GachaScreen: React.FC = () => {
           <span className="gacha-milestone-toast__text">{milestoneToast}</span>
         </div>
       )}
+    </div>
+  );
+};
+
+// ── Pull-History Strip ────────────────────────────────────────
+
+const PULL_DOT_COLORS: Record<string, string> = {
+  N: '#666', R: '#4caf50', SR: '#2196f3', SSR: '#ffc107', MR: '#f44336', LR: '#e040fb',
+};
+
+const PullHistoryStrip: React.FC<{ inventory: CardInstance[] }> = ({ inventory }) => {
+  const last20 = [...inventory]
+    .sort((a, b) => (b.pullIndex ?? 0) - (a.pullIndex ?? 0))
+    .slice(0, 20)
+    .reverse();
+
+  if (last20.length === 0) return null;
+
+  const ssrCount = last20.filter(i => i.rarity === 'SSR' || i.rarity === 'MR').length;
+
+  return (
+    <div className="pull-history">
+      <div className="pull-history__label">
+        Letzte {last20.length} Pulls · {ssrCount > 0 ? `${ssrCount}× SSR/MR` : 'kein SSR/MR'}
+      </div>
+      <div className="pull-history__dots">
+        {last20.map((inst, i) => {
+          const major = inst.rarity.replace(/\+/g, '');
+          const color = PULL_DOT_COLORS[major] ?? '#666';
+          const isBig = major === 'MR' || major === 'SSR' || major === 'LR';
+          return (
+            <div
+              key={`${inst.uuid}-${i}`}
+              className={`pull-dot ${isBig ? 'pull-dot--big' : ''}`}
+              style={{ background: color, boxShadow: isBig ? `0 0 6px ${color}` : undefined }}
+              title={`${inst.rarity} — ${inst.cardId}`}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };

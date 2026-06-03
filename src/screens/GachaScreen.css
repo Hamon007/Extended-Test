@@ -116,6 +116,44 @@
   font-style: italic;
 }
 
+/* ── Pull History Strip ──────────────────────────────────── */
+.pull-history {
+  padding: 6px 14px 5px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+
+.pull-history__label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: rgba(140,100,200,0.7);
+  letter-spacing: 0.08em;
+  margin-bottom: 5px;
+}
+
+.pull-history__dots {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.pull-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.pull-dot--big {
+  width: 11px;
+  height: 11px;
+  opacity: 1;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
 /* ── Haupt-Bereich (scrollbar) ────────────────────────────── */
 .gacha-main {
   flex: 1;
