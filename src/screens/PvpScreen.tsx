@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PvpService, PVP_RANK_TIERS, type PvpOpponent, rankLabel, rankColor } from '../services/PvpService';
+import { PvpHistoryService, type PvpMatchRecord } from '../services/PvpHistoryService';
 import { AudioService } from '../services/AudioService';
 import './PvpScreen.css';
 
@@ -78,6 +79,7 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
   const [error,     setError]     = useState('');
   const [attacking, setAttacking] = useState(false);
   const [toast,     setToast]     = useState('');
+  const [history]                 = useState<PvpMatchRecord[]>(() => PvpHistoryService.getAll());
 
   const myRecord = PvpService.getMyRecord();
   const myRating = PvpService.getMyRating();
@@ -165,6 +167,32 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
           </div>
         )}
       </div>
+
+      {/* ── Match History ── */}
+      {history.length > 0 && (
+        <div className="pvp-history">
+          <div className="pvp-history__title">Letzte Kämpfe</div>
+          <div className="pvp-history__list">
+            {history.map((m, i) => {
+              const ago = Math.round((Date.now() - m.timestamp) / 60000);
+              const agoLabel = ago < 60
+                ? `${ago}m`
+                : ago < 1440
+                  ? `${Math.floor(ago / 60)}h`
+                  : `${Math.floor(ago / 1440)}T`;
+              return (
+                <div key={i} className={`pvp-history-row pvp-history-row--${m.result}`}>
+                  <span className={`pvp-history-row__badge pvp-history-row__badge--${m.result}`}>
+                    {m.result === 'win' ? 'S' : 'N'}
+                  </span>
+                  <span className="pvp-history-row__name">{m.opponentName}</span>
+                  <span className="pvp-history-row__ago">{agoLabel}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Hinweistext ── */}
       <p className="pvp-info">

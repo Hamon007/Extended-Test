@@ -62,6 +62,7 @@ const BattleScreen: React.FC = () => {
   const [eventToast,     setEventToast]     = useState('');
   const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
   const [isPvpMode,      setIsPvpMode]      = useState(false);
+  const pvpOpponentRef = useRef<string>('');
   const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
   const [enemyTaunt,     setEnemyTaunt]     = useState<string | null>(null);
   const lowHpTauntFired    = useRef(false);
@@ -130,6 +131,7 @@ const BattleScreen: React.FC = () => {
     if (!pending) return;
     pvpConsumedRef.current = true;
     setIsPvpMode(true);
+    pvpOpponentRef.current = pending.opponent.displayName;
     battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -381,7 +383,8 @@ const BattleScreen: React.FC = () => {
     // PvP: Ergebnis speichern + Achievements
     if (isPvpMode) {
       void PvpService.recordResult(
-        battle.state.result.outcome === 'victory' ? 'win' : 'loss'
+        battle.state.result.outcome === 'victory' ? 'win' : 'loss',
+        pvpOpponentRef.current || undefined,
       );
       if (battle.state.result.outcome === 'victory') {
         AchievementService.recordProgress('pvp_first_win');

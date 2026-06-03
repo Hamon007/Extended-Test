@@ -14,6 +14,7 @@ import { FusionSystem } from './FusionSystem';
 import { supabase } from '../lib/supabase';
 import { AuthService } from './AuthService';
 import { SaveService } from './SaveService';
+import { PvpHistoryService } from './PvpHistoryService';
 import type { AccountState } from '../types/AccountTypes';
 
 // ── Typen ─────────────────────────────────────────────────────
@@ -190,7 +191,7 @@ async function fetchLeaderboard(): Promise<PvpOpponent[]> {
 
 // ── Ergebnis speichern ────────────────────────────────────────
 
-async function recordResult(outcome: 'win' | 'loss'): Promise<void> {
+async function recordResult(outcome: 'win' | 'loss', opponentName?: string): Promise<void> {
   const account = SaveService.loadAccountState() as AccountState & { pvpWins?: number; pvpLosses?: number };
   const updated = {
     ...account,
@@ -198,6 +199,9 @@ async function recordResult(outcome: 'win' | 'loss'): Promise<void> {
     pvpLosses: (account.pvpLosses ?? 0) + (outcome === 'loss' ? 1 : 0),
   };
   SaveService.saveAccountState(updated);
+  if (opponentName) {
+    PvpHistoryService.record({ opponentName, result: outcome });
+  }
 }
 
 function getMyRecord(): { wins: number; losses: number } {

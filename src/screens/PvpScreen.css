@@ -141,6 +141,67 @@
 
 /* ── Info-Text ── */
 
+/* ── Match History ── */
+
+.pvp-history {
+  padding: 8px 14px 6px;
+  border-bottom: 1px solid #3d2460;
+  flex-shrink: 0;
+}
+
+.pvp-history__title {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #6a5a80;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.pvp-history__list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pvp-history-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+}
+
+.pvp-history-row__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.pvp-history-row__badge--win  { background: rgba(76,175,128,0.3); color: #4caf80; }
+.pvp-history-row__badge--loss { background: rgba(224,85,85,0.3);  color: #e05555; }
+
+.pvp-history-row__name {
+  color: #c0a8d8;
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pvp-history-row__ago {
+  color: #5a4870;
+  font-size: 0.6rem;
+}
+
 .pvp-info {
   font-size:   0.8rem;
   color:       #8a6a9a;
