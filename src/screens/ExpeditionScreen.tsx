@@ -100,6 +100,14 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
                   <div className="exp-active-card__info">
                     <div className="exp-active-card__name" style={{ color: rc }}>{exp.cardName}</div>
                     <div className="exp-active-card__dest">{def?.name ?? exp.expeditionId}</div>
+                    {def && (
+                      <div className="exp-active-card__progress-track">
+                        <div
+                          className={`exp-active-card__progress-fill${done ? ' exp-active-card__progress-fill--done' : ''}`}
+                          style={{ width: `${Math.min(100, ((Date.now() - exp.startedAt) / def.durationMs) * 100)}%` }}
+                        />
+                      </div>
+                    )}
                     <div className={`exp-active-card__time ${done ? 'exp-active-card__time--done' : ''}`}>
                       {/* tick forces re-render every second */}
                       {tick >= 0 && ExpeditionService.formatTimeLeft(exp.endsAt)}

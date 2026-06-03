@@ -157,6 +157,25 @@
   font-weight: 700;
 }
 
+.exp-active-card__progress-track {
+  height: 3px;
+  background: rgba(124,77,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 4px 0 3px;
+}
+
+.exp-active-card__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #b39ddb);
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+.exp-active-card__progress-fill--done {
+  background: linear-gradient(90deg, #c9a84c, #ffd700);
+}
+
 .exp-collect-btn {
   background: linear-gradient(135deg, #c9a84c, #f0d080);
   border: none;
