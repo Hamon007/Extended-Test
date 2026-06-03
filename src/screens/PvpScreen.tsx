@@ -93,6 +93,14 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
     ? Math.min(1, (myRating - curTier.min) / (nextTier.min - curTier.min))
     : 1;
 
+  // Consecutive PvP win streak from history (history is newest-first)
+  const pvpStreak = history.reduce((streak, match) => {
+    if (streak === -1) return -1; // stopped counting
+    if (match.result === 'win') return streak + 1;
+    return -1; // first loss breaks streak
+  }, 0);
+  const pvpStreakCount = pvpStreak === -1 ? 0 : pvpStreak;
+
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -141,6 +149,11 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
         <span className="pvp-my-record__label">Meine Bilanz</span>
         <span className="pvp-my-record__wins">✔ {myRecord.wins} Siege</span>
         <span className="pvp-my-record__losses">✘ {myRecord.losses} Niederlagen</span>
+        {pvpStreakCount >= 2 && (
+          <span className={`pvp-streak-chip ${pvpStreakCount >= 5 ? 'pvp-streak-chip--hot' : ''}`}>
+            🔥 {pvpStreakCount}× Siegesserie
+          </span>
+        )}
         <RankBadge rating={myRating} />
       </div>
 

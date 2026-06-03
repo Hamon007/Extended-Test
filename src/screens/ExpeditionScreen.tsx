@@ -92,10 +92,11 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
             {active.map(exp => {
               const def  = ExpeditionService.EXPEDITION_DEFS.find(d => d.id === exp.expeditionId);
               const done = Date.now() >= exp.endsAt;
+              const soon = !done && exp.endsAt - Date.now() < 15 * 60 * 1000;
               const card = CardDatabase.getById(exp.cardId);
               const rc   = card ? (RARITY_COLOR[card.rarity as keyof typeof RARITY_COLOR] ?? '#c9a84c') : '#c9a84c';
               return (
-                <div key={exp.cardUuid} className={`exp-active-card ${done ? 'exp-active-card--done' : ''}`}>
+                <div key={exp.cardUuid} className={`exp-active-card ${done ? 'exp-active-card--done' : soon ? 'exp-active-card--soon' : ''}`}>
                   <div className="exp-active-card__icon">{def?.icon ?? '⚔'}</div>
                   <div className="exp-active-card__info">
                     <div className="exp-active-card__name" style={{ color: rc }}>{exp.cardName}</div>

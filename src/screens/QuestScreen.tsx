@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { QuestService } from '../services/QuestService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { SaveService } from '../services/SaveService';
@@ -55,11 +55,21 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
   const weekly = QuestService.getWeeklyQuests();
   const list   = tab === 'daily' ? daily : weekly;
 
+  // Tab badges: claimable count per tab
+  const dailyClaimable  = useMemo(() => daily.filter(q => q.progress.completed && !q.progress.claimed).length, [daily]);
+  const weeklyClaimable = useMemo(() => weekly.filter(q => q.progress.completed && !q.progress.claimed).length, [weekly]);
+
   // Total available (unclaimed + incomplete) crystals
   const pendingCrystals = list
     .filter(q => !q.progress.claimed)
     .reduce((sum, q) => sum + q.def.crystalReward, 0);
   const claimableCount = list.filter(q => q.progress.completed && !q.progress.claimed).length;
+
+  // Urgency: daily < 2h, weekly < 12h
+  const incompleteCount = list.filter(q => !q.progress.claimed && !q.progress.completed).length;
+  const isUrgentTimer = tab === 'daily'
+    ? resetMs < 2 * 3600_000 && incompleteCount > 0
+    : resetMs < 12 * 3600_000 && incompleteCount > 0;
 
   function handleClaim(questId: string) {
     const reward = QuestService.claimReward(questId);
@@ -87,14 +97,31 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
           onClick={() => { setTab('daily'); setResetMs(msUntilMidnightUtc()); }}
         >
           Täglich
+          {dailyClaimable > 0 && (
+            <span className="quest-tab__badge">{dailyClaimable}</span>
+          )}
         </button>
         <button
           className={`quest-tab ${tab === 'weekly' ? 'quest-tab--active' : ''}`}
           onClick={() => { setTab('weekly'); setResetMs(msUntilNextMonday()); }}
         >
           Wöchentlich
+          {weeklyClaimable > 0 && (
+            <span className="quest-tab__badge">{weeklyClaimable}</span>
+          )}
         </button>
       </div>
+
+      {/* Urgency banner */}
+      {isUrgentTimer && (
+        <div className="quest-urgency">
+          <span className="quest-urgency__icon">⏰</span>
+          <span className="quest-urgency__text">
+            {incompleteCount} Aufgabe{incompleteCount !== 1 ? 'n' : ''} unfertig —
+            Reset in <strong>{formatHMS(resetMs)}</strong>!
+          </span>
+        </div>
+      )}
 
       {/* Quest reset countdown + reward summary */}
       <div className="quest-reset-bar">
@@ -109,7 +136,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
             </span>
           )}
         </div>
-        <div className="quest-reset-bar__timer">
+        <div className={`quest-reset-bar__timer${isUrgentTimer ? ' quest-reset-bar__timer--urgent' : ''}`}>
           ↺ {formatHMS(resetMs)}
         </div>
       </div>
@@ -117,10 +144,11 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       <div className="quest-list">
         {list.map(({ def, progress }) => {
           const pct = Math.min(100, (progress.current / def.target) * 100);
+          const isNearComplete = !progress.completed && pct >= 75;
           return (
             <div
               key={def.id}
-              className={`quest-card ${progress.completed ? 'quest-card--done' : ''} ${progress.claimed ? 'quest-card--claimed' : ''}`}
+              className={`quest-card ${progress.completed ? 'quest-card--done' : ''} ${progress.claimed ? 'quest-card--claimed' : ''} ${isNearComplete ? 'quest-card--near' : ''}`}
             >
               <div className="quest-card__body">
                 <div className="quest-card__title">{def.title}</div>

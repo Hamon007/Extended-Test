@@ -47,6 +47,7 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   const [selectedCard,    setSelectedCard]    = useState<Card | null>(null);
   const [rarityFilter,    setRarityFilter]    = useState<Rarity | ''>('');
   const [sortKey,         setSortKey]         = useState<SortKey>('name');
+  const [ownedOnly,       setOwnedOnly]       = useState(false);
   const [milestoneToast,  setMilestoneToast]  = useState<string | null>(null);
 
   // Eigene Karten aus Inventar laden
@@ -72,13 +73,14 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   // Flache sortierte Liste aller gefilterten Karten — Grundlage für Swipe-Navigation
   const allCards = useMemo(() => {
     const filtered = CardDatabase.getAll()
-      .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter);
+      .filter(c => rarityFilter === '' || rarityMajor(c.rarity) === rarityFilter)
+      .filter(c => !ownedOnly || ownedMap.has(c.id));
     const sorted = sortCards(filtered, sortKey);
     return [
       ...sorted.filter(c => !!c.image),
       ...sorted.filter(c => !c.image),
     ];
-  }, [rarityFilter, sortKey]);
+  }, [rarityFilter, sortKey, ownedOnly, ownedMap]);
 
   const withArtwork    = allCards.filter(c => !!c.image);
   const withoutArtwork = allCards.filter(c => !c.image);
@@ -186,6 +188,12 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
       {/* ── Filter & Sortierung ── */}
       <div className="card-col-filter">
         <span className="card-col-filter__label">SELTENHEIT</span>
+        <button
+          className={`card-col-filter__chip card-col-filter__chip--owned ${ownedOnly ? 'card-col-filter__chip--active card-col-filter__chip--owned-active' : ''}`}
+          onClick={() => setOwnedOnly(v => !v)}
+        >
+          {ownedOnly ? '✓ Besessen' : '⬡ Besessen'}
+        </button>
         <button
           className={`card-col-filter__chip ${rarityFilter === '' ? 'card-col-filter__chip--active' : ''}`}
           onClick={() => setRarityFilter('')}

@@ -121,6 +121,16 @@
   50%       { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
 }
 
+.exp-active-card--soon {
+  border-color: rgba(255,160,40,0.6);
+  animation: exp-soon-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes exp-soon-pulse {
+  0%, 100% { border-color: rgba(255,160,40,0.6); }
+  50%       { border-color: rgba(255,200,80,0.9); box-shadow: 0 0 10px rgba(255,160,40,0.25); }
+}
+
 .exp-active-card__icon {
   font-size: 1.8rem;
   flex-shrink: 0;

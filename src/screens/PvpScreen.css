@@ -79,6 +79,29 @@
 .pvp-my-record__wins   { font-size: 0.85rem; color: #4caf80; }
 .pvp-my-record__losses { font-size: 0.85rem; color: #e05555; }
 
+/* ── PvP Streak Chip ── */
+.pvp-streak-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,120,0,0.18);
+  border: 1px solid rgba(255,140,0,0.5);
+  color: #ffb04c;
+}
+.pvp-streak-chip--hot {
+  background: rgba(255,60,0,0.22);
+  border-color: rgba(255,80,0,0.7);
+  color: #ff8040;
+  animation: pvpStreakHot 1.2s ease-in-out infinite;
+}
+@keyframes pvpStreakHot {
+  0%,100% { box-shadow: 0 0 6px rgba(255,80,0,0.2); }
+  50%     { box-shadow: 0 0 14px rgba(255,80,0,0.5); }
+}
+
 /* ── Rang-Badge ── */
 
 .pvp-rank-badge {
