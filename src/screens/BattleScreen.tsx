@@ -61,8 +61,10 @@ const BattleScreen: React.FC = () => {
   const [isPvpMode,      setIsPvpMode]      = useState(false);
   const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
   const [enemyTaunt,     setEnemyTaunt]     = useState<string | null>(null);
-  const lowHpTauntFired = useRef(false);
-  const [selectedRune, setSelectedRune] = useState<RuneBoost | null>(null);
+  const lowHpTauntFired    = useRef(false);
+  const lastStandShownRef  = useRef(false);
+  const [selectedRune,   setSelectedRune]   = useState<RuneBoost | null>(null);
+  const [showLastStand,  setShowLastStand]  = useState(false);
   const crystalRuneMultRef = useRef(1.0);
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied  = useRef(false);
@@ -106,7 +108,8 @@ const BattleScreen: React.FC = () => {
   // Enemy taunt on battle start
   useEffect(() => {
     if (!battle.state || battle.state.result) return;
-    lowHpTauntFired.current = false;
+    lowHpTauntFired.current   = false;
+    lastStandShownRef.current = false;
     const tier = TowerService.isBossFloor(towerFloor) ? 'boss'
       : tacticalConfig ? 'elite'
       : 'normal';
@@ -131,6 +134,16 @@ const BattleScreen: React.FC = () => {
       return () => clearTimeout(id);
     }
   }, [battle.state?.enemy.hp]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Last Stand: show dramatic overlay when player HP drops to ≤ 15%
+  useEffect(() => {
+    if (!battle.state?.lastStandActive || lastStandShownRef.current) return;
+    if (battle.state.result) return;
+    lastStandShownRef.current = true;
+    setShowLastStand(true);
+    const id = setTimeout(() => setShowLastStand(false), 2800);
+    return () => clearTimeout(id);
+  }, [battle.state?.lastStandActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Belohnungen einmalig anwenden wenn Battle endet
   useEffect(() => {
@@ -340,6 +353,17 @@ const BattleScreen: React.FC = () => {
     </div>
   ) : null;
 
+  // ── Last Stand Flash ──────────────────────────────────────
+  const lastStandOverlay = showLastStand ? (
+    <div className="last-stand-overlay">
+      <div className="last-stand-overlay__content">
+        <div className="last-stand-overlay__kanji">限界突破</div>
+        <div className="last-stand-overlay__title">LETZTE KRAFT!</div>
+        <div className="last-stand-overlay__sub">ATK ×1.5 — jetzt kämpfen!</div>
+      </div>
+    </div>
+  ) : null;
+
   // ── Tower Milestone Overlay (shown over any screen) ──────
   const milestoneOverlay = towerMilestone ? (
     <div className="milestone-overlay" onClick={() => setTowerMilestone(null)}>
@@ -377,6 +401,7 @@ const BattleScreen: React.FC = () => {
       <>
         <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />
         {tauntBubble}
+        {lastStandOverlay}
       </>
     );
   }

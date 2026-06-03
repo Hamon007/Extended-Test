@@ -92,6 +92,7 @@ export interface BattleState {
   awakenedIds?:    string[];                // sourceIds awakened this battle (persisted)
   guarding?:       boolean;                 // Verteidigungs-Haltung: halbiert nächsten Gegnerschaden
   maxComboReached?: number;                 // Höchster Combo-Count dieser Battle
+  lastStandActive?: boolean;               // Comeback: ATK ×1.5 when HP ≤ 15%
 }
 
 export type BattlePhase =

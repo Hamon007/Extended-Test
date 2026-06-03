@@ -369,7 +369,13 @@ function playPlayerCard(
   const isSuper = isAwakened && comboCount >= 3;
   const superMult = isSuper ? 3.0 : 1.0;
 
-  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * relicAtkMult * awakeningMult * superMult;
+  // Comeback: ATK ×1.5 when player HP ≤ 15%
+  const hpRatio = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
+  const lastStandActive = state.lastStandActive || hpRatio <= 0.15;
+  const lastStandMult   = lastStandActive ? 1.5 : 1.0;
+  const firstActivation = !state.lastStandActive && lastStandActive;
+
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * relicAtkMult * awakeningMult * superMult * lastStandMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
   // Karte in der Hand als gespielt markieren (bleibt sichtbar mit ✓-Overlay).
@@ -392,7 +398,9 @@ function playPlayerCard(
     ? `▼ SUPER: ${card.name} → ${damage.toLocaleString('de-DE')} Schaden!`
     : newlyAwakened
       ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden`
-      : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
+      : lastStandActive
+        ? `💥 ${card.name} → ${damage.toLocaleString('de-DE')} Schaden (LETZTE KRAFT!)`
+        : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
 
   const entry = log(state.round, 'player', card.name, damage, card.mpCost, logText, {
     quote:   isSuper ? card.card?.quote : undefined,
@@ -403,12 +411,17 @@ function playPlayerCard(
     ? [...(state.awakenedIds ?? []), card.sourceId]
     : state.awakenedIds;
 
+  const extraLog: BattleLogEntry[] = firstActivation
+    ? [log(state.round, 'system', '', 0, 0, '💥 LETZTE KRAFT aktiviert — ATK ×1.5!')]
+    : [];
+
   const newState: BattleState = {
     ...state,
     player: newPlayer,
     enemy:  newEnemy,
-    log:    [...state.log, entry],
+    log:    [...state.log, ...extraLog, entry],
     awakenedIds,
+    lastStandActive,
     maxComboReached: Math.max(state.maxComboReached ?? 0, comboCount),
   };
 
@@ -497,11 +510,20 @@ function runEnemyTurn(state: BattleState): BattleState {
       `${card.name} → ${damage.toLocaleString('de-DE')} Schaden am Spieler`
     );
 
+    // Check last stand activation triggered by enemy damage
+    const afterRatio = newPlayer.hpMax > 0 ? newPlayer.hp / newPlayer.hpMax : 1;
+    const newLastStand = current.lastStandActive || afterRatio <= 0.15;
+    const justActivated = !current.lastStandActive && newLastStand && newPlayer.hp > 0;
+    const lsLog: BattleLogEntry[] = justActivated
+      ? [log(current.round, 'system', '', 0, 0, '💥 LETZTE KRAFT aktiviert — ATK ×1.5!')]
+      : [];
+
     current = {
       ...current,
-      player: newPlayer,
-      enemy:  newEnemy,
-      log:    [...current.log, entry],
+      player:          newPlayer,
+      enemy:           newEnemy,
+      lastStandActive: newLastStand,
+      log:             [...current.log, entry, ...lsLog],
     };
 
     // Niederlage-Check nach jeder Karte

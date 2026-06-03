@@ -1921,3 +1921,76 @@
   color: #ffd700;
   white-space: nowrap;
 }
+
+/* ── Last Stand Dramatic Overlay ────────────────────────── */
+@keyframes lastStandIn {
+  0%   { opacity: 0; transform: scale(1.4); }
+  15%  { opacity: 1; transform: scale(1.0); }
+  75%  { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+@keyframes lastStandShake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+}
+
+@keyframes lastStandKanji {
+  0%   { opacity: 0; transform: translateY(-20px) scale(0.7); }
+  20%  { opacity: 1; transform: translateY(0)     scale(1.0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.last-stand-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(180,20,20,0.45) 0%, rgba(10,0,0,0.75) 70%);
+  z-index: 500;
+  pointer-events: none;
+  animation: lastStandIn 2.8s ease forwards;
+}
+
+.last-stand-overlay__content {
+  text-align: center;
+  animation: lastStandShake 0.6s ease 0.1s;
+}
+
+.last-stand-overlay__kanji {
+  font-family: serif;
+  font-size: 1.8rem;
+  color: rgba(255, 80, 80, 0.9);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 24px rgba(255,60,60,0.8), 0 0 48px rgba(255,0,0,0.4);
+  animation: lastStandKanji 2.8s ease forwards;
+  margin-bottom: 6px;
+}
+
+.last-stand-overlay__title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ff3333;
+  letter-spacing: 0.1em;
+  text-shadow:
+    0 0 20px rgba(255,50,50,1),
+    0 0 40px rgba(255,0,0,0.7),
+    0 0 80px rgba(200,0,0,0.4);
+  line-height: 1;
+}
+
+.last-stand-overlay__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: #ffaaaa;
+  letter-spacing: 0.08em;
+  margin-top: 10px;
+  opacity: 0.9;
+}
