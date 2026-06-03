@@ -1885,3 +1885,39 @@
   color: #ffd700;
   margin-top: 2px;
 }
+
+/* ── Next Milestone Preview (tower start) ────────────────── */
+.battle-milestone-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, rgba(123,45,0,0.25), rgba(192,128,0,0.18), rgba(123,45,0,0.25));
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 0 10px;
+}
+
+.battle-milestone-preview__icon {
+  font-size: 1rem;
+}
+
+.battle-milestone-preview__text {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #e8d9b0;
+  letter-spacing: 0.03em;
+}
+
+.battle-milestone-preview__text strong {
+  color: #ffd700;
+}
+
+.battle-milestone-preview__reward {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffd700;
+  white-space: nowrap;
+}

@@ -614,6 +614,7 @@ const BattleScreen: React.FC = () => {
   }
 
   const streakReward = WinStreakService.getRewardMultiplier(winStreak);
+  const nextMilestone = TowerMilestoneService.getNextMilestone(towerFloor);
 
   return (
     <div className="battle-screen--select">
@@ -646,6 +647,18 @@ const BattleScreen: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Nächster Meilenstein */}
+      {nextMilestone && (
+        <div className="battle-milestone-preview">
+          <span className="battle-milestone-preview__icon">🏆</span>
+          <span className="battle-milestone-preview__text">
+            Nächster Meilenstein: <strong>Etage {nextMilestone.floor}</strong>
+            {nextMilestone.floor > towerFloor && <> (noch {nextMilestone.floor - towerFloor})</>}
+          </span>
+          <span className="battle-milestone-preview__reward">+{nextMilestone.crystals.toLocaleString('de-DE')} 💎</span>
+        </div>
+      )}
 
       {/* Leader-Karte + Formation */}
       {leaderBonus && (

@@ -67,8 +67,15 @@ function getClaimed(): number[] {
   return [...loadClaimed()];
 }
 
+/** Returns the next unclaimed milestone at or above the given floor, or null. */
+function getNextMilestone(currentFloor: number): TowerMilestone | null {
+  const claimed = loadClaimed();
+  return TOWER_MILESTONES.find(m => m.floor >= currentFloor && !claimed.has(m.floor)) ?? null;
+}
+
 export const TowerMilestoneService = {
   checkFloor,
   getClaimed,
+  getNextMilestone,
   TOWER_MILESTONES,
 };
