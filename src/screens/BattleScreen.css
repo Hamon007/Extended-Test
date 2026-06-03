@@ -1994,3 +1994,139 @@
   margin-top: 10px;
   opacity: 0.9;
 }
+
+/* ── Boss Rush Card ──────────────────────────────────────── */
+.battle-boss-rush {
+  background: linear-gradient(135deg, rgba(40,5,5,0.9), rgba(80,10,10,0.85));
+  border: 1px solid rgba(180,30,30,0.5);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 10px 0;
+}
+
+.battle-boss-rush--done {
+  opacity: 0.55;
+}
+
+.battle-boss-rush__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.battle-boss-rush__icon {
+  font-size: 1rem;
+}
+
+.battle-boss-rush__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #ff6666;
+  flex: 1;
+}
+
+.battle-boss-rush__done-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #4caf50;
+  background: rgba(76,175,80,0.15);
+  border: 1px solid rgba(76,175,80,0.4);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.battle-boss-rush__waves {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.battle-boss-rush__wave-dot {
+  font-size: 1rem;
+  color: #ff6666;
+  opacity: 0.7;
+}
+
+.battle-boss-rush__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: #e8aaaa;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.battle-boss-rush__btn {
+  width: 100%;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #8b0000, #cc2200);
+  border: 1px solid rgba(255,80,50,0.6);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.battle-boss-rush__btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #aa0000, #ee3300);
+  box-shadow: 0 0 14px rgba(255,60,40,0.4);
+}
+
+/* ── Boss Rush Wave Complete Overlay ─────────────────────── */
+@keyframes bossRushWaveIn {
+  0%   { opacity: 0; transform: scale(0.85) translateY(20px); }
+  20%  { opacity: 1; transform: scale(1.05) translateY(0); }
+  80%  { opacity: 1; transform: scale(1)    translateY(0); }
+  100% { opacity: 0; transform: scale(0.95) translateY(-10px); }
+}
+
+.boss-rush-wave-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.72);
+  z-index: 490;
+  pointer-events: none;
+  animation: bossRushWaveIn 2.6s ease forwards;
+}
+
+.boss-rush-wave-overlay__content {
+  text-align: center;
+  padding: 24px 36px;
+  background: linear-gradient(135deg, rgba(60,5,5,0.95), rgba(100,15,15,0.9));
+  border: 2px solid rgba(255,60,40,0.6);
+  border-radius: 12px;
+  box-shadow: 0 0 32px rgba(255,40,20,0.35);
+}
+
+.boss-rush-wave-overlay__label {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ff6644;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 16px rgba(255,80,40,0.7);
+  margin-bottom: 8px;
+}
+
+.boss-rush-wave-overlay__gems {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: #ffd700;
+  margin-bottom: 6px;
+}
+
+.boss-rush-wave-overlay__next {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  color: #e8aaaa;
+  font-style: italic;
+}

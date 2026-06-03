@@ -26,6 +26,7 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { FirstWinService } from '../services/FirstWinService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
+import { BossRushService }  from '../services/BossRushService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -66,6 +67,12 @@ const BattleScreen: React.FC = () => {
   const [selectedRune,   setSelectedRune]   = useState<RuneBoost | null>(null);
   const [showLastStand,  setShowLastStand]  = useState(false);
   const crystalRuneMultRef = useRef(1.0);
+  // Boss Rush
+  const bossRushWaveRef       = useRef(0);   // 0 = not in boss rush; 1-5 = current wave
+  const bossRushCrystalsRef   = useRef(0);   // accumulated crystals across waves
+  const bossRushXpRef         = useRef(0);   // accumulated XP
+  const [bossRushWaveComplete, setBossRushWaveComplete] = useState<{ wave: number; crystals: number } | null>(null);
+  const [bossRushCanAttempt,   setBossRushCanAttempt]   = useState(() => BossRushService.canAttempt());
   const highestFloor = TowerService.getHighestFloor();
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
@@ -241,6 +248,38 @@ const BattleScreen: React.FC = () => {
       }
     }
 
+    // ── Boss Rush flow ────────────────────────────────────────
+    const currentBossWave = bossRushWaveRef.current;
+    if (currentBossWave > 0) {
+      if (finalDetails.isVictory) {
+        bossRushCrystalsRef.current += finalDetails.crystalsGained;
+        bossRushXpRef.current       += finalDetails.xpGained ?? 0;
+
+        if (currentBossWave < BossRushService.BOSS_RUSH_WAVES) {
+          // Intermediate wave complete — show overlay, then auto-start next wave
+          setBossRushWaveComplete({ wave: currentBossWave, crystals: bossRushCrystalsRef.current });
+          setTimeout(() => {
+            setBossRushWaveComplete(null);
+            battle.resetBattle();
+            startBossRushWave(currentBossWave + 1);
+          }, 2600);
+          return; // Skip normal VictoryScreen
+        } else {
+          // All 5 waves done — award completion bonus and show final victory
+          const totalCrystals = bossRushCrystalsRef.current + BossRushService.BOSS_RUSH_COMPLETION_BONUS;
+          const gs = SaveService.loadGachaState();
+          SaveService.saveGachaState({ ...gs, crystals: gs.crystals + BossRushService.BOSS_RUSH_COMPLETION_BONUS });
+          finalDetails = { ...finalDetails, crystalsGained: totalCrystals };
+          bossRushWaveRef.current = 0;
+        }
+      } else {
+        // Defeat during boss rush — show what was accumulated
+        finalDetails = { ...finalDetails, crystalsGained: bossRushCrystalsRef.current };
+        bossRushWaveRef.current = 0;
+      }
+    }
+    // ── End Boss Rush flow ────────────────────────────────────
+
     // Result taunt (shown briefly on victory/defeat screen)
     const resultTier = TowerService.isBossFloor(towerFloor) ? 'boss'
       : tacticalConfig ? 'elite'
@@ -353,6 +392,19 @@ const BattleScreen: React.FC = () => {
     </div>
   ) : null;
 
+  // ── Boss Rush Wave Complete overlay ──────────────────────
+  const bossRushWaveOverlay = bossRushWaveComplete ? (
+    <div className="boss-rush-wave-overlay">
+      <div className="boss-rush-wave-overlay__content">
+        <div className="boss-rush-wave-overlay__label">WELLE {bossRushWaveComplete.wave} GESCHAFFT!</div>
+        <div className="boss-rush-wave-overlay__gems">💎 {bossRushWaveComplete.crystals.toLocaleString('de-DE')} angesammelt</div>
+        <div className="boss-rush-wave-overlay__next">
+          Welle {bossRushWaveComplete.wave + 1} von {BossRushService.BOSS_RUSH_WAVES} startet …
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   // ── Last Stand Flash ──────────────────────────────────────
   const lastStandOverlay = showLastStand ? (
     <div className="last-stand-overlay">
@@ -402,6 +454,7 @@ const BattleScreen: React.FC = () => {
         <BattleArena state={battle.state} battle={battle} tacticalConfig={tacticalConfig} />
         {tauntBubble}
         {lastStandOverlay}
+        {bossRushWaveOverlay}
       </>
     );
   }
@@ -538,6 +591,33 @@ const BattleScreen: React.FC = () => {
     // Season SP for daily trial (awarded on start, not win, to encourage attempts)
     SeasonService.addSp(SeasonService.SP_REWARDS.daily_trial);
     QuestService.recordEvent('earn_sp', SeasonService.SP_REWARDS.daily_trial);
+  };
+
+  const handleBossRushStart = () => {
+    if (!deckComplete || !BossRushService.canAttempt()) return;
+    const wave1 = BossRushService.getWave(1);
+    if (!wave1) return;
+    BossRushService.recordAttempt();
+    setBossRushCanAttempt(false);
+    bossRushWaveRef.current     = 1;
+    bossRushCrystalsRef.current = 0;
+    bossRushXpRef.current       = 0;
+    lastStandShownRef.current   = false;
+    rewardApplied.current       = false;
+    setIsTowerMode(false);
+    setTacticalConfig(null);
+    const meta: BattleMeta = { leaderBonus, formation };
+    battle.startBattle(deckInstances, wave1, meta);
+  };
+
+  const startBossRushWave = (wave: number) => {
+    const enemy = BossRushService.getWave(wave);
+    if (!enemy) return;
+    lastStandShownRef.current = false;
+    rewardApplied.current     = false;
+    bossRushWaveRef.current   = wave;
+    const meta: BattleMeta = { leaderBonus, formation };
+    battle.startBattle(deckInstances, enemy, meta);
   };
 
   const RUNE_COSTS: Record<string, number> = { iron_shield: 80, blood_rage: 100, fortune: 60 };
@@ -726,6 +806,32 @@ const BattleScreen: React.FC = () => {
           onClick={handleDailyTrialStart}
         >
           {dailyDone ? 'Heute bereits absolviert' : '⚔ Prüfung starten'}
+        </button>
+      </div>
+
+      {/* ── Boss Rush ── */}
+      <div className={`battle-boss-rush ${!bossRushCanAttempt ? 'battle-boss-rush--done' : ''}`}>
+        <div className="battle-boss-rush__header">
+          <span className="battle-boss-rush__icon">💀</span>
+          <span className="battle-boss-rush__title">BOSS RUSH</span>
+          {!bossRushCanAttempt && <span className="battle-boss-rush__done-tag">✓</span>}
+        </div>
+        <div className="battle-boss-rush__waves">
+          {Array.from({ length: BossRushService.BOSS_RUSH_WAVES }).map((_, i) => (
+            <span key={i} className="battle-boss-rush__wave-dot">
+              {i < (bossRushWaveRef.current > 0 ? bossRushWaveRef.current - 1 : 0) ? '★' : '☆'}
+            </span>
+          ))}
+        </div>
+        <div className="battle-boss-rush__desc">
+          5 Gegner-Wellen ohne Energie-Kosten — alle 5 besiegen für +{BossRushService.BOSS_RUSH_COMPLETION_BONUS.toLocaleString('de-DE')} 💎
+        </div>
+        <button
+          className={`battle-boss-rush__btn ${!deckComplete || !bossRushCanAttempt ? 'battle-start-btn--disabled' : ''}`}
+          disabled={!deckComplete || !bossRushCanAttempt}
+          onClick={handleBossRushStart}
+        >
+          {!bossRushCanAttempt ? 'Heute bereits versucht' : '💀 Boss Rush starten'}
         </button>
       </div>
 
