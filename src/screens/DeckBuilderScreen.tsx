@@ -106,6 +106,25 @@ const DeckBuilderScreen: React.FC = () => {
     setTimeout(() => setToast(null), 2200);
   }
 
+  function handleAutoOptimize() {
+    // Rank all inventory cards by (effective ATK + mastery bonus), pick top DECK_SIZE unique
+    const scored = inventory.map(inst => {
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) return { inst, score: 0 };
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
+      return { inst, score: stats.atk + CardMasteryService.getAtkBonus(inst.cardId) };
+    }).sort((a, b) => b.score - a.score);
+
+    resetDeck();
+    let added = 0;
+    for (const { inst } of scored) {
+      if (added >= DECK_SIZE) break;
+      const ok = addCard(inst.uuid, inst.cardId, inst.rarity);
+      if (ok) added++;
+    }
+    showToast(`⚡ Optimiert: ${added} stärkste Karten ausgewählt`);
+  }
+
   function handleAddCard(uuid: string, cardId: string, rarity: Rarity) {
     const ok = addCard(uuid, cardId, rarity);
     if (!ok) {
@@ -154,6 +173,13 @@ const DeckBuilderScreen: React.FC = () => {
           )}
         </div>
         <div className="db-header__right">
+          <button
+            className="db-optimize-btn"
+            onClick={handleAutoOptimize}
+            title="Deck automatisch mit stärksten Karten füllen"
+          >
+            ⚡ Best
+          </button>
           <button
             className={`db-save-btn ${isDirty ? 'db-save-btn--dirty' : ''}`}
             onClick={handleSave}

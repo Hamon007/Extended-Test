@@ -126,6 +126,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
+  const [pityCounter,   setPityCounter]   = useState(() => SaveService.loadGachaState().pityCounter ?? 0);
   const [displayCrystals, setDisplayCrystals] = useState(0);
   const [collectionStats] = useState(() => {
     const inv = SaveService.loadGachaState().inventory;
@@ -215,9 +216,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setAccount(SaveService.loadAccountState());
       setEnergy(EnergyService.load());
       setEnergyMax(EnergyService.getMax());
-      const freshCrystals = SaveService.loadGachaState().crystals;
-      setCrystals(freshCrystals);
-      setDisplayCrystals(freshCrystals);
+      const freshGacha = SaveService.loadGachaState();
+      setCrystals(freshGacha.crystals);
+      setDisplayCrystals(freshGacha.crystals);
+      setPityCounter(freshGacha.pityCounter ?? 0);
       setProfileCardId(localStorage.getItem('ci_profile_card_id') ?? 'azazel');
       setTowerFloor(TowerService.getFloor());
       const claimable = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
@@ -350,6 +352,21 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           ✨ Beschwören
         </button>
       </div>
+      {/* ── Pity-Hinweis ── */}
+      {pityCounter >= 70 && (
+        <div
+          className={`main-pity-hint ${pityCounter >= 90 ? 'main-pity-hint--urgent' : ''}`}
+          onClick={() => onNavigate?.('gacha')}
+        >
+          <span className="main-pity-hint__icon">✨</span>
+          <span className="main-pity-hint__text">
+            {pityCounter >= 90
+              ? `Nur noch ${100 - pityCounter} Züge bis garantiertem SSR!`
+              : `Pity: ${pityCounter}/100 — SSR-Garantie nähert sich!`}
+          </span>
+          <span className="main-pity-hint__arrow">›</span>
+        </div>
+      )}
 
       {/* ── Ressourcen-Balken ── */}
       <div className="main-resources">

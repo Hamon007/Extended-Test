@@ -1639,3 +1639,42 @@
   animation: spinBtnPulse 2s ease infinite;
   border-color: rgba(255, 215, 0, 0.5) !important;
 }
+
+/* ── Pity Hint ──────────────────────────────────────────────── */
+.main-pity-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(100,60,200,0.12);
+  border: 1px solid rgba(160,100,255,0.3);
+  border-radius: 8px;
+  padding: 7px 12px;
+  margin: 0 12px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: #c9a0ff;
+  transition: background 0.15s;
+}
+
+.main-pity-hint--urgent {
+  background: rgba(255,60,100,0.12);
+  border-color: rgba(255,80,120,0.4);
+  color: #ff9abf;
+  animation: pityUrgentPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pityUrgentPulse {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 12px rgba(255,80,120,0.4); }
+}
+
+.main-pity-hint__icon { font-size: 1rem; flex-shrink: 0; }
+
+.main-pity-hint__text { flex: 1; }
+
+.main-pity-hint__arrow {
+  font-size: 1rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}

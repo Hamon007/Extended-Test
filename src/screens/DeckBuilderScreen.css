@@ -115,6 +115,24 @@
 }
 .db-reset-btn:hover { border-color: #8b1a1a; color: #ef9a9a; }
 
+.db-optimize-btn {
+  background: linear-gradient(135deg, rgba(40,20,80,0.8), rgba(20,10,50,0.9));
+  border: 1px solid rgba(120,80,220,0.5);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c4a0ff;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.db-optimize-btn:hover {
+  border-color: rgba(180,120,255,0.7);
+  box-shadow: 0 0 8px rgba(140,80,255,0.3);
+}
+
 /* ── Validation-Banner ────────────────────────────────────── */
 .db-banner {
   padding: 6px 14px;
