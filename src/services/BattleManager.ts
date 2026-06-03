@@ -41,6 +41,7 @@ import { AwakeningService }                    from './AwakeningService';
 import { CardBondService }                     from './CardBondService';
 import { RelicService }                        from './RelicService';
 import { CardMasteryService }                  from './CardMasteryService';
+import { ElementalService }                    from './ElementalService';
 import type { DailyModifier }                  from './DailyTrialService';
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
@@ -375,7 +376,12 @@ function playPlayerCard(
   const lastStandMult   = lastStandActive ? 1.5 : 1.0;
   const firstActivation = !state.lastStandActive && lastStandActive;
 
-  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * relicAtkMult * awakeningMult * superMult * lastStandMult;
+  // Elemental advantage vs. enemy element
+  const elemMult = card.card?.element
+    ? ElementalService.getMultiplier(card.card.element, state.enemyData.element)
+    : 1.0;
+
+  const totalMult = damageMultiplier * leaderMult * formationMult * dailyMult * bondMult * relicAtkMult * awakeningMult * superMult * lastStandMult * elemMult;
   const damage    = Math.round(calcDamage(card.atk, 0) * Math.max(0.01, totalMult));
 
   // Karte in der Hand als gespielt markieren (bleibt sichtbar mit ✓-Overlay).
@@ -394,13 +400,14 @@ function playPlayerCard(
     newPlayer = applyDamage(newPlayer, recoil);
   }
 
+  const elemTag = elemMult > 1.0 ? ' ▲VORTEIL' : elemMult < 1.0 ? ' ▼NACHTEIL' : '';
   const logText = isSuper
     ? `▼ SUPER: ${card.name} → ${damage.toLocaleString('de-DE')} Schaden!`
     : newlyAwakened
-      ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden`
+      ? `✨ ${card.name} ERWACHT! → ${damage.toLocaleString('de-DE')} Schaden${elemTag}`
       : lastStandActive
-        ? `💥 ${card.name} → ${damage.toLocaleString('de-DE')} Schaden (LETZTE KRAFT!)`
-        : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden`;
+        ? `💥 ${card.name} → ${damage.toLocaleString('de-DE')} Schaden (LETZTE KRAFT!)${elemTag}`
+        : `${card.name} → ${damage.toLocaleString('de-DE')} Schaden${elemTag}`;
 
   const entry = log(state.round, 'player', card.name, damage, card.mpCost, logText, {
     quote:   isSuper ? card.card?.quote : undefined,

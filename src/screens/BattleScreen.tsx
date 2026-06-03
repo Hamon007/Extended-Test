@@ -26,7 +26,8 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { FirstWinService } from '../services/FirstWinService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
-import { BossRushService }  from '../services/BossRushService';
+import { BossRushService }   from '../services/BossRushService';
+import { ElementalService }  from '../services/ElementalService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
 import { GUARD_MP_COST }        from '../config/GameConfig';
@@ -1361,6 +1362,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
               playerMp={player.mp}
               selectIndex={selectedIds.indexOf(card.instanceId)}
               onToggle={() => handleToggleCard(card)}
+              enemyElement={state.enemyData.element}
             />
           ))}
         </div>
@@ -1478,15 +1480,16 @@ const MpBar: React.FC<{ current: number; max: number }> = ({ current, max }) => 
 // ── Spieler-Hand-Karte ────────────────────────────────────────
 
 interface PlayerHandCardProps {
-  card:        BattleCard;
-  canPlay:     boolean;
-  playerMp:    number;
-  selectIndex: number;   // -1 = nicht ausgewählt, ≥0 = Spielreihenfolge
-  onToggle:    () => void;
+  card:         BattleCard;
+  canPlay:      boolean;
+  playerMp:     number;
+  selectIndex:  number;   // -1 = nicht ausgewählt, ≥0 = Spielreihenfolge
+  onToggle:     () => void;
+  enemyElement: string;
 }
 
 const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
-  card, canPlay, playerMp, selectIndex, onToggle,
+  card, canPlay, playerMp, selectIndex, onToggle, enemyElement,
 }) => {
   const [imgErr,    setImgErr]   = useState(false);
   const [striking,  setStriking] = useState(false);
@@ -1503,6 +1506,9 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   const blocked    = card.played || card.destroyed || !canPlay || noMp;
   const isSelected = selectIndex >= 0;
   const rc         = RARITY_COLOR[card.card?.rarity ?? 'N'] ?? '#8a6520';
+  const elemMatchup = card.card?.element
+    ? ElementalService.getMatchup(card.card.element, enemyElement)
+    : 'neutral';
 
   const handleClick = () => {
     if (!blocked) onToggle();
@@ -1549,6 +1555,11 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
       <div className={`hand-card__mp ${noMp ? 'hand-card__mp--low' : ''}`}>
         💧{card.mpCost}
       </div>
+      {elemMatchup !== 'neutral' && !card.played && (
+        <div className={`hand-card__elem-badge hand-card__elem-badge--${elemMatchup}`}>
+          {elemMatchup === 'advantage' ? '▲' : '▼'}
+        </div>
+      )}
       {isSelected && !card.played && (
         <div className="hand-card__select-order">{selectIndex + 1}</div>
       )}
