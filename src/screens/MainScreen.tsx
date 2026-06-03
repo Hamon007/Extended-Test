@@ -17,6 +17,7 @@ import { LuckySpinService } from '../services/LuckySpinService';
 import { FirstWinService } from '../services/FirstWinService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
+import { FusionSystem } from '../services/FusionSystem';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -118,6 +119,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     const uniqueOwned = new Set(inv.map(i => i.cardId)).size;
     const total = CardDatabase.count();
     return { owned: uniqueOwned, total };
+  });
+  const [fusionReady] = useState(() => {
+    const inv = SaveService.loadGachaState().inventory;
+    const groups = FusionSystem.buildGroups(inv);
+    return groups.filter(g => g.canFuse).slice(0, 3).map(g => g.card.name);
   });
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
@@ -566,6 +572,26 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* ── Fusionsbereit-Banner ── */}
+      {fusionReady.length > 0 && (
+        <div
+          className="main-fusion-banner"
+          onClick={() => onNavigate?.('deck')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('deck')}
+        >
+          <span className="main-fusion-banner__icon">⚗️</span>
+          <div className="main-fusion-banner__text">
+            <span className="main-fusion-banner__label">Fusion möglich!</span>
+            <span className="main-fusion-banner__names">
+              {fusionReady.join(', ')}{fusionReady.length === 3 ? ' …' : ''}
+            </span>
+          </div>
+          <span className="main-fusion-banner__arrow">›</span>
+        </div>
+      )}
 
       {/* ── Sammlungsfortschritt ── */}
       <div className="main-collection" onClick={() => onNavigate?.('deck')}>
