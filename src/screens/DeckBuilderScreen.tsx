@@ -345,9 +345,15 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
 
   const clickable = !inDeck && !addBlocked;
 
+  const majorRarity = instance.rarity.replace(/\+/g, '');
+  const shimmerClass = majorRarity === 'LR' ? 'inv-card--lr-shimmer'
+    : majorRarity === 'MR'  ? 'inv-card--mr-shimmer'
+    : majorRarity === 'SSR' ? 'inv-card--ssr-shimmer'
+    : '';
+
   return (
     <div
-      className={`inv-card ${inDeck ? 'inv-card--in-deck' : addBlocked ? 'inv-card--blocked' : 'inv-card--available'}`}
+      className={`inv-card ${inDeck ? 'inv-card--in-deck' : addBlocked ? 'inv-card--blocked' : 'inv-card--available'} ${shimmerClass}`}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={clickable ? () => onAdd(instance.uuid, instance.cardId, instance.rarity as Rarity) : undefined}
     >

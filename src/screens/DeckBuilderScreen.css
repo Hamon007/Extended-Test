@@ -487,3 +487,36 @@
   letter-spacing: 0.04em;
   opacity: 0.85;
 }
+
+/* ── Rarity shimmer effects on inventory cards ────────────── */
+
+@keyframes ssrGlow {
+  0%, 100% { box-shadow: 0 0 6px rgba(156,39,176,0.4), 0 0 12px rgba(156,39,176,0.15); }
+  50%       { box-shadow: 0 0 10px rgba(180,60,220,0.6), 0 0 20px rgba(156,39,176,0.25); }
+}
+
+@keyframes mrGlow {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,152,0,0.4), 0 0 12px rgba(255,152,0,0.2); }
+  50%       { box-shadow: 0 0 12px rgba(255,180,20,0.65), 0 0 24px rgba(255,152,0,0.3); }
+}
+
+@keyframes lrShimmer {
+  0%   { border-color: rgba(240,200,80,0.8); box-shadow: 0 0 8px rgba(255,220,80,0.5), 0 0 20px rgba(200,150,50,0.3); }
+  25%  { border-color: rgba(220,120,255,0.8); box-shadow: 0 0 8px rgba(200,100,255,0.5), 0 0 20px rgba(180,80,220,0.3); }
+  50%  { border-color: rgba(80,200,255,0.8); box-shadow: 0 0 8px rgba(60,180,255,0.5), 0 0 20px rgba(40,160,220,0.3); }
+  75%  { border-color: rgba(100,255,120,0.8); box-shadow: 0 0 8px rgba(80,240,100,0.5), 0 0 20px rgba(60,200,80,0.3); }
+  100% { border-color: rgba(240,200,80,0.8); box-shadow: 0 0 8px rgba(255,220,80,0.5), 0 0 20px rgba(200,150,50,0.3); }
+}
+
+.inv-card--ssr-shimmer {
+  animation: ssrGlow 2.5s ease infinite;
+}
+
+.inv-card--mr-shimmer {
+  animation: mrGlow 2.2s ease infinite;
+}
+
+.inv-card--lr-shimmer {
+  animation: lrShimmer 4s linear infinite;
+  border-width: 2px;
+}
