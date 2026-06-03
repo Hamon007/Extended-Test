@@ -413,6 +413,34 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
       )}
 
+      {/* ── Tower floor map strip ── */}
+      {onNavigate && (() => {
+        const floorNums = [towerFloor - 1, towerFloor, towerFloor + 1, towerFloor + 2, towerFloor + 3].filter(f => f >= 1);
+        return (
+          <div className="main-floor-strip">
+            {floorNums.map(f => {
+              const isCur  = f === towerFloor;
+              const isBoss = TowerService.isBossFloor(f);
+              return (
+                <div
+                  key={f}
+                  className={[
+                    'main-floor-node',
+                    isCur  ? 'main-floor-node--current' : '',
+                    isBoss ? 'main-floor-node--boss'    : '',
+                    f < towerFloor ? 'main-floor-node--done' : '',
+                  ].join(' ')}
+                >
+                  <div className="main-floor-node__icon">{isBoss ? '💀' : isCur ? '⚔' : f < towerFloor ? '✓' : '🗼'}</div>
+                  <div className="main-floor-node__num">{f}</div>
+                  {isBoss && <div className="main-floor-node__tag">BOSS</div>}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (
         <button
