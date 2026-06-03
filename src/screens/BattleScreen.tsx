@@ -23,6 +23,7 @@ import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { FusionSystem }       from '../services/FusionSystem';
 import { FirstWinService } from '../services/FirstWinService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
@@ -98,6 +99,25 @@ const BattleScreen: React.FC = () => {
 
   const leaderBonus = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
   const formation   = useMemo(() => FormationService.compute(deckCards), [deckCards]);
+
+  // Power comparison: effective ATK per card
+  const deckPower = useMemo(() => {
+    if (deckInstances.length === 0) return 0;
+    return deckInstances.reduce((sum, inst) => {
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) return sum;
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
+      return sum + stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+    }, 0);
+  }, [deckInstances]);
+
+  // Enemy estimated power based on floor scaling (avg base ATK ≈ 2600 per card × floor scale)
+  const enemyPowerEstimate = useMemo(() => {
+    const BASE_AVG_ATK_PER_CARD = 2600;
+    const floorScale = 1 + towerFloor * 0.1;
+    const BASE_CARD_COUNT = 3.5;
+    return Math.round(BASE_AVG_ATK_PER_CARD * floorScale * BASE_CARD_COUNT);
+  }, [towerFloor]);
 
   // Tagesprüfung
   const dailyTrial = useMemo(() => DailyTrialService.today(), []);
@@ -928,6 +948,40 @@ const BattleScreen: React.FC = () => {
           ? `✓ Deck bereit (${deckInstances.length}/${DECK_SIZE} Karten)`
           : `⚠ Deck unvollständig (${deckInstances.length}/${DECK_SIZE}) — Deckbuilder öffnen`}
       </div>
+
+      {/* ── Power Comparison Widget ── */}
+      {deckComplete && (() => {
+        const ratio = enemyPowerEstimate > 0 ? deckPower / enemyPowerEstimate : 0;
+        const playerPct = Math.min(100, Math.round(ratio * 50));
+        const enemyPct  = Math.min(100, Math.round((1 / Math.max(ratio, 0.01)) * 50));
+        const advantage = ratio >= 1.15 ? 'strong' : ratio >= 0.85 ? 'even' : 'weak';
+        const labels: Record<string, string> = { strong: '▲ ÜBERLEGEN', even: '≈ AUSGEGLICHEN', weak: '▼ UNTERLEGEN' };
+        return (
+          <div className={`battle-power-cmp battle-power-cmp--${advantage}`}>
+            <div className="battle-power-cmp__title">⚔ Kraftvergleich</div>
+            <div className="battle-power-cmp__row">
+              <div className="battle-power-cmp__side">
+                <span className="battle-power-cmp__label">Dein Deck</span>
+                <span className="battle-power-cmp__val">{deckPower.toLocaleString('de-DE')}</span>
+              </div>
+              <div className={`battle-power-cmp__verdict battle-power-cmp__verdict--${advantage}`}>{labels[advantage]}</div>
+              <div className="battle-power-cmp__side battle-power-cmp__side--enemy">
+                <span className="battle-power-cmp__label">Gegner ca.</span>
+                <span className="battle-power-cmp__val">{enemyPowerEstimate.toLocaleString('de-DE')}</span>
+              </div>
+            </div>
+            <div className="battle-power-cmp__bars">
+              <div className="battle-power-cmp__bar-wrap">
+                <div className="battle-power-cmp__bar-fill battle-power-cmp__bar-fill--player" style={{ width: `${playerPct}%` }} />
+              </div>
+              <div className="battle-power-cmp__bar-mid" />
+              <div className="battle-power-cmp__bar-wrap battle-power-cmp__bar-wrap--enemy">
+                <div className="battle-power-cmp__bar-fill battle-power-cmp__bar-fill--enemy" style={{ width: `${enemyPct}%` }} />
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="battle-tower-spacer" />
 
