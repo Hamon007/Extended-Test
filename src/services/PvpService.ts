@@ -205,6 +205,20 @@ function getMyRecord(): { wins: number; losses: number } {
   return { wins: account.pvpWins ?? 0, losses: account.pvpLosses ?? 0 };
 }
 
+function getMyRating(): number {
+  const account = SaveService.loadAccountState() as AccountState & { pvpWins?: number; pvpLosses?: number };
+  return computeRating(account.pvpWins ?? 0, account.pvpLosses ?? 0, account.level ?? 1);
+}
+
+export const PVP_RANK_TIERS: { label: string; min: number; color: string }[] = [
+  { label: 'Bronze',   min: 0,    color: '#cd7f32' },
+  { label: 'Silber',   min: 50,   color: '#c0c0c0' },
+  { label: 'Gold',     min: 200,  color: '#ffd700' },
+  { label: 'Platin',   min: 500,  color: '#b0bec5' },
+  { label: 'Diamant',  min: 1000, color: '#88d4f5' },
+  { label: 'Legendär', min: 2000, color: '#ff6b35' },
+];
+
 // ── Export ────────────────────────────────────────────────────
 
 export const PvpService = {
@@ -217,4 +231,5 @@ export const PvpService = {
   rankColor,
   recordResult,
   getMyRecord,
+  getMyRating,
 };

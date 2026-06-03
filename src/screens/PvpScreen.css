@@ -95,6 +95,50 @@
   white-space:   nowrap;
 }
 
+/* ── Rating progress bar ── */
+
+.pvp-rating-bar {
+  padding: 8px 14px 10px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid #3d2460;
+  flex-shrink: 0;
+}
+
+.pvp-rating-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.pvp-rating-bar__pts {
+  color: #9a80b0;
+  font-size: 0.68rem;
+  font-weight: 400;
+}
+
+.pvp-rating-bar__track {
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pvp-rating-bar__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.pvp-rating-bar__hint {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  color: #6a5a80;
+  text-align: right;
+}
+
 /* ── Info-Text ── */
 
 .pvp-info {

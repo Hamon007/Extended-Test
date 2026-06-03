@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { PvpService, type PvpOpponent, rankLabel, rankColor } from '../services/PvpService';
+import { PvpService, PVP_RANK_TIERS, type PvpOpponent, rankLabel, rankColor } from '../services/PvpService';
 import { AudioService } from '../services/AudioService';
 import './PvpScreen.css';
 
@@ -80,6 +80,16 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
   const [toast,     setToast]     = useState('');
 
   const myRecord = PvpService.getMyRecord();
+  const myRating = PvpService.getMyRating();
+
+  const tierIdx   = PVP_RANK_TIERS.findIndex((_t, i) =>
+    i === PVP_RANK_TIERS.length - 1 || PVP_RANK_TIERS[i + 1]!.min > myRating
+  );
+  const curTier   = PVP_RANK_TIERS[tierIdx]!;
+  const nextTier  = PVP_RANK_TIERS[tierIdx + 1] ?? null;
+  const tierPct   = nextTier
+    ? Math.min(1, (myRating - curTier.min) / (nextTier.min - curTier.min))
+    : 1;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -129,7 +139,31 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
         <span className="pvp-my-record__label">Meine Bilanz</span>
         <span className="pvp-my-record__wins">✔ {myRecord.wins} Siege</span>
         <span className="pvp-my-record__losses">✘ {myRecord.losses} Niederlagen</span>
-        <RankBadge rating={myRecord.wins * 100 - myRecord.losses * 20} />
+        <RankBadge rating={myRating} />
+      </div>
+
+      {/* ── Rating progress bar ── */}
+      <div className="pvp-rating-bar">
+        <div className="pvp-rating-bar__labels">
+          <span style={{ color: curTier.color }}>{curTier.label}</span>
+          <span className="pvp-rating-bar__pts">{myRating.toLocaleString('de-DE')} Pkt.</span>
+          {nextTier ? (
+            <span style={{ color: nextTier.color }}>{nextTier.label}</span>
+          ) : (
+            <span style={{ color: curTier.color }}>MAX</span>
+          )}
+        </div>
+        <div className="pvp-rating-bar__track">
+          <div
+            className="pvp-rating-bar__fill"
+            style={{ width: `${tierPct * 100}%`, background: curTier.color }}
+          />
+        </div>
+        {nextTier && (
+          <div className="pvp-rating-bar__hint">
+            {(nextTier.min - myRating).toLocaleString('de-DE')} Pkt. bis {nextTier.label}
+          </div>
+        )}
       </div>
 
       {/* ── Hinweistext ── */}
