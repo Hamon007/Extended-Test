@@ -112,6 +112,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
+  const [displayCrystals, setDisplayCrystals] = useState(0);
   const [collectionStats] = useState(() => {
     const inv = SaveService.loadGachaState().inventory;
     const uniqueOwned = new Set(inv.map(i => i.cardId)).size;
@@ -176,7 +177,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setAccount(SaveService.loadAccountState());
       setEnergy(EnergyService.load());
       setEnergyMax(EnergyService.getMax());
-      setCrystals(SaveService.loadGachaState().crystals);
+      const freshCrystals = SaveService.loadGachaState().crystals;
+      setCrystals(freshCrystals);
+      setDisplayCrystals(freshCrystals);
       setProfileCardId(localStorage.getItem('ci_profile_card_id') ?? 'azazel');
       setTowerFloor(TowerService.getFloor());
       const claimable = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
@@ -219,6 +222,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setEnergy(EnergyService.load());
     }
   }, []);
+
+  // Crystal count-up animation on mount
+  useEffect(() => {
+    if (crystals === 0) { setDisplayCrystals(0); return; }
+    const duration = Math.min(1200, 400 + crystals / 50);
+    const steps = 40;
+    const stepMs = duration / steps;
+    let step = 0;
+    const id = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayCrystals(Math.round(crystals * eased));
+      if (step >= steps) { clearInterval(id); setDisplayCrystals(crystals); }
+    }, stepMs);
+    return () => clearInterval(id);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Deck-Stats laden
   useEffect(() => {
@@ -276,7 +296,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       {/* ── Kristall-Leiste ── */}
       <div className="main-crystal-bar">
         <span className="main-crystal-bar__icon">💎</span>
-        <span className="main-crystal-bar__val">{crystals.toLocaleString('de-DE')}</span>
+        <span className="main-crystal-bar__val" aria-live="polite">{displayCrystals.toLocaleString('de-DE')}</span>
         <span className="main-crystal-bar__label">Kristalle</span>
         <button
           className="main-crystal-bar__shop-btn"
