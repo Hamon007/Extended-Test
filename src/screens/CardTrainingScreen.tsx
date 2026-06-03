@@ -179,6 +179,21 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     Lv. <strong>{target.level ?? 1}</strong>{atMax ? ' (MAX)' : ` / ${cap}`}
                   </div>
                   <XpBar inst={target} preview={preview} />
+                  {/* XP hint: how many N/R cards needed for next level */}
+                  {!atMax && (() => {
+                    const curLv = target.level ?? 1;
+                    const needed = LevelSystem.xpToNext(curLv) - (target.xp ?? 0);
+                    const nCards = Math.ceil(needed / 300);
+                    const rCards = Math.ceil(needed / 600);
+                    return (
+                      <div className="training-td__xp-hint">
+                        <span className="training-td__xp-hint-val">+{needed.toLocaleString('de-DE')} XP</span>
+                        <span className="training-td__xp-hint-eq">
+                          ≈ {nCards}× N {rCards > 0 ? `· ${rCards}× R` : ''}
+                        </span>
+                      </div>
+                    );
+                  })()}
                   {preview && preview.level > (target.level ?? 1) && (
                     <div className="training-td__preview-level">→ Lv. {preview.level}</div>
                   )}
