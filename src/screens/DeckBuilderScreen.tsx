@@ -163,6 +163,16 @@ const DeckBuilderScreen: React.FC = () => {
         <div className="db-inventory-header">
           <span className="db-slots-label">INVENTAR</span>
           <span className="db-slots-count">{inventoryEntries.length} Karten</span>
+          {(() => {
+            const uniqueOwned = new Set(inventory.map(i => i.cardId)).size;
+            const total = CardDatabase.count();
+            const pct = total > 0 ? Math.round((uniqueOwned / total) * 100) : 0;
+            return (
+              <span className="db-collection-pct" title={`${uniqueOwned} von ${total} einzigartigen Karten`}>
+                📚 {uniqueOwned}/{total} ({pct}%)
+              </span>
+            );
+          })()}
         </div>
 
         {/* Seltenheits-Filter */}

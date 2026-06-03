@@ -111,6 +111,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
+  const [collectionStats] = useState(() => {
+    const inv = SaveService.loadGachaState().inventory;
+    const uniqueOwned = new Set(inv.map(i => i.cardId)).size;
+    const total = CardDatabase.count();
+    return { owned: uniqueOwned, total };
+  });
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -537,6 +543,27 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             </span>
             <span className="main-daily-item__label">Tagesquests abgeschlossen</span>
           </div>
+        </div>
+      </div>
+
+      {/* ── Sammlungsfortschritt ── */}
+      <div className="main-collection" onClick={() => onNavigate?.('deck')}>
+        <div className="main-collection__header">
+          <span className="main-collection__title">📚 Sammlung</span>
+          <span className="main-collection__fraction">
+            {collectionStats.owned} / {collectionStats.total}
+          </span>
+        </div>
+        <div className="main-collection__bar">
+          <div
+            className="main-collection__fill"
+            style={{ width: `${collectionStats.total > 0 ? (collectionStats.owned / collectionStats.total) * 100 : 0}%` }}
+          />
+        </div>
+        <div className="main-collection__sub">
+          {collectionStats.owned === collectionStats.total
+            ? '🌟 Vollständige Sammlung!'
+            : `Noch ${collectionStats.total - collectionStats.owned} Karten zum Vervollständigen`}
         </div>
       </div>
 

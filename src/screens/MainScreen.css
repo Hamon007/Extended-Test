@@ -1028,3 +1028,63 @@
   color: #ff8c42;
   text-shadow: 0 0 12px rgba(255, 140, 66, 0.5);
 }
+
+/* ── Collection Progress Widget ──────────────────────────── */
+.main-collection {
+  background: linear-gradient(135deg, rgba(20,10,40,0.85), rgba(35,18,65,0.85));
+  border: 1px solid rgba(130,80,220,0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.main-collection:hover {
+  border-color: rgba(160,100,255,0.55);
+}
+
+.main-collection__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.main-collection__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: #c9a0ff;
+  font-weight: 700;
+}
+
+.main-collection__fraction {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #e8d0ff;
+}
+
+.main-collection__bar {
+  height: 6px;
+  background: rgba(60,30,100,0.6);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.main-collection__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #b39ddb, #c9a0ff);
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 0 8px rgba(180, 100, 255, 0.5);
+}
+
+.main-collection__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #9e7acc;
+  letter-spacing: 0.04em;
+}

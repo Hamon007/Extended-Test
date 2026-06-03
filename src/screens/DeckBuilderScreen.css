@@ -477,3 +477,13 @@
   padding: 1px 3px;
   line-height: 1;
 }
+
+/* ── Collection completion badge in inventory header ──────── */
+.db-collection-pct {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #c9a0ff;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
