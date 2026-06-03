@@ -612,6 +612,27 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
       </div>
 
+      {/* ── Tagesfrist-Warnung (< 2h bis Reset, offene Aufgaben) ── */}
+      {(() => {
+        const pendingTasks = [
+          !dailyChecks.login,
+          !dailyChecks.spin,
+          !dailyChecks.firstWin,
+          dailyChecks.dailyQuests < dailyChecks.totalQuests,
+        ].filter(Boolean).length;
+        if (dailyResetMs > 2 * 3600_000 || pendingTasks === 0) return null;
+        return (
+          <div className="main-urgency-banner" onClick={() => onNavigate?.('battle')}>
+            <span className="main-urgency-banner__icon">⏰</span>
+            <div className="main-urgency-banner__text">
+              <span className="main-urgency-banner__title">Reset in {formatCountdown(dailyResetMs)}!</span>
+              <span className="main-urgency-banner__sub">{pendingTasks} Tagesaufgabe{pendingTasks === 1 ? '' : 'n'} noch offen</span>
+            </div>
+            <span className="main-urgency-banner__arrow">▶</span>
+          </div>
+        );
+      })()}
+
       {/* ── Tagesaufgaben-Widget ── */}
       <div className="main-daily-widget">
         <div className="main-daily-widget__title">
