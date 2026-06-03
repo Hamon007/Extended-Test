@@ -463,3 +463,17 @@
   font-family: 'EB Garamond', serif; font-size: 12px;
   color: #3a2030; font-style: italic; text-align: center;
 }
+
+/* ── Mastery stars on inventory card ─────────────────────── */
+.inv-card__mastery {
+  position: absolute;
+  top: 4px; left: 4px;
+  font-size: 0.5rem;
+  letter-spacing: -1px;
+  color: #ffd700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  background: rgba(8,5,10,0.7);
+  border-radius: 2px;
+  padding: 1px 3px;
+  line-height: 1;
+}

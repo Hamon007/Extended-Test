@@ -8,6 +8,7 @@ import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
 import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
 import { AchievementService } from '../services/AchievementService';
+import { CardMasteryService } from '../services/CardMasteryService';
 import './DeckBuilderScreen.css';
 
 type SortKey = 'rarity' | 'name' | 'atk' | 'hp' | 'mp';
@@ -320,6 +321,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const card    = CardDatabase.getById(instance.cardId);
   const rc      = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
   const inDeck  = deck.uuids.includes(instance.uuid);
+  const mastery = CardMasteryService.getMasteryInfo(instance.cardId);
 
   let addBlocked = false;
   let blockTip   = '';
@@ -352,6 +354,11 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           <div className="inv-card__fallback">🌑</div>
         )}
         <div className="inv-card__rarity" style={{ color: rc }}>{instance.rarity}</div>
+        {mastery.level > 0 && (
+          <div className="inv-card__mastery" title={`Meisterschaft Stufe ${mastery.level} · +${mastery.atkBonus} ATK`}>
+            {'★'.repeat(mastery.level)}
+          </div>
+        )}
         {inDeck && <div className="inv-card__in-deck-badge">Im Deck</div>}
         {addBlocked && (
           <div className="inv-card__block-overlay">
