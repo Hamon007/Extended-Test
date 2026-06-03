@@ -205,6 +205,232 @@
           "chance": 0.05
         }
       ]
+    },
+    {
+      "id": "frost_drake",
+      "name": "Frostdrache",
+      "title": "Tyrann der gefrorenen Tundra",
+      "tier": 1,
+      "element": "ice",
+      "image": "/assets/enemies/frost_drake.png",
+      "stats": {
+        "hp": 14000,
+        "mpMax": 100,
+        "mpRegen": 28
+      },
+      "cards": [
+        {
+          "id": "ice_fang",
+          "name": "Eisreißer",
+          "atk": 2100,
+          "def": 800,
+          "hp": 4500,
+          "mpCost": 14,
+          "image": "/assets/enemies/card_ice_fang.png"
+        },
+        {
+          "id": "frost_knight",
+          "name": "Frostritter",
+          "atk": 1600,
+          "def": 2200,
+          "hp": 6000,
+          "mpCost": 16,
+          "image": "/assets/enemies/card_frost_knight.png"
+        },
+        {
+          "id": "blizzard_spirit",
+          "name": "Blizzardgeist",
+          "atk": 2600,
+          "def": 400,
+          "hp": 3500,
+          "mpCost": 20,
+          "image": "/assets/enemies/card_blizzard_spirit.png"
+        }
+      ],
+      "aiStrategy": "highest_atk_first",
+      "rewardXp": 150,
+      "rewardCrystals": 60,
+      "rewardCards": [
+        { "cardId": "gor_thul", "chance": 0.35 },
+        { "cardId": "leonidas", "chance": 0.25 }
+      ]
+    },
+    {
+      "id": "storm_prophet",
+      "name": "Sturmprophet",
+      "title": "Stimme des ewigen Sturms",
+      "tier": 2,
+      "element": "lightning",
+      "image": "/assets/enemies/storm_prophet.png",
+      "stats": {
+        "hp": 22000,
+        "mpMax": 100,
+        "mpRegen": 38
+      },
+      "cards": [
+        {
+          "id": "thunder_herald",
+          "name": "Donnerherold",
+          "atk": 3200,
+          "def": 900,
+          "hp": 5500,
+          "mpCost": 20,
+          "image": "/assets/enemies/card_thunder_herald.png"
+        },
+        {
+          "id": "lightning_golem",
+          "name": "Blitzgolem",
+          "atk": 2400,
+          "def": 2800,
+          "hp": 8500,
+          "mpCost": 22,
+          "image": "/assets/enemies/card_lightning_golem.png"
+        },
+        {
+          "id": "storm_mage",
+          "name": "Sturmmagier",
+          "atk": 4200,
+          "def": 600,
+          "hp": 4000,
+          "mpCost": 28,
+          "image": "/assets/enemies/card_storm_mage.png"
+        },
+        {
+          "id": "thunder_titan",
+          "name": "Donner-Titan",
+          "atk": 3800,
+          "def": 2500,
+          "hp": 7000,
+          "mpCost": 30,
+          "image": "/assets/enemies/card_thunder_titan.png"
+        }
+      ],
+      "aiStrategy": "lowest_mp_first",
+      "rewardXp": 320,
+      "rewardCrystals": 140,
+      "rewardCards": [
+        { "cardId": "jeanne_darc", "chance": 0.3 },
+        { "cardId": "kaizen_ryujin", "chance": 0.25 },
+        { "cardId": "garuda", "chance": 0.2 }
+      ]
+    },
+    {
+      "id": "death_knight",
+      "name": "Todesritter",
+      "title": "Erstgeborener der Verdammnis",
+      "tier": 2,
+      "element": "death",
+      "image": "/assets/enemies/death_knight.png",
+      "stats": {
+        "hp": 25000,
+        "mpMax": 100,
+        "mpRegen": 32
+      },
+      "cards": [
+        {
+          "id": "grave_reaper",
+          "name": "Grabsensenmann",
+          "atk": 3600,
+          "def": 1400,
+          "hp": 6500,
+          "mpCost": 22,
+          "image": "/assets/enemies/card_grave_reaper.png"
+        },
+        {
+          "id": "bone_colossus",
+          "name": "Knochenkoloss",
+          "atk": 2800,
+          "def": 3200,
+          "hp": 10000,
+          "mpCost": 25,
+          "image": "/assets/enemies/card_bone_colossus.png"
+        },
+        {
+          "id": "soul_ripper",
+          "name": "Seelenschlitzer",
+          "atk": 4500,
+          "def": 700,
+          "hp": 4500,
+          "mpCost": 30,
+          "image": "/assets/enemies/card_soul_ripper.png"
+        }
+      ],
+      "aiStrategy": "highest_atk_first",
+      "rewardXp": 380,
+      "rewardCrystals": 160,
+      "rewardCards": [
+        { "cardId": "azazel", "chance": 0.3 },
+        { "cardId": "loki", "chance": 0.2 },
+        { "cardId": "azgaroth", "chance": 0.08 }
+      ]
+    },
+    {
+      "id": "chaos_origin",
+      "name": "Chaosursprung",
+      "title": "Geborenes Nichts, gewordenes Alles",
+      "tier": 3,
+      "element": "chaos",
+      "image": "/assets/enemies/chaos_origin.png",
+      "stats": {
+        "hp": 42000,
+        "mpMax": 100,
+        "mpRegen": 45
+      },
+      "cards": [
+        {
+          "id": "chaos_herald",
+          "name": "Chaosherold",
+          "atk": 4800,
+          "def": 2000,
+          "hp": 7500,
+          "mpCost": 30,
+          "image": "/assets/enemies/card_chaos_herald.png"
+        },
+        {
+          "id": "pandemonium",
+          "name": "Pandämonium",
+          "atk": 6200,
+          "def": 3000,
+          "hp": 12000,
+          "mpCost": 38,
+          "image": "/assets/enemies/card_pandemonium.png"
+        },
+        {
+          "id": "entropy_lord",
+          "name": "Entropieherr",
+          "atk": 8000,
+          "def": 1800,
+          "hp": 9000,
+          "mpCost": 42,
+          "image": "/assets/enemies/card_entropy_lord.png"
+        },
+        {
+          "id": "chaos_colossus",
+          "name": "Chaoskoloss",
+          "atk": 7500,
+          "def": 5000,
+          "hp": 18000,
+          "mpCost": 45,
+          "image": "/assets/enemies/card_chaos_colossus.png"
+        },
+        {
+          "id": "void_tear",
+          "name": "Leerenriss",
+          "atk": 9000,
+          "def": 2500,
+          "hp": 10000,
+          "mpCost": 40,
+          "image": "/assets/enemies/card_void_tear.png"
+        }
+      ],
+      "aiStrategy": "random",
+      "rewardXp": 750,
+      "rewardCrystals": 380,
+      "rewardCards": [
+        { "cardId": "azazel", "chance": 0.6 },
+        { "cardId": "azgaroth", "chance": 0.12 },
+        { "cardId": "xal_zoth", "chance": 0.35 }
+      ]
     }
   ]
 }
