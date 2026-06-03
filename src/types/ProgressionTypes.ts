@@ -40,6 +40,7 @@ export interface RewardDetails {
   maxCombo?:        number;
   totalDamage?:     number;
   bondLevelUps?:    BondLevelUp[];
+  masteryLevelUps?: { cardName: string; newLevel: number; stars: string }[];
   // Performance grade
   playerHpPct?:     number;   // HP% remaining at battle end (0-1)
   enemyHpPct?:      number;   // Enemy HP% at battle end (defeat only)

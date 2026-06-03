@@ -42,6 +42,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
   const maxCombo    = details.maxCombo    ?? 0;
   const totalDamage = details.totalDamage ?? 0;
   const bondUps     = details.bondLevelUps ?? [];
+  const masteryUps  = details.masteryLevelUps ?? [];
   const grade       = details.grade;
   const gradeColor  = grade ? GRADE_COLORS[grade] : undefined;
 
@@ -100,6 +101,20 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
                 <span className="victory-bond-row__icon">{BOND_ICONS[b.newLevel]}</span>
                 <span className="victory-bond-row__name">{b.cardName}</span>
                 <span className="victory-bond-row__level">{BOND_NAMES[b.newLevel]}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Mastery Level-Ups */}
+        {masteryUps.length > 0 && (
+          <div className="victory-bonds victory-mastery">
+            <div className="victory-bonds__title">⚔ Meisterschaft erhöht!</div>
+            {masteryUps.map((m, i) => (
+              <div key={i} className="victory-bond-row">
+                <span className="victory-mastery-row__stars">{m.stars}</span>
+                <span className="victory-bond-row__name">{m.cardName}</span>
+                <span className="victory-bond-row__level">Stufe {m.newLevel}</span>
               </div>
             ))}
           </div>

@@ -420,3 +420,19 @@
   border-radius: 10px;
   padding: 2px 8px;
 }
+
+/* ── Mastery Level-Ups ───────────────────────────────────── */
+.victory-mastery {
+  border-color: rgba(255, 152, 0, 0.4) !important;
+}
+
+.victory-mastery .victory-bonds__title {
+  color: #ff9800;
+}
+
+.victory-mastery-row__stars {
+  font-size: 0.8rem;
+  color: #ffd700;
+  letter-spacing: 0.05em;
+  margin-right: 8px;
+}

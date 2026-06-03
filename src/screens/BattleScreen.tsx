@@ -159,8 +159,16 @@ const BattleScreen: React.FC = () => {
         if (cardId) playCountByCard[cardId] = (playCountByCard[cardId] ?? 0) + 1;
       }
     }
+    const masteryLevelUps: { cardName: string; newLevel: number; stars: string }[] = [];
     for (const [cardId, count] of Object.entries(playCountByCard)) {
-      CardMasteryService.recordPlays(cardId, count);
+      const res = CardMasteryService.recordPlays(cardId, count);
+      if (res.leveledUp) {
+        masteryLevelUps.push({
+          cardName: CardDatabase.getById(cardId)?.name ?? cardId,
+          newLevel: res.newLevel,
+          stars:    CardMasteryService.MASTERY_LEVELS[res.newLevel]?.stars ?? '',
+        });
+      }
     }
     const bondLevelUps = bondResults
       .filter(r => r.leveledUp)
@@ -197,7 +205,7 @@ const BattleScreen: React.FC = () => {
       : 0;
 
     // Apply Fortune rune crystal multiplier
-    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade };
+    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade };
     if (crystalRuneMultRef.current > 1.0 && details.isVictory) {
       const boosted = Math.round(details.crystalsGained * crystalRuneMultRef.current);
       const extra = boosted - details.crystalsGained;
