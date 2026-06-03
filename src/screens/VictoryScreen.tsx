@@ -49,6 +49,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
   const roundsElapsed = details.roundsElapsed ?? 0;
   const isFlawless    = playerHpPct >= 0.9 && roundsElapsed <= 5;
   const isNearMiss    = playerHpPct <= 0.15;
+  const newRecords    = details.newRecords ?? [];
 
   return (
     <div className="victory-screen">
@@ -83,6 +84,22 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             {isNearMiss && (
               <div className="victory-badge victory-badge--near-miss">
                 <span>💥</span> LETZTE KRAFT!
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* New personal record banners */}
+        {newRecords.length > 0 && (
+          <div className="victory-records">
+            {newRecords.includes('combo') && (
+              <div className="victory-record victory-record--combo">
+                🌀 NEUE BESTMARKE — MAX COMBO!
+              </div>
+            )}
+            {newRecords.includes('streak') && (
+              <div className="victory-record victory-record--streak">
+                🔥 NEUE BESTMARKE — SIEG-SERIE!
               </div>
             )}
           </div>

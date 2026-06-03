@@ -309,6 +309,16 @@ const BattleScreen: React.FC = () => {
     }
     // ── End Boss Rush flow ────────────────────────────────────
 
+    // Detect new personal records (before recording stats)
+    if (details.isVictory) {
+      const prevStats = BattleStatsService.load();
+      const newRecords: Array<'combo' | 'damage' | 'streak'> = [];
+      if (maxCombo > 0 && maxCombo > prevStats.bestCombo) newRecords.push('combo');
+      const currentStreak = WinStreakService.get();
+      if (currentStreak > prevStats.bestWinStreak)        newRecords.push('streak');
+      if (newRecords.length > 0) finalDetails = { ...finalDetails, newRecords };
+    }
+
     // Result taunt (shown briefly on victory/defeat screen)
     const resultTier = TowerService.isBossFloor(towerFloor) ? 'boss'
       : tacticalConfig ? 'elite'

@@ -51,6 +51,8 @@ export interface RewardDetails {
   // Streak milestone
   streakMilestoneBonus?: number; // extra crystals from streak milestone (0 = none)
   winStreak?:       number;
+  // New personal records
+  newRecords?:      Array<'combo' | 'damage' | 'streak'>;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

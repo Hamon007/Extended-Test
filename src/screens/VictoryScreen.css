@@ -483,3 +483,46 @@
   animation-delay: 0.15s;
   opacity: 0;
 }
+
+/* ── New Personal Record Banners ─────────────────────────────── */
+@keyframes recordPulse {
+  0%   { transform: scaleX(0.8); opacity: 0; }
+  50%  { transform: scaleX(1.04); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+.victory-records {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 4px 0 8px;
+  width: 100%;
+}
+
+.victory-record {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 4px;
+  animation: recordPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+.victory-record--combo {
+  background: linear-gradient(90deg, rgba(0,0,20,0.7), rgba(80,30,160,0.3), rgba(0,0,20,0.7));
+  border: 1px solid rgba(160,80,255,0.6);
+  color: #cc88ff;
+  text-shadow: 0 0 12px rgba(180,100,255,0.8);
+  animation-delay: 0.05s;
+}
+
+.victory-record--streak {
+  background: linear-gradient(90deg, rgba(20,0,0,0.7), rgba(200,60,0,0.3), rgba(20,0,0,0.7));
+  border: 1px solid rgba(255,120,40,0.6);
+  color: #ffaa55;
+  text-shadow: 0 0 12px rgba(255,100,30,0.8);
+  animation-delay: 0.15s;
+}
