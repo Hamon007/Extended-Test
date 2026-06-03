@@ -117,6 +117,18 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
     }).filter(s => s.total > 0);
   }, [ownedMap]);
 
+  // Top 5 unowned cards sorted by rarity tier (highest first) — FOMO
+  const covetedCards = useMemo(() => {
+    const RARITY_SCORE: Record<string, number> = { LR: 6, MR: 5, SSR: 4, SR: 3, R: 2, N: 1 };
+    return CardDatabase.getAll()
+      .filter(c => !ownedMap.has(c.id) && c.image)
+      .sort((a, b) => {
+        const diff = (RARITY_SCORE[rarityMajor(b.rarity)] ?? 0) - (RARITY_SCORE[rarityMajor(a.rarity)] ?? 0);
+        return diff !== 0 ? diff : b.stats.atk - a.stats.atk;
+      })
+      .slice(0, 5);
+  }, [ownedMap]);
+
   return (
     <div className="card-col-screen">
 
@@ -203,6 +215,33 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
           </button>
         ))}
       </div>
+
+      {/* ── Coveted: Top unowned rares ── */}
+      {covetedCards.length > 0 && (
+        <div className="card-col-coveted">
+          <div className="card-col-coveted__title">🔒 BEGEHRTE KARTEN</div>
+          <div className="card-col-coveted__row">
+            {covetedCards.map(card => {
+              const rc = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+              return (
+                <button
+                  key={card.id}
+                  className="card-col-coveted-item"
+                  style={{ '--rarity-color': rc } as React.CSSProperties}
+                  onClick={() => setSelectedCard(card)}
+                >
+                  <div className="card-col-coveted-item__img-wrap">
+                    <img className="card-col-coveted-item__img" src={card.image} alt={card.name} loading="lazy" />
+                    <div className="card-col-coveted-item__lock">🔒</div>
+                    <div className="card-col-coveted-item__rarity" style={{ color: rc }}>{card.rarity}</div>
+                  </div>
+                  <div className="card-col-coveted-item__name">{card.name}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Scrollbarer Bereich ── */}
       <div className="card-col-scroll">

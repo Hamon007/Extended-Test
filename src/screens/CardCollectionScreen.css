@@ -497,3 +497,90 @@
   color: #69f0ae;
   font-weight: 700;
 }
+
+/* ── Coveted Cards (FOMO Strip) ─────────────────────────────── */
+
+.card-col-coveted {
+  padding: 10px 12px 6px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.card-col-coveted__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-dark);
+  margin-bottom: 8px;
+}
+
+.card-col-coveted__row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.card-col-coveted-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 64px;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.card-col-coveted-item__img-wrap {
+  position: relative;
+  width: 64px;
+  aspect-ratio: 2/3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--rarity-color), 0.4);
+  box-shadow: 0 0 0 1px var(--rarity-color, #9e9e9e);
+}
+
+.card-col-coveted-item__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.45) saturate(0.7);
+}
+
+.card-col-coveted-item__lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(0,0,0,0.8);
+}
+
+.card-col-coveted-item__rarity {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem;
+  font-weight: bold;
+  background: rgba(0,0,0,0.7);
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.card-col-coveted-item__name {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.6rem;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 64px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(232,213,176,0.7);
+}
