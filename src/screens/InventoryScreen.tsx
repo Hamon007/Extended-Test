@@ -232,6 +232,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
             const color = RARITY_COLOR[inst.rarity];
             const lv = inst.level ?? 1;
             const pw = cardPower(inst);
+            const masteryLv = CardMasteryService.getMasteryInfo(inst.cardId).level;
             return (
               <button
                 key={inst.uuid}
@@ -241,6 +242,9 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
                 <div className="inv-card-chip__img-wrap">
                   <img className="inv-card-chip__img" src={card?.image} alt={card?.name} />
                   {lv > 1 && <span className="inv-card-chip__level">Lv.{lv}</span>}
+                  {masteryLv > 0 && (
+                    <span className="inv-card-chip__mastery">{'★'.repeat(Math.min(masteryLv, 3))}</span>
+                  )}
                 </div>
                 <span className="inv-card-chip__rarity" style={{ color }}>{rarityMajor(inst.rarity)}</span>
                 <span className="inv-card-chip__name">{card?.name ?? inst.cardId}</span>

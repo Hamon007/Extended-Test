@@ -152,6 +152,12 @@
   font-family: 'Cinzel', serif; font-size: 0.48rem; font-weight: bold;
   padding: 1px 3px; border-radius: 2px; pointer-events: none;
 }
+.inv-card-chip__mastery {
+  position: absolute; bottom: 3px; right: 3px;
+  color: #ffd700; font-size: 0.42rem; letter-spacing: -1px;
+  pointer-events: none; line-height: 1;
+  text-shadow: 0 0 4px rgba(255,200,0,0.6);
+}
 .inv-card-chip__rarity { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: bold; }
 .inv-card-chip__name { font-family: 'EB Garamond', serif; font-size: 0.65rem; text-align: center; line-height: 1.2; }
 .inv-card-chip__power {
