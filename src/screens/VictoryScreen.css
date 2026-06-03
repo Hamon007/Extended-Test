@@ -526,3 +526,71 @@
   text-shadow: 0 0 12px rgba(255,100,30,0.8);
   animation-delay: 0.15s;
 }
+
+/* ── Next Floor Preview ──────────────────────────────────── */
+.victory-next-floor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: rgba(30,15,50,0.7);
+  border: 1px solid rgba(100,60,180,0.4);
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 10px;
+  animation: defeat-fade-in 0.4s ease 0.8s both;
+}
+
+.victory-next-floor--boss {
+  background: rgba(50,10,10,0.8);
+  border-color: rgba(200,40,40,0.6);
+  animation: bossFloorPulse 1.5s ease-in-out infinite alternate, defeat-fade-in 0.4s ease 0.8s both;
+}
+
+.victory-next-floor--elite {
+  background: rgba(20,20,50,0.8);
+  border-color: rgba(80,120,255,0.5);
+}
+
+@keyframes bossFloorPulse {
+  from { box-shadow: 0 0 8px rgba(200,40,40,0.3); }
+  to   { box-shadow: 0 0 20px rgba(200,40,40,0.7); }
+}
+
+.victory-next-floor__label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: rgba(180,160,220,0.7);
+  letter-spacing: 0.15em;
+}
+
+.victory-next-floor__num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 28px;
+  color: #f0d080;
+  line-height: 1;
+  text-shadow: 0 0 15px rgba(240,208,128,0.5);
+}
+
+.victory-next-floor--boss .victory-next-floor__num {
+  color: #ef9a9a;
+  text-shadow: 0 0 15px rgba(204,34,0,0.6);
+}
+
+.victory-next-floor__tag {
+  font-family: 'Cinzel', serif;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  color: rgba(180,160,220,0.8);
+}
+
+.victory-next-floor__tag--boss {
+  color: #ef9a9a;
+  font-weight: 700;
+}
+
+.victory-next-floor__tag--elite {
+  color: #90caf9;
+}

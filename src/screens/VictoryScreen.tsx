@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { CardDatabase } from '../services/CardDatabase';
+import { TowerService } from '../services/TowerService';
 import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import './VictoryScreen.css';
@@ -50,6 +51,12 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
   const isFlawless    = playerHpPct >= 0.9 && roundsElapsed <= 5;
   const isNearMiss    = playerHpPct <= 0.15;
   const newRecords    = details.newRecords ?? [];
+
+  // Next floor preview (tower mode only)
+  const currentFloor = details.towerFloor;
+  const nextFloor    = currentFloor !== undefined ? currentFloor + 1 : undefined;
+  const nextIsBoss   = nextFloor !== undefined && TowerService.isBossFloor(nextFloor);
+  const nextIsMile   = nextFloor !== undefined && nextFloor % 5 === 0 && !nextIsBoss;
 
   return (
     <div className="victory-screen">
@@ -243,6 +250,21 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             </div>
           )}
         </div>
+
+        {/* Next floor preview */}
+        {nextFloor !== undefined && (
+          <div className={`victory-next-floor ${nextIsBoss ? 'victory-next-floor--boss' : nextIsMile ? 'victory-next-floor--elite' : ''}`}>
+            <div className="victory-next-floor__label">NÄCHSTE ETAGE</div>
+            <div className="victory-next-floor__num">{nextFloor}</div>
+            {nextIsBoss ? (
+              <div className="victory-next-floor__tag victory-next-floor__tag--boss">⚔ BOSS-ETAGE</div>
+            ) : nextIsMile ? (
+              <div className="victory-next-floor__tag victory-next-floor__tag--elite">⚡ ELITE-CHANCE</div>
+            ) : (
+              <div className="victory-next-floor__tag">◆ Normale Etage</div>
+            )}
+          </div>
+        )}
 
         {/* Weiter-Button */}
         <button className="victory-btn" onClick={onContinue}>

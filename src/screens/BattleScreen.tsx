@@ -319,6 +319,11 @@ const BattleScreen: React.FC = () => {
       if (newRecords.length > 0) finalDetails = { ...finalDetails, newRecords };
     }
 
+    // Embed tower floor context for VictoryScreen next-floor preview
+    if (isTowerMode) {
+      finalDetails = { ...finalDetails, towerFloor };
+    }
+
     // Result taunt (shown briefly on victory/defeat screen)
     const resultTier = TowerService.isBossFloor(towerFloor) ? 'boss'
       : tacticalConfig ? 'elite'

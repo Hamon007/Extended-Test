@@ -53,6 +53,8 @@ export interface RewardDetails {
   winStreak?:       number;
   // New personal records
   newRecords?:      Array<'combo' | 'damage' | 'streak'>;
+  // Tower context (set when in tower mode)
+  towerFloor?:      number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
