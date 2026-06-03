@@ -9,6 +9,7 @@ import { TowerService } from '../services/TowerService';
 import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService } from '../services/DailyLoginService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { FusionSystem } from '../services/FusionSystem';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
@@ -78,6 +79,22 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
     return sum;
   }, [gacha]);
 
+  // Composite "Power Score" — single headline number that combines all progression axes.
+  // Formula: deck total effective ATK + account_level×1000 + mastery_levels×500 + unique_owned×200 + tower_highest×300
+  const powerScore = useMemo(() => {
+    const deckAtk = gacha.inventory.reduce((sum, inst) => {
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) return sum;
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level ?? 1);
+      return sum + stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+    }, 0);
+    return deckAtk
+      + account.level * 1_000
+      + totalMasteryLevels * 500
+      + uniqueOwned * 200
+      + towerHighest * 300;
+  }, [gacha, account.level, totalMasteryLevels, uniqueOwned, towerHighest]);
+
   useEffect(() => {
     if (!isLoggedIn) { setLoading(false); return; }
     ProfileService.getOrCreate().then(p => {
@@ -125,6 +142,19 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
           <div className="profile-loading">Lade Profil …</div>
         ) : (
           <>
+            {/* ── Power Score Banner ── */}
+            {powerScore > 0 && (
+              <div className="profile-power-banner">
+                <div className="profile-power-banner__label">⚔ KAMPFSTÄRKE</div>
+                <div className="profile-power-banner__value">
+                  {powerScore.toLocaleString('de-DE')}
+                </div>
+                <div className="profile-power-banner__breakdown">
+                  Lv.{account.level} · Etage {towerHighest} · {uniqueOwned}/{totalCards} Karten · {totalMasteryLevels} Meisterschaft
+                </div>
+              </div>
+            )}
+
             {/* ── Profilkarte ── */}
             <div className="profile-card">
               <div className="profile-card__avatar">⚔️</div>
