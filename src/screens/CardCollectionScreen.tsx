@@ -102,6 +102,21 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   const { next: nextMilestone } = CollectionMilestoneService.getProgress();
   const collectionPct = totalCards > 0 ? (ownedUnique / totalCards) * 100 : 0;
 
+  // Per-rarity completion (unique owned vs total in DB per tier)
+  const rarityStats = useMemo(() => {
+    const all = CardDatabase.getAll();
+    const totalByRarity: Record<string, number> = {};
+    for (const card of all) {
+      const r = rarityMajor(card.rarity);
+      totalByRarity[r] = (totalByRarity[r] ?? 0) + 1;
+    }
+    return RARITY_MAJORS.map(r => {
+      const total = totalByRarity[r] ?? 0;
+      const owned = all.filter(c => rarityMajor(c.rarity) === r && ownedMap.has(c.id)).length;
+      return { rarity: r, owned, total, complete: total > 0 && owned === total };
+    }).filter(s => s.total > 0);
+  }, [ownedMap]);
+
   return (
     <div className="card-col-screen">
 
@@ -132,6 +147,28 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
             </span>
           )}
         </div>
+      </div>
+
+      {/* ── Per-rarity completion row ── */}
+      <div className="card-col-rarity-row">
+        {rarityStats.map(({ rarity, owned, total, complete }) => {
+          const color = RARITY_COLOR[rarity as Rarity] ?? '#9e9e9e';
+          return (
+            <div
+              key={rarity}
+              className={`card-col-rarity-chip ${complete ? 'card-col-rarity-chip--complete' : ''}`}
+              style={{ '--rarity-color': color } as React.CSSProperties}
+              onClick={() => setRarityFilter(prev => prev === rarity ? '' : rarity as Rarity)}
+              title={`${rarity}: ${owned}/${total} gesammelt`}
+            >
+              <span className="card-col-rarity-chip__label" style={{ color }}>{rarity}</span>
+              <span className="card-col-rarity-chip__count">
+                {owned}/{total}
+              </span>
+              {complete && <span className="card-col-rarity-chip__done">✓</span>}
+            </div>
+          );
+        })}
       </div>
 
       {/* ── Filter & Sortierung ── */}

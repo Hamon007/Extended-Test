@@ -441,3 +441,59 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ── Per-rarity completion row ───────────────────────────── */
+.card-col-rarity-row {
+  display: flex;
+  gap: 5px;
+  padding: 7px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.card-col-rarity-row::-webkit-scrollbar { display: none; }
+
+.card-col-rarity-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--rarity-color, #666);
+  background: rgba(0,0,0,0.3);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.card-col-rarity-chip:active {
+  background: rgba(255,255,255,0.08);
+}
+
+.card-col-rarity-chip--complete {
+  background: rgba(80,200,120,0.1);
+  border-color: #4caf50;
+  box-shadow: 0 0 6px rgba(76,175,80,0.3);
+}
+
+.card-col-rarity-chip__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.card-col-rarity-chip__count {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: rgba(220,200,255,0.8);
+}
+
+.card-col-rarity-chip__done {
+  font-size: 0.55rem;
+  color: #69f0ae;
+  font-weight: 700;
+}
