@@ -3,6 +3,20 @@ import { LuckySpinService, SPIN_PRIZES, type SpinPrize } from '../services/Lucky
 import { AchievementService } from '../services/AchievementService';
 import './LuckySpinScreen.css';
 
+function msUntilMidnightUtc(): number {
+  const now = new Date();
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  return midnight.getTime() - now.getTime();
+}
+
+function formatHMS(ms: number): string {
+  const s  = Math.max(0, Math.floor(ms / 1000));
+  const h  = Math.floor(s / 3600);
+  const m  = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(sc).padStart(2, '0')}`;
+}
+
 interface Props {
   onBack: () => void;
 }
@@ -16,10 +30,18 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
   const [rotation,    setRotation]    = useState(0);
   const [prize,       setPrize]       = useState<SpinPrize | null>(null);
   const [showResult,  setShowResult]  = useState(false);
+  const [streak,      setStreak]      = useState(() => LuckySpinService.getStreak());
+  const [resetMs,     setResetMs]     = useState(() => msUntilMidnightUtc());
   const baseRotationRef = useRef(0);
 
   // Reset result on mount
   useEffect(() => { setPrize(null); setShowResult(false); }, []);
+
+  // Countdown ticker
+  useEffect(() => {
+    const id = setInterval(() => setResetMs(msUntilMidnightUtc()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const handleSpin = () => {
     if (!canSpin || spinning) return;
@@ -50,6 +72,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
       setShowResult(true);
       setSpinning(false);
       setCanSpin(false);
+      setStreak(LuckySpinService.getStreak());
     }, 4200);
   };
 
@@ -58,8 +81,17 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
       <div className="spin-header">
         <button className="spin-back" onClick={onBack}>← Zurück</button>
         <h1 className="spin-title">🎰 Glücksrad</h1>
-        {!canSpin && <span className="spin-used-badge">Morgen wieder verfügbar</span>}
+        {streak >= 2 && (
+          <span className="spin-streak-badge">🔥 {streak}T</span>
+        )}
       </div>
+
+      {!canSpin && (
+        <div className="spin-reset-bar">
+          <span className="spin-reset-bar__label">✓ Heute gedreht · Nächste Drehung in</span>
+          <span className="spin-reset-bar__timer">{formatHMS(resetMs)}</span>
+        </div>
+      )}
 
       <div className="spin-arena">
         {/* Pointer */}

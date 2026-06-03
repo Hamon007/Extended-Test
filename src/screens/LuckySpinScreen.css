@@ -48,6 +48,48 @@
   white-space: nowrap;
 }
 
+.spin-streak-badge {
+  font-size: 0.75rem;
+  color: #ff7043;
+  background: rgba(255,112,67,0.15);
+  border: 1px solid rgba(255,112,67,0.4);
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  font-weight: 700;
+  animation: spin-streak-glow 2s ease-in-out infinite;
+}
+
+@keyframes spin-streak-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,112,67,0.2); }
+  50%       { box-shadow: 0 0 14px rgba(255,112,67,0.5); }
+}
+
+.spin-reset-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 7px 14px;
+  margin-bottom: 4px;
+  font-size: 0.7rem;
+}
+
+.spin-reset-bar__label {
+  color: #7a7a9a;
+}
+
+.spin-reset-bar__timer {
+  color: #b39ddb;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Arena ───────────────────────────────────────────────── */
 .spin-arena {
   position: relative;

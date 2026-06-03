@@ -38,6 +38,7 @@ const TOTAL_WEIGHT = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
 
 interface SpinState {
   lastSpinDate: string; // 'YYYY-MM-DD'
+  streak: number;       // consecutive days spun
 }
 
 function todayKey(): string {
@@ -47,8 +48,8 @@ function todayKey(): string {
 function load(): SpinState {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as SpinState) : { lastSpinDate: '' };
-  } catch { return { lastSpinDate: '' }; }
+    return raw ? (JSON.parse(raw) as SpinState) : { lastSpinDate: '', streak: 0 };
+  } catch { return { lastSpinDate: '', streak: 0 }; }
 }
 
 function save(st: SpinState): void {
@@ -68,9 +69,18 @@ function pickPrize(): SpinPrize {
   return SPIN_PRIZES[0]!;
 }
 
+function getStreak(): number {
+  return load().streak ?? 0;
+}
+
 function spin(): { prize: SpinPrize; prizeIndex: number } | null {
   if (!canSpin()) return null;
-  save({ lastSpinDate: todayKey() });
+  const st = load();
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yKey = yesterday.toISOString().slice(0, 10);
+  const newStreak = st.lastSpinDate === yKey ? (st.streak ?? 0) + 1 : 1;
+  save({ lastSpinDate: todayKey(), streak: newStreak });
 
   const prize = pickPrize();
   const prizeIndex = SPIN_PRIZES.indexOf(prize);
@@ -95,5 +105,6 @@ function spin(): { prize: SpinPrize; prizeIndex: number } | null {
 export const LuckySpinService = {
   canSpin,
   spin,
+  getStreak,
   SPIN_PRIZES,
 };
