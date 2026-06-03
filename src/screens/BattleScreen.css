@@ -2194,6 +2194,79 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
+   COMBO BURST OVERLAY
+   ══════════════════════════════════════════════════════════════ */
+@keyframes comboBurstRing {
+  0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+}
+
+@keyframes comboBurstText {
+  0%   { transform: translateX(-50%) translateY(-50%) scale(0.6); opacity: 0; }
+  18%  { transform: translateX(-50%) translateY(-50%) scale(1.15); opacity: 1; }
+  70%  { transform: translateX(-50%) translateY(-50%) scale(1.0);  opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-50%) scale(0.9);  opacity: 0; }
+}
+
+.combo-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 300;
+  overflow: hidden;
+}
+
+.combo-burst__ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 120px; height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  animation: comboBurstRing 0.8s ease-out forwards;
+}
+
+.combo-burst__ring--delay {
+  animation-delay: 0.12s;
+  opacity: 0;
+}
+
+.combo-burst--triple .combo-burst__ring {
+  border: 3px solid rgba(240,208,128,0.9);
+  box-shadow: 0 0 24px rgba(240,208,128,0.7);
+}
+
+.combo-burst--max .combo-burst__ring {
+  border: 3px solid rgba(255,100,220,0.9);
+  box-shadow: 0 0 40px rgba(200,50,255,0.8);
+}
+
+.combo-burst__text {
+  position: absolute;
+  top: 38%; left: 50%;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: comboBurstText 0.8s ease-out forwards;
+}
+
+.combo-burst--triple .combo-burst__text {
+  font-size: 1.3rem;
+  color: #f0d080;
+  text-shadow: 0 0 16px rgba(255,215,0,0.9), 0 0 32px rgba(255,165,0,0.5);
+}
+
+.combo-burst--max .combo-burst__text {
+  font-size: 1.7rem;
+  color: #ff80ee;
+  text-shadow:
+    0 0 20px rgba(255,80,220,1),
+    0 0 40px rgba(180,0,255,0.7),
+    0 0 70px rgba(255,0,180,0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════
    TAGESQUEST COMPACT WIDGET
    ══════════════════════════════════════════════════════════════ */
 .battle-daily-quests {

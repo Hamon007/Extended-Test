@@ -1078,6 +1078,8 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [enemyHit,       setEnemyHit]       = useState(false);
   const [limitBreakUsed,   setLimitBreakUsed]   = useState(false);
   const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
+  const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
+  const lastComboBurstRef = useRef(0);
   const lastAwakenedCount = useRef(0);
   const lastLogId         = useRef(0);
   const lastEnemyHpRef    = useRef(state.enemy.hp);
@@ -1124,11 +1126,33 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     lastPlayerHpRef.current = state.player.hp;
   }, [state.player.hp, triggerShake]);
 
-  // Combo gebrochen → dumpfer Sound
+  // Combo gebrochen → dumpfer Sound + reset burst threshold
   useEffect(() => {
-    if (combo.isBreaking && !wasBreakingRef.current) AudioService.comboBreak();
+    if (combo.isBreaking && !wasBreakingRef.current) {
+      AudioService.comboBreak();
+      lastComboBurstRef.current = 0;
+    }
     wasBreakingRef.current = combo.isBreaking;
   }, [combo.isBreaking]);
+
+  // Combo milestone burst at 3× and MAX_COMBO
+  useEffect(() => {
+    const c = combo.count;
+    if (c <= lastComboBurstRef.current) return;
+    if (c >= 5 && lastComboBurstRef.current < 5) {
+      lastComboBurstRef.current = c;
+      setComboBurst('max');
+      AudioService.vibrate([20, 40, 60, 80]);
+      setTimeout(() => setComboBurst(null), 1200);
+    } else if (c === 3 && lastComboBurstRef.current < 3) {
+      lastComboBurstRef.current = c;
+      setComboBurst('triple');
+      AudioService.vibrate([20, 30]);
+      setTimeout(() => setComboBurst(null), 800);
+    } else {
+      lastComboBurstRef.current = c;
+    }
+  }, [combo.count]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sieg / Niederlage → Fanfare
   useEffect(() => {
@@ -1403,6 +1427,21 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
       {/* Critical Flash */}
       {critFlash && <div className="arena-crit-flash" />}
+
+      {/* Combo Burst Overlay */}
+      {comboBurst === 'triple' && (
+        <div className="combo-burst combo-burst--triple" aria-hidden="true">
+          <div className="combo-burst__ring" />
+          <div className="combo-burst__text">3× COMBO!</div>
+        </div>
+      )}
+      {comboBurst === 'max' && (
+        <div className="combo-burst combo-burst--max" aria-hidden="true">
+          <div className="combo-burst__ring" />
+          <div className="combo-burst__ring combo-burst__ring--delay" />
+          <div className="combo-burst__text">MAX COMBO!!</div>
+        </div>
+      )}
 
       {/* Limit Break Animation */}
       {limitBreakAnim && (
