@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDeckStore } from '../hooks/useDeckStore';
 import { DeckBuilder } from '../services/DeckBuilder';
 import { CardDatabase } from '../services/CardDatabase';
+import { FusionSystem } from '../services/FusionSystem';
 import type { ResolvedSlot, Deck } from '../types/DeckTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
@@ -66,6 +67,19 @@ const DeckBuilderScreen: React.FC = () => {
       : inventory.filter(e => rarityMajor(e.rarity) === rarityFilter);
     return sortInventory(filtered, sortKey);
   }, [inventory, rarityFilter, sortKey]);
+
+  // Deck total ATK power (effective stats incl. level + mastery)
+  const deckPower = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    return deck.uuids.reduce((sum, uuid) => {
+      const inst = invMap.get(uuid);
+      if (!inst) return sum;
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) return sum;
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
+      return sum + stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+    }, 0);
+  }, [deck.uuids, inventory]);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -140,6 +154,9 @@ const DeckBuilderScreen: React.FC = () => {
         <div className="db-slots-header">
           <span className="db-slots-label">DECK</span>
           <span className="db-slots-count">{deck.uuids.length} / {DECK_SIZE}</span>
+          {deckPower > 0 && (
+            <span className="db-power-chip">⚔ {deckPower.toLocaleString('de-DE')}</span>
+          )}
           <span className={`db-mp-total ${validation.isOverBudget ? 'db-mp-total--over' : ''}`}>
             💧 {validation.totalMP} / {MAX_DECK_COST} MP
           </span>
@@ -332,6 +349,8 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
   const rc      = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
   const inDeck  = deck.uuids.includes(instance.uuid);
   const mastery = CardMasteryService.getMasteryInfo(instance.cardId);
+  const effStats = card ? FusionSystem.getEffectiveStats(card, instance.rarity, instance.level) : null;
+  const effAtk   = effStats ? effStats.atk + CardMasteryService.getAtkBonus(instance.cardId) : null;
 
   let addBlocked = false;
   let blockTip   = '';
@@ -385,6 +404,9 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
       <div className="inv-card__info">
         <div className="inv-card__name">{card?.name ?? instance.cardId}</div>
         <div className="inv-card__sub">Lv.{instance.level ?? 1} · 💧{card?.stats.mpCost ?? '?'}</div>
+        {effAtk !== null && (
+          <div className="inv-card__atk">⚔ {effAtk.toLocaleString('de-DE')}</div>
+        )}
       </div>
     </div>
   );

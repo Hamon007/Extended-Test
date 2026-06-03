@@ -155,6 +155,17 @@
   color: #c9a84c;
 }
 
+.db-power-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #ffcc44;
+  background: rgba(255,180,0,0.1);
+  border: 1px solid rgba(255,180,0,0.4);
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
 .db-mp-total {
   margin-left: auto;
   font-family: 'Cinzel', serif;
@@ -442,6 +453,13 @@
 
 .inv-card__sub {
   font-family: 'Cinzel', serif; font-size: 0.5rem; color: #90caf9;
+}
+
+.inv-card__atk {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: #ffcc44;
+  opacity: 0.9;
 }
 
 /* Sort-Filter */

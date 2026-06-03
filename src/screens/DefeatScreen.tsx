@@ -26,17 +26,95 @@ function pick<T>(arr: T[], seed: number): T {
   return arr[seed % arr.length]!;
 }
 
+// ── Tactical analysis helpers ─────────────────────────────────
+
+interface TacTip {
+  icon: string;
+  text: string;
+  variant: 'primary' | 'secondary' | 'combo';
+}
+
+function buildTips(details: RewardDetails): TacTip[] {
+  const tips: TacTip[] = [];
+  const enemyHpPct   = details.enemyHpPct   ?? 1;
+  const maxCombo     = details.maxCombo     ?? 0;
+  const roundsElapsed = details.roundsElapsed ?? 0;
+  const defeatReason = details.defeatReason ?? 'hp';
+
+  if (defeatReason === 'rounds') {
+    tips.push({
+      icon: '⏱',
+      text: roundsElapsed >= MAX_ROUNDS - 1
+        ? `Rundengrenze (${MAX_ROUNDS}) erreicht. Dein Deck braucht mehr Schaden pro Runde — ATK-Levelups priorisieren!`
+        : 'Zu viele Runden verbraucht. Erhöhe den Durchsatz durch stärkere ATK-Werte.',
+      variant: 'primary',
+    });
+  } else {
+    if (enemyHpPct > 0.55) {
+      tips.push({
+        icon: '⚔',
+        text: 'Massiver Rückstand. Beide ATK und Verteidigung deiner Karten müssen deutlich gesteigert werden.',
+        variant: 'primary',
+      });
+    } else if (enemyHpPct > 0.25) {
+      tips.push({
+        icon: '🛡',
+        text: `Der Gegner hatte noch ${Math.round(enemyHpPct * 100)}% HP. Steigere dein Deck-ATK durch Levelups und Fusion.`,
+        variant: 'primary',
+      });
+    } else {
+      tips.push({
+        icon: '⚡',
+        text: `Nur ${Math.round(enemyHpPct * 100)}% HP des Gegners verbleibend — ein kleines ATK-Upgrade reicht für den Sieg!`,
+        variant: 'primary',
+      });
+    }
+  }
+
+  if (maxCombo < 2) {
+    tips.push({
+      icon: '🔥',
+      text: 'Keine Kombos erzielt! Ketten-Angriffe verdoppeln deinen Schaden — spare Energie für Combo-Züge.',
+      variant: 'combo',
+    });
+  } else if (maxCombo < 4) {
+    tips.push({
+      icon: '🔥',
+      text: `Max Combo: ${maxCombo}×. Strebe nach 5+ Treffer-Ketten für massiv mehr Schadenspotenzial.`,
+      variant: 'combo',
+    });
+  }
+
+  if (roundsElapsed > 0 && defeatReason === 'hp' && roundsElapsed >= MAX_ROUNDS - 2) {
+    tips.push({
+      icon: '⏳',
+      text: 'Kampf dauerte fast bis zur Rundenbegrenzung. Verbessere Deck-Synergien für effizientere Angriffe.',
+      variant: 'secondary',
+    });
+  }
+
+  return tips.slice(0, 3);
+}
+
+// Progress bar: fraction of enemy HP eliminated (1 - enemyHpPct)
+function damageProgress(enemyHpPct: number): number {
+  return Math.max(0, Math.min(1, 1 - enemyHpPct));
+}
+
 const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect }) => {
   const reasonText = details.defeatReason === 'rounds'
     ? `Rundengrenze (${MAX_ROUNDS}) erreicht — Gegner zu stark.`
     : 'Alle HP verloren.';
 
-  const totalDamage = details.totalDamage ?? 0;
-  const maxCombo    = details.maxCombo    ?? 0;
-  const enemyHpPct  = details.enemyHpPct  ?? 1;
-  const wasClose    = enemyHpPct > 0 && enemyHpPct < 0.2;
-  const seed        = Math.floor(Date.now() / 60000) % 4;
+  const totalDamage  = details.totalDamage ?? 0;
+  const maxCombo     = details.maxCombo    ?? 0;
+  const enemyHpPct   = details.enemyHpPct  ?? 1;
+  const wasClose     = enemyHpPct > 0 && enemyHpPct < 0.2;
+  const seed         = Math.floor(Date.now() / 60000) % 4;
   const motivational = wasClose ? pick(CLOSE_MESSAGES, seed) : pick(MOTIVATIONAL, seed);
+  const tips         = buildTips(details);
+  const dmgPct       = damageProgress(enemyHpPct);
+  const barColor     = dmgPct >= 0.85 ? '#44cc44' : dmgPct >= 0.6 ? '#f0c040' : dmgPct >= 0.35 ? '#e07020' : '#cc2200';
 
   return (
     <div className="defeat-screen">
@@ -73,6 +151,38 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect }) => {
             )}
           </div>
         )}
+
+        {/* ── Tactical Analysis ─────────────────────────────── */}
+        <div className="defeat-analysis">
+          <div className="defeat-analysis__header">TAKTIK-ANALYSE</div>
+
+          {/* Damage progress bar */}
+          <div className="defeat-analysis__prog-label">
+            <span>Gegner-HP eliminiert</span>
+            <span>{Math.round(dmgPct * 100)}%</span>
+          </div>
+          <div className="defeat-analysis__bar-track">
+            <div
+              className="defeat-analysis__bar-fill"
+              style={{ width: `${dmgPct * 100}%`, background: barColor }}
+            />
+            {/* Threshold markers */}
+            <div className="defeat-analysis__bar-mark" style={{ left: '80%' }} />
+          </div>
+          <div className="defeat-analysis__bar-legend">
+            <span>0%</span><span>Sieg →</span><span>100%</span>
+          </div>
+
+          {/* Tips */}
+          <div className="defeat-tips">
+            {tips.map((tip, i) => (
+              <div key={i} className={`defeat-tip defeat-tip--${tip.variant}`}>
+                <span className="defeat-tip__icon">{tip.icon}</span>
+                <span className="defeat-tip__text">{tip.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Trostpreis */}
         <div className="defeat-consolation">
