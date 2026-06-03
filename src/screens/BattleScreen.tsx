@@ -1598,7 +1598,14 @@ const BattleLog: React.FC<{ entries: BattleState['log'] }> = ({ entries }) => {
       {visible.map(e => (
         <div
           key={e.id}
-          className={`battle-log__entry battle-log__entry--${e.actor} ${e.isSuper ? 'battle-log__entry--super' : ''}`}
+          className={[
+            'battle-log__entry',
+            `battle-log__entry--${e.actor}`,
+            e.isSuper                          ? 'battle-log__entry--super'      : '',
+            e.text.includes('LETZTE KRAFT')    ? 'battle-log__entry--last-stand' : '',
+            e.text.includes('▲VORTEIL')        ? 'battle-log__entry--advantage'  : '',
+            e.text.includes('▼NACHTEIL')       ? 'battle-log__entry--weakness'   : '',
+          ].join(' ')}
         >
           <div className="battle-log__main">
             <span>{e.text}</span>

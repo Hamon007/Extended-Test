@@ -1307,6 +1307,19 @@
   text-shadow: 0 0 8px rgba(255,87,34,0.4);
   font-weight: bold;
 }
+.battle-log__entry--last-stand {
+  color: #ff5533 !important;
+  background: rgba(200,30,20,0.12) !important;
+  font-weight: bold;
+}
+.battle-log__entry--advantage {
+  color: #66ee88 !important;
+  background: rgba(30,160,60,0.1) !important;
+}
+.battle-log__entry--weakness {
+  color: #ff8888 !important;
+  background: rgba(180,30,30,0.1) !important;
+}
 .battle-log__quote {
   font-family: 'EB Garamond', serif;
   font-size: 10px;
