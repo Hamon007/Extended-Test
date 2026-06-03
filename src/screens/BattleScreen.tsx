@@ -677,6 +677,18 @@ const BattleScreen: React.FC = () => {
   if (loreOverlay) {
     const lore = TowerLore.forFloor(loreOverlay.floor, loreOverlay.type);
     const loreCrystals = SaveService.loadGachaState().crystals;
+    const enemyElem = pendingMeta?.enemy.element ?? '';
+    // Find which elements beat the enemy element
+    const ELEMENT_ICON: Record<string, string> = {
+      fire: '🔥', ice: '❄️', water: '💧', lightning: '⚡', wind: '🌪️',
+      earth: '🌿', light: '☀️', dark: '🌑', void: '🔮', death: '💀', chaos: '🔱',
+    };
+    const advantageElements = Object.entries({
+      fire: ['ice','earth','wind'], ice: ['wind','lightning'], water: ['fire','earth'],
+      lightning: ['water','wind'], wind: ['earth','lightning'], earth: ['water','ice'],
+      light: ['dark','void'], dark: ['light','void'], void: ['death','chaos'],
+      death: ['void'], chaos: ['death','dark'],
+    }).filter(([, victims]) => victims.includes(enemyElem)).map(([elem]) => elem);
     const RUNE_OPTIONS: { rune: RuneBoost; cost: number; label: string; desc: string }[] = [
       { rune: { type: 'iron_shield',  hpMult: 1.25 },    cost: 80,  label: '🛡 Eisenschild',  desc: 'HP +25%' },
       { rune: { type: 'blood_rage',   atkMult: 1.30 },   cost: 100, label: '🔥 Blutraserei',  desc: 'ATK +30%' },
@@ -688,6 +700,20 @@ const BattleScreen: React.FC = () => {
           <div className="lore-overlay__floor">ETAGE {loreOverlay.floor}</div>
           <h2 className="lore-overlay__subtitle">{lore.subtitle}</h2>
           <p className="lore-overlay__text">{lore.text}</p>
+
+          {/* Elemental strategy hint */}
+          {enemyElem && (
+            <div className="lore-elem-hint">
+              <span className="lore-elem-hint__enemy">
+                {ELEMENT_ICON[enemyElem] ?? '👹'} Gegner-Element: <strong>{enemyElem.toUpperCase()}</strong>
+              </span>
+              {advantageElements.length > 0 && (
+                <span className="lore-elem-hint__adv">
+                  ▲ Vorteilhaft: {advantageElements.map(e => `${ELEMENT_ICON[e] ?? ''}${e}`).join(', ')}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="rune-section">
             <div className="rune-section__title">Kampfrune wählen (optional)</div>

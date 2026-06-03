@@ -1127,6 +1127,32 @@
   box-shadow: 0 0 14px rgba(201,168,76,0.4);
 }
 
+/* Elemental hint in lore overlay */
+.lore-elem-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(20,10,35,0.7);
+  border: 1px solid rgba(120,80,200,0.35);
+  border-radius: 6px;
+  padding: 7px 10px;
+  margin: 6px 0;
+}
+
+.lore-elem-hint__enemy {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #c9a0ff;
+  letter-spacing: 0.05em;
+}
+
+.lore-elem-hint__adv {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #66ee88;
+  letter-spacing: 0.05em;
+}
+
 /* ══════════════════════════════════════════════════════════════
    META-BONUS-BOX (Anführer + Formation)
    ══════════════════════════════════════════════════════════════ */
