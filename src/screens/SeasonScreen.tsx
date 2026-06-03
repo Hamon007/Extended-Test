@@ -33,6 +33,14 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
   const daysLeft = SeasonService.getDaysLeft();
   const endReward = SEASON_END_REWARDS.find(r => r.rank === rank)!;
 
+  // SP velocity: SP per day based on season start
+  const startDate = new Date(state.startDate);
+  const daysElapsed = Math.max(1, Math.round((Date.now() - startDate.getTime()) / 86400000));
+  const spPerDay = Math.round(state.sp / daysElapsed);
+  const nextRankThreshold = nextRank ? RANK_THRESHOLDS[nextRank] : null;
+  const spNeeded = nextRankThreshold ? nextRankThreshold - state.sp : 0;
+  const daysToNextRank = spNeeded > 0 && spPerDay > 0 ? Math.ceil(spNeeded / spPerDay) : null;
+
   return (
     <div className="season-screen">
 
@@ -112,6 +120,30 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
           Steige auf, um mehr zu erhalten!
         </div>
       </div>
+
+      {/* SP velocity / rank forecast */}
+      {spPerDay > 0 && (
+        <div className="season-velocity">
+          <div className="season-velocity__row">
+            <span className="season-velocity__label">⚡ SP / Tag (Ø)</span>
+            <span className="season-velocity__val">{spPerDay.toLocaleString('de-DE')}</span>
+          </div>
+          {nextRank && spNeeded > 0 && (
+            <div className="season-velocity__row">
+              <span className="season-velocity__label">
+                📈 Bis {nextRank} ({spNeeded.toLocaleString('de-DE')} SP)
+              </span>
+              <span className="season-velocity__val">
+                {daysToNextRank !== null
+                  ? daysToNextRank <= daysLeft
+                    ? `~${daysToNextRank}T`
+                    : `⚠ +${daysToNextRank - daysLeft}T nach Saisonende`
+                  : '—'}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* SP Sources Table */}
       <div className="season-section-title">SP verdienen</div>

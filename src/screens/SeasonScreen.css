@@ -275,3 +275,36 @@
   opacity: 0.35;
   text-align: center;
 }
+
+/* ── SP Velocity Widget ──────────────────────────────────── */
+.season-velocity {
+  margin: 0 12px 12px;
+  background: rgba(100,60,200,0.1);
+  border: 1px solid rgba(100,60,200,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.season-velocity__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.season-velocity__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: rgba(200,180,255,0.8);
+  flex: 1;
+}
+
+.season-velocity__val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #c9a84c;
+  white-space: nowrap;
+}
