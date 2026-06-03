@@ -999,3 +999,32 @@
   text-decoration: line-through;
   opacity: 0.7;
 }
+
+/* ── Team Power Score ────────────────────────────────────── */
+.main-power {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(120,30,30,0.25), rgba(180,60,40,0.18), rgba(120,30,30,0.25));
+  border: 1px solid rgba(255, 120, 60, 0.35);
+  border-radius: 6px;
+  padding: 7px 14px;
+  margin-bottom: 8px;
+}
+
+.main-power__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: #ffb088;
+}
+
+.main-power__value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #ff8c42;
+  text-shadow: 0 0 12px rgba(255, 140, 66, 0.5);
+}

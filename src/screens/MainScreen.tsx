@@ -14,6 +14,8 @@ import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
 import { OfflineIncomeService, type OfflineResult } from '../services/OfflineIncomeService';
 import { LuckySpinService } from '../services/LuckySpinService';
+import { CardMasteryService } from '../services/CardMasteryService';
+import { CardBondService } from '../services/CardBondService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -85,7 +87,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [countdown,     setCountdown]     = useState(() => nextBattleMs());
   const [tipIndex,      setTipIndex]      = useState(0);
   const [npcIndex,      setNpcIndex]      = useState(0);
-  const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number } | null>(null);
+  const [deckStats,     setDeckStats]     = useState<{ atk: number; def: number; power: number } | null>(null);
   const [account,       setAccount]       = useState<AccountState>(() => SaveService.loadAccountState());
   const [energy,        setEnergy]        = useState(() => EnergyService.load());
   const [energyMax,     setEnergyMax]     = useState(() => EnergyService.getMax());
@@ -221,6 +223,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     let totalDef = 0;
     let found = 0;
 
+    let masteryAtk = 0;
+    let bondMult = 0;
+
     for (const uuid of deck.uuids) {
       const inst = inventory.find(ci => ci.uuid === uuid);
       if (!inst) continue;
@@ -228,10 +233,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       if (!card) continue;
       totalAtk += card.stats.atk;
       totalDef += card.stats.def;
+      masteryAtk += CardMasteryService.getAtkBonus(inst.cardId);
+      bondMult += (CardBondService.getAtkMultiplier(inst.cardId) - 1);
       found++;
     }
 
-    setDeckStats(found > 0 ? { atk: totalAtk, def: totalDef } : null);
+    // Power score: ATK + half DEF + mastery flat + bond %-based bonus
+    const power = found > 0
+      ? Math.round((totalAtk + masteryAtk) * (1 + bondMult / Math.max(1, found)) + totalDef * 0.5)
+      : 0;
+
+    setDeckStats(found > 0 ? { atk: totalAtk + masteryAtk, def: totalDef, power } : null);
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -334,6 +346,14 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* ── Team-Kampfkraft ── */}
+      {deckStats && deckStats.power > 0 && (
+        <div className="main-power">
+          <span className="main-power__label">⚔ KAMPFKRAFT</span>
+          <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
+        </div>
+      )}
 
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (
