@@ -538,3 +538,42 @@
   animation: lrShimmer 4s linear infinite;
   border-width: 2px;
 }
+
+/* ── Element icon on inventory card ──────────────────────────── */
+.inv-card__element {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.72);
+  border-radius: 3px;
+  padding: 1px 2px;
+  line-height: 1;
+}
+
+/* ── Element distribution strip ──────────────────────────────── */
+.db-elem-dist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 4px 2px 8px;
+}
+
+.db-elem-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: rgba(220,200,255,0.85);
+  background: rgba(80,40,120,0.25);
+  border: 1px solid rgba(120,80,200,0.3);
+  border-radius: 12px;
+  padding: 2px 7px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.db-elem-chip__bonus {
+  color: #ffcc44;
+  font-size: 0.55rem;
+  text-shadow: 0 0 4px rgba(255,200,68,0.7);
+}

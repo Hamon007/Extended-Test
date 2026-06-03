@@ -21,6 +21,13 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'mp',     label: 'MP' },
 ];
 
+// ── Elemente ─────────────────────────────────────────────────
+
+const ELEM_ICON: Record<string, string> = {
+  fire: '🔥', ice: '❄️', water: '💧', lightning: '⚡', wind: '🌪️',
+  earth: '🌿', light: '☀️', dark: '🌑', void: '🔮', death: '💀', chaos: '🔱',
+};
+
 // ── Fehlertext ────────────────────────────────────────────────
 
 const RULE_LABEL: Record<string, string> = {
@@ -79,6 +86,19 @@ const DeckBuilderScreen: React.FC = () => {
       const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
       return sum + stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
     }, 0);
+  }, [deck.uuids, inventory]);
+
+  // Element distribution of current deck
+  const deckElementDist = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    const counts: Record<string, number> = {};
+    for (const uuid of deck.uuids) {
+      const inst = invMap.get(uuid);
+      const card = inst ? CardDatabase.getById(inst.cardId) : null;
+      if (!card?.element) continue;
+      counts[card.element] = (counts[card.element] ?? 0) + 1;
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [deck.uuids, inventory]);
 
   function showToast(msg: string) {
@@ -161,6 +181,17 @@ const DeckBuilderScreen: React.FC = () => {
             💧 {validation.totalMP} / {MAX_DECK_COST} MP
           </span>
         </div>
+        {/* Element distribution */}
+        {deckElementDist.length > 0 && (
+          <div className="db-elem-dist">
+            {deckElementDist.map(([elem, count]) => (
+              <span key={elem} className="db-elem-chip">
+                {ELEM_ICON[elem] ?? '◆'}{elem} ×{count}
+                {count >= 3 && <span className="db-elem-chip__bonus">✦</span>}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="db-slots-row">
           {/* Belegte Slots */}
           {resolved.map(slot => (
@@ -389,6 +420,11 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
           <div className="inv-card__fallback">🌑</div>
         )}
         <div className="inv-card__rarity" style={{ color: rc }}>{instance.rarity}</div>
+        {card?.element && (
+          <div className="inv-card__element" title={card.element}>
+            {ELEM_ICON[card.element] ?? '◆'}
+          </div>
+        )}
         {mastery.level > 0 && (
           <div className="inv-card__mastery" title={`Meisterschaft Stufe ${mastery.level} · +${mastery.atkBonus} ATK`}>
             {'★'.repeat(mastery.level)}
