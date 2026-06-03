@@ -95,6 +95,16 @@
   opacity: 0.45;
 }
 
+.shop-section-sub--timer {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: #b39ddb;
+  opacity: 1;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
 .shop-daily-badge {
   font-family: 'EB Garamond', serif;
   font-size: 0.65rem;

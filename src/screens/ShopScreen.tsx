@@ -1,7 +1,21 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { SaveService } from '../services/SaveService';
 import { ShopService, type ShopItem } from '../services/ShopService';
 import './ShopScreen.css';
+
+function msUntilMidnightUtc(): number {
+  const now = new Date();
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  return midnight.getTime() - now.getTime();
+}
+
+function formatHMS(ms: number): string {
+  const s  = Math.max(0, Math.floor(ms / 1000));
+  const h  = Math.floor(s / 3600);
+  const m  = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(sc).padStart(2, '0')}`;
+}
 
 interface ShopScreenProps {
   onBack: () => void;
@@ -10,6 +24,12 @@ interface ShopScreenProps {
 const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
   const [crystals, setCrystals] = useState(() => SaveService.loadGachaState().crystals);
   const [toast,    setToast]    = useState('');
+  const [resetMs,  setResetMs]  = useState(() => msUntilMidnightUtc());
+
+  useEffect(() => {
+    const id = setInterval(() => setResetMs(msUntilMidnightUtc()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const dailyOffers  = ShopService.getDailyOffers();
   const fixedItems   = ShopService.SHOP_ITEMS.filter(i => !i.rotating);
@@ -69,7 +89,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
         {/* Daily Offers */}
         <div className="shop-section-header">
           <span className="shop-section-title">Tagesangebote</span>
-          <span className="shop-section-sub">Erneuert sich täglich</span>
+          <span className="shop-section-sub shop-section-sub--timer">↺ {formatHMS(resetMs)}</span>
         </div>
         <div className="shop-daily-badge">📅 {ShopService.todayISO()}</div>
         <div className="shop-items">
