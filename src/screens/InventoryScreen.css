@@ -95,6 +95,42 @@
 }
 .inv-sort-btn--active { background: rgba(201,168,76,0.15); border-color: var(--gold-dark); color: var(--gold-bright); }
 
+/* ── Top Power strip ─────────────────────────────────────────── */
+.inv-top-power {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.inv-top-power__label {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.1em;
+  color: var(--gold-dark); margin-bottom: 8px;
+}
+.inv-top-power__row {
+  display: flex; gap: 6px; overflow-x: auto;
+  padding-bottom: 4px;
+}
+.inv-top-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: linear-gradient(135deg, rgba(60,40,10,0.6), rgba(20,10,5,0.8));
+  border: 1px solid rgba(201,168,76,0.35); border-radius: 6px;
+  padding: 5px 4px; min-width: 60px; flex-shrink: 0; cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.inv-top-card:active { border-color: var(--gold); box-shadow: 0 0 8px rgba(201,168,76,0.3); }
+.inv-top-card__rank {
+  font-family: 'Cinzel', serif; font-size: 0.5rem; color: var(--gold-dark);
+}
+.inv-top-card__img { width: 48px; aspect-ratio: 2/3; object-fit: cover; border-radius: 3px; }
+.inv-top-card__rarity { font-family: 'Cinzel', serif; font-size: 0.5rem; font-weight: bold; }
+.inv-top-card__pw {
+  font-family: 'Cinzel', serif; font-size: 0.52rem; color: #ffcc44;
+  text-shadow: 0 0 6px rgba(255,200,68,0.5);
+}
+.inv-top-card__name {
+  font-family: 'EB Garamond', serif; font-size: 0.58rem; text-align: center;
+  line-height: 1.2; max-width: 56px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
 /* Card grid */
 .inv-card-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
@@ -108,9 +144,19 @@
   transition: border-color 0.12s;
 }
 .inv-card-chip:active { border-color: var(--gold-dark); }
-.inv-card-chip__img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; }
+.inv-card-chip__img-wrap { position: relative; width: 100%; }
+.inv-card-chip__img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; display: block; }
+.inv-card-chip__level {
+  position: absolute; bottom: 3px; left: 3px;
+  background: rgba(0,0,0,0.72); color: #f0d080;
+  font-family: 'Cinzel', serif; font-size: 0.48rem; font-weight: bold;
+  padding: 1px 3px; border-radius: 2px; pointer-events: none;
+}
 .inv-card-chip__rarity { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: bold; }
 .inv-card-chip__name { font-family: 'EB Garamond', serif; font-size: 0.65rem; text-align: center; line-height: 1.2; }
+.inv-card-chip__power {
+  font-family: 'Cinzel', serif; font-size: 0.48rem; color: rgba(255,200,68,0.7);
+}
 
 /* Detail overlay */
 .inv-overlay {
@@ -128,8 +174,31 @@
 .inv-overlay__name { font-family: 'Cinzel Decorative', 'Cinzel', serif; font-size: 0.8rem; font-weight: bold; }
 .inv-overlay__title { font-family: 'EB Garamond', serif; font-size: 0.72rem; opacity: 0.7; }
 .inv-overlay__rarity { font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold-dark); }
-.inv-overlay__stats { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
-.inv-overlay__stats span { font-family: 'Cinzel', serif; font-size: 0.62rem; color: var(--gold-bright); }
+.inv-overlay__level-row {
+  display: flex; align-items: center; gap: 6px; margin-top: 2px;
+}
+.inv-overlay__lv {
+  font-family: 'Cinzel', serif; font-size: 0.65rem; color: #f0d080;
+  background: rgba(240,208,128,0.12); border: 1px solid rgba(240,208,128,0.3);
+  border-radius: 3px; padding: 1px 5px;
+}
+.inv-overlay__mastery {
+  font-size: 0.65rem; color: #ffcc44;
+  text-shadow: 0 0 4px rgba(255,200,68,0.6);
+}
+.inv-overlay__stats { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+.inv-overlay__stat-row {
+  display: flex; align-items: center; gap: 5px;
+}
+.inv-overlay__stat-label {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; color: var(--gold-dark); width: 40px; flex-shrink: 0;
+}
+.inv-overlay__stat-eff {
+  font-family: 'Cinzel', serif; font-size: 0.65rem; color: var(--gold-bright); font-weight: bold;
+}
+.inv-overlay__stat-base {
+  font-family: 'Cinzel', serif; font-size: 0.52rem; color: #66ff88; opacity: 0.9;
+}
 .inv-overlay__close {
   position: absolute; top: 8px; right: 10px;
   background: none; border: none; color: var(--gold-dark);

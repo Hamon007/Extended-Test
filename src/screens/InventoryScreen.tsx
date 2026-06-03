@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { SaveService } from '../services/SaveService';
 import { EnergyService } from '../services/EnergyService';
 import { CardDatabase } from '../services/CardDatabase';
+import { FusionSystem } from '../services/FusionSystem';
+import { CardMasteryService } from '../services/CardMasteryService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RARITY_COLOR, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
@@ -10,9 +12,16 @@ import './InventoryScreen.css';
 
 interface Props { onBack: () => void; }
 
-type SortKey = 'rarity' | 'name' | 'newest';
+type SortKey = 'rarity' | 'name' | 'newest' | 'level' | 'power';
 const RARITY_FILTERS: (Rarity | 'ALL')[] = ['ALL', 'N', 'R', 'SR', 'SSR', 'MR', 'LR'];
 const RARITY_RANK: Record<string, number> = { N:0, R:1, SR:2, SSR:3, MR:4, LR:5 };
+
+function cardPower(inst: CardInstance): number {
+  const card = CardDatabase.getById(inst.cardId);
+  if (!card) return 0;
+  const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level ?? 1);
+  return stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+}
 
 const InventoryScreen: React.FC<Props> = ({ onBack }) => {
   const [gs,      setGs]      = useState(() => SaveService.loadGachaState());
@@ -76,6 +85,8 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
         if (sort === 'name') {
           return (CardDatabase.getById(a.cardId)?.name ?? '').localeCompare(CardDatabase.getById(b.cardId)?.name ?? '');
         }
+        if (sort === 'level') return (b.level ?? 1) - (a.level ?? 1);
+        if (sort === 'power') return cardPower(b) - cardPower(a);
         // newest: reverse array order (newest pulls at end of inventory)
         return gs.inventory.indexOf(b) - gs.inventory.indexOf(a);
       });
@@ -83,6 +94,13 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
 
   const stock = gs.crystalCards;
   const detailCard = detail ? CardDatabase.getById(detail.cardId) : null;
+
+  const topPower = useMemo(() =>
+    [...gs.inventory]
+      .sort((a, b) => cardPower(b) - cardPower(a))
+      .slice(0, 5),
+    [gs.inventory],
+  );
 
   return (
     <div className="inv-screen">
@@ -149,6 +167,29 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
       <section className="inv-section">
         <div className="inv-section__title">KARTEN ({gs.inventory.length})</div>
 
+        {/* Top 5 Power strip */}
+        {topPower.length > 0 && (
+          <div className="inv-top-power">
+            <div className="inv-top-power__label">⚔ STÄRKSTE KARTEN</div>
+            <div className="inv-top-power__row">
+              {topPower.map((inst, rank) => {
+                const card  = CardDatabase.getById(inst.cardId);
+                const color = RARITY_COLOR[inst.rarity];
+                const pw    = cardPower(inst);
+                return (
+                  <button key={inst.uuid} className="inv-top-card" onClick={() => setDetail(inst)}>
+                    <div className="inv-top-card__rank">#{rank + 1}</div>
+                    <img className="inv-top-card__img" src={card?.image} alt={card?.name} />
+                    <div className="inv-top-card__rarity" style={{ color }}>{rarityMajor(inst.rarity)}</div>
+                    <div className="inv-top-card__pw">⚔{pw.toLocaleString('de-DE')}</div>
+                    <div className="inv-top-card__name">{card?.name ?? inst.cardId}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="inv-filters">
           <input
             className="inv-search"
@@ -170,13 +211,13 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
             ))}
           </div>
           <div className="inv-sort-row">
-            {(['rarity', 'name', 'newest'] as SortKey[]).map(s => (
+            {(['rarity', 'name', 'newest', 'level', 'power'] as SortKey[]).map(s => (
               <button
                 key={s}
                 className={`inv-sort-btn${sort === s ? ' inv-sort-btn--active' : ''}`}
                 onClick={() => setSort(s)}
               >
-                {s === 'rarity' ? 'Rarität' : s === 'name' ? 'Name' : 'Neueste'}
+                {s === 'rarity' ? 'Rarität' : s === 'name' ? 'Name' : s === 'newest' ? 'Neueste' : s === 'level' ? 'Level' : '⚔ Power'}
               </button>
             ))}
           </div>
@@ -189,15 +230,21 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
           {filtered.map(inst => {
             const card = CardDatabase.getById(inst.cardId);
             const color = RARITY_COLOR[inst.rarity];
+            const lv = inst.level ?? 1;
+            const pw = cardPower(inst);
             return (
               <button
                 key={inst.uuid}
                 className="inv-card-chip"
                 onClick={() => setDetail(inst)}
               >
-                <img className="inv-card-chip__img" src={card?.image} alt={card?.name} />
+                <div className="inv-card-chip__img-wrap">
+                  <img className="inv-card-chip__img" src={card?.image} alt={card?.name} />
+                  {lv > 1 && <span className="inv-card-chip__level">Lv.{lv}</span>}
+                </div>
                 <span className="inv-card-chip__rarity" style={{ color }}>{rarityMajor(inst.rarity)}</span>
                 <span className="inv-card-chip__name">{card?.name ?? inst.cardId}</span>
+                {pw > 0 && <span className="inv-card-chip__power">⚔{pw.toLocaleString('de-DE')}</span>}
               </button>
             );
           })}
@@ -205,27 +252,63 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* ── Detail-Overlay ── */}
-      {detail && detailCard && (
-        <div className="inv-overlay" onClick={() => setDetail(null)}>
-          <div className="inv-overlay__box" onClick={e => e.stopPropagation()}>
-            <img className="inv-overlay__img" src={detailCard.image} alt={detailCard.name} />
-            <div className="inv-overlay__info">
-              <div className="inv-overlay__name" style={{ color: RARITY_COLOR[detail.rarity] }}>
-                {detailCard.name}
+      {detail && detailCard && (() => {
+        const eff = FusionSystem.getEffectiveStats(detailCard, detail.rarity, detail.level ?? 1);
+        const atkBonus = CardMasteryService.getAtkBonus(detail.cardId);
+        const effAtk = eff.atk + atkBonus;
+        const lv = detail.level ?? 1;
+        const mastery = CardMasteryService.getMasteryInfo(detail.cardId);
+        return (
+          <div className="inv-overlay" onClick={() => setDetail(null)}>
+            <div className="inv-overlay__box" onClick={e => e.stopPropagation()}>
+              <img className="inv-overlay__img" src={detailCard.image} alt={detailCard.name} />
+              <div className="inv-overlay__info">
+                <div className="inv-overlay__name" style={{ color: RARITY_COLOR[detail.rarity] }}>
+                  {detailCard.name}
+                </div>
+                <div className="inv-overlay__title">{detailCard.title}</div>
+                <div className="inv-overlay__rarity">{detail.rarity} · {detailCard.element}</div>
+                <div className="inv-overlay__level-row">
+                  <span className="inv-overlay__lv">Lv. {lv}</span>
+                  {mastery.level > 0 && (
+                    <span className="inv-overlay__mastery" title={`Meisterschaft +${atkBonus} ATK`}>
+                      {'★'.repeat(mastery.level)}
+                    </span>
+                  )}
+                </div>
+                <div className="inv-overlay__stats">
+                  <div className="inv-overlay__stat-row">
+                    <span className="inv-overlay__stat-label">⚔ ATK</span>
+                    <span className="inv-overlay__stat-eff">{effAtk.toLocaleString('de-DE')}</span>
+                    {effAtk > detailCard.stats.atk && (
+                      <span className="inv-overlay__stat-base">(+{(effAtk - detailCard.stats.atk).toLocaleString('de-DE')})</span>
+                    )}
+                  </div>
+                  <div className="inv-overlay__stat-row">
+                    <span className="inv-overlay__stat-label">🛡 DEF</span>
+                    <span className="inv-overlay__stat-eff">{eff.def.toLocaleString('de-DE')}</span>
+                    {eff.def > detailCard.stats.def && (
+                      <span className="inv-overlay__stat-base">(+{(eff.def - detailCard.stats.def).toLocaleString('de-DE')})</span>
+                    )}
+                  </div>
+                  <div className="inv-overlay__stat-row">
+                    <span className="inv-overlay__stat-label">♥ HP</span>
+                    <span className="inv-overlay__stat-eff">{eff.hp.toLocaleString('de-DE')}</span>
+                    {eff.hp > detailCard.stats.hp && (
+                      <span className="inv-overlay__stat-base">(+{(eff.hp - detailCard.stats.hp).toLocaleString('de-DE')})</span>
+                    )}
+                  </div>
+                  <div className="inv-overlay__stat-row">
+                    <span className="inv-overlay__stat-label">💧 MP</span>
+                    <span className="inv-overlay__stat-eff">{detailCard.stats.mpCost}</span>
+                  </div>
+                </div>
               </div>
-              <div className="inv-overlay__title">{detailCard.title}</div>
-              <div className="inv-overlay__rarity">{detail.rarity} · {detailCard.element}</div>
-              <div className="inv-overlay__stats">
-                <span>ATK {detailCard.stats.atk.toLocaleString('de-DE')}</span>
-                <span>DEF {detailCard.stats.def.toLocaleString('de-DE')}</span>
-                <span>HP {detailCard.stats.hp.toLocaleString('de-DE')}</span>
-                <span>MP {detailCard.stats.mpCost}</span>
-              </div>
+              <button className="inv-overlay__close" onClick={() => setDetail(null)}>✕</button>
             </div>
-            <button className="inv-overlay__close" onClick={() => setDetail(null)}>✕</button>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
