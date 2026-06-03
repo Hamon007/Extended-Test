@@ -10,6 +10,9 @@ import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService } from '../services/DailyLoginService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem } from '../services/FusionSystem';
+import { LevelSystem } from '../services/LevelSystem';
+import { AchievementService } from '../services/AchievementService';
+import { QuestService } from '../services/QuestService';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
@@ -95,6 +98,56 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
       + towerHighest * 300;
   }, [gacha, account.level, totalMasteryLevels, uniqueOwned, towerHighest]);
 
+  // Next Goals — actionable suggestions to grow power score
+  const nextGoals = useMemo(() => {
+    const goals: { icon: string; text: string; priority: number }[] = [];
+
+    // 1. Fusion-ready cards
+    const fusionGroups = FusionSystem.buildGroups(gacha.inventory);
+    const readyFusions = fusionGroups.filter(g => g.canFuse).length;
+    if (readyFusions > 0) {
+      goals.push({ icon: '🔮', text: `${readyFusions} Karte${readyFusions > 1 ? 'n' : ''} bereit zur Fusion → +Kampfstärke`, priority: 10 });
+    }
+
+    // 2. Lowest-level deck card that can still level up
+    const deck = SaveService.loadDeck();
+    const deckInsts = deck.uuids
+      .map(uuid => gacha.inventory.find(i => i.uuid === uuid))
+      .filter((i): i is CardInstance => i !== undefined);
+    const levelable = deckInsts
+      .filter(i => (i.level ?? 1) < LevelSystem.levelCap(i.rarity))
+      .sort((a, b) => (a.level ?? 1) - (b.level ?? 1));
+    if (levelable.length > 0) {
+      const weakest = levelable[0]!;
+      const card    = CardDatabase.getById(weakest.cardId);
+      goals.push({ icon: '⚔', text: `${card?.name ?? weakest.cardId} trainieren (Lv.${weakest.level ?? 1} → stärker)`, priority: 8 });
+    }
+
+    // 3. Claimable achievements
+    const achItems = AchievementService.getAll();
+    const claimable = achItems.filter(({ progress }) => progress.unlocked && !progress.claimed).length;
+    if (claimable > 0) {
+      goals.push({ icon: '🏅', text: `${claimable} Achievement${claimable > 1 ? 's' : ''} einfordern`, priority: 7 });
+    }
+
+    // 4. Incomplete daily quests
+    const dailyQuests = QuestService.getDailyQuests();
+    const incompleteDailies = dailyQuests.filter(q => !q.progress.claimed).length;
+    if (incompleteDailies > 0) {
+      goals.push({ icon: '📋', text: `${incompleteDailies} tägliche Quest${incompleteDailies > 1 ? 's' : ''} noch offen`, priority: 6 });
+    }
+
+    // 5. Account XP close to next level
+    const xpNeeded = LevelSystem.xpToNext(account.level);
+    const xpLeft   = xpNeeded - account.xp;
+    const xpPct    = xpNeeded > 0 ? account.xp / xpNeeded : 1;
+    if (xpPct >= 0.75 && xpLeft > 0) {
+      goals.push({ icon: '✦', text: `Fast Level ${account.level + 1}! Noch ${xpLeft.toLocaleString('de-DE')} XP nötig`, priority: 5 });
+    }
+
+    return goals.sort((a, b) => b.priority - a.priority).slice(0, 4);
+  }, [gacha, account]);
+
   useEffect(() => {
     if (!isLoggedIn) { setLoading(false); return; }
     ProfileService.getOrCreate().then(p => {
@@ -152,6 +205,19 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                 <div className="profile-power-banner__breakdown">
                   Lv.{account.level} · Etage {towerHighest} · {uniqueOwned}/{totalCards} Karten · {totalMasteryLevels} Meisterschaft
                 </div>
+              </div>
+            )}
+
+            {/* ── Nächste Ziele ── */}
+            {nextGoals.length > 0 && (
+              <div className="profile-next-goals">
+                <div className="profile-next-goals__title">◆ NÄCHSTE ZIELE</div>
+                {nextGoals.map((g, i) => (
+                  <div key={i} className="profile-next-goal">
+                    <span className="profile-next-goal__icon">{g.icon}</span>
+                    <span className="profile-next-goal__text">{g.text}</span>
+                  </div>
+                ))}
               </div>
             )}
 

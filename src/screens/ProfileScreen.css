@@ -687,3 +687,57 @@
   opacity: 0.7;
   letter-spacing: 0.05em;
 }
+
+/* ── Nächste Ziele ───────────────────────────────────────────── */
+
+.profile-next-goals {
+  background: linear-gradient(135deg, rgba(10,20,40,0.7), rgba(5,10,25,0.8));
+  border: 1px solid rgba(80,120,200,0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-next-goals__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: #7ab4ff;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.profile-next-goal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 5px;
+  padding: 6px 10px;
+  animation: profileGoalIn 0.3s ease both;
+}
+
+.profile-next-goal:nth-child(2) { animation-delay: 0.04s; }
+.profile-next-goal:nth-child(3) { animation-delay: 0.08s; }
+.profile-next-goal:nth-child(4) { animation-delay: 0.12s; }
+.profile-next-goal:nth-child(5) { animation-delay: 0.16s; }
+
+@keyframes profileGoalIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.profile-next-goal__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.profile-next-goal__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  color: rgba(220,210,255,0.85);
+  line-height: 1.3;
+}

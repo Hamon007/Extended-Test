@@ -36,9 +36,18 @@ export const SPIN_PRIZES: SpinPrize[] = [
 
 const TOTAL_WEIGHT = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
 
+export const STREAK_MILESTONES: { days: number; bonus: number; label: string }[] = [
+  { days: 3,  bonus: 300,  label: '3-Tage-Serie'   },
+  { days: 7,  bonus: 1000, label: '7-Tage-Serie'   },
+  { days: 14, bonus: 2000, label: '14-Tage-Serie'  },
+  { days: 30, bonus: 5000, label: '30-Tage-Serie'  },
+];
+
 interface SpinState {
-  lastSpinDate: string; // 'YYYY-MM-DD'
-  streak: number;       // consecutive days spun
+  lastSpinDate: string;       // 'YYYY-MM-DD'
+  streak: number;             // consecutive days spun
+  history: string[];          // last 7 prize IDs (newest first)
+  claimedMilestones: number[]; // milestone day-counts already claimed
 }
 
 function todayKey(): string {
@@ -48,8 +57,16 @@ function todayKey(): string {
 function load(): SpinState {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as SpinState) : { lastSpinDate: '', streak: 0 };
-  } catch { return { lastSpinDate: '', streak: 0 }; }
+    const base = raw ? (JSON.parse(raw) as Partial<SpinState>) : {};
+    return {
+      lastSpinDate:      base.lastSpinDate      ?? '',
+      streak:            base.streak            ?? 0,
+      history:           base.history           ?? [],
+      claimedMilestones: base.claimedMilestones ?? [],
+    };
+  } catch {
+    return { lastSpinDate: '', streak: 0, history: [], claimedMilestones: [] };
+  }
 }
 
 function save(st: SpinState): void {
@@ -73,38 +90,69 @@ function getStreak(): number {
   return load().streak ?? 0;
 }
 
-function spin(): { prize: SpinPrize; prizeIndex: number } | null {
+function getHistory(): SpinPrize[] {
+  const st = load();
+  return (st.history ?? [])
+    .map(id => SPIN_PRIZES.find(p => p.id === id))
+    .filter((p): p is SpinPrize => p !== undefined);
+}
+
+function spin(): { prize: SpinPrize; prizeIndex: number; streakBonus: number | null } | null {
   if (!canSpin()) return null;
   const st = load();
   const yesterday = new Date();
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
   const yKey = yesterday.toISOString().slice(0, 10);
   const newStreak = st.lastSpinDate === yKey ? (st.streak ?? 0) + 1 : 1;
-  save({ lastSpinDate: todayKey(), streak: newStreak });
+
+  // Check for unclaimed streak milestones
+  const claimed = st.claimedMilestones ?? [];
+  let streakBonus: number | null = null;
+  const newClaimed = [...claimed];
+  for (const ms of STREAK_MILESTONES) {
+    if (newStreak >= ms.days && !claimed.includes(ms.days)) {
+      streakBonus = (streakBonus ?? 0) + ms.bonus;
+      newClaimed.push(ms.days);
+    }
+  }
 
   const prize = pickPrize();
   const prizeIndex = SPIN_PRIZES.indexOf(prize);
+  const newHistory = [prize.id, ...(st.history ?? [])].slice(0, 7);
+
+  save({
+    lastSpinDate: todayKey(),
+    streak: newStreak,
+    history: newHistory,
+    claimedMilestones: newClaimed,
+  });
 
   // Apply reward
   if (prize.crystals) {
     const gs = SaveService.loadGachaState();
-    SaveService.saveGachaState({ ...gs, crystals: gs.crystals + prize.crystals });
-  }
-  if (prize.potions) {
-    EnergyService.addPotions(prize.potions);
-  }
-  if (prize.accountXp) {
-    const acc = SaveService.loadAccountState();
-    const res = AccountProgressionService.addAccountXp(acc, prize.accountXp);
-    SaveService.saveAccountState(res.newState);
+    SaveService.saveGachaState({ ...gs, crystals: gs.crystals + prize.crystals + (streakBonus ?? 0) });
+  } else {
+    if (streakBonus) {
+      const gs = SaveService.loadGachaState();
+      SaveService.saveGachaState({ ...gs, crystals: gs.crystals + streakBonus });
+    }
+    if (prize.potions) {
+      EnergyService.addPotions(prize.potions);
+    }
+    if (prize.accountXp) {
+      const acc = SaveService.loadAccountState();
+      const res = AccountProgressionService.addAccountXp(acc, prize.accountXp);
+      SaveService.saveAccountState(res.newState);
+    }
   }
 
-  return { prize, prizeIndex };
+  return { prize, prizeIndex, streakBonus };
 }
 
 export const LuckySpinService = {
   canSpin,
   spin,
   getStreak,
+  getHistory,
   SPIN_PRIZES,
 };

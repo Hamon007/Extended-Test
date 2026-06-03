@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LuckySpinService, SPIN_PRIZES, type SpinPrize } from '../services/LuckySpinService';
+import { LuckySpinService, SPIN_PRIZES, STREAK_MILESTONES, type SpinPrize } from '../services/LuckySpinService';
 import { AchievementService } from '../services/AchievementService';
 import './LuckySpinScreen.css';
 
@@ -21,25 +21,25 @@ interface Props {
   onBack: () => void;
 }
 
-const SEG_COUNT   = SPIN_PRIZES.length;
-const SEG_DEG     = 360 / SEG_COUNT;
+const SEG_COUNT    = SPIN_PRIZES.length;
+const SEG_DEG      = 360 / SEG_COUNT;
 const TOTAL_WEIGHT = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
 const JACKPOT      = SPIN_PRIZES.reduce((best, p) => (p.crystals ?? 0) > (best.crystals ?? 0) ? p : best);
 
 const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
-  const [canSpin,     setCanSpin]     = useState(() => LuckySpinService.canSpin());
-  const [spinning,    setSpinning]    = useState(false);
-  const [rotation,    setRotation]    = useState(0);
-  const [prize,       setPrize]       = useState<SpinPrize | null>(null);
-  const [showResult,  setShowResult]  = useState(false);
-  const [streak,      setStreak]      = useState(() => LuckySpinService.getStreak());
-  const [resetMs,     setResetMs]     = useState(() => msUntilMidnightUtc());
+  const [canSpin,      setCanSpin]      = useState(() => LuckySpinService.canSpin());
+  const [spinning,     setSpinning]     = useState(false);
+  const [rotation,     setRotation]     = useState(0);
+  const [prize,        setPrize]        = useState<SpinPrize | null>(null);
+  const [streakBonus,  setStreakBonus]  = useState<number | null>(null);
+  const [showResult,   setShowResult]   = useState(false);
+  const [streak,       setStreak]       = useState(() => LuckySpinService.getStreak());
+  const [history,      setHistory]      = useState<SpinPrize[]>(() => LuckySpinService.getHistory());
+  const [resetMs,      setResetMs]      = useState(() => msUntilMidnightUtc());
   const baseRotationRef = useRef(0);
 
-  // Reset result on mount
   useEffect(() => { setPrize(null); setShowResult(false); }, []);
 
-  // Countdown ticker
   useEffect(() => {
     const id = setInterval(() => setResetMs(msUntilMidnightUtc()), 1000);
     return () => clearInterval(id);
@@ -49,6 +49,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     if (!canSpin || spinning) return;
     setShowResult(false);
     setPrize(null);
+    setStreakBonus(null);
     setSpinning(true);
 
     const result = LuckySpinService.spin();
@@ -57,11 +58,8 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     AchievementService.recordProgress('spin_first');
     AchievementService.recordProgress('spin_regular', 1);
 
-    const { prize: won, prizeIndex } = result;
+    const { prize: won, prizeIndex, streakBonus: bonus } = result;
 
-    // Target angle: spin 5+ full rotations, stop with prizeIndex segment at top
-    // Wheel spins so segment[0] starts at top; each segment is SEG_DEG wide
-    // To land on prizeIndex: rotate so that (prizeIndex * SEG_DEG + SEG_DEG/2) faces the pointer
     const targetStop = 360 - (prizeIndex * SEG_DEG + SEG_DEG / 2);
     const fullSpins = 5 + Math.floor(Math.random() * 3);
     const newRotation = baseRotationRef.current + fullSpins * 360 + targetStop;
@@ -71,20 +69,33 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
 
     setTimeout(() => {
       setPrize(won);
+      setStreakBonus(bonus);
       setShowResult(true);
       setSpinning(false);
       setCanSpin(false);
       setStreak(LuckySpinService.getStreak());
+      setHistory(LuckySpinService.getHistory());
     }, 4200);
   };
+
+  // Next streak milestone
+  const nextMilestone = STREAK_MILESTONES.find(ms => ms.days > streak);
+  const prevMilestone = [...STREAK_MILESTONES].reverse().find(ms => ms.days <= streak);
+  const milestoneBase  = prevMilestone ? prevMilestone.days : 0;
+  const milestoneNext  = nextMilestone ? nextMilestone.days : null;
+  const milestonePct   = milestoneNext
+    ? Math.min(100, ((streak - milestoneBase) / (milestoneNext - milestoneBase)) * 100)
+    : 100;
 
   return (
     <div className="spin-screen">
       <div className="spin-header">
         <button className="spin-back" onClick={onBack}>← Zurück</button>
         <h1 className="spin-title">🎰 Glücksrad</h1>
-        {streak >= 2 && (
-          <span className="spin-streak-badge">🔥 {streak}T</span>
+        {streak >= 1 && (
+          <span className={`spin-streak-badge ${streak >= 7 ? 'spin-streak-badge--hot' : ''}`}>
+            🔥 {streak}T
+          </span>
         )}
       </div>
 
@@ -95,11 +106,44 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         </div>
       )}
 
-      <div className="spin-arena">
-        {/* Pointer */}
-        <div className="spin-pointer">▼</div>
+      {/* Streak Milestone Road */}
+      {streak >= 1 && (
+        <div className="spin-milestone-road">
+          <div className="spin-milestone-road__top">
+            <span className="spin-milestone-road__label">
+              {nextMilestone
+                ? `Noch ${nextMilestone.days - streak} Tag${nextMilestone.days - streak !== 1 ? 'e' : ''} bis +${nextMilestone.bonus.toLocaleString('de-DE')} 💎 Bonus`
+                : '✦ Alle Serien-Boni freigeschaltet!'}
+            </span>
+            <span className="spin-milestone-road__streak">{streak} / {nextMilestone?.days ?? STREAK_MILESTONES[STREAK_MILESTONES.length - 1]!.days} Tage</span>
+          </div>
+          <div className="spin-milestone-road__bar">
+            <div className="spin-milestone-road__fill" style={{ width: `${milestonePct}%` }} />
+            {STREAK_MILESTONES.map(ms => (
+              <div
+                key={ms.days}
+                className={`spin-milestone-road__pip ${streak >= ms.days ? 'spin-milestone-road__pip--done' : ''}`}
+                style={{ left: `${(ms.days / STREAK_MILESTONES[STREAK_MILESTONES.length - 1]!.days) * 100}%` }}
+                title={`${ms.label}: +${ms.bonus} 💎`}
+              />
+            ))}
+          </div>
+          <div className="spin-milestone-road__marks">
+            {STREAK_MILESTONES.map(ms => (
+              <span
+                key={ms.days}
+                className={`spin-milestone-road__mark ${streak >= ms.days ? 'spin-milestone-road__mark--done' : ''}`}
+                style={{ left: `${(ms.days / STREAK_MILESTONES[STREAK_MILESTONES.length - 1]!.days) * 100}%` }}
+              >
+                {ms.days}T
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
-        {/* Wheel */}
+      <div className="spin-arena">
+        <div className="spin-pointer">▼</div>
         <div
           className="spin-wheel"
           style={{
@@ -123,12 +167,9 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
             );
           })}
         </div>
-
-        {/* Center cap */}
         <div className="spin-center">⭐</div>
       </div>
 
-      {/* Jackpot teaser */}
       {canSpin && !spinning && (
         <div className="spin-jackpot-hint">
           ✦ Jackpot: {JACKPOT.label} ·{' '}
@@ -138,7 +179,6 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         </div>
       )}
 
-      {/* Spin Button */}
       <button
         className={`spin-btn ${(!canSpin || spinning) ? 'spin-btn--disabled' : ''}`}
         disabled={!canSpin || spinning}
@@ -147,6 +187,25 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         {spinning ? '⏳ Drehe...' : canSpin ? '🎰 Drehen!' : '✓ Heute gedreht'}
       </button>
 
+      {/* Recent spin history */}
+      {history.length > 0 && (
+        <div className="spin-history">
+          <div className="spin-history__label">Letzte Ergebnisse</div>
+          <div className="spin-history__row">
+            {history.map((p, i) => (
+              <div
+                key={i}
+                className={`spin-history__chip ${i === 0 && !canSpin ? 'spin-history__chip--latest' : ''}`}
+                title={p.label}
+                style={{ borderColor: p.color }}
+              >
+                <span className="spin-history__chip-icon">{p.icon}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Result overlay */}
       {showResult && prize && (
         <div className="spin-result" onClick={() => setShowResult(false)}>
@@ -154,6 +213,11 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
             <div className="spin-result__icon">{prize.icon}</div>
             <div className="spin-result__label">Glückwunsch!</div>
             <div className="spin-result__prize" style={{ color: prize.color }}>{prize.label}</div>
+            {streakBonus && streakBonus > 0 && (
+              <div className="spin-result__streak-bonus">
+                🔥 Serien-Bonus: +{streakBonus.toLocaleString('de-DE')} 💎
+              </div>
+            )}
             <div className="spin-result__note">gewonnen! Tippe zum Schließen.</div>
           </div>
         </div>
@@ -163,7 +227,6 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         <p>Einmal täglich kostenlos drehen.</p>
       </div>
 
-      {/* Prize legend with odds */}
       <div className="spin-legend">
         {SPIN_PRIZES.map(p => {
           const pct = Math.round((p.weight / TOTAL_WEIGHT) * 100);
