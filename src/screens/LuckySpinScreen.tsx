@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LuckySpinService, SPIN_PRIZES, type SpinPrize } from '../services/LuckySpinService';
+import { AchievementService } from '../services/AchievementService';
 import './LuckySpinScreen.css';
 
 interface Props {
@@ -28,6 +29,9 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
 
     const result = LuckySpinService.spin();
     if (!result) { setSpinning(false); return; }
+
+    AchievementService.recordProgress('spin_first');
+    AchievementService.recordProgress('spin_regular', 1);
 
     const { prize: won, prizeIndex } = result;
 

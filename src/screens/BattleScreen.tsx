@@ -169,6 +169,10 @@ const BattleScreen: React.FC = () => {
           newLevel: res.newLevel,
           stars:    CardMasteryService.MASTERY_LEVELS[res.newLevel]?.stars ?? '',
         });
+        AchievementService.recordProgress('mastery_first');
+        if (res.newLevel >= CardMasteryService.MASTERY_LEVELS.length - 1) {
+          AchievementService.recordProgress('mastery_max');
+        }
       }
     }
     const bondLevelUps = bondResults

@@ -64,7 +64,11 @@ export type AchievementId =
   | 'login_7'
   | 'login_30'
   | 'combo_10'
-  | 'tower_100';
+  | 'tower_100'
+  | 'mastery_first'
+  | 'mastery_max'
+  | 'spin_first'
+  | 'spin_regular';
 
 export interface AchievementDef {
   id:          AchievementId;
@@ -265,6 +269,26 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     id: 'tower_100', title: 'Ewiger Aufsteiger', icon: '🗼',
     description: 'Erreiche Etage 100 im Turm.',
     crystals: 5000, category: 'progression',
+  },
+  {
+    id: 'mastery_first', title: 'Erste Meisterschaft', icon: '⚔',
+    description: 'Bringe eine Karte auf Meisterschaftsstufe 1.',
+    crystals: 200, category: 'progression',
+  },
+  {
+    id: 'mastery_max', title: 'Wahre Meisterschaft', icon: '🌟',
+    description: 'Bringe eine Karte auf maximale Meisterschaft (Stufe 5).',
+    crystals: 2000, category: 'progression',
+  },
+  {
+    id: 'spin_first', title: 'Glückspilz', icon: '🎰',
+    description: 'Drehe zum ersten Mal am Glücksrad.',
+    crystals: 100, category: 'progression',
+  },
+  {
+    id: 'spin_regular', title: 'Rad des Schicksals', icon: '🎡',
+    description: 'Drehe 30-mal am Glücksrad.',
+    crystals: 1000, targetValue: 30, category: 'progression',
   },
 ];
 
