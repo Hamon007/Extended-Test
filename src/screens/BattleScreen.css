@@ -83,6 +83,13 @@
   white-space: nowrap;
 }
 
+.battle-energy__regen {
+  font-size: 9px;
+  color: #7a6a9a;
+  margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
 .battle-energy__potion {
   font-family: 'Cinzel', serif;
   font-size: 11px;

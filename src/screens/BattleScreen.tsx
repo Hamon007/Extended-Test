@@ -4,6 +4,7 @@ import { useTacticalStore }     from '../hooks/useTacticalStore';
 import { useComboStore }        from '../hooks/useComboStore';
 import { useDeckStore }         from '../hooks/useDeckStore';
 import { useEnergyStore }       from '../hooks/useEnergyStore';
+import { EnergyService }        from '../services/EnergyService';
 import { EnemyDatabase }        from '../services/EnemyDatabase';
 import { TowerService }         from '../services/TowerService';
 import { SaveService }          from '../services/SaveService';
@@ -47,6 +48,12 @@ import './BattleScreen.css';
 
 // ── Haupt-Screen ──────────────────────────────────────────────
 
+function fmtRegen(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(s / 60);
+  return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
+}
+
 const BattleScreen: React.FC = () => {
   const battle = useBattleStore();
   const deck   = useDeckStore();
@@ -77,6 +84,7 @@ const BattleScreen: React.FC = () => {
   const [bossRushWaveComplete, setBossRushWaveComplete] = useState<{ wave: number; crystals: number } | null>(null);
   const [bossRushCanAttempt,   setBossRushCanAttempt]   = useState(() => BossRushService.canAttempt());
   const highestFloor = TowerService.getHighestFloor();
+  const [energyRegenMs, setEnergyRegenMs] = useState(() => EnergyService.msUntilNextRegen());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -123,6 +131,15 @@ const BattleScreen: React.FC = () => {
   // Tagesprüfung
   const dailyTrial = useMemo(() => DailyTrialService.today(), []);
   const dailyDone  = DailyTrialService.isCompleted();
+
+  // Energy regen ticker (lobby only)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setEnergyRegenMs(EnergyService.msUntilNextRegen());
+      energy.refresh();
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // PvP: Automatisch starten wenn ein Gegner anstehend ist
   useEffect(() => {
@@ -963,7 +980,12 @@ const BattleScreen: React.FC = () => {
           ))}
         </div>
         <div className="battle-energy__meta">
-          <span className="battle-energy__count">{energy.energy}/{energy.max} Kämpfe</span>
+          <span className="battle-energy__count">
+            {energy.energy}/{energy.max} Kämpfe
+            {energy.energy < energy.max && energyRegenMs > 0 && (
+              <span className="battle-energy__regen"> +1 in {fmtRegen(energyRegenMs)}</span>
+            )}
+          </span>
           <button
             className="battle-energy__potion"
             onClick={energy.usePotion}
