@@ -10,7 +10,7 @@ import type { Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './InventoryScreen.css';
 
-interface Props { onBack: () => void; }
+interface Props { onBack: () => void; onNavigate?: (screen: string) => void; }
 
 type SortKey = 'rarity' | 'name' | 'newest' | 'level' | 'power';
 const RARITY_FILTERS: (Rarity | 'ALL')[] = ['ALL', 'N', 'R', 'SR', 'SSR', 'MR', 'LR'];
@@ -23,7 +23,7 @@ function cardPower(inst: CardInstance): number {
   return stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
 }
 
-const InventoryScreen: React.FC<Props> = ({ onBack }) => {
+const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
   const [gs,      setGs]      = useState(() => SaveService.loadGachaState());
   const [energy,  setEnergy]  = useState(() => EnergyService.load());
   const [eMax,    setEMax]    = useState(() => EnergyService.getMax());
@@ -305,6 +305,22 @@ const InventoryScreen: React.FC<Props> = ({ onBack }) => {
                 </div>
               </div>
               <button className="inv-overlay__close" onClick={() => setDetail(null)}>✕</button>
+              {onNavigate && (
+                <div className="inv-overlay__actions">
+                  <button
+                    className="inv-overlay__action-btn inv-overlay__action-btn--train"
+                    onClick={() => { setDetail(null); onNavigate('training'); }}
+                  >
+                    ⚔ Trainieren
+                  </button>
+                  <button
+                    className="inv-overlay__action-btn inv-overlay__action-btn--fusion"
+                    onClick={() => { setDetail(null); onNavigate('fusion'); }}
+                  >
+                    🔮 Fusion
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );

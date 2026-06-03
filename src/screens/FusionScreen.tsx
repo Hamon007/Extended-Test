@@ -171,6 +171,14 @@ const FusionRow: React.FC<FusionRowProps> = ({ group, onFuse, onAwaken }) => {
               {duplicatesNeeded} Duplikat nötig · {duplicatesAvailable} verfügbar
             </span>
             <span className="fusion-row__cost">💎 {crystalCost.toLocaleString('de-DE')}</span>
+            {!canFuse && duplicatesAvailable > 0 && (
+              <div className="fusion-row__dup-bar">
+                <div
+                  className="fusion-row__dup-fill"
+                  style={{ width: `${Math.min(100, (duplicatesAvailable / duplicatesNeeded) * 100)}%` }}
+                />
+              </div>
+            )}
           </div>
         )}
 

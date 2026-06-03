@@ -256,7 +256,7 @@ const App: React.FC = () => {
           <FriendsScreen onBack={goBack} />
         )}
         {screen === 'inventory' && (
-          <InventoryScreen onBack={goBack} />
+          <InventoryScreen onBack={goBack} onNavigate={(s) => goTo(s as Parameters<typeof goTo>[0])} />
         )}
         {screen === 'quests' && (
           <QuestScreen onBack={goBack} />

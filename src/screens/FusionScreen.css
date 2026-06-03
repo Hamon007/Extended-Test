@@ -253,8 +253,9 @@
 /* Anforderung */
 .fusion-row__req {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   font-family: 'Cinzel', serif;
   font-size: 0.55rem;
 }
@@ -263,6 +264,21 @@
 .fusion-req--miss { color: #ef9a9a; }
 
 .fusion-row__cost { color: #c9a84c; }
+
+.fusion-row__dup-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.fusion-row__dup-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef9a9a, #ffb74d);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
 
 /* Aktion */
 .fusion-row__btn {

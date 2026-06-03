@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { AchievementService, type AchievementDef, type AchievementProgress } from '../services/AchievementService';
 import { AudioService } from '../services/AudioService';
 import './AchievementScreen.css';
@@ -130,6 +130,18 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
     claimed:  items.filter(({ progress }) => progress.claimed).length,
   };
 
+  // Per-category claimable count for tab badges
+  const claimableByCategory = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const { def, progress } of items) {
+      if (progress.unlocked && !progress.claimed) {
+        counts['all'] = (counts['all'] ?? 0) + 1;
+        counts[def.category] = (counts[def.category] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, [items]);
+
   // Achievements >= 50% but not yet unlocked, sorted by progress desc
   const nearlyDone = items
     .filter(({ def, progress }) =>
@@ -197,15 +209,19 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
 
       {/* Kategorie-Tabs */}
       <div className="ach-tabs">
-        {(Object.keys(CATEGORY_LABELS) as Category[]).map(cat => (
-          <button
-            key={cat}
-            className={`ach-tab ${category === cat ? 'ach-tab--active' : ''}`}
-            onClick={() => setCategory(cat)}
-          >
-            {CATEGORY_LABELS[cat]}
-          </button>
-        ))}
+        {(Object.keys(CATEGORY_LABELS) as Category[]).map(cat => {
+          const badge = claimableByCategory[cat] ?? 0;
+          return (
+            <button
+              key={cat}
+              className={`ach-tab ${category === cat ? 'ach-tab--active' : ''}`}
+              onClick={() => setCategory(cat)}
+            >
+              {CATEGORY_LABELS[cat]}
+              {badge > 0 && <span className="ach-tab__badge">{badge}</span>}
+            </button>
+          );
+        })}
       </div>
 
       {/* Liste */}
