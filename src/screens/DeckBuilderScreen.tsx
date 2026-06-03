@@ -185,9 +185,13 @@ const DeckBuilderScreen: React.FC = () => {
         {deckElementDist.length > 0 && (
           <div className="db-elem-dist">
             {deckElementDist.map(([elem, count]) => (
-              <span key={elem} className="db-elem-chip">
+              <span
+                key={elem}
+                className={`db-elem-chip${count >= 3 ? ' db-elem-chip--active' : count === 2 ? ' db-elem-chip--near' : ''}`}
+              >
                 {ELEM_ICON[elem] ?? '◆'}{elem} ×{count}
                 {count >= 3 && <span className="db-elem-chip__bonus">✦</span>}
+                {count === 2 && <span className="db-elem-chip__need">+1!</span>}
               </span>
             ))}
           </div>

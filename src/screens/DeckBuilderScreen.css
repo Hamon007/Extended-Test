@@ -572,8 +572,31 @@
   gap: 3px;
 }
 
+.db-elem-chip--active {
+  border-color: rgba(255,200,68,0.5);
+  background: rgba(100,60,10,0.35);
+}
+
+.db-elem-chip--near {
+  border-color: rgba(255,140,0,0.45);
+  background: rgba(80,40,0,0.3);
+  animation: nearFormation 1.6s ease-in-out infinite;
+}
+
+@keyframes nearFormation {
+  0%,100% { border-color: rgba(255,140,0,0.45); }
+  50%      { border-color: rgba(255,180,40,0.8); }
+}
+
 .db-elem-chip__bonus {
   color: #ffcc44;
   font-size: 0.55rem;
   text-shadow: 0 0 4px rgba(255,200,68,0.7);
+}
+
+.db-elem-chip__need {
+  color: #ff9820;
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-shadow: 0 0 3px rgba(255,140,0,0.6);
 }
