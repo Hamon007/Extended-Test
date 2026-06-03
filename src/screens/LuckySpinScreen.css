@@ -82,39 +82,9 @@
   will-change: transform;
 }
 
-/* Segments via conic-gradient approach */
-.spin-segment {
-  position: absolute;
-  inset: 0;
-  transform-origin: center;
-  transform: rotate(var(--seg-rotate));
-  clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%);
-  /* Use a conic slice */
-}
-
-/* We'll use a simpler absolute-positioned div approach instead */
+/* Conic-gradient wheel background (8 segments, 45deg each) */
 .spin-wheel {
   position: relative;
-}
-
-/* Override: draw all segments as a proper conic wheel */
-.spin-segment {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  clip-path: polygon(
-    50% 50%,
-    50% 0%,
-    calc(50% + 50% * tan(calc(var(--seg-deg) / 2))) 0%
-  );
-  background: var(--seg-color);
-  opacity: 0.85;
-  transform-origin: 50% 50%;
-  border-right: 1px solid rgba(0,0,0,0.3);
-}
-
-/* Use simpler approach — conic gradient wheel */
-.spin-wheel {
   background: conic-gradient(
     #5e8eff   0deg   45deg,
     #7b52ab  45deg   90deg,
@@ -127,17 +97,42 @@
   );
 }
 
-.spin-segment {
-  display: none; /* replaced by conic */
+/* Prize labels positioned around the wheel */
+.spin-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
 }
 
-/* Segment content labels positioned around wheel */
-.spin-wheel::before {
-  content: '';
+.spin-label__inner {
   position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: transparent;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 64px;
+  margin-left: -32px;
+  margin-top: -16px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+.spin-label__icon {
+  font-size: 1rem;
+}
+
+.spin-label__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 /* Center cap */

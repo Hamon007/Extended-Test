@@ -70,20 +70,16 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
           }}
         >
           {SPIN_PRIZES.map((p, i) => {
-            const startDeg = i * SEG_DEG;
+            const midDeg = i * SEG_DEG + SEG_DEG / 2;
             return (
               <div
                 key={p.id}
-                className="spin-segment"
-                style={{
-                  '--seg-rotate': `${startDeg}deg`,
-                  '--seg-color':  p.color,
-                  '--seg-deg':    `${SEG_DEG}deg`,
-                } as React.CSSProperties}
+                className="spin-label"
+                style={{ transform: `rotate(${midDeg}deg) translateY(-104px)` }}
               >
-                <div className="spin-segment__content" style={{ transform: `rotate(${SEG_DEG / 2}deg)` }}>
-                  <span className="spin-segment__icon">{p.icon}</span>
-                  <span className="spin-segment__label">{p.label}</span>
+                <div className="spin-label__inner" style={{ transform: `rotate(${-midDeg}deg)` }}>
+                  <span className="spin-label__icon">{p.icon}</span>
+                  <span className="spin-label__text">{p.label.replace(' Kristalle', '').replace(' Account-XP', ' XP').replace(' Tränke', '🧪').replace(' Trank', '🧪')}</span>
                 </div>
               </div>
             );
@@ -117,7 +113,16 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
 
       <div className="spin-info">
         <p>Einmal täglich kostenlos drehen.</p>
-        <p>Mögliche Preise: Kristalle, Tränke, Account-XP.</p>
+      </div>
+
+      {/* Prize legend */}
+      <div className="spin-legend">
+        {SPIN_PRIZES.map(p => (
+          <div key={p.id} className="spin-legend-item">
+            <span className="spin-legend-item__dot" style={{ background: p.color }} />
+            <span className="spin-legend-item__label">{p.icon} {p.label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
