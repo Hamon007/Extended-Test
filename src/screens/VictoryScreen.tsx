@@ -39,12 +39,16 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
-  const maxCombo    = details.maxCombo    ?? 0;
-  const totalDamage = details.totalDamage ?? 0;
-  const bondUps     = details.bondLevelUps ?? [];
-  const masteryUps  = details.masteryLevelUps ?? [];
-  const grade       = details.grade;
-  const gradeColor  = grade ? GRADE_COLORS[grade] : undefined;
+  const maxCombo      = details.maxCombo    ?? 0;
+  const totalDamage   = details.totalDamage ?? 0;
+  const bondUps       = details.bondLevelUps ?? [];
+  const masteryUps    = details.masteryLevelUps ?? [];
+  const grade         = details.grade;
+  const gradeColor    = grade ? GRADE_COLORS[grade] : undefined;
+  const playerHpPct   = details.playerHpPct ?? 1;
+  const roundsElapsed = details.roundsElapsed ?? 0;
+  const isFlawless    = playerHpPct >= 0.9 && roundsElapsed <= 5;
+  const isNearMiss    = playerHpPct <= 0.15;
 
   return (
     <div className="victory-screen">
@@ -68,6 +72,22 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
           </div>
         )}
 
+        {/* Special victory badges */}
+        {(isFlawless || isNearMiss) && (
+          <div className="victory-badge-row">
+            {isFlawless && (
+              <div className="victory-badge victory-badge--flawless">
+                <span>✨</span> MAKELLOS
+              </div>
+            )}
+            {isNearMiss && (
+              <div className="victory-badge victory-badge--near-miss">
+                <span>💥</span> LETZTE KRAFT!
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="victory-divider" />
 
         {/* Battle-Stats */}
@@ -87,6 +107,13 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
                 <span className="victory-stat__icon">🔥</span>
                 <span className="victory-stat__value">{maxCombo}×</span>
                 <span className="victory-stat__label">Max Combo</span>
+              </div>
+            )}
+            {roundsElapsed > 0 && (
+              <div className="victory-stat">
+                <span className="victory-stat__icon">⏱</span>
+                <span className="victory-stat__value">{roundsElapsed}</span>
+                <span className="victory-stat__label">Runden</span>
               </div>
             )}
           </div>
