@@ -1276,6 +1276,83 @@
   50%       { box-shadow: 0 0 22px rgba(255,180,0,0.7); }
 }
 
+/* ── Mastery Progress Strip ──────────────────────────────── */
+.main-mastery-strip {
+  background: rgba(30,10,50,0.7);
+  border: 1px solid rgba(150,80,255,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.main-mastery-strip:hover { border-color: rgba(150,80,255,0.6); }
+
+.main-mastery-strip__title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: rgba(180,120,255,0.8);
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.main-mastery-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.main-mastery-row__name {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px;
+  color: #d0b0f0;
+  width: 56px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-mastery-row__bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(80,40,120,0.4);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.main-mastery-row__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7b2ff7, #d070ff);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.main-mastery-row__pct {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c090f0;
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.main-mastery-row__lvl {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: rgba(150,80,200,0.6);
+  flex-shrink: 0;
+}
+
+.main-mastery-strip__hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: rgba(150,100,200,0.5);
+  font-style: italic;
+  margin-top: 4px;
+}
+
 .main-fusion-banner {
   display: flex;
   align-items: center;

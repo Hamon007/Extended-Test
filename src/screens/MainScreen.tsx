@@ -136,6 +136,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     const groups = FusionSystem.buildGroups(inv);
     return groups.filter(g => g.canFuse).slice(0, 3).map(g => g.card.name);
   });
+  const [masteryProgress] = useState(() => {
+    const deck = SaveService.loadDeck();
+    const inv  = SaveService.loadGachaState().inventory;
+    return deck.uuids
+      .map(uuid => {
+        const inst = inv.find(i => i.uuid === uuid);
+        if (!inst) return null;
+        const m = CardMasteryService.getMasteryInfo(inst.cardId);
+        if (m.nextThreshold === null) return null;
+        const pct  = m.nextThreshold > 0 ? m.plays / m.nextThreshold : 0;
+        const card = CardDatabase.getById(inst.cardId);
+        return { name: card?.name ?? inst.cardId, pct, plays: m.plays, next: m.nextThreshold, level: m.level };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null)
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 3);
+  });
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -679,14 +696,38 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
       )}
 
+      {/* ── Meisterschafts-Fortschritt ── */}
+      {masteryProgress.length > 0 && (
+        <div
+          className="main-mastery-strip"
+          onClick={() => onNavigate?.('inventory')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('inventory')}
+        >
+          <div className="main-mastery-strip__title">⚔ Meisterschaft</div>
+          {masteryProgress.map(m => (
+            <div key={m.name} className="main-mastery-row">
+              <span className="main-mastery-row__name">{m.name.split(' ')[0]}</span>
+              <div className="main-mastery-row__bar">
+                <div className="main-mastery-row__fill" style={{ width: `${Math.min(100, Math.round(m.pct * 100))}%` }} />
+              </div>
+              <span className="main-mastery-row__pct">{Math.min(100, Math.round(m.pct * 100))}%</span>
+              <span className="main-mastery-row__lvl">Lv.{m.level}→{m.level + 1}</span>
+            </div>
+          ))}
+          <div className="main-mastery-strip__hint">Spiele dein Deck, um Meisterschaft zu verdienen</div>
+        </div>
+      )}
+
       {/* ── Fusionsbereit-Banner ── */}
       {fusionReady.length > 0 && (
         <div
           className="main-fusion-banner"
-          onClick={() => onNavigate?.('deck')}
+          onClick={() => onNavigate?.('fusion')}
           role="button"
           tabIndex={0}
-          onKeyDown={e => e.key === 'Enter' && onNavigate?.('deck')}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('fusion')}
         >
           <span className="main-fusion-banner__icon">⚗️</span>
           <div className="main-fusion-banner__text">

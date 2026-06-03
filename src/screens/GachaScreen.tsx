@@ -139,6 +139,14 @@ const GachaScreen: React.FC = () => {
               <span className="gacha-stat__label">INVENTAR</span>
               <span className="gacha-stat__value">{state.inventory.length} Karten</span>
             </div>
+            <div className="gacha-stat gacha-stat--afford">
+              <span className="gacha-stat__label">MÖGLICH</span>
+              <span className="gacha-stat__value">
+                {Math.floor(state.crystals / PULL_COST_SINGLE)}×
+                <span className="gacha-stat__sep"> · </span>
+                {Math.floor(state.crystals / PULL_COST_MULTI)}×10
+              </span>
+            </div>
           </div>
 
           {state.crystals < PULL_COST_SINGLE && (
@@ -169,20 +177,42 @@ const PULL_DOT_COLORS: Record<string, string> = {
   N: '#666', R: '#4caf50', SR: '#2196f3', SSR: '#ffc107', MR: '#f44336', LR: '#e040fb',
 };
 
+const HIGH_RARITY = ['SSR', 'MR', 'LR'];
+
 const PullHistoryStrip: React.FC<{ inventory: CardInstance[] }> = ({ inventory }) => {
-  const last20 = [...inventory]
-    .sort((a, b) => (b.pullIndex ?? 0) - (a.pullIndex ?? 0))
-    .slice(0, 20)
-    .reverse();
+  const sorted = [...inventory].sort((a, b) => (b.pullIndex ?? 0) - (a.pullIndex ?? 0));
+  const last20 = sorted.slice(0, 20).reverse();
 
   if (last20.length === 0) return null;
 
-  const ssrCount = last20.filter(i => i.rarity === 'SSR' || i.rarity === 'MR').length;
+  // Pulls since last high-rarity (dry streak)
+  const lastHighIdx = sorted.findIndex(i => HIGH_RARITY.some(r => i.rarity.startsWith(r)));
+  const dryStreak   = lastHighIdx === -1 ? sorted.length : lastHighIdx;
+  const lastHigh    = lastHighIdx >= 0 ? sorted[lastHighIdx] : null;
+  const dryUrgent   = dryStreak >= 50;
+  const dryWarn     = dryStreak >= 25;
+
+  const ssrCount = last20.filter(i => HIGH_RARITY.some(r => i.rarity.startsWith(r))).length;
 
   return (
     <div className="pull-history">
-      <div className="pull-history__label">
-        Letzte {last20.length} Pulls · {ssrCount > 0 ? `${ssrCount}× SSR/MR` : 'kein SSR/MR'}
+      <div className="pull-history__header">
+        <span className="pull-history__label">
+          Letzte {last20.length} · {ssrCount > 0 ? `${ssrCount}× SR+` : 'kein SR+'}
+        </span>
+        {dryStreak > 0 && (
+          <span className={`pull-history__dry${dryUrgent ? ' pull-history__dry--urgent' : dryWarn ? ' pull-history__dry--warn' : ''}`}>
+            {dryStreak} ohne SR+
+          </span>
+        )}
+        {lastHigh && (
+          <span
+            className="pull-history__last-high"
+            style={{ color: PULL_DOT_COLORS[lastHigh.rarity.replace(/\+/g, '')] ?? '#ccc' }}
+          >
+            ↑ {lastHigh.rarity}
+          </span>
+        )}
       </div>
       <div className="pull-history__dots">
         {last20.map((inst, i) => {
