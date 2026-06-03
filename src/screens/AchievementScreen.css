@@ -103,6 +103,88 @@
 .ach-claim-all:hover  { transform: scale(1.02); }
 .ach-claim-all:active { transform: scale(0.98); }
 
+/* ── Near completion ── */
+
+.ach-nearly {
+  margin: 0 12px 10px;
+  background: rgba(255,215,0,0.05);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.ach-nearly__title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ach-nearly-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ach-nearly-row:last-child { margin-bottom: 0; }
+
+.ach-nearly-row__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.ach-nearly-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ach-nearly-row__name {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #e8d5b0;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ach-nearly-row__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ach-nearly-row__bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ach-nearly-row__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a84c, #ffd700);
+  border-radius: 2px;
+}
+
+.ach-nearly-row__pct {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #ffd700;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+}
+
+.ach-nearly-row__counts {
+  font-size: 9px;
+  color: #6a5a80;
+  margin-top: 2px;
+}
+
 /* ── Tabs ── */
 
 .ach-tabs {

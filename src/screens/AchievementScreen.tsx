@@ -130,6 +130,19 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
     claimed:  items.filter(({ progress }) => progress.claimed).length,
   };
 
+  // Achievements >= 50% but not yet unlocked, sorted by progress desc
+  const nearlyDone = items
+    .filter(({ def, progress }) =>
+      !progress.unlocked && def.targetValue && progress.current > 0 &&
+      (progress.current / def.targetValue) >= 0.5
+    )
+    .sort((a, b) => {
+      const pa = a.progress.current / (a.def.targetValue ?? 1);
+      const pb = b.progress.current / (b.def.targetValue ?? 1);
+      return pb - pa;
+    })
+    .slice(0, 3);
+
   return (
     <div className="ach-screen">
 
@@ -153,6 +166,33 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
         <button className="ach-claim-all" onClick={handleClaimAll}>
           ✦ Alle abholen — +{totalCrystalsLeft} 💎
         </button>
+      )}
+
+      {/* "Fast geschafft" section */}
+      {nearlyDone.length > 0 && (
+        <div className="ach-nearly">
+          <div className="ach-nearly__title">⚡ Fast geschafft</div>
+          {nearlyDone.map(({ def, progress }) => {
+            const pct = Math.min(100, Math.round((progress.current / def.targetValue!) * 100));
+            return (
+              <div key={def.id} className="ach-nearly-row">
+                <span className="ach-nearly-row__icon">{def.icon}</span>
+                <div className="ach-nearly-row__body">
+                  <div className="ach-nearly-row__name">{def.title}</div>
+                  <div className="ach-nearly-row__bar-wrap">
+                    <div className="ach-nearly-row__bar">
+                      <div className="ach-nearly-row__fill" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="ach-nearly-row__pct">{pct}%</span>
+                  </div>
+                  <div className="ach-nearly-row__counts">
+                    {progress.current}/{def.targetValue} · 💎 {def.crystals}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Kategorie-Tabs */}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useFusionStore } from '../hooks/useFusionStore';
+import { useFusionStore, type LastFusion } from '../hooks/useFusionStore';
 import { FusionSystem, type FusionGroup } from '../services/FusionSystem';
 import { AwakeningSystem } from '../services/AwakeningSystem';
+import { CardDatabase } from '../services/CardDatabase';
 import { AudioService } from '../services/AudioService';
 import { RARITY_COLOR } from '../types/Card';
 import type { CardStats } from '../types/Card';
@@ -232,13 +233,18 @@ const StatDelta: React.FC<StatDeltaProps> = ({ label, from, to, lowerBetter }) =
 // ── Erfolgs-Overlay ───────────────────────────────────────────
 
 interface OverlayProps {
-  lastFusion: { cardId: string; from: string; to: string };
+  lastFusion: LastFusion;
   onClose:    () => void;
 }
 
 const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) => {
   useEffect(() => { AudioService.reveal(0.7); AudioService.vibrate([15, 25, 40]); }, []);
   const toColor = RARITY_COLOR[lastFusion.to as keyof typeof RARITY_COLOR] ?? '#f0d080';
+  const card = CardDatabase.getById(lastFusion.cardId);
+  const beforeStats = card ? FusionSystem.getEffectiveStats(card, lastFusion.from) : null;
+  const afterStats  = card ? FusionSystem.getEffectiveStats(card, lastFusion.to)   : null;
+  const dAtk = afterStats && beforeStats ? afterStats.atk - beforeStats.atk : 0;
+  const dHp  = afterStats && beforeStats ? afterStats.hp  - beforeStats.hp  : 0;
   return (
     <div className="fusion-overlay" onClick={onClose}>
       <div className="fusion-overlay__box" style={{ '--rc': toColor } as React.CSSProperties}>
@@ -249,6 +255,12 @@ const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) =>
           <span className="fusion-overlay__arrow">→</span>
           <span className="fusion-overlay__to" style={{ color: toColor }}>{lastFusion.to}</span>
         </div>
+        {(dAtk > 0 || dHp > 0) && (
+          <div className="fusion-overlay__gains">
+            {dAtk > 0 && <span className="fusion-overlay__gain">⚔ +{dAtk.toLocaleString('de-DE')} ATK</span>}
+            {dHp  > 0 && <span className="fusion-overlay__gain fusion-overlay__gain--hp">❤ +{dHp.toLocaleString('de-DE')} HP</span>}
+          </div>
+        )}
         <button className="fusion-overlay__btn" onClick={onClose}>Weiter</button>
       </div>
     </div>
