@@ -52,10 +52,13 @@ function AchievementCard({
       <div className="ach-card__body">
         <div className="ach-card__title">{def.title}</div>
         <div className="ach-card__desc">{def.description}</div>
-        {def.targetValue && !progress.unlocked && (
+        {def.targetValue && !progress.claimed && (
           <div className="ach-card__progress">
             <div className="ach-card__progress-bar">
-              <div className="ach-card__progress-fill" style={{ width: `${pct}%` }} />
+              <div
+                className={`ach-card__progress-fill ${pct >= 80 ? 'ach-card__progress-fill--near' : ''}`}
+                style={{ width: `${pct}%` }}
+              />
             </div>
             <span className="ach-card__progress-label">
               {progress.current}/{def.targetValue}

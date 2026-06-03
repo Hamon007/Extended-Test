@@ -218,24 +218,35 @@
 
 .ach-card__progress-bar {
   flex:          1;
-  height:        4px;
-  background:    rgba(255,255,255,0.1);
-  border-radius: 2px;
+  height:        6px;
+  background:    rgba(255,255,255,0.08);
+  border-radius: 3px;
   overflow:      hidden;
 }
 
 .ach-card__progress-fill {
   height:        100%;
   background:    linear-gradient(90deg, #6a3a9a, #a050e0);
-  border-radius: 2px;
-  transition:    width 0.4s ease-out;
+  border-radius: 3px;
+  transition:    width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes nearFill {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(160,80,224,0); }
+  50%       { box-shadow: 0 0 6px 1px rgba(160,80,224,0.5); }
+}
+
+.ach-card__progress-fill--near {
+  background: linear-gradient(90deg, #a050e0, #ffd700);
+  animation: nearFill 1.8s ease infinite;
 }
 
 .ach-card__progress-label {
-  font-size: 0.7rem;
-  color:     #8a6a9a;
-  min-width: 2.5rem;
+  font-size:  0.65rem;
+  color:      #9a7aaa;
+  min-width:  2.8rem;
   text-align: right;
+  font-family: 'Cinzel', serif;
 }
 
 /* Reward area */
