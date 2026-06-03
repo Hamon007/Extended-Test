@@ -109,6 +109,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   }));
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
+  const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
   const [collectionStats] = useState(() => {
@@ -564,6 +565,45 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           {collectionStats.owned === collectionStats.total
             ? '🌟 Vollständige Sammlung!'
             : `Noch ${collectionStats.total - collectionStats.owned} Karten zum Vervollständigen`}
+        </div>
+      </div>
+
+      {/* ── 7-Tage Login-Streak-Kalender ── */}
+      <div className="main-streak-calendar">
+        <div className="main-streak-calendar__header">
+          <span className="main-streak-calendar__title">🔥 Login-Streak</span>
+          <span className="main-streak-calendar__day">Tag {streakDay}/7</span>
+        </div>
+        <div className="main-streak-calendar__days">
+          {DailyLoginService.DAY_REWARDS.map(r => {
+            const isPast    = r.day < streakDay;
+            const isCurrent = r.day === streakDay;
+            const isClaimed = isPast || (isCurrent && !dailyChecks.login);
+            return (
+              <div
+                key={r.day}
+                className={[
+                  'main-streak-day',
+                  isClaimed          ? 'main-streak-day--claimed'  : '',
+                  isCurrent && dailyChecks.login === false
+                                     ? 'main-streak-day--available' : '',
+                  isCurrent && dailyChecks.login
+                                     ? 'main-streak-day--today'   : '',
+                  !isCurrent && !isClaimed ? 'main-streak-day--future' : '',
+                ].join(' ')}
+              >
+                <div className="main-streak-day__num">
+                  {isClaimed ? '✓' : `${r.day}`}
+                </div>
+                <div className="main-streak-day__icon">
+                  {r.day === 7 ? '🎉' : r.crystals >= 500 ? '💎' : r.potions > 0 ? '🧪' : '💎'}
+                </div>
+                <div className="main-streak-day__val">
+                  {r.day === 7 ? '1K' : r.crystals >= 1000 ? `${(r.crystals/1000).toFixed(1)}K` : `${r.crystals}`}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
