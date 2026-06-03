@@ -151,6 +151,7 @@
 .reward-row--crystals { background: rgba(201,168,76,0.12); border: 1px solid #8a6520; animation-delay: 0.4s; }
 .reward-row--xp       { background: rgba(156,39,176,0.1);  border: 1px solid #6a1b9a; animation-delay: 0.5s; }
 .reward-row--streak   { background: rgba(244,67,54,0.12);  border: 1px solid #c62828; animation-delay: 0.55s; }
+.reward-row--firstwin { background: rgba(255,180,0,0.14);  border: 1px solid #ffa000; animation-delay: 0.45s; }
 .reward-row--levelup  {
   flex-direction: column;
   align-items: flex-start;

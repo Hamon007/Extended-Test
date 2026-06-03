@@ -46,6 +46,8 @@ export interface RewardDetails {
   enemyHpPct?:      number;   // Enemy HP% at battle end (defeat only)
   roundsElapsed?:   number;   // rounds used
   grade?:           'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
+  // First win of the day
+  firstWinBonus?:   number; // extra crystals from first daily win (0 = none)
   // Streak milestone
   streakMilestoneBonus?: number; // extra crystals from streak milestone (0 = none)
   winStreak?:       number;

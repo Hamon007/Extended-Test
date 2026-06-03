@@ -14,6 +14,7 @@ import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
 import { OfflineIncomeService, type OfflineResult } from '../services/OfflineIncomeService';
 import { LuckySpinService } from '../services/LuckySpinService';
+import { FirstWinService } from '../services/FirstWinService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
 import type { Card } from '../types/Card';
@@ -102,6 +103,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [dailyChecks,   setDailyChecks]   = useState(() => ({
     spin:        LuckySpinService.canSpin() ? false : true,
     login:       !DailyLoginService.canClaim(),
+    firstWin:    !FirstWinService.isAvailable(),
     dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
     totalQuests: QuestService.getDailyQuests().length,
   }));
@@ -180,6 +182,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setDailyChecks({
         spin:        !canSpin,
         login:       !DailyLoginService.canClaim(),
+        firstWin:    !FirstWinService.isAvailable(),
         dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
         totalQuests: QuestService.getDailyQuests().length,
       });
@@ -521,6 +524,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             onClick={() => onNavigate?.('lucky_spin')} style={{ cursor: 'pointer' }}>
             <span className="main-daily-item__check">{dailyChecks.spin ? '✓' : '○'}</span>
             <span className="main-daily-item__label">Glücksrad drehen</span>
+          </div>
+          <div className={`main-daily-item ${dailyChecks.firstWin ? 'main-daily-item--done' : ''}`}
+            onClick={() => onNavigate?.('battle')} style={{ cursor: 'pointer' }}>
+            <span className="main-daily-item__check">{dailyChecks.firstWin ? '✓' : '○'}</span>
+            <span className="main-daily-item__label">Erster Sieg (+500 💎)</span>
           </div>
           <div className={`main-daily-item ${dailyChecks.dailyQuests >= dailyChecks.totalQuests ? 'main-daily-item--done' : ''}`}
             onClick={() => onNavigate?.('quests')} style={{ cursor: 'pointer' }}>

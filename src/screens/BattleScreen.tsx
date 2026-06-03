@@ -23,6 +23,7 @@ import { CardBondService }    from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { FirstWinService } from '../services/FirstWinService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { TowerLore }            from '../data/towerLore';
@@ -213,6 +214,14 @@ const BattleScreen: React.FC = () => {
       const gState = SaveService.loadGachaState();
       SaveService.saveGachaState({ ...gState, crystals: gState.crystals + extra });
       crystalRuneMultRef.current = 1.0;
+    }
+
+    // First win of the day bonus
+    if (details.isVictory) {
+      const firstWinBonus = FirstWinService.claim();
+      if (firstWinBonus > 0) {
+        finalDetails = { ...finalDetails, firstWinBonus };
+      }
     }
 
     // Result taunt (shown briefly on victory/defeat screen)

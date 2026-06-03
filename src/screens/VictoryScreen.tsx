@@ -131,6 +131,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             </span>
           </div>
 
+          {/* Erster Sieg des Tages */}
+          {details.firstWinBonus && details.firstWinBonus > 0 && (
+            <div className="reward-row reward-row--firstwin">
+              <span className="reward-row__label">🌅 Erster Sieg heute!</span>
+              <span className="reward-row__value">
+                +<CountUp target={details.firstWinBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Account-XP */}
           {(details.accountXpGained ?? 0) > 0 && (
             <div className="reward-row reward-row--xp">
