@@ -8,6 +8,7 @@ import { BattleStatsService } from '../services/BattleStatsService';
 import { TowerService } from '../services/TowerService';
 import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService } from '../services/DailyLoginService';
+import { CardMasteryService } from '../services/CardMasteryService';
 import { rarityMajor, RARITY_COLOR, type Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
 import './ProfileScreen.css';
@@ -58,6 +59,23 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
       }
     }
     return Array.from(seen.values());
+  }, [gacha]);
+
+  // Top mastered cards (level > 0), highest first
+  const topMastery = useMemo(() => {
+    const uniqueIds = new Set(gacha.inventory.map(i => i.cardId));
+    return Array.from(uniqueIds)
+      .map(cardId => ({ cardId, info: CardMasteryService.getMasteryInfo(cardId) }))
+      .filter(m => m.info.level > 0)
+      .sort((a, b) => b.info.plays - a.info.plays)
+      .slice(0, 5);
+  }, [gacha]);
+
+  const totalMasteryLevels = useMemo(() => {
+    const uniqueIds = new Set(gacha.inventory.map(i => i.cardId));
+    let sum = 0;
+    for (const id of uniqueIds) sum += CardMasteryService.getMasteryInfo(id).level;
+    return sum;
   }, [gacha]);
 
   useEffect(() => {
@@ -237,6 +255,28 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
                 <span className="profile-season-streak__label">Login-Tage</span>
               </div>
             </div>
+
+            {/* ── Kartenmeisterschaft ── */}
+            {topMastery.length > 0 && (
+              <>
+                <div className="profile-section-title">
+                  Kartenmeisterschaft
+                  <span className="profile-mastery-total">{totalMasteryLevels} Stufen gesamt</span>
+                </div>
+                <div className="profile-mastery-list">
+                  {topMastery.map(({ cardId, info }) => {
+                    const card = CardDatabase.getById(cardId);
+                    return (
+                      <div key={cardId} className="profile-mastery-item">
+                        <span className="profile-mastery-item__name">{card?.name ?? cardId}</span>
+                        <span className="profile-mastery-item__stars">{info.stars}</span>
+                        <span className="profile-mastery-item__plays">{info.plays}×</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
             {/* ── Seltenheits-Verteilung ── */}
             <div className="profile-section-title">Sammlung nach Seltenheit</div>

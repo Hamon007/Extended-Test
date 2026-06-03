@@ -586,3 +586,50 @@
   color: var(--text);
   opacity: 0.5;
 }
+
+/* ── Card Mastery Showcase ───────────────────────────────── */
+.profile-mastery-total {
+  float: right;
+  font-size: 0.6rem;
+  color: #ff9800;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.profile-mastery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.profile-mastery-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 152, 0, 0.06);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: 5px;
+  padding: 6px 10px;
+}
+
+.profile-mastery-item__name {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: #e0ccff;
+}
+
+.profile-mastery-item__stars {
+  font-size: 0.72rem;
+  color: #ffd700;
+  letter-spacing: 0.04em;
+}
+
+.profile-mastery-item__plays {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #ff9800;
+  min-width: 34px;
+  text-align: right;
+}
