@@ -110,6 +110,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   }));
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
+  const [activeExps,    setActiveExps]    = useState(() => ExpeditionService.getActive());
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
@@ -138,6 +139,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       // Wenn Energie regeneriert wurde, State aktualisieren
       const freshEnergy = EnergyService.load();
       setEnergy(prev => prev.energy !== freshEnergy.energy ? freshEnergy : prev);
+      setActiveExps(ExpeditionService.getActive());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -572,6 +574,32 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* ── Expeditions-Statusleiste ── */}
+      {activeExps.length > 0 && (
+        <div
+          className="main-expeditions"
+          onClick={() => onNavigate?.('expedition')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('expedition')}
+        >
+          <div className="main-expeditions__title">⚔ Expeditionen</div>
+          <div className="main-expeditions__list">
+            {activeExps.map(exp => {
+              const done = Date.now() >= exp.endsAt;
+              return (
+                <div key={exp.cardUuid} className={`main-exp-item ${done ? 'main-exp-item--done' : ''}`}>
+                  <span className="main-exp-item__card">{exp.cardName.split(' ')[0]}</span>
+                  <span className="main-exp-item__timer">
+                    {done ? '✓ Bereit!' : ExpeditionService.formatTimeLeft(exp.endsAt)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Fusionsbereit-Banner ── */}
       {fusionReady.length > 0 && (
