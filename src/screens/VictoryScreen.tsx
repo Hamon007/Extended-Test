@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { CardDatabase } from '../services/CardDatabase';
 import { TowerService } from '../services/TowerService';
+import { SaveService } from '../services/SaveService';
+import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import './VictoryScreen.css';
@@ -40,6 +42,11 @@ const GRADE_COLORS: Record<string, string> = {
 };
 
 const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
+  // Post-battle account state for XP progress bar
+  const accountAfter = useMemo(() => SaveService.loadAccountState(), []);
+  const xpToNext     = AccountProgressionService.xpToNextLevel(accountAfter.level);
+  const xpPct        = xpToNext > 0 ? Math.min(100, Math.round((accountAfter.xp / xpToNext) * 100)) : 100;
+
   const maxCombo      = details.maxCombo    ?? 0;
   const totalDamage   = details.totalDamage ?? 0;
   const bondUps       = details.bondLevelUps ?? [];
@@ -199,6 +206,24 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
               <span className="reward-row__value">
                 +<CountUp target={details.accountXpGained ?? 0} />
               </span>
+            </div>
+          )}
+
+          {/* Account XP progress bar (post-battle state) */}
+          {(details.accountXpGained ?? 0) > 0 && !details.accountLevelUp && (
+            <div className="victory-xp-bar">
+              <div className="victory-xp-bar__labels">
+                <span>Lv.{accountAfter.level}</span>
+                <span className="victory-xp-bar__pct">{xpPct}%</span>
+                <span>Lv.{accountAfter.level + 1}</span>
+              </div>
+              <div className="victory-xp-bar__track">
+                <div className="victory-xp-bar__fill" style={{ width: `${xpPct}%` }} />
+              </div>
+              <div className="victory-xp-bar__note">
+                {accountAfter.xp.toLocaleString('de-DE')} / {xpToNext.toLocaleString('de-DE')} XP
+                {xpPct >= 85 && <span className="victory-xp-bar__almost"> · Fast Level Up!</span>}
+              </div>
             </div>
           )}
 

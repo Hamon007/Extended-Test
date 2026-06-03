@@ -169,6 +169,55 @@
   letter-spacing: 0.5px;
 }
 
+/* ── Account XP Progress Bar ─────────────────────────────── */
+.victory-xp-bar {
+  background: rgba(80,20,120,0.2);
+  border: 1px solid rgba(120,60,200,0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  animation: reward-slide-in 0.4s ease 0.55s both;
+}
+
+.victory-xp-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: rgba(180,140,255,0.8);
+}
+
+.victory-xp-bar__pct { color: #c090ff; font-weight: 700; }
+
+.victory-xp-bar__track {
+  height: 6px;
+  background: rgba(60,20,100,0.5);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.victory-xp-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7b2ff7, #d070ff);
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.victory-xp-bar__note {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: rgba(160,120,220,0.7);
+  font-style: italic;
+}
+
+.victory-xp-bar__almost {
+  color: #f0c040;
+  font-style: normal;
+  font-weight: 600;
+}
+
 @keyframes reward-slide-in {
   from { opacity: 0; transform: translateX(-12px); }
   to   { opacity: 1; transform: translateX(0); }
