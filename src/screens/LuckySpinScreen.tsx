@@ -21,8 +21,10 @@ interface Props {
   onBack: () => void;
 }
 
-const SEG_COUNT = SPIN_PRIZES.length;
-const SEG_DEG   = 360 / SEG_COUNT;
+const SEG_COUNT   = SPIN_PRIZES.length;
+const SEG_DEG     = 360 / SEG_COUNT;
+const TOTAL_WEIGHT = SPIN_PRIZES.reduce((s, p) => s + p.weight, 0);
+const JACKPOT      = SPIN_PRIZES.reduce((best, p) => (p.crystals ?? 0) > (best.crystals ?? 0) ? p : best);
 
 const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
   const [canSpin,     setCanSpin]     = useState(() => LuckySpinService.canSpin());
@@ -126,6 +128,16 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         <div className="spin-center">⭐</div>
       </div>
 
+      {/* Jackpot teaser */}
+      {canSpin && !spinning && (
+        <div className="spin-jackpot-hint">
+          ✦ Jackpot: {JACKPOT.label} ·{' '}
+          <span style={{ color: JACKPOT.color }}>
+            {Math.round((JACKPOT.weight / TOTAL_WEIGHT) * 100)}% Chance
+          </span>
+        </div>
+      )}
+
       {/* Spin Button */}
       <button
         className={`spin-btn ${(!canSpin || spinning) ? 'spin-btn--disabled' : ''}`}
@@ -151,14 +163,18 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         <p>Einmal täglich kostenlos drehen.</p>
       </div>
 
-      {/* Prize legend */}
+      {/* Prize legend with odds */}
       <div className="spin-legend">
-        {SPIN_PRIZES.map(p => (
-          <div key={p.id} className="spin-legend-item">
-            <span className="spin-legend-item__dot" style={{ background: p.color }} />
-            <span className="spin-legend-item__label">{p.icon} {p.label}</span>
-          </div>
-        ))}
+        {SPIN_PRIZES.map(p => {
+          const pct = Math.round((p.weight / TOTAL_WEIGHT) * 100);
+          return (
+            <div key={p.id} className="spin-legend-item">
+              <span className="spin-legend-item__dot" style={{ background: p.color }} />
+              <span className="spin-legend-item__label">{p.icon} {p.label}</span>
+              <span className="spin-legend-item__pct" style={{ color: p.color }}>{pct}%</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
