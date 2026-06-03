@@ -426,6 +426,21 @@ function getNewlyUnlocked(): AchievementId[] {
     .map(def => def.id);
 }
 
+/** Returns the closest-to-completion unclaimed achievement (for UI prompt). */
+function getNearestIncomplete(): { def: AchievementDef; current: number; target: number; pct: number } | null {
+  const st = loadState();
+  let best: { def: AchievementDef; current: number; target: number; pct: number } | null = null;
+  for (const def of ACHIEVEMENTS) {
+    const prog = st.progress[def.id] ?? { current: 0, unlocked: false, claimed: false };
+    if (prog.unlocked) continue;
+    const target = def.targetValue ?? 1;
+    const current = Math.min(prog.current, target);
+    const pct = target > 0 ? current / target : 0;
+    if (!best || pct > best.pct) best = { def, current, target, pct };
+  }
+  return best;
+}
+
 export const AchievementService = {
   recordProgress,
   claim,
@@ -434,5 +449,6 @@ export const AchievementService = {
   getProgress,
   getUnclaimedCount,
   getNewlyUnlocked,
+  getNearestIncomplete,
   ACHIEVEMENTS,
 };

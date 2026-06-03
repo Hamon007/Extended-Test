@@ -111,6 +111,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [activeExps,    setActiveExps]    = useState(() => ExpeditionService.getActive());
+  const nearestAch = AchievementService.getNearestIncomplete();
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
@@ -574,6 +575,33 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* ── Nächster Erfolg-Prompt ── */}
+      {nearestAch && nearestAch.pct > 0 && (
+        <div
+          className="main-next-ach"
+          onClick={() => onNavigate?.('achievements')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('achievements')}
+        >
+          <div className="main-next-ach__header">
+            <span className="main-next-ach__icon">🏆</span>
+            <span className="main-next-ach__title">{nearestAch.def.title}</span>
+            <span className="main-next-ach__reward">💎+{nearestAch.def.crystals}</span>
+          </div>
+          <div className="main-next-ach__bar">
+            <div
+              className="main-next-ach__fill"
+              style={{ width: `${Math.round(nearestAch.pct * 100)}%` }}
+            />
+          </div>
+          <div className="main-next-ach__progress">
+            {nearestAch.current} / {nearestAch.target}
+            {nearestAch.pct >= 0.8 && <span className="main-next-ach__almost"> · Fast geschafft!</span>}
+          </div>
+        </div>
+      )}
 
       {/* ── Expeditions-Statusleiste ── */}
       {activeExps.length > 0 && (
