@@ -7,6 +7,16 @@ import CardThumbnail from '../components/CardThumbnail';
 import CardDetailModal from '../components/CardDetailModal';
 import './CollectionScreen.css';
 
+const ELEMENT_COLORS: Record<string, string> = {
+  fire: '#ff5500', ice: '#00aaff', water: '#0066ff', lightning: '#ffff00',
+  wind: '#00ddaa', earth: '#44aa22', light: '#ffee00', dark: '#9900ff',
+  void: '#cc00ff', death: '#888888', chaos: '#ff0044',
+};
+const ELEMENT_ICONS: Record<string, string> = {
+  fire: '🔥', ice: '❄️', water: '💧', lightning: '⚡', wind: '🌪️',
+  earth: '🌿', light: '☀️', dark: '🌑', void: '🔮', death: '💀', chaos: '🔱',
+};
+
 // ── Filter-State ──────────────────────────────────────────────
 
 interface FilterState {
@@ -52,6 +62,20 @@ const CollectionScreen: React.FC = () => {
     for (const inst of inv) m.set(inst.cardId, (m.get(inst.cardId) ?? 0) + 1);
     return m;
   }, []);
+
+  // Element completion stats
+  const elementStats = useMemo(() => {
+    const all = CardDatabase.getAll();
+    const byElem: Record<string, { total: number; owned: number }> = {};
+    for (const card of all) {
+      if (!card.element) continue;
+      if (!byElem[card.element]) byElem[card.element] = { total: 0, owned: 0 };
+      byElem[card.element]!.total++;
+      if (ownedMap.has(card.id)) byElem[card.element]!.owned++;
+    }
+    return Object.entries(byElem)
+      .sort((a, b) => (b[1].owned / b[1].total) - (a[1].owned / a[1].total));
+  }, [ownedMap]);
 
   // Gefilterte + sortierte Karten
   const visibleCards = useMemo(() => {
@@ -223,6 +247,36 @@ const CollectionScreen: React.FC = () => {
               ✕ Filter zurücksetzen
             </button>
           )}
+        </div>
+      )}
+
+      {/* ── Element-Abschluss-Leisten ── */}
+      {!filtersOpen && elementStats.length > 0 && (
+        <div className="collection-elem-progress">
+          {elementStats.map(([elem, { total, owned }]) => {
+            const pct = total > 0 ? (owned / total) * 100 : 0;
+            const color = ELEMENT_COLORS[elem] ?? '#888';
+            const icon  = ELEMENT_ICONS[elem] ?? '◆';
+            return (
+              <button
+                key={elem}
+                className="collection-elem-row"
+                onClick={() => setFilter(f => ({ ...f, element: f.element === elem ? '' : elem as Element }))}
+                title={`${elem}: ${owned}/${total} besessen`}
+              >
+                <span className="collection-elem-row__icon">{icon}</span>
+                <div className="collection-elem-row__bar-track">
+                  <div
+                    className="collection-elem-row__bar-fill"
+                    style={{ width: `${pct}%`, background: color }}
+                  />
+                </div>
+                <span className="collection-elem-row__frac" style={{ color }}>
+                  {owned}<span className="collection-elem-row__total">/{total}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 
