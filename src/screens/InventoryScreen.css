@@ -192,6 +192,11 @@
   font-size: 0.65rem; color: #ffcc44;
   text-shadow: 0 0 4px rgba(255,200,68,0.6);
 }
+.inv-overlay__bond {
+  font-family: 'EB Garamond', serif; font-size: 0.65rem;
+  color: #c8a2d8; font-style: italic;
+  margin-left: 2px;
+}
 .inv-overlay__stats { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
 .inv-overlay__stat-row {
   display: flex; align-items: center; gap: 5px;

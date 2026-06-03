@@ -4,6 +4,7 @@ import { EnergyService } from '../services/EnergyService';
 import { CardDatabase } from '../services/CardDatabase';
 import { FusionSystem } from '../services/FusionSystem';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { CardBondService, BOND_NAMES, BOND_ICONS } from '../services/CardBondService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RARITY_COLOR, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
@@ -262,6 +263,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
         const effAtk = eff.atk + atkBonus;
         const lv = detail.level ?? 1;
         const mastery = CardMasteryService.getMasteryInfo(detail.cardId);
+        const bond    = CardBondService.getCardBond(detail.cardId);
         return (
           <div className="inv-overlay" onClick={() => setDetail(null)}>
             <div className="inv-overlay__box" onClick={e => e.stopPropagation()}>
@@ -277,6 +279,11 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
                   {mastery.level > 0 && (
                     <span className="inv-overlay__mastery" title={`Meisterschaft +${atkBonus} ATK`}>
                       {'★'.repeat(mastery.level)}
+                    </span>
+                  )}
+                  {bond.level > 0 && (
+                    <span className="inv-overlay__bond" title={`Band: ${BOND_NAMES[bond.level]}`}>
+                      {BOND_ICONS[bond.level]} {BOND_NAMES[bond.level]}
                     </span>
                   )}
                 </div>
