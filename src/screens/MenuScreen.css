@@ -120,6 +120,29 @@
   flex: 1;
 }
 
+.menu-item__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: #e53935;
+  color: #fff;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin-left: auto;
+  margin-right: 4px;
+  animation: menu-badge-pop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes menu-badge-pop {
+  0%   { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
 .menu-item__arrow {
   font-family: 'Cinzel', serif;
   font-size: 1.2rem;
