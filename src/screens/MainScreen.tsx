@@ -18,6 +18,7 @@ import { FirstWinService } from '../services/FirstWinService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
 import { FusionSystem } from '../services/FusionSystem';
+import { WinStreakService } from '../services/WinStreakService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -112,6 +113,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [activeExps,    setActiveExps]    = useState(() => ExpeditionService.getActive());
   const nearestAch = AchievementService.getNearestIncomplete();
+  const winStreak  = WinStreakService.get();
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
@@ -386,11 +388,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
       </div>
 
-      {/* ── Team-Kampfkraft ── */}
-      {deckStats && deckStats.power > 0 && (
+      {/* ── Team-Kampfkraft + Win-Streak ── */}
+      {(deckStats && deckStats.power > 0 || winStreak > 0) && (
         <div className="main-power">
-          <span className="main-power__label">⚔ KAMPFKRAFT</span>
-          <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
+          {deckStats && deckStats.power > 0 && (
+            <>
+              <span className="main-power__label">⚔ KAMPFKRAFT</span>
+              <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
+            </>
+          )}
+          {winStreak > 0 && (
+            <div className={`main-streak-chip ${winStreak >= 5 ? 'main-streak-chip--hot' : ''}`}>
+              🔥 {winStreak}× SERIE
+            </div>
+          )}
         </div>
       )}
 
