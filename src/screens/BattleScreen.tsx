@@ -870,6 +870,37 @@ const BattleScreen: React.FC = () => {
         </button>
       </div>
 
+      {/* ── Daily Quest Compact ── */}
+      {(() => {
+        const dailyQ = QuestService.getDailyQuests().filter(q => !q.progress.claimed).slice(0, 3);
+        if (dailyQ.length === 0) return null;
+        return (
+          <div className="battle-daily-quests">
+            <div className="battle-daily-quests__title">📜 Tagesquests</div>
+            {dailyQ.map(q => {
+              const pct = q.def.target > 0
+                ? Math.min(100, (q.progress.current / q.def.target) * 100)
+                : 0;
+              return (
+                <div key={q.def.id} className="battle-dq">
+                  <div className="battle-dq__header">
+                    <span className="battle-dq__title">{q.def.title}</span>
+                    <span className="battle-dq__crystals">💎{q.def.crystalReward}</span>
+                  </div>
+                  <div className="battle-dq__bar">
+                    <div className="battle-dq__fill" style={{ width: `${pct}%` }} />
+                  </div>
+                  <div className="battle-dq__count">
+                    {q.progress.current}/{q.def.target}
+                    {q.progress.completed && <span className="battle-dq__done"> ✓</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {/* Energie / Ausdauertränke */}
       <div className="battle-energy">
         <div className="battle-energy__pips" aria-label={`Energie ${energy.energy} von ${energy.max}`}>
