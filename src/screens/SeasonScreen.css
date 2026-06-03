@@ -47,6 +47,68 @@
   opacity: 0.8;
 }
 
+.season-header__days--urgent {
+  color: #ff5020;
+  opacity: 1;
+  animation: urgentDaysPulse 1s ease-in-out infinite;
+}
+
+@keyframes urgentDaysPulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* Season Urgency Banner */
+.season-urgency {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  animation: seasonUrgencyIn 0.4s ease both;
+}
+
+@keyframes seasonUrgencyIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.season-urgency--reachable {
+  background: rgba(20,80,20,0.5);
+  border: 1px solid rgba(80,200,80,0.45);
+}
+
+.season-urgency--danger {
+  background: rgba(80,15,0,0.6);
+  border: 1px solid rgba(255,60,0,0.5);
+  animation: seasonUrgencyIn 0.4s ease both, dangerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+  0%,100% { border-color: rgba(255,60,0,0.5); }
+  50%      { border-color: rgba(255,120,0,0.85); box-shadow: 0 0 8px rgba(255,80,0,0.3); }
+}
+
+.season-urgency__icon { font-size: 1.2rem; flex-shrink: 0; }
+
+.season-urgency__text { flex: 1; }
+
+.season-urgency__title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #f0f0f0;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.season-urgency__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 10px;
+  color: rgba(220,200,180,0.7);
+  font-style: italic;
+}
+
 /* Hero Section */
 @keyframes rankGlow {
   0%, 100% { box-shadow: 0 0 12px 2px currentColor; }

@@ -41,6 +41,11 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
   const spNeeded = nextRankThreshold ? nextRankThreshold - state.sp : 0;
   const daysToNextRank = spNeeded > 0 && spPerDay > 0 ? Math.ceil(spNeeded / spPerDay) : null;
 
+  // Urgency: deadline warning when < 7 days remain with a reachable next rank
+  const spPerDayNeeded = nextRank && daysLeft > 0 ? Math.ceil(spNeeded / daysLeft) : null;
+  const isUrgent = daysLeft <= 7 && nextRank && spNeeded > 0;
+  const canStillReach = isUrgent && daysLeft > 0 && (daysToNextRank === null || daysToNextRank <= daysLeft);
+
   return (
     <div className="season-screen">
 
@@ -48,8 +53,28 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
       <div className="season-header">
         <button className="season-header__back" onClick={onBack}>← Zurück</button>
         <h1 className="season-header__title">SAISON {state.seasonNumber}</h1>
-        <div className="season-header__days">{daysLeft}T</div>
+        <div className={`season-header__days${daysLeft <= 3 ? ' season-header__days--urgent' : ''}`}>{daysLeft}T</div>
       </div>
+
+      {/* Urgency Banner */}
+      {isUrgent && nextRank && (
+        <div className={`season-urgency ${canStillReach ? 'season-urgency--reachable' : 'season-urgency--danger'}`}>
+          <div className="season-urgency__icon">{canStillReach ? '⚡' : '⚠'}</div>
+          <div className="season-urgency__text">
+            <div className="season-urgency__title">
+              {canStillReach
+                ? `${daysLeft} Tage bis Saisonende — ${nextRank} noch erreichbar!`
+                : `Achtung: ${nextRank} nicht mehr auf Kurs!`}
+            </div>
+            <div className="season-urgency__sub">
+              Benötigt: {spNeeded.toLocaleString('de-DE')} SP ·{' '}
+              {canStillReach
+                ? `${spPerDayNeeded?.toLocaleString('de-DE')} SP/Tag nötig`
+                : `Fehlend: ${(spNeeded - (spPerDay ?? 0) * daysLeft).toLocaleString('de-DE')} SP`}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Current Rank Hero */}
       <div className="season-hero" style={{ borderColor: RANK_COLORS[rank] }}>
