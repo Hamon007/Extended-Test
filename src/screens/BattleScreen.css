@@ -425,6 +425,40 @@
   pointer-events: none;
 }
 
+/* ── Round Stats Bar ─────────────────────────────────────── */
+.round-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.round-stats-bar__round {
+  color: rgba(200,170,255,0.7);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  min-width: 18px;
+}
+
+.round-stats-bar__player {
+  color: #81c784;
+  letter-spacing: 0.03em;
+}
+
+.round-stats-bar__enemy {
+  color: #ef9a9a;
+  letter-spacing: 0.03em;
+}
+
+.round-stats-bar__sep {
+  color: rgba(255,255,255,0.2);
+}
+
 /* ── Battle-Log ───────────────────────────────────────────── */
 .battle-log {
   flex: 1;

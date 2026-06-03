@@ -1496,6 +1496,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
       {/* Battle-Log + Combo-Overlay */}
       <div className="arena-log-wrap">
+        <RoundStatsBar log={log} round={round} />
         <BattleLog entries={log} />
 
         <div className="combo-overlay">
@@ -1771,6 +1772,22 @@ const EnemyCardMini: React.FC<{ card: BattleCard }> = ({ card }) => (
 );
 
 // ── Battle-Log ────────────────────────────────────────────────
+
+// ── Round Stats Bar ───────────────────────────────────────────
+const RoundStatsBar: React.FC<{ log: BattleState['log']; round: number }> = ({ log, round }) => {
+  const roundEntries = log.filter(e => e.round === round);
+  const playerDmg = roundEntries.filter(e => e.actor === 'player').reduce((s, e) => s + e.damage, 0);
+  const enemyDmg  = roundEntries.filter(e => e.actor === 'enemy').reduce((s, e) => s + e.damage, 0);
+  if (playerDmg === 0 && enemyDmg === 0) return null;
+  return (
+    <div className="round-stats-bar">
+      <span className="round-stats-bar__round">R{round}</span>
+      <span className="round-stats-bar__player">⚔ {playerDmg.toLocaleString('de-DE')}</span>
+      <span className="round-stats-bar__sep">·</span>
+      <span className="round-stats-bar__enemy">🛡 {enemyDmg.toLocaleString('de-DE')}</span>
+    </div>
+  );
+};
 
 const BattleLog: React.FC<{ entries: BattleState['log'] }> = ({ entries }) => {
   const visible = [...entries].reverse().slice(0, 5);
