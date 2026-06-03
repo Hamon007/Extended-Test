@@ -249,6 +249,14 @@ const BattleScreen: React.FC = () => {
       }
     }
 
+    // Last Stand Victory bonus (+100 crystals for winning from the brink)
+    if (details.isVictory && battle.state.lastStandActive) {
+      const LAST_STAND_BONUS = 100;
+      const gls = SaveService.loadGachaState();
+      SaveService.saveGachaState({ ...gls, crystals: gls.crystals + LAST_STAND_BONUS });
+      finalDetails = { ...finalDetails, crystalsGained: finalDetails.crystalsGained + LAST_STAND_BONUS };
+    }
+
     // ── Boss Rush flow ────────────────────────────────────────
     const currentBossWave = bossRushWaveRef.current;
     if (currentBossWave > 0) {
