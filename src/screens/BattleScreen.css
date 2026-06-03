@@ -362,6 +362,29 @@
 }
 .battle-bar--mp { height: 7px; }
 
+/* Stage markers on enemy HP bar */
+.battle-bar__marker {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(255,255,255,0.25);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Rage state: enemy below 30% HP */
+@keyframes rageBarFlicker {
+  0%, 100% { filter: brightness(1); }
+  50%       { filter: brightness(1.5) saturate(1.8); }
+}
+.battle-bar--rage .battle-bar__fill {
+  animation: hp-danger-pulse 0.7s ease-in-out infinite, rageBarFlicker 0.5s ease-in-out infinite !important;
+}
+.battle-bar--rage {
+  border-color: rgba(255,34,0,0.5);
+  box-shadow: 0 0 6px rgba(255,34,0,0.25);
+}
+
 .battle-bar__fill {
   position: absolute;
   inset-block: 0;

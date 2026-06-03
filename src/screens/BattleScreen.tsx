@@ -1471,7 +1471,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         />
         <div className="arena-enemy-info">
           <div className="arena-enemy-name">{enemyData.name}</div>
-          <HpBar current={enemy.hp} max={enemy.hpMax} color="#cc2200" />
+          <HpBar current={enemy.hp} max={enemy.hpMax} color="#cc2200" showMarkers />
           <MpBar current={enemy.mp} max={enemy.mpMax} />
           <div className="arena-enemy-cards-row">
             {enemy.hand.map(c => <EnemyCardMini key={c.instanceId} card={c} />)}
@@ -1622,12 +1622,20 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
 // ── HP/MP-Balken ──────────────────────────────────────────────
 
-const HpBar: React.FC<{ current: number; max: number; color: string }> = ({ current, max, color }) => {
+const HpBar: React.FC<{ current: number; max: number; color: string; showMarkers?: boolean }> = ({ current, max, color, showMarkers }) => {
   const pct      = max > 0 ? Math.max(0, (current / max) * 100) : 0;
   const isDanger = pct > 0 && pct < 25;
+  const isRage   = showMarkers && pct > 0 && pct < 30;
   return (
-    <div className={`battle-bar ${isDanger ? 'battle-bar--danger' : ''}`}>
-      <div className="battle-bar__fill" style={{ width: `${pct}%`, background: color }} />
+    <div className={`battle-bar ${isDanger ? 'battle-bar--danger' : ''} ${isRage ? 'battle-bar--rage' : ''}`}>
+      <div className="battle-bar__fill" style={{ width: `${pct}%`, background: isRage ? 'linear-gradient(90deg, #8b0000, #ff2200)' : color }} />
+      {showMarkers && (
+        <>
+          <div className="battle-bar__marker" style={{ left: '25%' }} />
+          <div className="battle-bar__marker" style={{ left: '50%' }} />
+          <div className="battle-bar__marker" style={{ left: '75%' }} />
+        </>
+      )}
       <span className="battle-bar__label">
         {current.toLocaleString('de-DE')} / {max.toLocaleString('de-DE')}
       </span>
