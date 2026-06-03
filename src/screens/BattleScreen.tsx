@@ -432,6 +432,15 @@ const BattleScreen: React.FC = () => {
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
 
+  const handleTowerRetry = useCallback(() => {
+    if (!energy.consume()) return;
+    battle.resetBattle();
+    setRewardDetails(null);
+    rewardApplied.current = false;
+    setIsTowerMode(true);
+    startFloorBattle();
+  }, [battle, energy]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Enemy Taunt bubble ────────────────────────────────────
   const tauntBubble = enemyTaunt ? (
     <div className="enemy-taunt-bubble">
@@ -486,7 +495,12 @@ const BattleScreen: React.FC = () => {
         {rewardDetails.isVictory ? (
           <VictoryScreen details={rewardDetails} onContinue={handleContinue} />
         ) : (
-          <DefeatScreen details={rewardDetails} onReturnToSelect={handleContinue} />
+          <DefeatScreen
+            details={rewardDetails}
+            onReturnToSelect={handleContinue}
+            onRetry={isTowerMode ? handleTowerRetry : undefined}
+            canRetry={isTowerMode && energy.energy > 0}
+          />
         )}
         {milestoneOverlay}
         {tauntBubble}

@@ -145,6 +145,29 @@
 
 .defeat-btn:active { transform: scale(0.97); }
 
+.defeat-btn--retry {
+  background: linear-gradient(135deg, #1a2a1a, #0d1f0d);
+  border: 2px solid #44cc44;
+  color: #44cc44;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(68,204,68,0.3);
+  animation: defeat-retry-glow 2s ease-in-out infinite;
+}
+.defeat-btn--retry:hover { box-shadow: 0 0 20px rgba(68,204,68,0.5); }
+
+.defeat-btn--retry-disabled {
+  border-color: #444;
+  color: #666;
+  box-shadow: none;
+  animation: none;
+  cursor: not-allowed;
+}
+
+@keyframes defeat-retry-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(68,204,68,0.25); }
+  50%       { box-shadow: 0 0 18px rgba(68,204,68,0.5); }
+}
+
 .defeat-btn--return {
   background: linear-gradient(135deg, #1a0d12, #2a1215);
   border: 1px solid #8a6520;

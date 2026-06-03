@@ -5,8 +5,10 @@ import { MAX_ROUNDS } from '../types/BattleTypes';
 import './DefeatScreen.css';
 
 interface Props {
-  details:         RewardDetails;
+  details:          RewardDetails;
   onReturnToSelect: () => void;
+  onRetry?:         () => void;
+  canRetry?:        boolean;
 }
 
 const CLOSE_MESSAGES = [
@@ -101,7 +103,7 @@ function damageProgress(enemyHpPct: number): number {
   return Math.max(0, Math.min(1, 1 - enemyHpPct));
 }
 
-const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect }) => {
+const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, canRetry }) => {
   const reasonText = details.defeatReason === 'rounds'
     ? `Rundengrenze (${MAX_ROUNDS}) erreicht — Gegner zu stark.`
     : 'Alle HP verloren.';
@@ -201,8 +203,18 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect }) => {
         </div>
 
         <div className="defeat-actions">
+          {onRetry && (
+            <button
+              className={`defeat-btn defeat-btn--retry ${!canRetry ? 'defeat-btn--retry-disabled' : ''}`}
+              onClick={canRetry ? onRetry : undefined}
+              disabled={!canRetry}
+              title={!canRetry ? 'Keine Energie' : undefined}
+            >
+              {canRetry ? '⚡ Nochmal!' : '⚡ Keine Energie'}
+            </button>
+          )}
           <button className="defeat-btn defeat-btn--return" onClick={onReturnToSelect}>
-            ◀ Zurück zur Auswahl
+            ◀ Zurück
           </button>
         </div>
 
