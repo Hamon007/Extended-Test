@@ -51,6 +51,39 @@
   background: rgba(201,168,76,0.06);
 }
 
+/* ── Reset Bar ────────────────────────────────────────────── */
+.quest-reset-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  background: rgba(120,60,200,0.08);
+  border-bottom: 1px solid rgba(120,60,200,0.2);
+  flex-shrink: 0;
+}
+
+.quest-reset-bar__rewards {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+.quest-reset-bar__claimable {
+  color: #69f0ae;
+}
+
+.quest-reset-bar__pending {
+  color: rgba(180,150,255,0.7);
+}
+
+.quest-reset-bar__timer {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: rgba(180,140,255,0.6);
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
 /* Quest list */
 .quest-list {
   flex: 1; padding: 10px 12px;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QuestService } from '../services/QuestService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { SaveService } from '../services/SaveService';
@@ -6,10 +6,43 @@ import './QuestScreen.css';
 
 interface Props { onBack: () => void; }
 
+function msUntilMidnightUtc(): number {
+  const now = new Date();
+  const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  return tomorrow.getTime() - now.getTime();
+}
+
+function msUntilNextMonday(): number {
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun, 1=Mon
+  const daysUntilMonday = day === 0 ? 1 : (8 - day) % 7 || 7;
+  const nextMon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilMonday));
+  return nextMon.getTime() - now.getTime();
+}
+
+function formatHMS(ms: number): string {
+  if (ms <= 0) return '00:00:00';
+  const s = Math.floor(ms / 1000);
+  const hh = Math.floor(s / 3600);
+  const mm = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+}
+
 const QuestScreen: React.FC<Props> = ({ onBack }) => {
   const [tab, setTab]   = useState<'daily' | 'weekly'>('daily');
   const [toast, setToast] = useState('');
   const [, setTick] = useState(0);
+  const [resetMs, setResetMs] = useState(() =>
+    tab === 'daily' ? msUntilMidnightUtc() : msUntilNextMonday()
+  );
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setResetMs(tab === 'daily' ? msUntilMidnightUtc() : msUntilNextMonday());
+    }, 1000);
+    return () => clearInterval(id);
+  }, [tab]);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -21,6 +54,12 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
   const daily  = QuestService.getDailyQuests();
   const weekly = QuestService.getWeeklyQuests();
   const list   = tab === 'daily' ? daily : weekly;
+
+  // Total available (unclaimed + incomplete) crystals
+  const pendingCrystals = list
+    .filter(q => !q.progress.claimed)
+    .reduce((sum, q) => sum + q.def.crystalReward, 0);
+  const claimableCount = list.filter(q => q.progress.completed && !q.progress.claimed).length;
 
   function handleClaim(questId: string) {
     const reward = QuestService.claimReward(questId);
@@ -45,16 +84,34 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       <div className="quest-tabs">
         <button
           className={`quest-tab ${tab === 'daily' ? 'quest-tab--active' : ''}`}
-          onClick={() => setTab('daily')}
+          onClick={() => { setTab('daily'); setResetMs(msUntilMidnightUtc()); }}
         >
           Täglich
         </button>
         <button
           className={`quest-tab ${tab === 'weekly' ? 'quest-tab--active' : ''}`}
-          onClick={() => setTab('weekly')}
+          onClick={() => { setTab('weekly'); setResetMs(msUntilNextMonday()); }}
         >
           Wöchentlich
         </button>
+      </div>
+
+      {/* Quest reset countdown + reward summary */}
+      <div className="quest-reset-bar">
+        <div className="quest-reset-bar__rewards">
+          {claimableCount > 0 ? (
+            <span className="quest-reset-bar__claimable">
+              ✦ {claimableCount} abholbar · 💎 {pendingCrystals.toLocaleString('de-DE')} verfügbar
+            </span>
+          ) : (
+            <span className="quest-reset-bar__pending">
+              💎 {pendingCrystals.toLocaleString('de-DE')} noch zu verdienen
+            </span>
+          )}
+        </div>
+        <div className="quest-reset-bar__timer">
+          ↺ {formatHMS(resetMs)}
+        </div>
       </div>
 
       <div className="quest-list">

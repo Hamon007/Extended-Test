@@ -193,6 +193,46 @@
 }
 @keyframes preview-in { from{opacity:0;transform:translateY(-3px);} to{opacity:1;transform:none;} }
 
+/* ── Stat delta preview ──────────────────────────────────── */
+.training-td__stat-deltas {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+  animation: preview-in 0.2s ease;
+}
+
+.training-stat-delta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: 'Cinzel', serif;
+  font-size: 9.5px;
+  color: #c0a0ff;
+}
+
+.training-stat-delta--hp {
+  color: #ff8a80;
+}
+
+.training-stat-delta__arrow {
+  color: rgba(200,180,255,0.5);
+  font-size: 9px;
+}
+
+.training-stat-delta__after {
+  color: #e0e0ff;
+}
+
+.training-stat-delta__gain {
+  font-weight: 700;
+  color: #69f0ae;
+  background: rgba(105,240,174,0.12);
+  border-radius: 3px;
+  padding: 0 3px;
+  font-size: 9px;
+}
+
 /* XP-Balken */
 .xp-bar {
   position: relative;

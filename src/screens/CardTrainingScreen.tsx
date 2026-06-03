@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { SaveService }   from '../services/SaveService';
 import { CardDatabase }  from '../services/CardDatabase';
 import { LevelSystem, CRYSTAL_CARD_XP, type CrystalCardSize } from '../services/LevelSystem';
+import { FusionSystem }  from '../services/FusionSystem';
 import type { CardInstance } from '../types/GachaTypes';
 import type { Card, Rarity } from '../types/Card';
 import { RARITY_COLOR, RARITY_MAJORS, RARITY_ORDER, rarityMajor } from '../types/Card';
@@ -181,6 +182,33 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   {preview && preview.level > (target.level ?? 1) && (
                     <div className="training-td__preview-level">→ Lv. {preview.level}</div>
                   )}
+                  {preview && targetCard && (() => {
+                    const before = FusionSystem.getEffectiveStats(targetCard, target.rarity, target.level ?? 1);
+                    const after  = FusionSystem.getEffectiveStats(targetCard, target.rarity, preview.level ?? 1);
+                    const dAtk = after.atk - before.atk;
+                    const dHp  = after.hp  - before.hp;
+                    if (dAtk === 0 && dHp === 0) return null;
+                    return (
+                      <div className="training-td__stat-deltas">
+                        {dAtk !== 0 && (
+                          <span className="training-stat-delta">
+                            ⚔ {before.atk.toLocaleString('de-DE')}
+                            <span className="training-stat-delta__arrow">→</span>
+                            <span className="training-stat-delta__after">{after.atk.toLocaleString('de-DE')}</span>
+                            <span className="training-stat-delta__gain">+{dAtk.toLocaleString('de-DE')}</span>
+                          </span>
+                        )}
+                        {dHp !== 0 && (
+                          <span className="training-stat-delta training-stat-delta--hp">
+                            ♥ {before.hp.toLocaleString('de-DE')}
+                            <span className="training-stat-delta__arrow">→</span>
+                            <span className="training-stat-delta__after">{after.hp.toLocaleString('de-DE')}</span>
+                            <span className="training-stat-delta__gain">+{dHp.toLocaleString('de-DE')}</span>
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <button className="opfern-change-btn" onClick={() => setPicker('target')}>Karte ändern</button>
                 </div>
               </>

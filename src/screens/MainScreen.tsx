@@ -52,6 +52,12 @@ const BATTLE_HOURS = [0, 7, 14, 21];
 
 // ── Hilfsfunktionen ───────────────────────────────────────────
 
+function msUntilMidnightUtc(): number {
+  const now = new Date();
+  const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  return tomorrow.getTime() - now.getTime();
+}
+
 function nextBattleMs(): number {
   const now = new Date();
   // nächste UTC-Stunde in [0,7,14,21]
@@ -110,6 +116,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     totalQuests: QuestService.getDailyQuests().length,
   }));
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
+  const [dailyResetMs,  setDailyResetMs]  = useState(() => msUntilMidnightUtc());
   const [loginReward,   setLoginReward]   = useState<DayReward | null>(null);
   const [activeExps,    setActiveExps]    = useState(() => ExpeditionService.getActive());
   const nearestAch = AchievementService.getNearestIncomplete();
@@ -139,6 +146,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     const id = setInterval(() => {
       setCountdown(nextBattleMs());
       setRegenMs(EnergyService.msUntilNextRegen());
+      setDailyResetMs(msUntilMidnightUtc());
       // Wenn Energie regeneriert wurde, State aktualisieren
       const freshEnergy = EnergyService.load();
       setEnergy(prev => prev.energy !== freshEnergy.energy ? freshEnergy : prev);
@@ -561,7 +569,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
 
       {/* ── Tagesaufgaben-Widget ── */}
       <div className="main-daily-widget">
-        <div className="main-daily-widget__title">⚡ Heute erledigen</div>
+        <div className="main-daily-widget__title">
+          <span>⚡ Heute erledigen</span>
+          <span className="main-daily-reset">↺ {formatCountdown(dailyResetMs)}</span>
+        </div>
         <div className="main-daily-widget__items">
           <div className={`main-daily-item ${dailyChecks.login ? 'main-daily-item--done' : ''}`}>
             <span className="main-daily-item__check">{dailyChecks.login ? '✓' : '○'}</span>

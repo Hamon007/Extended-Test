@@ -955,6 +955,16 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-daily-reset {
+  font-size: 0.6rem;
+  color: rgba(140,100,220,0.7);
+  letter-spacing: 0.05em;
+  font-style: italic;
 }
 
 .main-daily-widget__items {
