@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { SaveService } from '../services/SaveService';
 import { ShopService, type ShopItem } from '../services/ShopService';
+import { PULL_COST_SINGLE, PULL_COST_MULTI } from '../config/GameConfig';
 import './ShopScreen.css';
 
 function msUntilMidnightUtc(): number {
@@ -85,6 +86,19 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
       {toast && <div className="shop-toast">{toast}</div>}
 
       <div className="shop-body">
+
+        {/* Pull Affordability Widget */}
+        <div className="shop-pull-power">
+          <div className="shop-pull-power__title">💎 Ziehkraft</div>
+          <div className="shop-pull-power__row">
+            <span className="shop-pull-power__label">Einzel (💎{PULL_COST_SINGLE})</span>
+            <span className="shop-pull-power__val">{Math.floor(crystals / PULL_COST_SINGLE)}×</span>
+          </div>
+          <div className="shop-pull-power__row">
+            <span className="shop-pull-power__label">10× (💎{PULL_COST_MULTI.toLocaleString('de-DE')})</span>
+            <span className="shop-pull-power__val">{Math.floor(crystals / PULL_COST_MULTI)}×10</span>
+          </div>
+        </div>
 
         {/* Daily Offers */}
         <div className="shop-section-header">
