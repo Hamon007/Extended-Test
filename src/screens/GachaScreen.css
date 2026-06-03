@@ -835,3 +835,41 @@
   0%, 100% { box-shadow: 0 0 16px rgba(180,200,255,0.4); }
   50%       { box-shadow: 0 0 32px rgba(180,200,255,0.7), 0 0 60px rgba(100,150,255,0.3); }
 }
+
+/* ── Collection Milestone Toast ──────────────────────────── */
+@keyframes milestoneSlideIn {
+  0%   { transform: translateX(100%); opacity: 0; }
+  15%  { transform: translateX(0);    opacity: 1; }
+  80%  { transform: translateX(0);    opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+.gacha-milestone-toast {
+  position: fixed;
+  top: 16px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(20,10,40,0.97), rgba(50,25,80,0.95));
+  border: 1px solid rgba(180,100,255,0.6);
+  border-radius: 10px;
+  padding: 10px 14px;
+  max-width: 280px;
+  z-index: 600;
+  box-shadow: 0 4px 20px rgba(150,80,255,0.35);
+  animation: milestoneSlideIn 5s ease forwards;
+}
+
+.gacha-milestone-toast__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.gacha-milestone-toast__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #e0ccff;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}

@@ -10,6 +10,7 @@ import {
 import { RARITY_COLOR } from '../types/Card';
 import { GachaSystem } from '../services/GachaSystem';
 import { AudioService } from '../services/AudioService';
+import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
 import CardDetailModal from '../components/CardDetailModal';
 import './GachaScreen.css';
 
@@ -28,9 +29,21 @@ function rarityIntensity(rarity: string): number {
 const GachaScreen: React.FC = () => {
   const store = useGachaStore();
   const { state, lastSingle, lastMulti, error, isPulling } = store;
-  const [detailCard, setDetailCard] = useState<Card | null>(null);
+  const [detailCard,     setDetailCard]     = useState<Card | null>(null);
+  const [milestoneToast, setMilestoneToast] = useState<string | null>(null);
 
   const showResult = lastSingle !== null || lastMulti !== null;
+
+  // Check collection milestones after each pull result
+  useEffect(() => {
+    if (!lastSingle && !lastMulti) return;
+    const awarded = CollectionMilestoneService.checkAndAward();
+    if (awarded.length > 0) {
+      const msg = awarded.map(m => `${m.label}: +${m.crystals.toLocaleString('de-DE')} 💎`).join(' · ');
+      setMilestoneToast(msg);
+      setTimeout(() => setMilestoneToast(null), 5000);
+    }
+  }, [lastSingle, lastMulti]);
 
   const openDetail = (cardId: string) => {
     setDetailCard(CardDatabase.getById(cardId) ?? null);
@@ -133,6 +146,14 @@ const GachaScreen: React.FC = () => {
       )}
 
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
+
+      {/* Collection Milestone Toast */}
+      {milestoneToast && (
+        <div className="gacha-milestone-toast">
+          <span className="gacha-milestone-toast__icon">🏆</span>
+          <span className="gacha-milestone-toast__text">{milestoneToast}</span>
+        </div>
+      )}
     </div>
   );
 };
