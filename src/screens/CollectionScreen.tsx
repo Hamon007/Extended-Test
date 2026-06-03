@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import type { Card, Rarity, Element, CardType } from '../types/Card';
 import { RARITY_ORDER, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
+import { SaveService } from '../services/SaveService';
 import CardThumbnail from '../components/CardThumbnail';
 import CardDetailModal from '../components/CardDetailModal';
 import './CollectionScreen.css';
@@ -43,6 +44,14 @@ const CollectionScreen: React.FC = () => {
   const [filter,       setFilter]       = useState<FilterState>(DEFAULT_FILTER);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [filtersOpen,  setFiltersOpen]  = useState(false);
+
+  // Owned-Karten: cardId → Anzahl der Kopien
+  const ownedMap = useMemo(() => {
+    const inv = SaveService.loadGachaState().inventory;
+    const m = new Map<string, number>();
+    for (const inst of inv) m.set(inst.cardId, (m.get(inst.cardId) ?? 0) + 1);
+    return m;
+  }, []);
 
   // Gefilterte + sortierte Karten
   const visibleCards = useMemo(() => {
@@ -90,6 +99,9 @@ const CollectionScreen: React.FC = () => {
           <h1 className="collection-topbar__title">◆ KARTENSAMMLUNG ◆</h1>
           <span className="collection-topbar__count">
             {visibleCards.length} / {CardDatabase.count()} Karten
+          </span>
+          <span className="collection-topbar__owned">
+            ✓ {ownedMap.size} besessen
           </span>
         </div>
         <div className="collection-topbar__right">
@@ -222,6 +234,8 @@ const CollectionScreen: React.FC = () => {
               key={card.id}
               card={card}
               onClick={handleCardClick}
+              owned={ownedMap.has(card.id)}
+              copiesOwned={ownedMap.get(card.id)}
             />
           ))}
         </div>

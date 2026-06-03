@@ -44,6 +44,13 @@
   letter-spacing: 1px;
 }
 
+.collection-topbar__owned {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #50c878;
+  letter-spacing: 1px;
+}
+
 .collection-topbar__right { flex-shrink: 0; }
 
 /* Filter-Button */

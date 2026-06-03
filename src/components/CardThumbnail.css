@@ -139,3 +139,29 @@
   color: #e8d5b0;
   white-space: nowrap;
 }
+
+/* Owned-Zustand: grüner Akzent-Glanz */
+.card-thumb--owned {
+  box-shadow: 0 0 0 1px rgba(80,200,120,0.35);
+}
+
+.card-thumb--owned:hover,
+.card-thumb--owned:focus {
+  box-shadow: 0 0 14px rgba(80,200,120,0.5), 0 0 0 1px rgba(80,200,120,0.45);
+}
+
+.card-thumb__owned-badge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 11;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  font-weight: 700;
+  color: #50c878;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid rgba(80,200,120,0.5);
+  border-radius: 3px;
+  padding: 2px 4px;
+  line-height: 1;
+}
