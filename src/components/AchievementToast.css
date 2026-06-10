@@ -22,8 +22,27 @@
   border-radius: 14px;
   padding:       0.65rem 1rem;
   box-shadow:    0 4px 20px rgba(255,215,0,0.3), 0 2px 8px rgba(0,0,0,0.6);
-  animation:     ach-toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                 ach-toast-fade-out 0.4s ease-in 3.1s forwards;
+  pointer-events: all;
+  animation:     ach-toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Big achievement (>=500 crystals): rainbow shimmer border */
+.ach-toast-item--big {
+  animation: ach-toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+             ach-big-rainbow 3s linear 0.4s infinite;
+}
+
+@keyframes ach-big-rainbow {
+  0%   { box-shadow: 0 0 16px rgba(255,80,0,0.5),   0 0 32px rgba(255,80,0,0.2);   border-color: #ff5000; }
+  25%  { box-shadow: 0 0 16px rgba(255,215,0,0.6),  0 0 32px rgba(255,215,0,0.25); border-color: #ffd700; }
+  50%  { box-shadow: 0 0 16px rgba(0,200,255,0.5),  0 0 32px rgba(0,200,255,0.2);  border-color: #00c8ff; }
+  75%  { box-shadow: 0 0 16px rgba(200,80,255,0.5), 0 0 32px rgba(200,80,255,0.2); border-color: #c850ff; }
+  100% { box-shadow: 0 0 16px rgba(255,80,0,0.5),   0 0 32px rgba(255,80,0,0.2);   border-color: #ff5000; }
+}
+
+/* Claimed state: fade out quickly */
+.ach-toast-item--claimed {
+  animation: ach-toast-claimed 1.2s ease forwards !important;
 }
 
 @keyframes ach-toast-slide-in {
@@ -31,9 +50,10 @@
   to   { opacity: 1; transform: translateY(0)     scale(1);    }
 }
 
-@keyframes ach-toast-fade-out {
-  from { opacity: 1; transform: scale(1);    }
-  to   { opacity: 0; transform: scale(0.9); }
+@keyframes ach-toast-claimed {
+  0%   { opacity: 1; transform: scale(1.05); }
+  40%  { opacity: 1; transform: scale(1);    }
+  100% { opacity: 0; transform: scale(0.9) translateY(-8px); }
 }
 
 .ach-toast-item__icon {
@@ -46,22 +66,58 @@
 }
 
 .ach-toast-item__label {
-  font-size:      0.65rem;
+  font-family:    'Cinzel', serif;
+  font-size:      0.58rem;
   color:          #a080c0;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .ach-toast-item__title {
-  font-size:   0.95rem;
+  font-family: 'Cinzel', serif;
+  font-size:   0.88rem;
   font-weight: 700;
   color:       #ffd700;
   text-shadow: 0 0 8px rgba(255,215,0,0.4);
 }
 
-.ach-toast-item__crystals {
-  font-size:   0.85rem;
+/* Inline claim button */
+.ach-toast-item__claim-btn {
+  font-family:    'Cinzel', serif;
+  font-size:      0.75rem;
+  font-weight:    700;
+  color:          #1a0d12;
+  background:     linear-gradient(135deg, #c9a84c, #f0d080);
+  border:         none;
+  border-radius:  8px;
+  padding:        6px 10px;
+  cursor:         pointer;
+  flex-shrink:    0;
+  letter-spacing: 0.04em;
+  box-shadow:     0 0 10px rgba(240,208,128,0.5);
+  transition:     transform 0.1s, box-shadow 0.15s;
+  animation:      ach-claim-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ach-claim-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(240,208,128,0.4); }
+  50%       { box-shadow: 0 0 18px rgba(240,208,128,0.8); }
+}
+
+.ach-toast-item__claim-btn:hover  { transform: scale(1.05); }
+.ach-toast-item__claim-btn:active { transform: scale(0.95); }
+
+/* Claimed confirmation badge */
+.ach-toast-item__claimed-badge {
+  font-family: 'Cinzel', serif;
+  font-size:   0.75rem;
   font-weight: 700;
-  color:       #e8d5b0;
+  color:       #80ffaa;
   flex-shrink: 0;
+  animation:   ach-claimed-pop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes ach-claimed-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1);   }
 }
