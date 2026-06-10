@@ -207,21 +207,35 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
       )}
 
       {/* Result overlay */}
-      {showResult && prize && (
-        <div className="spin-result" onClick={() => setShowResult(false)}>
-          <div className="spin-result__box">
-            <div className="spin-result__icon">{prize.icon}</div>
-            <div className="spin-result__label">Glückwunsch!</div>
-            <div className="spin-result__prize" style={{ color: prize.color }}>{prize.label}</div>
-            {streakBonus && streakBonus > 0 && (
-              <div className="spin-result__streak-bonus">
-                🔥 Serien-Bonus: +{streakBonus.toLocaleString('de-DE')} 💎
+      {showResult && prize && (() => {
+        const isJackpot = (prize.crystals ?? 0) >= 3000;
+        const isBigWin  = (prize.crystals ?? 0) >= 1000;
+        const resultClass = isJackpot ? 'spin-result--jackpot' : isBigWin ? 'spin-result--big' : '';
+        return (
+          <div className={`spin-result ${resultClass}`} onClick={() => setShowResult(false)}>
+            {isJackpot && (
+              <div className="spin-jackpot-particles" aria-hidden="true">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div key={i} className={`spin-jp-particle spin-jp-particle--${i % 4}`} />
+                ))}
               </div>
             )}
-            <div className="spin-result__note">gewonnen! Tippe zum Schließen.</div>
+            <div className={`spin-result__box ${isJackpot ? 'spin-result__box--jackpot' : isBigWin ? 'spin-result__box--big' : ''}`}>
+              <div className={`spin-result__icon ${isJackpot ? 'spin-result__icon--jackpot' : ''}`}>{prize.icon}</div>
+              <div className={`spin-result__label ${isJackpot ? 'spin-result__label--jackpot' : ''}`}>
+                {isJackpot ? '🎉 JACKPOT!' : isBigWin ? '⭐ GROSSER GEWINN!' : 'Glückwunsch!'}
+              </div>
+              <div className="spin-result__prize" style={{ color: prize.color }}>{prize.label}</div>
+              {streakBonus && streakBonus > 0 && (
+                <div className="spin-result__streak-bonus">
+                  🔥 Serien-Bonus: +{streakBonus.toLocaleString('de-DE')} 💎
+                </div>
+              )}
+              <div className="spin-result__note">Tippe zum Schließen.</div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       <div className="spin-info">
         <p>Einmal täglich kostenlos drehen.</p>

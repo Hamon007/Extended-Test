@@ -361,12 +361,67 @@
   animation: spinResultIn 0.4s ease;
 }
 
+.spin-result--big {
+  background: rgba(0,0,0,0.8);
+}
+
+.spin-result--jackpot {
+  background: rgba(0,0,0,0.85);
+  animation: spinResultIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
 @keyframes spinResultIn {
   from { opacity: 0; transform: scale(0.8); }
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Jackpot particles */
+.spin-jackpot-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.spin-jp-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: jpFloat linear infinite;
+  opacity: 0;
+}
+
+.spin-jp-particle--0 { width: 8px;  height: 8px;  background: #ffd700; left: 10%; animation-duration: 2.2s; animation-delay: 0.0s; }
+.spin-jp-particle--1 { width: 6px;  height: 6px;  background: #ff4081; left: 25%; animation-duration: 1.9s; animation-delay: 0.3s; }
+.spin-jp-particle--2 { width: 10px; height: 10px; background: #40c4ff; left: 40%; animation-duration: 2.5s; animation-delay: 0.6s; }
+.spin-jp-particle--3 { width: 5px;  height: 5px;  background: #69f0ae; left: 60%; animation-duration: 2.0s; animation-delay: 0.9s; }
+
+.spin-jp-particle:nth-child(1)  { left:  5%; animation-duration: 2.1s; animation-delay: 0.0s; }
+.spin-jp-particle:nth-child(2)  { left: 15%; animation-duration: 1.8s; animation-delay: 0.2s; }
+.spin-jp-particle:nth-child(3)  { left: 25%; animation-duration: 2.3s; animation-delay: 0.4s; }
+.spin-jp-particle:nth-child(4)  { left: 35%; animation-duration: 2.0s; animation-delay: 0.1s; }
+.spin-jp-particle:nth-child(5)  { left: 45%; animation-duration: 1.7s; animation-delay: 0.5s; }
+.spin-jp-particle:nth-child(6)  { left: 55%; animation-duration: 2.4s; animation-delay: 0.3s; }
+.spin-jp-particle:nth-child(7)  { left: 65%; animation-duration: 1.9s; animation-delay: 0.7s; }
+.spin-jp-particle:nth-child(8)  { left: 75%; animation-duration: 2.2s; animation-delay: 0.2s; }
+.spin-jp-particle:nth-child(9)  { left: 85%; animation-duration: 2.0s; animation-delay: 0.6s; }
+.spin-jp-particle:nth-child(10) { left: 95%; animation-duration: 1.6s; animation-delay: 0.4s; }
+.spin-jp-particle:nth-child(11) { left: 20%; animation-duration: 2.3s; animation-delay: 0.8s; }
+.spin-jp-particle:nth-child(12) { left: 50%; animation-duration: 1.8s; animation-delay: 1.0s; }
+.spin-jp-particle:nth-child(13) { left: 70%; animation-duration: 2.1s; animation-delay: 0.1s; }
+.spin-jp-particle:nth-child(14) { left: 30%; animation-duration: 1.7s; animation-delay: 0.9s; }
+.spin-jp-particle:nth-child(15) { left: 80%; animation-duration: 2.4s; animation-delay: 0.3s; }
+.spin-jp-particle:nth-child(16) { left: 10%; animation-duration: 2.0s; animation-delay: 0.7s; }
+
+@keyframes jpFloat {
+  0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(-20vh) rotate(540deg); opacity: 0; }
+}
+
 .spin-result__box {
+  position: relative;
+  z-index: 2;
   background: linear-gradient(135deg, #1a0035, #2d0060);
   border: 2px solid #ffd700;
   border-radius: 16px;
@@ -379,9 +434,54 @@
   gap: 8px;
 }
 
+.spin-result__box--big {
+  border-color: #ff9800;
+  box-shadow: 0 0 60px rgba(255, 152, 0, 0.6);
+  background: linear-gradient(135deg, #200a00, #3d1500);
+  animation: bigWinGlow 1.5s ease-in-out infinite alternate;
+}
+
+.spin-result__box--jackpot {
+  border-color: #ffd700;
+  box-shadow:
+    0 0 0 2px #ffd700,
+    0 0 40px rgba(255,215,0,0.7),
+    0 0 80px rgba(255,215,0,0.4);
+  background: linear-gradient(135deg, #1a0500, #3d2000, #1a0500);
+  animation: jackpotGlow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes bigWinGlow {
+  from { box-shadow: 0 0 40px rgba(255,152,0,0.4); }
+  to   { box-shadow: 0 0 80px rgba(255,152,0,0.8), 0 0 120px rgba(255,100,0,0.3); }
+}
+
+@keyframes jackpotGlow {
+  from { box-shadow: 0 0 40px rgba(255,215,0,0.6), 0 0 0 2px #ffd700; }
+  to   { box-shadow: 0 0 100px rgba(255,215,0,0.9), 0 0 200px rgba(255,215,0,0.4), 0 0 0 3px #ffd700; }
+}
+
 .spin-result__icon {
   font-size: 3rem;
   animation: spinBounce 0.6s ease;
+}
+
+.spin-result__icon--jackpot {
+  font-size: 4rem;
+  animation: jackpotIconBounce 0.7s cubic-bezier(0.34,1.56,0.64,1), jackpotIconSpin 3s linear 0.7s infinite;
+  filter: drop-shadow(0 0 20px #ffd700);
+}
+
+@keyframes jackpotIconBounce {
+  0%   { transform: scale(0) rotate(-180deg); }
+  70%  { transform: scale(1.4) rotate(10deg); }
+  100% { transform: scale(1)   rotate(0deg);  }
+}
+
+@keyframes jackpotIconSpin {
+  0%   { filter: drop-shadow(0 0 12px #ffd700); }
+  50%  { filter: drop-shadow(0 0 30px #fff) drop-shadow(0 0 50px #ffd700); }
+  100% { filter: drop-shadow(0 0 12px #ffd700); }
 }
 
 @keyframes spinBounce {
@@ -396,11 +496,37 @@
   letter-spacing: 0.1em;
 }
 
+.spin-result__label--jackpot {
+  font-size: 1.4rem;
+  color: #ffd700;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 20px rgba(255,215,0,0.8);
+  animation: jackpotLabelFlash 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes jackpotLabelFlash {
+  from { text-shadow: 0 0 12px rgba(255,215,0,0.5); }
+  to   { text-shadow: 0 0 30px rgba(255,215,0,1), 0 0 60px rgba(255,200,0,0.5); }
+}
+
 .spin-result__prize {
   font-size: 1.6rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-shadow: 0 0 20px currentColor;
+}
+
+.spin-result--jackpot .spin-result__prize,
+.spin-result--big     .spin-result__prize {
+  font-size: 2rem;
+  animation: prizeCountUp 0.5s ease;
+}
+
+@keyframes prizeCountUp {
+  from { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.2); }
+  to   { transform: scale(1);   opacity: 1; }
 }
 
 .spin-result__note {
