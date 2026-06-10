@@ -63,7 +63,9 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
   const pendingCrystals = list
     .filter(q => !q.progress.claimed)
     .reduce((sum, q) => sum + q.def.crystalReward, 0);
-  const claimableCount = list.filter(q => q.progress.completed && !q.progress.claimed).length;
+  const claimableCount  = list.filter(q => q.progress.completed && !q.progress.claimed).length;
+  const claimedTotal    = list.filter(q => q.progress.claimed).reduce((s, q) => s + q.def.crystalReward, 0);
+  const allDone         = list.length > 0 && list.every(q => q.progress.claimed);
 
   // Urgency: daily < 2h, weekly < 12h
   const incompleteCount = list.filter(q => !q.progress.claimed && !q.progress.completed).length;
@@ -140,6 +142,22 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
           ↺ {formatHMS(resetMs)}
         </div>
       </div>
+
+      {/* All-complete celebration */}
+      {allDone && (
+        <div className="quest-all-done">
+          <div className="quest-all-done__icon">🎉</div>
+          <div className="quest-all-done__title">
+            {tab === 'daily' ? 'Alle Tagesquests erledigt!' : 'Alle Wochenquests erledigt!'}
+          </div>
+          <div className="quest-all-done__crystals">
+            +{claimedTotal.toLocaleString('de-DE')} 💎 heute verdient
+          </div>
+          <div className="quest-all-done__hint">
+            ↺ Neue Quests in {formatHMS(resetMs)}
+          </div>
+        </div>
+      )}
 
       <div className="quest-list">
         {list.map(({ def, progress }) => {
