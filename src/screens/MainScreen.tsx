@@ -948,44 +948,68 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       )}
 
       {/* ── Täglicher Login-Bonus Modal ── */}
-      {loginReward && (
-        <div className="login-bonus-overlay" onClick={() => setLoginReward(null)}>
-          <div className="login-bonus-modal" onClick={e => e.stopPropagation()}>
-            <div className="login-bonus-header">
-              <div className="login-bonus-star">✦</div>
-              <div className="login-bonus-title">Tägliche Belohnung</div>
-              <div className="login-bonus-subtitle">Tag {loginReward.day} von 7</div>
-            </div>
-            <div className="login-bonus-dots">
-              {DailyLoginService.DAY_REWARDS.map(r => (
-                <div
-                  key={r.day}
-                  className={`login-bonus-dot ${r.day < loginReward.day ? 'login-bonus-dot--done' : r.day === loginReward.day ? 'login-bonus-dot--today' : ''}`}
-                >
-                  {r.day < loginReward.day ? '✓' : r.day === loginReward.day ? loginReward.day : r.day}
+      {loginReward && (() => {
+        const isDay7 = loginReward.day === 7;
+        const nextDay = DailyLoginService.DAY_REWARDS[loginReward.day % 7]; // wraps back to Day 1 after Day 7
+        return (
+          <div className="login-bonus-overlay" onClick={() => setLoginReward(null)}>
+            <div
+              className={`login-bonus-modal${isDay7 ? ' login-bonus-modal--mega' : ''}`}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="login-bonus-header">
+                <div className={`login-bonus-star${isDay7 ? ' login-bonus-star--mega' : ''}`}>
+                  {isDay7 ? '🎉' : '✦'}
                 </div>
-              ))}
-            </div>
-            <div className="login-bonus-reward">
-              {loginReward.crystals > 0 && (
-                <div className="login-bonus-item">
-                  <span className="login-bonus-item__icon">💎</span>
-                  <span className="login-bonus-item__val">+{loginReward.crystals}</span>
+                <div className="login-bonus-title">
+                  {isDay7 ? 'MEGA-BELOHNUNG!' : 'Tägliche Belohnung'}
+                </div>
+                <div className="login-bonus-subtitle">Tag {loginReward.day} von 7</div>
+              </div>
+              <div className="login-bonus-dots">
+                {DailyLoginService.DAY_REWARDS.map(r => (
+                  <div
+                    key={r.day}
+                    className={`login-bonus-dot ${r.day < loginReward.day ? 'login-bonus-dot--done' : r.day === loginReward.day ? 'login-bonus-dot--today' : ''} ${r.day === 7 ? 'login-bonus-dot--final' : ''}`}
+                  >
+                    {r.day < loginReward.day ? '✓' : r.day === loginReward.day ? loginReward.day : r.day}
+                  </div>
+                ))}
+              </div>
+              <div className="login-bonus-reward">
+                {loginReward.crystals > 0 && (
+                  <div className="login-bonus-item">
+                    <span className="login-bonus-item__icon">💎</span>
+                    <span className={`login-bonus-item__val${isDay7 ? ' login-bonus-item__val--mega' : ''}`}>
+                      +{loginReward.crystals.toLocaleString('de-DE')}
+                    </span>
+                  </div>
+                )}
+                {loginReward.potions > 0 && (
+                  <div className="login-bonus-item">
+                    <span className="login-bonus-item__icon">🧪</span>
+                    <span className="login-bonus-item__val">+{loginReward.potions}</span>
+                  </div>
+                )}
+              </div>
+              {/* Next reward teaser */}
+              {!isDay7 && nextDay && (
+                <div className="login-bonus-next">
+                  Morgen: Tag {loginReward.day + 1} · +{nextDay.crystals} 💎
+                  {nextDay.potions > 0 && ` + ${nextDay.potions} 🧪`}
                 </div>
               )}
-              {loginReward.potions > 0 && (
-                <div className="login-bonus-item">
-                  <span className="login-bonus-item__icon">🧪</span>
-                  <span className="login-bonus-item__val">+{loginReward.potions}</span>
-                </div>
-              )}
+              {/* Streak risk warning */}
+              <div className="login-bonus-streak-hint">
+                📅 Morgen einloggen für Streak-Fortschritt!
+              </div>
+              <button className="login-bonus-close" onClick={() => setLoginReward(null)}>
+                {isDay7 ? '🎉 Einsammeln!' : 'Einsammeln ✦'}
+              </button>
             </div>
-            <button className="login-bonus-close" onClick={() => setLoginReward(null)}>
-              Einsammeln ✦
-            </button>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
     </div>
   );
