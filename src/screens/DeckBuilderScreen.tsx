@@ -3,6 +3,7 @@ import { useDeckStore } from '../hooks/useDeckStore';
 import { DeckBuilder } from '../services/DeckBuilder';
 import { CardDatabase } from '../services/CardDatabase';
 import { FusionSystem } from '../services/FusionSystem';
+import { FormationService } from '../services/FormationService';
 import type { ResolvedSlot, Deck } from '../types/DeckTypes';
 import type { CardInstance } from '../types/GachaTypes';
 import { DECK_SIZE, MAX_DECK_COST } from '../types/DeckTypes';
@@ -116,6 +117,42 @@ const DeckBuilderScreen: React.FC = () => {
       counts[card.element] = (counts[card.element] ?? 0) + 1;
     }
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  }, [deck.uuids, inventory]);
+
+  // Formation bonuses from current deck (tag-based synergies)
+  const formationResult = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    const deckCards = deck.uuids
+      .map(uuid => invMap.get(uuid))
+      .filter((inst): inst is CardInstance => inst !== undefined)
+      .map(inst => CardDatabase.getById(inst.cardId))
+      .filter((card): card is NonNullable<typeof card> => card !== null);
+    return FormationService.compute(deckCards);
+  }, [deck.uuids, inventory]);
+
+  // Near-formations: tags that need 1-2 more cards to activate (count === 2)
+  const nearFormations = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    const deckCards = deck.uuids
+      .map(uuid => invMap.get(uuid))
+      .filter((inst): inst is CardInstance => inst !== undefined)
+      .map(inst => CardDatabase.getById(inst.cardId))
+      .filter((card): card is NonNullable<typeof card> => card !== null);
+    const tagCounts = new Map<string, number>();
+    const tagLabels = new Map<string, string>();
+    for (const card of deckCards) {
+      const seen = new Set<string>();
+      for (const combo of card.combos ?? []) {
+        if (seen.has(combo.tag)) continue;
+        seen.add(combo.tag);
+        tagCounts.set(combo.tag, (tagCounts.get(combo.tag) ?? 0) + 1);
+        tagLabels.set(combo.tag, combo.tag);
+      }
+    }
+    // Return tags with exactly 2 cards (1 more needed to activate +15% bonus)
+    return Array.from(tagCounts.entries())
+      .filter(([, count]) => count === 2)
+      .map(([tag]) => tag);
   }, [deck.uuids, inventory]);
 
   function showToast(msg: string) {
@@ -237,6 +274,30 @@ const DeckBuilderScreen: React.FC = () => {
                 {count === 2 && <span className="db-elem-chip__need">+1!</span>}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* Formation bonuses */}
+        {(formationResult.bonuses.length > 0 || nearFormations.length > 0) && (
+          <div className="db-formations">
+            {formationResult.bonuses.length > 0 && (
+              <div className="db-formations__active">
+                {formationResult.bonuses.map(b => (
+                  <span key={b.tag} className="db-formation-chip db-formation-chip--active">
+                    ⚡ {b.label} ×{b.count} → +{Math.round(b.damageBoost * 100)}% ATK
+                  </span>
+                ))}
+              </div>
+            )}
+            {nearFormations.length > 0 && formationResult.bonuses.length === 0 && (
+              <div className="db-formations__near">
+                {nearFormations.slice(0, 2).map(tag => (
+                  <span key={tag} className="db-formation-chip db-formation-chip--near">
+                    ◐ {tag}-Formation +1 → +15% ATK
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
         <div className="db-slots-row">

@@ -651,3 +651,46 @@
   font-weight: 700;
   text-shadow: 0 0 3px rgba(255,140,0,0.6);
 }
+
+/* ── Formation Bonuses ─────────────────────────────────────── */
+.db-formations {
+  padding: 4px 2px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.db-formations__active,
+.db-formations__near {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.db-formation-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.db-formation-chip--active {
+  background: linear-gradient(90deg, rgba(80,200,80,0.15), rgba(40,120,40,0.15));
+  border-color: rgba(80,200,80,0.5);
+  color: #80ee80;
+  animation: formationGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes formationGlow {
+  from { box-shadow: none; }
+  to   { box-shadow: 0 0 8px rgba(80,200,80,0.4); }
+}
+
+.db-formation-chip--near {
+  background: rgba(80,60,0,0.25);
+  border-color: rgba(200,150,30,0.4);
+  color: #d4a840;
+  font-style: italic;
+}
