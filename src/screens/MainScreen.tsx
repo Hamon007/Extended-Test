@@ -119,6 +119,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     bossRush:    !BossRushService.canAttempt(),
     dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
     totalQuests: QuestService.getDailyQuests().length,
+    expeditionsReady: ExpeditionService.getCompleted().length,
   }));
   const [regenMs,       setRegenMs]       = useState(() => EnergyService.msUntilNextRegen());
   const [dailyResetMs,  setDailyResetMs]  = useState(() => msUntilMidnightUtc());
@@ -247,7 +248,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         bossRush:    !BossRushService.canAttempt(),
         dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
         totalQuests: QuestService.getDailyQuests().length,
+        expeditionsReady: ExpeditionService.getCompleted().length,
       });
+      setActiveExps(ExpeditionService.getActive());
       setRegenMs(EnergyService.msUntilNextRegen());
     };
     refresh();
@@ -664,6 +667,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           !dailyChecks.trial,
           !dailyChecks.bossRush,
           dailyChecks.dailyQuests < dailyChecks.totalQuests,
+          dailyChecks.expeditionsReady > 0,
         ].filter(Boolean).length;
         if (dailyResetMs > 2 * 3600_000 || pendingTasks === 0) return null;
         return (
@@ -720,6 +724,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             </span>
             <span className="main-daily-item__label">Tagesquests abgeschlossen</span>
           </div>
+          {dailyChecks.expeditionsReady > 0 && (
+            <div
+              className="main-daily-item main-daily-item--exp-ready"
+              onClick={() => onNavigate?.('expedition')} style={{ cursor: 'pointer' }}>
+              <span className="main-daily-item__check">⚔</span>
+              <span className="main-daily-item__label">
+                Expeditionen abholen
+                <span className="main-daily-item__reward"> ×{dailyChecks.expeditionsReady} bereit!</span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

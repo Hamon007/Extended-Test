@@ -103,10 +103,14 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
     [gs.inventory],
   );
 
-  const fusionReadyIds = useMemo(() => {
-    const groups = FusionSystem.buildGroups(gs.inventory);
-    return new Set(groups.filter(g => g.canFuse).map(g => g.cardId));
-  }, [gs.inventory]);
+  const fusionGroups = useMemo(() => FusionSystem.buildGroups(gs.inventory), [gs.inventory]);
+  const fusionReadyIds = useMemo(
+    () => new Set(fusionGroups.filter(g => g.canFuse).map(g => g.cardId)),
+    [fusionGroups],
+  );
+
+  // UUIDs of cards currently in active deck
+  const deckUuids = useMemo(() => new Set(SaveService.loadDeck().uuids), []);
 
   return (
     <div className="inv-screen">
@@ -253,10 +257,11 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
             const pw = cardPower(inst);
             const masteryLv = CardMasteryService.getMasteryInfo(inst.cardId).level;
             const isFuseable = fusionReadyIds.has(inst.cardId);
+            const inDeck     = deckUuids.has(inst.uuid);
             return (
               <button
                 key={inst.uuid}
-                className={`inv-card-chip${isFuseable ? ' inv-card-chip--fuseable' : ''}`}
+                className={`inv-card-chip${isFuseable ? ' inv-card-chip--fuseable' : ''}${inDeck ? ' inv-card-chip--in-deck' : ''}`}
                 onClick={() => setDetail(inst)}
               >
                 <div className="inv-card-chip__img-wrap">
@@ -266,6 +271,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
                     <span className="inv-card-chip__mastery">{'★'.repeat(Math.min(masteryLv, 3))}</span>
                   )}
                   {isFuseable && <span className="inv-card-chip__fusion">⚗</span>}
+                  {inDeck && <span className="inv-card-chip__deck-badge">DECK</span>}
                 </div>
                 <span className="inv-card-chip__rarity" style={{ color }}>{rarityMajor(inst.rarity)}</span>
                 <span className="inv-card-chip__name">{card?.name ?? inst.cardId}</span>
@@ -284,6 +290,11 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
         const lv = detail.level ?? 1;
         const mastery = CardMasteryService.getMasteryInfo(detail.cardId);
         const bond    = CardBondService.getCardBond(detail.cardId);
+        const inDeck  = deckUuids.has(detail.uuid);
+        const fusionGroup = fusionGroups.find(g => g.cardId === detail.cardId);
+        const fusionPct = fusionGroup && fusionGroup.duplicatesNeeded > 0
+          ? Math.min(1, fusionGroup.duplicatesAvailable / fusionGroup.duplicatesNeeded)
+          : 0;
         return (
           <div className="inv-overlay" onClick={() => setDetail(null)}>
             <div className="inv-overlay__box" onClick={e => e.stopPropagation()}>
@@ -291,6 +302,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
               <div className="inv-overlay__info">
                 <div className="inv-overlay__name" style={{ color: RARITY_COLOR[detail.rarity] }}>
                   {detailCard.name}
+                  {inDeck && <span className="inv-overlay__deck-badge">IN DECK</span>}
                 </div>
                 <div className="inv-overlay__title">{detailCard.title}</div>
                 <div className="inv-overlay__rarity">{detail.rarity} · {detailCard.element}</div>
@@ -335,6 +347,27 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
                   </div>
                 </div>
               </div>
+              {/* Fusion progress */}
+              {fusionGroup && !fusionGroup.canFuse && fusionGroup.nextRarity && (
+                <div className="inv-overlay__fusion-progress">
+                  <div className="inv-overlay__fusion-label">
+                    🔮 Fusion: {fusionGroup.duplicatesAvailable}/{fusionGroup.duplicatesNeeded} für {fusionGroup.nextRarity}
+                    {fusionGroup.duplicatesNeeded - fusionGroup.duplicatesAvailable === 1 && (
+                      <span className="inv-overlay__fusion-close"> — Noch 1!</span>
+                    )}
+                  </div>
+                  <div className="inv-overlay__fusion-bar">
+                    <div
+                      className="inv-overlay__fusion-fill"
+                      style={{ width: `${Math.round(fusionPct * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              {fusionGroup && fusionGroup.canFuse && (
+                <div className="inv-overlay__fusion-ready">⚗ Fusion bereit! → {fusionGroup.nextRarity}</div>
+              )}
+
               <button className="inv-overlay__close" onClick={() => setDetail(null)}>✕</button>
               {onNavigate && (
                 <div className="inv-overlay__actions">

@@ -183,6 +183,24 @@
   to   { box-shadow: 0 0 8px rgba(160,80,255,0.35); }
 }
 
+.inv-card-chip--in-deck {
+  border-color: rgba(80, 200, 120, 0.5);
+}
+
+.inv-card-chip__deck-badge {
+  position: absolute;
+  bottom: 3px; left: 3px;
+  font-size: 0.48rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: rgba(40,160,80,0.9);
+  color: #c8ffdc;
+  border-radius: 2px;
+  padding: 1px 3px;
+  pointer-events: none;
+}
+
 /* Fusion-ready banner */
 .inv-fusion-banner {
   display: flex; align-items: center; gap: 8px;
@@ -248,6 +266,73 @@
 .inv-overlay__stat-base {
   font-family: 'Cinzel', serif; font-size: 0.52rem; color: #66ff88; opacity: 0.9;
 }
+.inv-overlay__deck-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  background: rgba(40,180,80,0.25);
+  border: 1px solid rgba(80,220,100,0.5);
+  color: #80ffaa;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.inv-overlay__fusion-progress {
+  margin: 6px 0 4px;
+  padding: 6px 8px;
+  background: rgba(80,20,140,0.2);
+  border: 1px solid rgba(120,60,200,0.3);
+  border-radius: 6px;
+}
+
+.inv-overlay__fusion-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #c090ff;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.inv-overlay__fusion-close {
+  color: #ffcc44;
+  font-weight: 900;
+}
+
+.inv-overlay__fusion-bar {
+  height: 4px;
+  background: rgba(80,20,140,0.4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.inv-overlay__fusion-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7b2ff7, #d070ff);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.inv-overlay__fusion-ready {
+  margin: 6px 0 4px;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, rgba(100,20,180,0.3), rgba(200,80,255,0.15));
+  border: 1px solid rgba(180,80,255,0.6);
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #d4b4ff;
+  font-weight: 700;
+  animation: fusionReadyGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes fusionReadyGlow {
+  from { box-shadow: 0 0 4px rgba(180,80,255,0.3); }
+  to   { box-shadow: 0 0 14px rgba(200,100,255,0.65); }
+}
+
 .inv-overlay__close {
   position: absolute; top: 8px; right: 10px;
   background: none; border: none; color: var(--gold-dark);
