@@ -35,6 +35,7 @@ export interface FusionStore {
   lastAwakening: LastAwakening | null;
   error:         FusionError | AwakenError | null;
   fuse:          (cardId: string) => void;
+  fuseAll:       () => number;
   awaken:        (uuid: string) => void;
   clearLast:     () => void;
 }
@@ -65,6 +66,36 @@ export function useFusionStore(): FusionStore {
     }
   }, [state]);
 
+  const fuseAll = useCallback((): number => {
+    setError(null);
+    let cur = state;
+    let count = 0;
+    let last: LastFusion | null = null;
+    for (;;) {
+      const readyGroups = FusionSystem.buildGroups(cur.inventory).filter(g => g.canFuse);
+      if (readyGroups.length === 0) break;
+      for (const g of readyGroups) {
+        const outcome = FusionSystem.fuse(cur, g.cardId);
+        if (!outcome.ok) continue;
+        cur = outcome.nextState;
+        last = { cardId: g.cardId, from: outcome.fromRarity, to: outcome.toRarity };
+        count++;
+        AchievementService.recordProgress('first_fusion');
+        if (outcome.toRarity === 'LR') {
+          AchievementService.recordProgress('first_lr');
+          const card = CardDatabase.getById(g.cardId);
+          ActivityFeedService.post('fusion_lr', { cardName: card?.name ?? g.cardId });
+        }
+      }
+    }
+    if (count > 0) {
+      SaveService.saveGachaState(cur);
+      setState(cur);
+      if (last) setLastFusion(last);
+    }
+    return count;
+  }, [state]);
+
   const awaken = useCallback((uuid: string) => {
     setError(null);
     const outcome = AwakeningSystem.awaken(state, uuid);
@@ -84,5 +115,5 @@ export function useFusionStore(): FusionStore {
     setLastAwakening(null);
   }, []);
 
-  return { state, groups, lastFusion, lastAwakening, error, fuse, awaken, clearLast };
+  return { state, groups, lastFusion, lastAwakening, error, fuse, fuseAll, awaken, clearLast };
 }

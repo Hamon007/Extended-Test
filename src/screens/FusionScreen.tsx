@@ -20,7 +20,13 @@ const ERROR_LABEL: Record<string, string> = {
 };
 
 const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
-  const { state, groups, lastFusion, lastAwakening, error, fuse, awaken, clearLast } = useFusionStore();
+  const { state, groups, lastFusion, lastAwakening, error, fuse, fuseAll, awaken, clearLast } = useFusionStore();
+  const [toast, setToast] = useState('');
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2600);
+  }
 
   // Nur Gruppen mit Material oder bereits fusioniertem Träger anzeigen
   const visible = groups.filter(g =>
@@ -30,8 +36,17 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
 
   const fuseable = visible.filter(g => g.canFuse).length;
 
+  const handleFuseAll = () => {
+    const count = fuseAll();
+    if (count > 0) {
+      AudioService.super();
+      showToast(`✦ ${count} Fusion${count > 1 ? 'en' : ''} durchgeführt!`);
+    }
+  };
+
   return (
     <div className="fusion-screen">
+      {toast && <div className="fusion-toast">{toast}</div>}
 
       {/* ── Header ── */}
       <div className="fusion-header">
@@ -62,10 +77,17 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
           </div>
         ) : (
           <>
-            <div className="fusion-count">
-              {fuseable > 0
-                ? `${fuseable} Karte${fuseable === 1 ? '' : 'n'} bereit zur Fusion`
-                : 'Noch keine Karte bereit'}
+            <div className="fusion-count-row">
+              <div className="fusion-count">
+                {fuseable > 0
+                  ? `${fuseable} Karte${fuseable === 1 ? '' : 'n'} bereit zur Fusion`
+                  : 'Noch keine Karte bereit'}
+              </div>
+              {fuseable > 1 && (
+                <button className="fusion-all-btn" onClick={handleFuseAll}>
+                  ⚗ Alle fusionieren
+                </button>
+              )}
             </div>
             {visible.map(g => (
               <FusionRow
