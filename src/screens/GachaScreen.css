@@ -771,6 +771,40 @@
   max-width: 320px;
 }
 
+/* Multi-pull summary */
+.result-multi__summary {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px 2px;
+  animation: fadeIn 0.4s ease;
+  flex-wrap: wrap;
+}
+.result-multi__summary-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 3px 10px;
+  color: #c0b0e0;
+}
+.result-multi__summary-chip--ssr {
+  font-weight: 700;
+}
+
+/* Best card in multi-pull */
+.multi-card--best {
+  transform: scale(1.06);
+  z-index: 2;
+  animation: bestCardGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes bestCardGlow {
+  from { box-shadow: 0 0 10px var(--rc, #c9a84c), 0 0 20px rgba(255,215,0,0.3); }
+  to   { box-shadow: 0 0 20px var(--rc, #c9a84c), 0 0 40px rgba(255,215,0,0.6); }
+}
+
 .result-multi__actions {
   display: flex;
   flex-direction: column;

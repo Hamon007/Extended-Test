@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useGachaStore } from '../hooks/useGachaStore';
 import { CardDatabase } from '../services/CardDatabase';
 import type { Card } from '../types/Card';
@@ -13,6 +13,11 @@ import { AudioService } from '../services/AudioService';
 import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
 import CardDetailModal from '../components/CardDetailModal';
 import './GachaScreen.css';
+
+const RARITY_SCORE: Record<string, number> = { N: 1, R: 2, SR: 3, SSR: 4, MR: 5, LR: 6 };
+function rarityScore(r: string): number {
+  return RARITY_SCORE[r.replace(/\+/g, '')] ?? 1;
+}
 
 const ERROR_LABEL: Record<string, string> = {
   NOT_ENOUGH_CRYSTALS: 'Nicht genug Kristalle.',
@@ -418,6 +423,16 @@ const MultiResult: React.FC<MultiResultProps> = ({
     return () => clearTimeout(t);
   }, [revealed, allRevealed]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Post-reveal summary stats
+  const summary = useMemo(() => {
+    if (!allRevealed) return null;
+    const highRarity = ['SSR', 'MR', 'LR'];
+    const ssrPlus = results.filter(r => highRarity.some(h => r.instance.rarity.startsWith(h))).length;
+    const newCards = results.filter(r => r.instance.isNew).length;
+    const best = [...results].sort((a, b) => rarityScore(b.instance.rarity) - rarityScore(a.instance.rarity))[0];
+    return { ssrPlus, newCards, bestRarity: best?.instance.rarity ?? '', bestUuid: best?.instance.uuid ?? '' };
+  }, [allRevealed, results]);
+
   return (
     <div className="result-multi">
       <div className="result-multi__grid">
@@ -426,10 +441,28 @@ const MultiResult: React.FC<MultiResultProps> = ({
             key={pr.instance.uuid}
             pullResult={pr}
             visible={i < revealed}
+            isBest={allRevealed && summary?.bestUuid === pr.instance.uuid}
             onCardClick={onCardClick}
           />
         ))}
       </div>
+
+      {allRevealed && summary && (
+        <div className="result-multi__summary">
+          <span className="result-multi__summary-chip result-multi__summary-chip--ssr" style={{ color: summary.ssrPlus > 0 ? '#ffc107' : '#666' }}>
+            {summary.ssrPlus > 0 ? `✦ ${summary.ssrPlus}× SSR+` : '— kein SSR+'}
+          </span>
+          <span className="result-multi__summary-chip">
+            {summary.newCards > 0 ? `🆕 ${summary.newCards} NEU` : '— kein Neu'}
+          </span>
+          <span
+            className="result-multi__summary-chip"
+            style={{ color: (RARITY_COLOR as Record<string, string>)[summary.bestRarity.replace(/\+/g, '')] ?? '#9e9e9e' }}
+          >
+            BEST: {summary.bestRarity}
+          </span>
+        </div>
+      )}
 
       {allRevealed && (
         <div className="result-multi__actions">
@@ -465,10 +498,11 @@ const MultiResult: React.FC<MultiResultProps> = ({
 interface MultiCardProps {
   pullResult:  PullResult;
   visible:     boolean;
+  isBest?:     boolean;
   onCardClick: (cardId: string) => void;
 }
 
-const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, onCardClick }) => {
+const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, isBest, onCardClick }) => {
   const { instance, wasPity } = pullResult;
   const card = CardDatabase.getById(instance.cardId);
   const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
@@ -476,7 +510,7 @@ const MultiCard: React.FC<MultiCardProps> = ({ pullResult, visible, onCardClick 
 
   return (
     <div
-      className={`multi-card ${visible ? 'multi-card--visible' : ''}`}
+      className={`multi-card ${visible ? 'multi-card--visible' : ''} ${isBest ? 'multi-card--best' : ''}`}
       style={{ '--rc': rarityColor } as React.CSSProperties}
       data-rarity={visible ? instance.rarity : undefined}
       onClick={() => visible && onCardClick(instance.cardId)}
