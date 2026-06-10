@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { DEFEAT_CONSOLATION } from '../types/ProgressionTypes';
 import { MAX_ROUNDS } from '../types/BattleTypes';
+import { SaveService } from '../services/SaveService';
+import { CardDatabase } from '../services/CardDatabase';
+import { FusionSystem } from '../services/FusionSystem';
+import { CardMasteryService } from '../services/CardMasteryService';
+import { LevelSystem } from '../services/LevelSystem';
 import './DefeatScreen.css';
 
 interface Props {
@@ -108,6 +113,25 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
     ? `Rundengrenze (${MAX_ROUNDS}) erreicht — Gegner zu stark.`
     : 'Alle HP verloren.';
 
+  // Deck upgrade suggestion: weakest card + whether it can level up or fuse
+  const upgradeSuggestion = useMemo(() => {
+    const gState = SaveService.loadGachaState();
+    const deck = SaveService.loadDeck();
+    if (deck.uuids.length === 0) return null;
+    let weakest: { name: string; atk: number; canLevel: boolean } | null = null;
+    for (const uuid of deck.uuids) {
+      const inst = gState.inventory.find(i => i.uuid === uuid);
+      if (!inst) continue;
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) continue;
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level ?? 1);
+      const atk = stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+      const canLevel = (inst.level ?? 1) < LevelSystem.levelCap(inst.rarity);
+      if (!weakest || atk < weakest.atk) weakest = { name: card.name, atk, canLevel };
+    }
+    return weakest;
+  }, []);
+
   const totalDamage  = details.totalDamage ?? 0;
   const maxCombo     = details.maxCombo    ?? 0;
   const enemyHpPct   = details.enemyHpPct  ?? 1;
@@ -185,6 +209,24 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
             ))}
           </div>
         </div>
+
+        {/* ── Deck-Verbesserung ── */}
+        {upgradeSuggestion && (
+          <div className="defeat-upgrade">
+            <div className="defeat-upgrade__header">◆ NÄCHSTE VERBESSERUNG</div>
+            <div className="defeat-upgrade__body">
+              <span className="defeat-upgrade__icon">⚔</span>
+              <span className="defeat-upgrade__text">
+                <strong>{upgradeSuggestion.name}</strong>
+                <span className="defeat-upgrade__atk"> ({upgradeSuggestion.atk.toLocaleString('de-DE')} ATK)</span>
+                {' — '}
+                {upgradeSuggestion.canLevel
+                  ? 'Trainiere diese Karte für mehr Kampfstärke!'
+                  : 'Fusioniere für die nächste Seltenheitsstufe!'}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Trostpreis */}
         <div className="defeat-consolation">

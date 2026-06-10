@@ -135,8 +135,11 @@
   animation: lvlup-flash 1.2s ease;
 }
 @keyframes lvlup-flash {
-  0%,100% { background: transparent; }
-  25%,75% { background: rgba(201,168,76,0.18); border-radius: 6px; }
+  0%   { background: transparent; transform: scale(1); }
+  15%  { background: rgba(201,168,76,0.35); transform: scale(1.04); box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+  45%  { background: rgba(201,168,76,0.18); transform: scale(1.02); box-shadow: 0 0 30px rgba(255,215,0,0.9); }
+  75%  { background: rgba(201,168,76,0.12); transform: scale(1.01); }
+  100% { background: transparent; transform: scale(1); box-shadow: none; }
 }
 
 .training-target-detail__left { flex-shrink: 0; }
@@ -505,6 +508,47 @@
   letter-spacing: 0.5px;
 }
 
+/* MAX LEVEL BANNER */
+.training-max-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(255,215,0,0.1), rgba(201,168,76,0.2));
+  border: 1px solid rgba(201,168,76,0.6);
+  border-radius: 8px;
+  text-align: center;
+  animation: maxBannerShimmer 3s ease-in-out infinite alternate;
+}
+@keyframes maxBannerShimmer {
+  from { box-shadow: 0 0 10px rgba(255,215,0,0.25); border-color: rgba(201,168,76,0.4); }
+  to   { box-shadow: 0 0 20px rgba(255,215,0,0.55); border-color: rgba(255,215,0,0.8); }
+}
+.training-max-banner__star {
+  font-size: 1.4rem;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255,215,0,0.7);
+  flex-shrink: 0;
+}
+.training-max-banner__text {
+  flex: 1;
+}
+.training-max-banner__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255,215,0,0.5);
+  margin-bottom: 4px;
+}
+.training-max-banner__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.78rem;
+  color: #c9a84c;
+  opacity: 0.85;
+}
+
 /* ── Opfern: Body & Sektionen ──────────────────────────────── */
 .opfern-body {
   flex: 1;
@@ -526,7 +570,7 @@
   gap: 12px;
   align-items: flex-start;
 }
-.opfern-target--levelup { animation: lvlup-flash 1.2s ease; border-radius: 6px; }
+.opfern-target--levelup { animation: lvlup-flash 1.4s ease both; border-radius: 6px; }
 
 .opfern-target__art {
   width: 78px;

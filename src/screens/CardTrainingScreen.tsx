@@ -237,7 +237,16 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
 
         {target && atMax && (
-          <div className="training-max-msg">✦ Diese Karte hat das maximale Level ({cap}) erreicht.</div>
+          <div className="training-max-banner">
+            <div className="training-max-banner__star">★</div>
+            <div className="training-max-banner__text">
+              <div className="training-max-banner__title">MAX LEVEL ERREICHT</div>
+              <div className="training-max-banner__sub">
+                Lv. {cap} · {targetCard?.name} ist auf dem Gipfel seiner Macht!
+              </div>
+            </div>
+            <div className="training-max-banner__star">★</div>
+          </div>
         )}
 
         {target && !atMax && (

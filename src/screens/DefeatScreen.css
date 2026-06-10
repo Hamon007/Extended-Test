@@ -76,6 +76,35 @@
   margin: 18px 0;
 }
 
+/* ── Deck-Verbesserung ───────────────────────────────────── */
+.defeat-upgrade {
+  background: rgba(30, 60, 20, 0.35);
+  border: 1px solid rgba(80, 160, 60, 0.45);
+  border-radius: 8px;
+  padding: 10px 16px;
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 12px;
+}
+.defeat-upgrade__header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: #88cc66;
+  margin-bottom: 6px;
+}
+.defeat-upgrade__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  color: #c0e0a8;
+  line-height: 1.4;
+}
+.defeat-upgrade__icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+.defeat-upgrade__atk { color: #ffcc44; font-size: 0.75rem; }
+
 /* ── Trostpreis ───────────────────────────────────────────── */
 .defeat-consolation {
   background: rgba(139,26,26,0.12);
