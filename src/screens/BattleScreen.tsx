@@ -76,6 +76,10 @@ const BattleScreen: React.FC = () => {
   const lastStandShownRef  = useRef(false);
   const [selectedRune,   setSelectedRune]   = useState<RuneBoost | null>(null);
   const [showLastStand,  setShowLastStand]  = useState(false);
+  const [revengeFloor,   setRevengeFloor]   = useState<number | null>(() => {
+    const v = localStorage.getItem('ci_defeat_floor');
+    return v ? parseInt(v, 10) : null;
+  });
   const crystalRuneMultRef = useRef(1.0);
   // Boss Rush
   const bossRushWaveRef       = useRef(0);   // 0 = not in boss rush; 1-5 = current wave
@@ -341,6 +345,17 @@ const BattleScreen: React.FC = () => {
     // Embed tower floor context for VictoryScreen next-floor preview
     if (isTowerMode) {
       finalDetails = { ...finalDetails, towerFloor };
+    }
+
+    // Track revenge floor: store on defeat, clear on victory
+    if (isTowerMode) {
+      if (finalDetails.isVictory) {
+        localStorage.removeItem('ci_defeat_floor');
+        setRevengeFloor(null);
+      } else {
+        localStorage.setItem('ci_defeat_floor', String(towerFloor));
+        setRevengeFloor(towerFloor);
+      }
     }
 
     // Result taunt (shown briefly on victory/defeat screen)
@@ -838,6 +853,15 @@ const BattleScreen: React.FC = () => {
         )}
       </div>
 
+      {/* Revenge chip — appears when the player returns to their last defeat floor */}
+      {revengeFloor === towerFloor && (
+        <div className="battle-revenge-chip">
+          <span className="battle-revenge-chip__icon">⚔</span>
+          <span className="battle-revenge-chip__text">REVANCHE — Etage {towerFloor}</span>
+          <span className="battle-revenge-chip__sub">Beweise dich!</span>
+        </div>
+      )}
+
       {/* Etagen-Info */}
       <div className="battle-tower-floor-banner">
         <div className="battle-tower-floor-banner__floor">
@@ -849,6 +873,16 @@ const BattleScreen: React.FC = () => {
             {isBoss ? '⚔ BOSS-ETAGE' : towerFloor % 5 === 0 ? '⚡ ELITE-ETAGE' : '◆ NORMAL-ETAGE'}
           </div>
           <div className="battle-tower-floor-banner__highest">Höchste erreicht: {highestFloor}</div>
+          {(() => {
+            const base = EnemyDatabase.getFirst();
+            const baseCrystals = base?.rewardCrystals ?? 100;
+            const est = Math.round(baseCrystals * (1 + towerFloor * 0.2));
+            return (
+              <div className="battle-tower-floor-banner__reward-hint">
+                💎 ~{est.toLocaleString('de-DE')} Kristalle
+              </div>
+            );
+          })()}
           <div className="battle-tower-floor-banner__hint">
             {isBoss
               ? 'Ein mächtiger Wächter versperrt den Weg. Taktik ist alles.'
