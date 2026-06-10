@@ -16,6 +16,7 @@ import { OfflineIncomeService, type OfflineResult } from '../services/OfflineInc
 import { LuckySpinService } from '../services/LuckySpinService';
 import { FirstWinService } from '../services/FirstWinService';
 import { DailyTrialService } from '../services/DailyTrialService';
+import { BossRushService } from '../services/BossRushService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
 import { FusionSystem } from '../services/FusionSystem';
@@ -115,6 +116,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     login:       !DailyLoginService.canClaim(),
     firstWin:    !FirstWinService.isAvailable(),
     trial:       DailyTrialService.isCompleted(),
+    bossRush:    !BossRushService.canAttempt(),
     dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
     totalQuests: QuestService.getDailyQuests().length,
   }));
@@ -242,6 +244,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         login:       !DailyLoginService.canClaim(),
         firstWin:    !FirstWinService.isAvailable(),
         trial:       DailyTrialService.isCompleted(),
+        bossRush:    !BossRushService.canAttempt(),
         dailyQuests: QuestService.getDailyQuests().filter(q => q.progress.completed && q.progress.claimed).length,
         totalQuests: QuestService.getDailyQuests().length,
       });
@@ -653,6 +656,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           !dailyChecks.spin,
           !dailyChecks.firstWin,
           !dailyChecks.trial,
+          !dailyChecks.bossRush,
           dailyChecks.dailyQuests < dailyChecks.totalQuests,
         ].filter(Boolean).length;
         if (dailyResetMs > 2 * 3600_000 || pendingTasks === 0) return null;
@@ -693,6 +697,15 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             onClick={() => onNavigate?.('battle')} style={{ cursor: 'pointer' }}>
             <span className="main-daily-item__check">{dailyChecks.trial ? '✓' : '○'}</span>
             <span className="main-daily-item__label">☀️ Tagesprüfung</span>
+          </div>
+          <div
+            className={`main-daily-item ${dailyChecks.bossRush ? 'main-daily-item--done' : 'main-daily-item--highlight'}`}
+            onClick={() => onNavigate?.('battle')} style={{ cursor: 'pointer' }}>
+            <span className="main-daily-item__check">{dailyChecks.bossRush ? '✓' : '○'}</span>
+            <span className="main-daily-item__label">
+              💀 Boss Rush
+              {!dailyChecks.bossRush && <span className="main-daily-item__reward"> +2500 💎</span>}
+            </span>
           </div>
           <div className={`main-daily-item ${dailyChecks.dailyQuests >= dailyChecks.totalQuests ? 'main-daily-item--done' : ''}`}
             onClick={() => onNavigate?.('quests')} style={{ cursor: 'pointer' }}>
