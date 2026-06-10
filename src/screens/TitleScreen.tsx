@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AuthService } from '../services/AuthService';
+import { QuestService } from '../services/QuestService';
+import { AchievementService } from '../services/AchievementService';
+import { ExpeditionService } from '../services/ExpeditionService';
+import { LuckySpinService } from '../services/LuckySpinService';
+import { DailyLoginService } from '../services/DailyLoginService';
 import './TitleScreen.css';
 
 interface TitleScreenProps {
@@ -12,6 +17,30 @@ const B = import.meta.env.BASE_URL;
 const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter, onAccountPress }) => {
   const [loggedIn, setLoggedIn] = useState(() => AuthService.isLoggedIn);
   useEffect(() => AuthService.subscribe(u => setLoggedIn(u !== null)), []);
+
+  const pendingItems = useMemo(() => {
+    const items: { icon: string; label: string }[] = [];
+    const claimableQuests = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
+      .filter(q => q.progress.completed && !q.progress.claimed).length;
+    if (claimableQuests > 0)
+      items.push({ icon: '📜', label: `${claimableQuests} Quest${claimableQuests > 1 ? 's' : ''}` });
+
+    const achCount = AchievementService.getUnclaimedCount();
+    if (achCount > 0)
+      items.push({ icon: '🏆', label: `${achCount} Erfolg${achCount > 1 ? 'e' : ''}` });
+
+    const expDone = ExpeditionService.getCompleted().length;
+    if (expDone > 0)
+      items.push({ icon: '⚔', label: `${expDone} Exp.` });
+
+    if (LuckySpinService.canSpin())
+      items.push({ icon: '🎰', label: 'Gratis-Dreh' });
+
+    if (DailyLoginService.canClaim())
+      items.push({ icon: '📅', label: 'Tages-Login' });
+
+    return items;
+  }, []);
 
   return (
     <div className="title-screen" onClick={onEnter}>
@@ -30,6 +59,22 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onEnter, onAccountPress }) =>
         <span className="title-screen__logo-codex">Codex</span>
         <span className="title-screen__logo-immortalis">Immortalis</span>
       </div>
+
+      {/* Pending rewards notification */}
+      {pendingItems.length > 0 && (
+        <div className="title-screen__pending" onClick={e => e.stopPropagation()}>
+          <div className="title-screen__pending-label">
+            ✦ {pendingItems.length} Belohnung{pendingItems.length > 1 ? 'en' : ''} warten!
+          </div>
+          <div className="title-screen__pending-chips">
+            {pendingItems.map((item, i) => (
+              <span key={i} className="title-screen__pending-chip">
+                {item.icon} {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Start-Button unten mittig */}
       <div className="title-screen__bottom-center" onClick={e => e.stopPropagation()}>
