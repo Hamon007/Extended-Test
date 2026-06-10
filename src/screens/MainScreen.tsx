@@ -862,16 +862,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <span className="main-streak-calendar__title">🔥 Login-Streak</span>
           <span className="main-streak-calendar__day">Tag {streakDay}/7</span>
         </div>
+        {streakDay < 7 && (
+          <div className="main-streak-calendar__goal">
+            🎁 Tag 7: 1.000 💎 + 3 Tränke — noch {7 - streakDay} Tag{7 - streakDay !== 1 ? 'e' : ''}!
+          </div>
+        )}
         <div className="main-streak-calendar__days">
           {DailyLoginService.DAY_REWARDS.map(r => {
             const isPast    = r.day < streakDay;
             const isCurrent = r.day === streakDay;
             const isClaimed = isPast || (isCurrent && !dailyChecks.login);
+            const isFinal   = r.day === 7;
             return (
               <div
                 key={r.day}
                 className={[
                   'main-streak-day',
+                  isFinal            ? 'main-streak-day--final'    : '',
                   isClaimed          ? 'main-streak-day--claimed'  : '',
                   isCurrent && dailyChecks.login === false
                                      ? 'main-streak-day--available' : '',
@@ -884,10 +891,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
                   {isClaimed ? '✓' : `${r.day}`}
                 </div>
                 <div className="main-streak-day__icon">
-                  {r.day === 7 ? '🎉' : r.crystals >= 500 ? '💎' : r.potions > 0 ? '🧪' : '💎'}
+                  {isFinal ? '🎉' : r.crystals >= 500 ? '💎' : r.potions > 0 ? '🧪' : '💎'}
                 </div>
                 <div className="main-streak-day__val">
-                  {r.day === 7 ? '1K' : r.crystals >= 1000 ? `${(r.crystals/1000).toFixed(1)}K` : `${r.crystals}`}
+                  {isFinal ? '1K+' : r.crystals >= 1000 ? `${(r.crystals/1000).toFixed(1)}K` : `${r.crystals}`}
                 </div>
               </div>
             );
