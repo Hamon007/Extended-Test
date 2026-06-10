@@ -63,6 +63,7 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const totalContrib = NPC_TOTAL_CONTRIBUTION + state.playerWeeklyContribution;
   const weeklyPct    = Math.min(100, (totalContrib / WEEKLY_GOAL) * 100);
   const bossHpPct    = (state.bossCurrentHp / GUILD_BOSS_MAX_HP) * 100;
+  const bossPhase    = bossHpPct > 66 ? 'healthy' : bossHpPct > 33 ? 'wounded' : 'critical';
 
   useEffect(() => {
     const id = setInterval(() => setResetMs(msUntilNextMonday()), 1000);
@@ -168,13 +169,20 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <section className="guild-section">
             <div className="guild-section__title">GILDENBOSS</div>
 
-            <div className={`guild-boss-card ${shaking ? 'guild-boss-card--shake' : ''} ${state.bossCleared ? 'guild-boss-card--cleared' : ''}`}>
-              <div className="guild-boss__portrait">
-                {state.bossCleared ? '☠️' : '👹'}
+            <div className={`guild-boss-card guild-boss-card--${bossPhase} ${shaking ? 'guild-boss-card--shake' : ''} ${state.bossCleared ? 'guild-boss-card--cleared' : ''}`}>
+              <div className={`guild-boss__portrait ${bossPhase === 'critical' ? 'guild-boss__portrait--critical' : ''}`}>
+                {state.bossCleared ? '☠️' : bossPhase === 'critical' ? '💢👹' : '👹'}
               </div>
               <div className="guild-boss__info">
-                <div className="guild-boss__name">
-                  {state.bossCleared ? 'Besiegt!' : 'Dämon der Finsternis'}
+                <div className="guild-boss__name-row">
+                  <div className="guild-boss__name">
+                    {state.bossCleared ? 'Besiegt!' : 'Dämon der Finsternis'}
+                  </div>
+                  {!state.bossCleared && (
+                    <span className={`guild-boss__phase guild-boss__phase--${bossPhase}`}>
+                      {bossPhase === 'healthy' ? '● Gesund' : bossPhase === 'wounded' ? '⚡ Verwundet' : '🔥 Kritisch!'}
+                    </span>
+                  )}
                 </div>
                 <div className="guild-boss__hp-row">
                   <span className="guild-boss__hp-label">
@@ -186,13 +194,14 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 </div>
                 <div className="guild-bar guild-bar--boss">
                   <div
-                    className="guild-bar__fill guild-bar__fill--boss"
+                    className={`guild-bar__fill guild-bar__fill--boss guild-bar__fill--boss-${bossPhase}`}
                     style={{ width: `${bossHpPct}%` }}
                   />
                 </div>
                 {attack && (
-                  <div className="guild-boss__last-hit">
-                    Letzter Treffer: -{attack.damage.toLocaleString('de-DE')} Schaden
+                  <div className="guild-boss__last-hit guild-boss__last-hit--anim">
+                    ⚔ -{attack.damage.toLocaleString('de-DE')} Schaden
+                    {attack.cleared && ' · BOSS BESIEGT! ✦'}
                   </div>
                 )}
               </div>
@@ -204,13 +213,15 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               </div>
             ) : (
               <button
-                className={`guild-attack-btn ${state.bossAttacksLeft <= 0 ? 'guild-attack-btn--disabled' : ''}`}
+                className={`guild-attack-btn ${state.bossAttacksLeft <= 0 ? 'guild-attack-btn--disabled' : bossPhase === 'critical' ? 'guild-attack-btn--critical' : 'guild-attack-btn--ready'}`}
                 disabled={state.bossAttacksLeft <= 0}
                 onClick={handleAttack}
               >
                 {state.bossAttacksLeft <= 0
                   ? '✕ Keine Angriffe mehr (Reset: Montag)'
-                  : `⚔ Boss angreifen (+${GUILD_BOSS_REWARD_CRYSTALS} 💎 bei Sieg)`}
+                  : bossPhase === 'critical'
+                    ? `🔥 JETZT ANGREIFEN — Kritische Phase!`
+                    : `⚔ Boss angreifen (+${GUILD_BOSS_REWARD_CRYSTALS} 💎 bei Sieg)`}
               </button>
             )}
 

@@ -195,7 +195,6 @@
   font-family: 'Cinzel', serif;
   font-size: 13px;
   color: #f0d080;
-  margin-bottom: 6px;
 }
 
 .guild-boss__hp-row {
@@ -273,6 +272,75 @@
   background: linear-gradient(135deg, #1a0d10, #200f18);
   border-color: #2a1525;
   box-shadow: none;
+}
+
+.guild-attack-btn--ready {
+  animation: attackReady 2s ease-in-out infinite alternate;
+}
+@keyframes attackReady {
+  from { box-shadow: 0 0 8px rgba(139,26,26,0.3); }
+  to   { box-shadow: 0 0 20px rgba(204,34,0,0.6); }
+}
+
+.guild-attack-btn--critical {
+  background: linear-gradient(135deg, #4a0808, #8b1a1a);
+  border-color: #ff4400;
+  color: #ffccaa;
+  animation: criticalPulse 1s ease-in-out infinite alternate;
+}
+@keyframes criticalPulse {
+  from { box-shadow: 0 0 12px rgba(255,60,0,0.4); transform: scale(1); }
+  to   { box-shadow: 0 0 28px rgba(255,60,0,0.8); transform: scale(1.02); }
+}
+
+/* Boss phase colors */
+.guild-bar__fill--boss-healthy  { background: linear-gradient(90deg, #8b0000, #cc2200); }
+.guild-bar__fill--boss-wounded  { background: linear-gradient(90deg, #b05000, #e07000); }
+.guild-bar__fill--boss-critical { background: linear-gradient(90deg, #cc0050, #ff2040); animation: critBarPulse 1.2s ease-in-out infinite alternate; }
+@keyframes critBarPulse {
+  from { opacity: 0.8; }
+  to   { opacity: 1; box-shadow: 0 0 8px rgba(255,30,60,0.5); }
+}
+
+/* Boss name + phase row */
+.guild-boss__name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.guild-boss__phase {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.guild-boss__phase--healthy  { color: #66bb66; background: rgba(50,130,50,0.15); border: 1px solid rgba(50,130,50,0.3); }
+.guild-boss__phase--wounded  { color: #f0a040; background: rgba(160,80,0,0.15);  border: 1px solid rgba(160,80,0,0.3); }
+.guild-boss__phase--critical { color: #ff6050; background: rgba(200,30,0,0.15);  border: 1px solid rgba(200,30,0,0.4); animation: phaseFlash 1.2s ease-in-out infinite alternate; }
+@keyframes phaseFlash {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}
+
+.guild-boss__portrait--critical {
+  animation: portraitShudder 0.8s ease-in-out infinite alternate;
+}
+@keyframes portraitShudder {
+  from { transform: rotate(-2deg); }
+  to   { transform: rotate(2deg); }
+}
+
+.guild-boss__last-hit--anim {
+  animation: hitAnim 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  color: #ff8060;
+  font-weight: 700;
+}
+@keyframes hitAnim {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
 }
 
 /* ── Spenden ──────────────────────────────────────────────── */
