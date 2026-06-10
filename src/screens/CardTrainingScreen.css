@@ -10,6 +10,97 @@
   color: #e8d5b0;
 }
 
+/* ── Deck recommendation banner ──────────────────────────────── */
+.training-deck-suggest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(18,10,30,0.95), rgba(35,18,55,0.9));
+  border: 1px solid rgba(200,160,40,0.4);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 4px 0 6px;
+  cursor: pointer;
+  text-align: left;
+  flex-shrink: 0;
+  animation: trainSuggestPulse 2.5s ease-in-out infinite alternate;
+  transition: transform 0.12s;
+}
+.training-deck-suggest:active { transform: scale(0.98); }
+
+@keyframes trainSuggestPulse {
+  from { border-color: rgba(200,160,40,0.3); }
+  to   { border-color: rgba(255,210,60,0.65); box-shadow: 0 0 14px rgba(220,180,0,0.18); }
+}
+
+.training-deck-suggest__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.training-deck-suggest__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.training-deck-suggest__eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: #c9a84c;
+}
+
+.training-deck-suggest__name {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #f0d080;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.training-deck-suggest__bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.training-deck-suggest__bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(201,168,76,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.training-deck-suggest__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a84c, #f0d080);
+  border-radius: 2px;
+}
+
+.training-deck-suggest__level {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #8a6520;
+  white-space: nowrap;
+}
+
+.training-deck-suggest__cta {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #ffd700;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
 /* Toast */
 .training-toast {
   position: absolute;

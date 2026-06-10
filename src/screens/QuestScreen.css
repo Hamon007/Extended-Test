@@ -181,6 +181,18 @@
   flex-shrink: 0;
 }
 
+.quest-card__near-hint {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #ff9940;
+  letter-spacing: 0.05em;
+  animation: nearHintBlink 1.4s ease-in-out infinite alternate;
+}
+@keyframes nearHintBlink {
+  from { opacity: 0.75; }
+  to   { opacity: 1; text-shadow: 0 0 6px rgba(255,140,40,0.5); }
+}
+
 .quest-card__rewards {
   display: flex; gap: 12px;
   font-family: 'Cinzel', serif; font-size: 0.6rem; color: var(--gold-dark);

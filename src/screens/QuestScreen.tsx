@@ -65,6 +65,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
     .reduce((sum, q) => sum + q.def.crystalReward, 0);
   const claimableCount  = list.filter(q => q.progress.completed && !q.progress.claimed).length;
   const claimedTotal    = list.filter(q => q.progress.claimed).reduce((s, q) => s + q.def.crystalReward, 0);
+  const claimedXpTotal  = list.filter(q => q.progress.claimed).reduce((s, q) => s + q.def.xpReward, 0);
   const allDone         = list.length > 0 && list.every(q => q.progress.claimed);
 
   // Urgency: daily < 2h, weekly < 12h
@@ -151,7 +152,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
             {tab === 'daily' ? 'Alle Tagesquests erledigt!' : 'Alle Wochenquests erledigt!'}
           </div>
           <div className="quest-all-done__crystals">
-            +{claimedTotal.toLocaleString('de-DE')} 💎 heute verdient
+            +{claimedTotal.toLocaleString('de-DE')} 💎 · +{claimedXpTotal.toLocaleString('de-DE')} XP verdient
           </div>
           <div className="quest-all-done__hint">
             ↺ Neue Quests in {formatHMS(resetMs)}
@@ -179,6 +180,11 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
                     {progress.current}/{def.target}
                   </span>
                 </div>
+                {isNearComplete && (
+                  <div className="quest-card__near-hint">
+                    ⚡ Noch {def.target - progress.current} {def.target - progress.current === 1 ? 'Mal' : '×'} bis fertig!
+                  </div>
+                )}
                 <div className="quest-card__rewards">
                   <span>💎 {def.crystalReward}</span>
                   <span>✦ {def.xpReward.toLocaleString('de-DE')} XP</span>

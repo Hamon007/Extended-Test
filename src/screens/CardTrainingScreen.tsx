@@ -31,6 +31,20 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const cap        = target ? LevelSystem.levelCap(target.rarity) : 1;
   const atMax      = target ? (target.level ?? 1) >= cap : false;
 
+  // Lowest-level deck card that can still be trained
+  const deckWeakest = useMemo(() => {
+    const deck = SaveService.loadDeck();
+    return deck.uuids
+      .map(uuid => inventory.find(i => i.uuid === uuid))
+      .filter((i): i is CardInstance => !!i)
+      .filter(i => (i.level ?? 1) < LevelSystem.levelCap(i.rarity))
+      .sort((a, b) => {
+        const capA = LevelSystem.levelCap(a.rarity);
+        const capB = LevelSystem.levelCap(b.rarity);
+        return (a.level ?? 1) / capA - (b.level ?? 1) / capB;
+      })[0] ?? null;
+  }, [inventory]);
+
   const sacrificeInsts = useMemo(
     () => sacrificeUuids
       .map(u => inventory.find(i => i.uuid === u))
@@ -158,6 +172,33 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <span className="training-header__title">OPFERN</span>
         <div style={{ width: 32 }} />
       </div>
+
+      {/* Deck recommendation: weakest untrained deck card */}
+      {deckWeakest && !targetUuid && (() => {
+        const wCard = CardDatabase.getById(deckWeakest.cardId);
+        const wCap  = LevelSystem.levelCap(deckWeakest.rarity);
+        const wLv   = deckWeakest.level ?? 1;
+        const wPct  = Math.round((wLv / wCap) * 100);
+        return (
+          <button
+            className="training-deck-suggest"
+            onClick={() => chooseTarget(deckWeakest.uuid)}
+          >
+            <span className="training-deck-suggest__icon">⚔</span>
+            <div className="training-deck-suggest__body">
+              <span className="training-deck-suggest__eyebrow">DECK-EMPFEHLUNG</span>
+              <span className="training-deck-suggest__name">{wCard?.name ?? deckWeakest.cardId}</span>
+              <div className="training-deck-suggest__bar-row">
+                <div className="training-deck-suggest__bar">
+                  <div className="training-deck-suggest__bar-fill" style={{ width: `${wPct}%` }} />
+                </div>
+                <span className="training-deck-suggest__level">Lv. {wLv} / {wCap}</span>
+              </div>
+            </div>
+            <span className="training-deck-suggest__cta">TRAINIEREN →</span>
+          </button>
+        );
+      })()}
 
       <div className="opfern-body">
 
