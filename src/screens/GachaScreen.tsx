@@ -92,6 +92,7 @@ const GachaScreen: React.FC = () => {
             <MultiResult
               results={lastMulti.results}
               isPulling={isPulling}
+              pity={state.pityCounter}
               onClose={store.clearResults}
               onCardClick={openDetail}
               onSingleAgain={store.doSingle}
@@ -372,6 +373,12 @@ const SingleResult: React.FC<SingleResultProps> = ({
         <div className="result-single__tap-hint">Tippen für Details</div>
       </div>
 
+      {instance.isNew && HIGH_RARITY.some(r => instance.rarity.startsWith(r)) && (
+        <div className="result-first-high">
+          🌟 ERSTE {instance.rarity}!
+        </div>
+      )}
+
       <div className="result-actions">
         <button
           className="result-again-btn result-again-btn--single"
@@ -403,6 +410,7 @@ const SingleResult: React.FC<SingleResultProps> = ({
 interface MultiResultProps {
   results:      PullResult[];
   isPulling:    boolean;
+  pity:         number;
   onClose:      () => void;
   onCardClick:  (cardId: string) => void;
   onSingleAgain:() => void;
@@ -410,7 +418,7 @@ interface MultiResultProps {
 }
 
 const MultiResult: React.FC<MultiResultProps> = ({
-  results, isPulling, onClose, onCardClick, onSingleAgain, onMultiAgain,
+  results, isPulling, pity, onClose, onCardClick, onSingleAgain, onMultiAgain,
 }) => {
   const [revealed, setRevealed] = useState(0);
   const allRevealed = revealed >= results.length;
@@ -461,6 +469,11 @@ const MultiResult: React.FC<MultiResultProps> = ({
           >
             BEST: {summary.bestRarity}
           </span>
+          {summary.ssrPlus === 0 && pity > 0 && (
+            <span className="result-multi__summary-chip result-multi__summary-chip--pity-fomo">
+              Pity {pity}/{PITY_THRESHOLD} · noch {PITY_THRESHOLD - pity} ✦
+            </span>
+          )}
         </div>
       )}
 

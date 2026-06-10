@@ -108,6 +108,14 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
 
   const slotsUsed = active.length;
 
+  const pendingCrystals = useMemo(() => {
+    return active.reduce((sum, exp) => {
+      const def = ExpeditionService.EXPEDITION_DEFS.find(d => d.id === exp.expeditionId);
+      if (!def) return sum;
+      return sum + Math.round((def.rewards.crystalsMin + def.rewards.crystalsMax) / 2);
+    }, 0);
+  }, [active]);
+
   return (
     <div className="exp-screen">
       {toast && <div className="exp-toast">{toast}</div>}
@@ -129,6 +137,19 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
         {active.length > 0 && (
           <section className="exp-section">
             <h2 className="exp-section__title">Aktive Expeditionen</h2>
+            {pendingCrystals > 0 && (
+              <div className="exp-pending-chip">
+                <span className="exp-pending-chip__icon">💎</span>
+                <span className="exp-pending-chip__text">
+                  ~{pendingCrystals.toLocaleString('de-DE')} Kristalle unterwegs
+                </span>
+                {active.filter(e => Date.now() >= e.endsAt).length > 0 && (
+                  <span className="exp-pending-chip__ready">
+                    · {active.filter(e => Date.now() >= e.endsAt).length} bereit!
+                  </span>
+                )}
+              </div>
+            )}
             {active.map(exp => {
               const def  = ExpeditionService.EXPEDITION_DEFS.find(d => d.id === exp.expeditionId);
               const done = Date.now() >= exp.endsAt;
