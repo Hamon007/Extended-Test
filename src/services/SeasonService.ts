@@ -81,6 +81,8 @@ export interface SeasonState {
   startDate:    string;   // ISO date when season started
   endDate:      string;   // ISO date when season ends (startDate + 30 days)
   lastClaimed:  boolean;  // has end-season reward been claimed
+  spToday:      number;   // SP earned today (resets at midnight)
+  lastSpDate:   string;   // ISO date of last SP earned (for daily reset)
 }
 
 const SEASON_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -98,6 +100,8 @@ function newSeason(number: number): SeasonState {
     startDate:    start.toISOString().slice(0, 10),
     endDate:      end.toISOString().slice(0, 10),
     lastClaimed:  false,
+    spToday:      0,
+    lastSpDate:   todayISO(),
   };
 }
 
@@ -109,9 +113,15 @@ function load(): SeasonState {
       save(st);
       return st;
     }
-    const st = JSON.parse(raw) as SeasonState;
+    const partial = JSON.parse(raw) as Partial<SeasonState> & Pick<SeasonState, 'seasonNumber' | 'sp' | 'startDate' | 'endDate' | 'lastClaimed'>;
+    const today = todayISO();
+    const st: SeasonState = {
+      ...partial,
+      spToday:    partial.lastSpDate === today ? (partial.spToday ?? 0) : 0,
+      lastSpDate: partial.lastSpDate ?? today,
+    };
     // Check if season expired
-    if (todayISO() > st.endDate) {
+    if (today > st.endDate) {
       return handleSeasonEnd(st);
     }
     return st;
@@ -169,7 +179,9 @@ function progressToNext(sp: number): { rank: SeasonRank; nextRank: SeasonRank | 
 
 function addSp(amount: number): SeasonState {
   const st = load();
-  const updated = { ...st, sp: st.sp + amount };
+  const today = todayISO();
+  const spToday = st.lastSpDate === today ? st.spToday + amount : amount;
+  const updated = { ...st, sp: st.sp + amount, spToday, lastSpDate: today };
   save(updated);
   return updated;
 }

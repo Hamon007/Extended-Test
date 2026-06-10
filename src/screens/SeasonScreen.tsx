@@ -170,6 +170,29 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
         </div>
       )}
 
+      {/* Today's SP goal tracker */}
+      {nextRank && spPerDayNeeded !== null && spPerDayNeeded > 0 && daysLeft > 0 && (
+        <div className="season-today">
+          <div className="season-today__header">
+            <span className="season-today__title">◆ HEUTE</span>
+            <span className="season-today__frac">
+              {state.spToday.toLocaleString('de-DE')} / {spPerDayNeeded.toLocaleString('de-DE')} SP
+            </span>
+          </div>
+          <div className="season-today__bar-track">
+            <div
+              className={`season-today__bar-fill ${state.spToday >= spPerDayNeeded ? 'season-today__bar-fill--done' : state.spToday >= spPerDayNeeded * 0.5 ? 'season-today__bar-fill--ok' : 'season-today__bar-fill--behind'}`}
+              style={{ width: `${Math.min(100, spPerDayNeeded > 0 ? (state.spToday / spPerDayNeeded) * 100 : 0)}%` }}
+            />
+          </div>
+          <div className="season-today__sub">
+            {state.spToday >= spPerDayNeeded
+              ? `✦ Tagesziel erreicht — ${nextRank} im Plan!`
+              : `Noch ${(spPerDayNeeded - state.spToday).toLocaleString('de-DE')} SP heute für ${nextRank}-Kurs`}
+          </div>
+        </div>
+      )}
+
       {/* SP Sources Table */}
       <div className="season-section-title">SP verdienen</div>
       <div className="season-sp-table">

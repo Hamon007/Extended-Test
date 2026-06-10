@@ -101,6 +101,12 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
   }, 0);
   const pvpStreakCount = pvpStreak === -1 ? 0 : pvpStreak;
 
+  // Today's W/L from history timestamps
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+  const todayMatches = history.filter(m => m.timestamp >= todayStart.getTime());
+  const todayWins   = todayMatches.filter(m => m.result === 'win').length;
+  const todayLosses = todayMatches.filter(m => m.result === 'loss').length;
+
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -155,6 +161,11 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
           </span>
         )}
         <RankBadge rating={myRating} />
+        {todayMatches.length > 0 && (
+          <span className={`pvp-today-chip ${todayWins > todayLosses ? 'pvp-today-chip--winning' : todayLosses > todayWins ? 'pvp-today-chip--losing' : ''}`}>
+            Heute: {todayWins}S/{todayLosses}N
+          </span>
+        )}
       </div>
 
       {/* ── Rating progress bar ── */}

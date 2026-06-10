@@ -122,7 +122,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
         <div className="victory-divider" />
 
         {/* Battle-Stats */}
-        {(totalDamage > 0 || maxCombo > 0) && (
+        {(totalDamage > 0 || maxCombo > 0 || playerHpPct > 0) && (
           <div className="victory-stats">
             {totalDamage > 0 && (
               <div className="victory-stat">
@@ -138,6 +138,13 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
                 <span className="victory-stat__icon">🔥</span>
                 <span className="victory-stat__value">{maxCombo}×</span>
                 <span className="victory-stat__label">Max Combo</span>
+              </div>
+            )}
+            {playerHpPct > 0 && (
+              <div className={`victory-stat ${playerHpPct >= 0.9 ? 'victory-stat--max' : ''}`}>
+                <span className="victory-stat__icon">❤️</span>
+                <span className="victory-stat__value">{Math.round(playerHpPct * 100)}%</span>
+                <span className="victory-stat__label">HP übrig</span>
               </div>
             )}
             {roundsElapsed > 0 && (
