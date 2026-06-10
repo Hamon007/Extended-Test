@@ -148,10 +148,28 @@
   animation: reward-slide-in 0.4s ease both;
 }
 
-.reward-row--crystals { background: rgba(201,168,76,0.12); border: 1px solid #8a6520; animation-delay: 0.4s; }
-.reward-row--xp       { background: rgba(156,39,176,0.1);  border: 1px solid #6a1b9a; animation-delay: 0.5s; }
-.reward-row--streak   { background: rgba(244,67,54,0.12);  border: 1px solid #c62828; animation-delay: 0.55s; }
-.reward-row--firstwin { background: rgba(255,180,0,0.14);  border: 1px solid #ffa000; animation-delay: 0.45s; }
+.reward-row--crystals    { background: rgba(201,168,76,0.12); border: 1px solid #8a6520; animation-delay: 0.4s; }
+.reward-row--xp          { background: rgba(156,39,176,0.1);  border: 1px solid #6a1b9a; animation-delay: 0.5s; }
+.reward-row--streak      { background: rgba(244,67,54,0.12);  border: 1px solid #c62828; animation-delay: 0.55s; }
+.reward-row--firstwin    { background: rgba(255,180,0,0.14);  border: 1px solid #ffa000; animation-delay: 0.45s; }
+.reward-row--streak-mult {
+  background: linear-gradient(135deg, rgba(255,80,0,0.14), rgba(255,180,0,0.1));
+  border: 1px solid rgba(255,130,0,0.6);
+  animation-delay: 0.48s;
+  animation: reward-slide-in 0.4s ease 0.48s both, streakMultPulse 2s ease-in-out 1s infinite;
+}
+@keyframes streakMultPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,130,0,0.2); }
+  50%       { box-shadow: 0 0 16px rgba(255,130,0,0.5); }
+}
+.reward-row--streak-mult .reward-row__label { color: #ffaa55; }
+.reward-row__value--mult {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  color: #ffcc44;
+  font-weight: 900;
+  text-shadow: 0 0 12px rgba(255,200,60,0.6);
+}
 .reward-row--levelup  {
   flex-direction: column;
   align-items: flex-start;

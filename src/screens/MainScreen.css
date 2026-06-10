@@ -1225,6 +1225,27 @@
   50%       { box-shadow: 0 0 22px rgba(255,87,34,0.85); }
 }
 
+.main-streak-chip__mult {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ffe080;
+  margin-left: 2px;
+  text-shadow: 0 0 8px rgba(255,220,80,0.7);
+}
+
+.main-streak-chip--boost {
+  background: linear-gradient(135deg, #cc2200, #ff6600, #ffaa00);
+  border-color: #ffcc44;
+  box-shadow: 0 0 16px rgba(255,160,0,0.65);
+  animation: streakBoostPulse 1s ease-in-out infinite;
+}
+
+@keyframes streakBoostPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,140,0,0.5); }
+  50%       { box-shadow: 0 0 24px rgba(255,200,0,0.85); }
+}
+
 /* ── Collection Progress Widget ──────────────────────────── */
 /* ── Next Achievement Prompt ─────────────────────────────────── */
 .main-next-ach {

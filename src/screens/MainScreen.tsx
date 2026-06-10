@@ -453,11 +453,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
             </>
           )}
-          {winStreak > 0 && (
-            <div className={`main-streak-chip ${winStreak >= 5 ? 'main-streak-chip--hot' : ''}`}>
-              🔥 {winStreak}× SERIE
-            </div>
-          )}
+          {winStreak > 0 && (() => {
+            const sr = WinStreakService.getRewardMultiplier(winStreak);
+            return (
+              <div className={`main-streak-chip ${winStreak >= 3 ? 'main-streak-chip--hot' : ''} ${sr.multiplier > 1 ? 'main-streak-chip--boost' : ''}`}>
+                🔥 {winStreak}× SERIE
+                {sr.multiplier > 1 && (
+                  <span className="main-streak-chip__mult"> ×{sr.multiplier.toFixed(1)}</span>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 

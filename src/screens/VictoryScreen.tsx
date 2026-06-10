@@ -6,6 +6,7 @@ import { SaveService } from '../services/SaveService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
+import { WinStreakService } from '../services/WinStreakService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -58,6 +59,9 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
   const isFlawless    = playerHpPct >= 0.9 && roundsElapsed <= 5;
   const isNearMiss    = playerHpPct <= 0.15;
   const newRecords    = details.newRecords ?? [];
+
+  const streakReward  = WinStreakService.getRewardMultiplier(details.winStreak ?? 0);
+  const hasMultiplier = streakReward.multiplier > 1.0;
 
   // Next floor preview (tower mode only)
   const currentFloor = details.towerFloor;
@@ -243,6 +247,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
                 <span>Ausdauer: {details.accountLevelUp.newMaxStamina}</span>
                 <span>Mana: {details.accountLevelUp.newMaxMana.toLocaleString('de-DE')}</span>
               </div>
+            </div>
+          )}
+
+          {/* Aktiver Streak-Multiplikator */}
+          {hasMultiplier && (
+            <div className="reward-row reward-row--streak-mult">
+              <span className="reward-row__label">🔥 {streakReward.label}</span>
+              <span className="reward-row__value reward-row__value--mult">×{streakReward.multiplier.toFixed(1)}</span>
             </div>
           )}
 
