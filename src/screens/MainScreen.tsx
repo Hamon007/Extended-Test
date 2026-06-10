@@ -20,6 +20,7 @@ import { BossRushService } from '../services/BossRushService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
 import { FusionSystem } from '../services/FusionSystem';
+import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
 import { WinStreakService } from '../services/WinStreakService';
 import { PvpHistoryService } from '../services/PvpHistoryService';
 import type { Card } from '../types/Card';
@@ -145,6 +146,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     const total = CardDatabase.count();
     return { owned: uniqueOwned, total };
   });
+  const [collectionMilestone] = useState(() => CollectionMilestoneService.getProgress().next);
   const [fusionReady] = useState(() => {
     const inv = SaveService.loadGachaState().inventory;
     const groups = FusionSystem.buildGroups(inv);
@@ -854,6 +856,16 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             ? '🌟 Vollständige Sammlung!'
             : `Noch ${collectionStats.total - collectionStats.owned} Karten zum Vervollständigen`}
         </div>
+        {collectionMilestone && (() => {
+          const cardsNeeded = Math.ceil(
+            collectionStats.total * (collectionMilestone.pct / 100)
+          ) - collectionStats.owned;
+          return cardsNeeded > 0 ? (
+            <div className="main-collection__milestone">
+              🏆 Nächster Meilenstein: noch {cardsNeeded} Karte{cardsNeeded !== 1 ? 'n' : ''} → +{collectionMilestone.crystals.toLocaleString('de-DE')} 💎
+            </div>
+          ) : null;
+        })()}
       </div>
 
       {/* ── 7-Tage Login-Streak-Kalender ── */}

@@ -832,7 +832,7 @@ const BattleScreen: React.FC = () => {
       <div className="battle-select-header">
         <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
         {winStreak >= 1 && (
-          <div className={`battle-streak-chip ${winStreak >= 5 ? 'battle-streak-chip--hot' : ''}`}>
+          <div className={`battle-streak-chip ${winStreak >= 3 ? 'battle-streak-chip--hot' : ''}`}>
             🔥 {winStreak}{streakReward.multiplier > 1.0 && <> · ×{streakReward.multiplier.toFixed(1)}</>}
           </div>
         )}

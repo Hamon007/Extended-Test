@@ -1585,6 +1585,20 @@
   letter-spacing: 0.04em;
 }
 
+.main-collection__milestone {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  color: #c9a84c;
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  animation: milestoneGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes milestoneGlow {
+  from { opacity: 0.75; }
+  to   { opacity: 1; text-shadow: 0 0 8px rgba(201,168,76,0.4); }
+}
+
 /* ── 7-Day Login Streak Calendar ─────────────────────────── */
 .main-streak-calendar {
   background: linear-gradient(135deg, rgba(10,8,25,0.92), rgba(25,15,50,0.9));
