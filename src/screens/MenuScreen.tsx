@@ -12,13 +12,19 @@ interface MenuScreenProps {
   onBack: () => void;
 }
 
-// ── Menüpunkte ────────────────────────────────────────────────
+type MenuItem = {
+  icon: string;
+  label: string;
+  target: string | null;
+  badgeKey?: string;
+  hintKey?: string;
+};
 
-type MenuItem = { icon: string; label: string; target: string | null; badgeKey?: string };
+// ── Menüpunkte ────────────────────────────────────────────────
 
 const MENU_ITEMS: MenuItem[] = [
   { icon: '🏠', label: 'Hauptbildschirm',     target: 'main' },
-  { icon: '📜', label: 'Aufgaben',            target: 'quests',       badgeKey: 'quests' },
+  { icon: '📜', label: 'Aufgaben',            target: 'quests',       badgeKey: 'quests',       hintKey: 'quests' },
   { icon: '🃏', label: 'Kartensammlung',     target: 'cardCollection' },
   { icon: '📋', label: 'Deck bauen',         target: 'deck' },
   { icon: '🔮', label: 'Fusion & Awakening', target: 'fusion' },
@@ -27,11 +33,11 @@ const MENU_ITEMS: MenuItem[] = [
   { icon: '👤', label: 'Mein Profil',        target: 'profile' },
   { icon: '👥', label: 'Freunde',            target: 'friends' },
   { icon: '⚔️', label: 'PvP Rangliste',      target: 'pvp' },
-  { icon: '🏆', label: 'Achievements',       target: 'achievements',  badgeKey: 'achievements' },
-  { icon: '⚔', label: 'Expeditionen',       target: 'expedition',    badgeKey: 'expedition' },
+  { icon: '🏆', label: 'Achievements',       target: 'achievements',  badgeKey: 'achievements', hintKey: 'achievements' },
+  { icon: '⚔', label: 'Expeditionen',       target: 'expedition',    badgeKey: 'expedition',   hintKey: 'expedition' },
   { icon: '🏅', label: 'Saison-Rang',        target: 'season' },
-  { icon: '🛒', label: 'Laden',              target: 'shop',          badgeKey: 'spin' },
-  { icon: '🎰', label: 'Glücksrad',           target: 'lucky_spin',    badgeKey: 'spin' },
+  { icon: '🛒', label: 'Laden',              target: 'shop' },
+  { icon: '🎰', label: 'Glücksrad',           target: 'lucky_spin',    badgeKey: 'spin',         hintKey: 'spin' },
   { icon: '🔀', label: 'Handel',             target: 'trade' },
   { icon: '⚙️', label: 'Einstellungen',      target: 'settings' },
   { icon: 'ℹ️', label: 'Über das Spiel',     target: null },
@@ -42,15 +48,42 @@ const MENU_ITEMS: MenuItem[] = [
 
 const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
   const badges = useMemo(() => {
-    const claimableQuests = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
-      .filter(q => q.progress.completed && !q.progress.claimed).length;
+    const allQuests  = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()];
+    const claimable  = allQuests.filter(q => q.progress.completed && !q.progress.claimed).length;
+    const inProgress = allQuests.filter(q => !q.progress.completed && !q.progress.claimed).length;
+    const achCount   = AchievementService.getUnclaimedCount();
+    const expDone    = ExpeditionService.getCompleted().length;
+    const spinReady  = LuckySpinService.canSpin();
     return {
-      quests:       claimableQuests,
-      achievements: AchievementService.getUnclaimedCount(),
-      expedition:   ExpeditionService.getCompleted().length,
-      spin:         LuckySpinService.canSpin() ? 1 : 0,
+      quests:       claimable,
+      questsTotal:  allQuests.length,
+      questsInProg: inProgress,
+      achievements: achCount,
+      expedition:   expDone,
+      spin:         spinReady ? 1 : 0,
     };
   }, []);
+
+  const hints: Record<string, string> = useMemo(() => {
+    const h: Record<string, string> = {};
+    if (badges.quests > 0) {
+      h['quests'] = `${badges.quests} Belohnung${badges.quests !== 1 ? 'en' : ''} abholbereit!`;
+    } else if (badges.questsInProg > 0) {
+      h['quests'] = `${badges.questsInProg} Quest${badges.questsInProg !== 1 ? 's' : ''} läuft`;
+    }
+    if (badges.achievements > 0) {
+      h['achievements'] = `${badges.achievements} Erfolg${badges.achievements !== 1 ? 'e' : ''} abholbereit!`;
+    }
+    if (badges.expedition > 0) {
+      h['expedition'] = `${badges.expedition} Expedition${badges.expedition !== 1 ? 'en' : ''} abgeschlossen!`;
+    }
+    if (badges.spin > 0) {
+      h['spin'] = 'Gratis-Dreh verfügbar! 🎰';
+    }
+    return h;
+  }, [badges]);
+
+  const totalPending = badges.quests + badges.achievements + badges.expedition + badges.spin;
 
   return (
     <div className="menu-screen">
@@ -58,9 +91,43 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
       {/* ── Header ── */}
       <div className="menu-header">
         <button className="menu-header__back" onClick={onBack}>← Zurück</button>
-        <h1 className="menu-header__title">Menü</h1>
+        <h1 className="menu-header__title">
+          Menü
+          {totalPending > 0 && (
+            <span className="menu-header__pending">{totalPending > 9 ? '9+' : totalPending}</span>
+          )}
+        </h1>
         <div className="menu-header__spacer" />
       </div>
+
+      {/* ── Today at a Glance ── */}
+      {totalPending > 0 && (
+        <div className="menu-glance">
+          <div className="menu-glance__label">◆ HEUTE ZU TUN</div>
+          <div className="menu-glance__chips">
+            {badges.quests > 0 && (
+              <button className="menu-glance__chip menu-glance__chip--quest" onClick={() => onNav('quests')}>
+                📜 {badges.quests} Quest{badges.quests !== 1 ? 's' : ''}
+              </button>
+            )}
+            {badges.achievements > 0 && (
+              <button className="menu-glance__chip menu-glance__chip--ach" onClick={() => onNav('achievements')}>
+                🏆 {badges.achievements} Erfolg{badges.achievements !== 1 ? 'e' : ''}
+              </button>
+            )}
+            {badges.expedition > 0 && (
+              <button className="menu-glance__chip menu-glance__chip--exp" onClick={() => onNav('expedition')}>
+                ⚔ {badges.expedition} Exp.
+              </button>
+            )}
+            {badges.spin > 0 && (
+              <button className="menu-glance__chip menu-glance__chip--spin" onClick={() => onNav('lucky_spin')}>
+                🎰 Gratis-Dreh!
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Zierlinie ── */}
       <div className="menu-ornament">✦ ─────────────── ✦</div>
@@ -69,15 +136,20 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
       <div className="menu-list">
         {MENU_ITEMS.map(item => {
           const badgeCount = item.badgeKey ? (badges[item.badgeKey as keyof typeof badges] ?? 0) : 0;
+          const hint       = item.hintKey ? (hints[item.hintKey] ?? '') : '';
+          const isUrgent   = badgeCount > 0;
           return (
             <button
               key={item.label}
-              className={`menu-item ${item.target === null ? 'menu-item--disabled' : ''}`}
+              className={`menu-item ${item.target === null ? 'menu-item--disabled' : ''} ${isUrgent ? 'menu-item--urgent' : ''}`}
               onClick={() => item.target !== null && onNav(item.target)}
               disabled={item.target === null}
             >
               <span className="menu-item__icon">{item.icon}</span>
-              <span className="menu-item__label">{item.label}</span>
+              <div className="menu-item__body">
+                <span className="menu-item__label">{item.label}</span>
+                {hint && <span className="menu-item__hint">{hint}</span>}
+              </div>
               {badgeCount > 0 && (
                 <span className="menu-item__badge">{badgeCount > 9 ? '9+' : badgeCount}</span>
               )}
