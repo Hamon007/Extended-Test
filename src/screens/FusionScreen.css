@@ -118,6 +118,68 @@
 .fusion-all-btn:hover  { box-shadow: 0 2px 16px rgba(124,77,255,0.65); }
 .fusion-all-btn:active { transform: scale(0.97); }
 
+/* ── One-Away FOMO Banner ── */
+.fusion-one-away {
+  background: linear-gradient(135deg, rgba(255,100,0,0.10), rgba(255,200,0,0.08));
+  border: 1px solid rgba(255,160,0,0.4);
+  border-radius: 10px;
+  padding: 10px 14px 8px;
+  margin-bottom: 12px;
+  animation: oneAwayPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes oneAwayPulse {
+  from { box-shadow: 0 0 6px rgba(255,160,0,0.2); }
+  to   { box-shadow: 0 0 16px rgba(255,160,0,0.5); }
+}
+
+.fusion-one-away__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: #ffb300;
+  margin-bottom: 8px;
+}
+
+.fusion-one-away__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.fusion-one-away__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+}
+
+.fusion-one-away__name {
+  flex: 1;
+  color: #e8d8c0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-one-away__rarity { font-size: 0.65rem; }
+.fusion-one-away__next   { font-size: 0.65rem; font-weight: 700; }
+
+.fusion-one-away__arrow {
+  font-size: 0.7rem;
+  color: rgba(255,160,0,0.6);
+}
+
+.fusion-one-away__hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: #c8a060;
+  font-style: italic;
+  text-align: center;
+}
+
 .fusion-toast {
   position: absolute;
   top: 60px;

@@ -34,7 +34,9 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
     FusionSystem.ranksAboveBase(g.card.rarity, g.currentRarity) > 0
   );
 
-  const fuseable = visible.filter(g => g.canFuse).length;
+  const fuseable  = visible.filter(g => g.canFuse).length;
+  // Cards where exactly 1 more duplicate would enable fusion
+  const oneAway   = visible.filter(g => !g.canFuse && g.nextRarity && g.duplicatesNeeded - g.duplicatesAvailable === 1);
 
   const handleFuseAll = () => {
     const count = fuseAll();
@@ -89,6 +91,36 @@ const FusionScreen: React.FC<FusionScreenProps> = ({ onBack }) => {
                 </button>
               )}
             </div>
+            {/* "1 More Away" FOMO banner */}
+            {oneAway.length > 0 && (
+              <div className="fusion-one-away">
+                <div className="fusion-one-away__title">
+                  ⚡ NUR 1 DUPLIKAT ENTFERNT
+                </div>
+                <div className="fusion-one-away__list">
+                  {oneAway.map(g => {
+                    const color = RARITY_COLOR[g.currentRarity] ?? '#9e9e9e';
+                    const nextColor = g.nextRarity ? (RARITY_COLOR[g.nextRarity] ?? '#9e9e9e') : color;
+                    return (
+                      <div key={g.cardId} className="fusion-one-away__item">
+                        <span className="fusion-one-away__name">{g.card.name}</span>
+                        <span className="fusion-one-away__rarity" style={{ color }}>
+                          {g.currentRarity}
+                        </span>
+                        <span className="fusion-one-away__arrow">→</span>
+                        <span className="fusion-one-away__next" style={{ color: nextColor }}>
+                          {g.nextRarity}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="fusion-one-away__hint">
+                  Beschwöre noch einmal für den Durchbruch! 🔮
+                </div>
+              </div>
+            )}
+
             {visible.map(g => (
               <FusionRow
                 key={g.cardId}
