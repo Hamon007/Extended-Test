@@ -661,3 +661,94 @@
 .victory-next-floor__tag--elite {
   color: #90caf9;
 }
+
+/* ── Near Mastery Hints ───────────────────────────────────── */
+.victory-near-mastery {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(40,20,10,0.75), rgba(20,10,5,0.75));
+  border: 1px solid rgba(255,152,0,0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  animation: bond-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s both;
+}
+
+.victory-near-mastery__title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  color: #ff9800;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: nearMasteryTitleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes nearMasteryTitleGlow {
+  from { text-shadow: none; }
+  to   { text-shadow: 0 0 10px rgba(255,152,0,0.5); }
+}
+
+.victory-near-mastery__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(255,152,0,0.12);
+}
+
+.victory-near-mastery__row:first-of-type { border-top: none; }
+
+.victory-near-mastery__stars {
+  font-size: 0.72rem;
+  color: #ffd700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.victory-near-mastery__name {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #e8d5b0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.victory-near-mastery__bar {
+  width: 60px;
+  height: 5px;
+  background: rgba(255,152,0,0.15);
+  border-radius: 3px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.victory-near-mastery__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800, #ffd740);
+  border-radius: 3px;
+  animation: nearMasteryFillIn 0.6s ease 0.5s both;
+}
+
+@keyframes nearMasteryFillIn {
+  from { width: 0 !important; }
+}
+
+.victory-near-mastery__hint {
+  font-family: 'Cinzel', serif;
+  font-size: 9.5px;
+  color: #ff9800;
+  background: rgba(255,152,0,0.12);
+  border: 1px solid rgba(255,152,0,0.3);
+  border-radius: 8px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  animation: nearMasteryHintPulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes nearMasteryHintPulse {
+  from { border-color: rgba(255,152,0,0.3); }
+  to   { border-color: rgba(255,180,0,0.7); box-shadow: 0 0 6px rgba(255,152,0,0.2); }
+}

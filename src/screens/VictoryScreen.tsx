@@ -7,6 +7,7 @@ import { AccountProgressionService } from '../services/AccountProgressionService
 import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import { WinStreakService } from '../services/WinStreakService';
+import { CardMasteryService } from '../services/CardMasteryService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -62,6 +63,28 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
 
   const streakReward  = WinStreakService.getRewardMultiplier(details.winStreak ?? 0);
   const hasMultiplier = streakReward.multiplier > 1.0;
+
+  // Cards close to next mastery level (75%+), excluding ones that just leveled up
+  const nearMastery = useMemo(() => {
+    const deck = SaveService.loadDeck();
+    const inv  = SaveService.loadGachaState().inventory;
+    return deck.uuids
+      .map(uuid => {
+        const inst = inv.find(i => i.uuid === uuid);
+        if (!inst) return null;
+        const info = CardMasteryService.getMasteryInfo(inst.cardId);
+        if (info.nextThreshold === null) return null;
+        const pct = info.nextThreshold > 0 ? info.plays / info.nextThreshold : 0;
+        if (pct < 0.75) return null;
+        const card = CardDatabase.getById(inst.cardId);
+        const remaining = info.nextThreshold - info.plays;
+        return { name: card?.name ?? inst.cardId, pct, remaining, stars: info.stars, level: info.level };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null)
+      .filter(x => !masteryUps.some(m => m.cardName === x.name))
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 3);
+  }, [masteryUps]);
 
   // Next floor preview (tower mode only)
   const currentFloor = details.towerFloor;
@@ -184,6 +207,28 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
                 <span className="victory-mastery-row__stars">{m.stars}</span>
                 <span className="victory-bond-row__name">{m.cardName}</span>
                 <span className="victory-bond-row__level">Stufe {m.newLevel}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Near-Mastery hints */}
+        {nearMastery.length > 0 && (
+          <div className="victory-near-mastery">
+            <div className="victory-near-mastery__title">⚔ Fast Meisterschaft!</div>
+            {nearMastery.map((m, i) => (
+              <div key={i} className="victory-near-mastery__row">
+                <span className="victory-near-mastery__stars">{m.stars}</span>
+                <span className="victory-near-mastery__name">{m.name}</span>
+                <div className="victory-near-mastery__bar">
+                  <div
+                    className="victory-near-mastery__bar-fill"
+                    style={{ width: `${Math.round(m.pct * 100)}%` }}
+                  />
+                </div>
+                <span className="victory-near-mastery__hint">
+                  noch {m.remaining}×
+                </span>
               </div>
             ))}
           </div>
