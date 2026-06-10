@@ -20,6 +20,7 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService } from '../services/CardBondService';
 import { FusionSystem } from '../services/FusionSystem';
 import { WinStreakService } from '../services/WinStreakService';
+import { PvpHistoryService } from '../services/PvpHistoryService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -125,6 +126,13 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const winStreak  = WinStreakService.get();
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
+  const [pvpRecord] = useState(() => {
+    const hist = PvpHistoryService.getAll();
+    if (hist.length === 0) return null;
+    const w = hist.filter(m => m.result === 'win').length;
+    const l = hist.filter(m => m.result === 'loss').length;
+    return `${w}S/${l}N`;
+  });
   const [crystals,      setCrystals]      = useState(() => SaveService.loadGachaState().crystals);
   const [pityCounter,   setPityCounter]   = useState(() => SaveService.loadGachaState().pityCounter ?? 0);
   const [displayCrystals, setDisplayCrystals] = useState(0);
@@ -575,6 +583,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             onClick={() => onNavigate?.('expedition')}
           >
             ⚔ Expeditionen {expBadge > 0 && <span className="main-card__badge main-card__badge--purple">{expBadge}</span>}
+          </button>
+          <button
+            className="main-card__action-btn main-card__action-btn--pvp"
+            onClick={() => onNavigate?.('pvp')}
+          >
+            🥊 PvP Arena{pvpRecord && <span className="main-card__pvp-record"> · {pvpRecord}</span>}
           </button>
           <button
             className="main-card__action-btn"

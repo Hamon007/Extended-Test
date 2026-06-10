@@ -103,6 +103,11 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
     [gs.inventory],
   );
 
+  const fusionReadyIds = useMemo(() => {
+    const groups = FusionSystem.buildGroups(gs.inventory);
+    return new Set(groups.filter(g => g.canFuse).map(g => g.cardId));
+  }, [gs.inventory]);
+
   return (
     <div className="inv-screen">
       {toast && <div className="inv-toast">{toast}</div>}
@@ -224,6 +229,19 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
           </div>
         </div>
 
+        {fusionReadyIds.size > 0 && (
+          <button
+            className="inv-fusion-banner"
+            onClick={() => onNavigate?.('fusion')}
+          >
+            <span className="inv-fusion-banner__icon">⚗</span>
+            <span className="inv-fusion-banner__text">
+              {fusionReadyIds.size} Karte{fusionReadyIds.size !== 1 ? 'n' : ''} fusionsbereit!
+            </span>
+            <span className="inv-fusion-banner__arrow">›</span>
+          </button>
+        )}
+
         <div className="inv-card-grid">
           {filtered.length === 0 && (
             <p className="inv-empty">Keine Karten gefunden.</p>
@@ -234,10 +252,11 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
             const lv = inst.level ?? 1;
             const pw = cardPower(inst);
             const masteryLv = CardMasteryService.getMasteryInfo(inst.cardId).level;
+            const isFuseable = fusionReadyIds.has(inst.cardId);
             return (
               <button
                 key={inst.uuid}
-                className="inv-card-chip"
+                className={`inv-card-chip${isFuseable ? ' inv-card-chip--fuseable' : ''}`}
                 onClick={() => setDetail(inst)}
               >
                 <div className="inv-card-chip__img-wrap">
@@ -246,6 +265,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
                   {masteryLv > 0 && (
                     <span className="inv-card-chip__mastery">{'★'.repeat(Math.min(masteryLv, 3))}</span>
                   )}
+                  {isFuseable && <span className="inv-card-chip__fusion">⚗</span>}
                 </div>
                 <span className="inv-card-chip__rarity" style={{ color }}>{rarityMajor(inst.rarity)}</span>
                 <span className="inv-card-chip__name">{card?.name ?? inst.cardId}</span>

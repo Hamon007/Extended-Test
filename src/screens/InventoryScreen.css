@@ -163,6 +163,44 @@
 .inv-card-chip__power {
   font-family: 'Cinzel', serif; font-size: 0.48rem; color: rgba(255,200,68,0.7);
 }
+.inv-card-chip__fusion {
+  position: absolute; top: 3px; right: 3px;
+  font-size: 0.62rem; line-height: 1;
+  background: rgba(100,20,180,0.85); border-radius: 3px;
+  padding: 1px 3px; pointer-events: none;
+  animation: fusionPip 1.8s ease-in-out infinite alternate;
+}
+@keyframes fusionPip {
+  from { box-shadow: 0 0 4px rgba(160,80,255,0.5); }
+  to   { box-shadow: 0 0 10px rgba(200,100,255,0.9), 0 0 20px rgba(160,80,255,0.5); }
+}
+.inv-card-chip--fuseable {
+  border-color: rgba(160, 80, 255, 0.55);
+  animation: fuseablePulse 2.2s ease-in-out infinite alternate;
+}
+@keyframes fuseablePulse {
+  from { box-shadow: none; }
+  to   { box-shadow: 0 0 8px rgba(160,80,255,0.35); }
+}
+
+/* Fusion-ready banner */
+.inv-fusion-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(90deg, rgba(80,0,140,0.55), rgba(120,0,100,0.4));
+  border: 1px solid rgba(160,80,255,0.5);
+  border-radius: 6px; padding: 8px 12px;
+  margin-bottom: 10px; cursor: pointer; width: 100%;
+  font-family: 'Cinzel', serif; font-size: 0.68rem; color: #d4b4ff;
+  letter-spacing: 0.06em;
+  animation: fuseBannerPulse 2s ease-in-out infinite alternate;
+}
+@keyframes fuseBannerPulse {
+  from { border-color: rgba(160,80,255,0.4); }
+  to   { border-color: rgba(200,100,255,0.8); box-shadow: 0 0 10px rgba(160,80,255,0.25); }
+}
+.inv-fusion-banner__icon { font-size: 1rem; }
+.inv-fusion-banner__text { flex: 1; text-align: left; }
+.inv-fusion-banner__arrow { font-size: 1rem; color: rgba(200,100,255,0.7); }
 
 /* Detail overlay */
 .inv-overlay {

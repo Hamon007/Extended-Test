@@ -180,7 +180,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
       )}
 
       <button
-        className={`spin-btn ${(!canSpin || spinning) ? 'spin-btn--disabled' : ''}`}
+        className={`spin-btn ${(!canSpin || spinning) ? 'spin-btn--disabled' : canSpin && !spinning ? 'spin-btn--ready' : ''}`}
         disabled={!canSpin || spinning}
         onClick={handleSpin}
       >

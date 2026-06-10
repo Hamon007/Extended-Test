@@ -334,6 +334,21 @@
   box-shadow: none;
 }
 
+.spin-btn--ready {
+  animation: spinReadyPulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes spinReadyPulse {
+  from {
+    box-shadow: 0 4px 24px rgba(194, 24, 91, 0.5);
+    transform: scale(1);
+  }
+  to {
+    box-shadow: 0 4px 40px rgba(220, 60, 130, 0.85), 0 0 20px rgba(255, 140, 0, 0.4);
+    transform: scale(1.03);
+  }
+}
+
 /* ── Result Overlay ──────────────────────────────────────── */
 .spin-result {
   position: fixed;

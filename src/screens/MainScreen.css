@@ -1015,6 +1015,17 @@
   to   { box-shadow: 0 0 8px rgba(200, 100, 255, 0.4); }
 }
 
+.main-card__action-btn--pvp {
+  background: linear-gradient(135deg, rgba(180, 30, 30, 0.35), rgba(120, 20, 10, 0.35));
+  border-color: rgba(255, 80, 60, 0.45);
+  color: #ffb8a8;
+}
+.main-card__pvp-record {
+  font-size: 0.52rem;
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
 /* ── Daily Task Widget ───────────────────────────────────── */
 /* ── Urgency Banner ──────────────────────────────────────── */
 .main-urgency-banner {
