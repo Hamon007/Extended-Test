@@ -71,6 +71,41 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
     setSelectedCard(null);
   };
 
+  // Quick-fill: auto-send best available cards to all empty expedition slots
+  const handleQuickFill = useCallback(() => {
+    const rarityOrder = ['LR', 'MR', 'SSR', 'SR', 'R', 'N'];
+    // Pick the highest-reward expedition def (most crystals)
+    const bestDef = [...ExpeditionService.EXPEDITION_DEFS].sort(
+      (a, b) => b.rewards.crystalsMax - a.rewards.crystalsMax,
+    )[0];
+    if (!bestDef) return;
+
+    let filled = 0;
+    const usedUuids = new Set(ExpeditionService.getExpeditionedCardUuids());
+    const sorted = [...inventory]
+      .filter(i => !usedUuids.has(i.uuid))
+      .sort((a, b) => rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity));
+
+    for (const inst of sorted) {
+      if (ExpeditionService.getActive().length >= ExpeditionService.MAX_EXPEDITIONS) break;
+      const card = CardDatabase.getById(inst.cardId);
+      const ok = ExpeditionService.startExpedition(
+        bestDef.id, inst.uuid, inst.cardId, card?.name ?? inst.cardId,
+      );
+      if (ok) {
+        usedUuids.add(inst.uuid);
+        filled++;
+      }
+    }
+
+    if (filled > 0) {
+      showToast(`⚡ ${filled} Expedition${filled > 1 ? 'en' : ''} gestartet!`);
+      setActive(ExpeditionService.getActive());
+    } else {
+      showToast('Keine Karten verfügbar.');
+    }
+  }, [inventory, showToast]);
+
   const slotsUsed = active.length;
 
   return (
@@ -81,6 +116,11 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
         <button className="exp-header__back" onClick={onBack}>← Zurück</button>
         <h1 className="exp-header__title">⚔ Expeditionen</h1>
         <span className="exp-header__slots">{slotsUsed}/{ExpeditionService.MAX_EXPEDITIONS}</span>
+        {slotsUsed < ExpeditionService.MAX_EXPEDITIONS && availableCards.length > 0 && (
+          <button className="exp-quickfill-btn" onClick={handleQuickFill} title="Alle freien Slots automatisch füllen">
+            ⚡ Auto
+          </button>
+        )}
       </div>
 
       <div className="exp-scroll">

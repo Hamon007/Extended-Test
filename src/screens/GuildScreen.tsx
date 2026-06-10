@@ -25,6 +25,23 @@ import './GuildScreen.css';
 
 const DONATE_OPTIONS = [100, 500, 1_000] as const;
 
+function msUntilNextMonday(): number {
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun, 1=Mon
+  const daysUntilMonday = day === 0 ? 1 : (8 - day) % 7 || 7;
+  const nextMon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilMonday));
+  return nextMon.getTime() - now.getTime();
+}
+
+function formatHMS(ms: number): string {
+  if (ms <= 0) return '00:00:00';
+  const s = Math.floor(ms / 1000);
+  const hh = Math.floor(s / 3600);
+  const mm = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+}
+
 // ── Haupt-Screen ──────────────────────────────────────────────
 
 const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -34,6 +51,7 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [attack,  setAttack]  = useState<BossAttackResult | null>(null);
   const [shaking, setShaking] = useState(false);
   const [activeTab, setActiveTab] = useState<'kampf' | 'gilde'>('kampf');
+  const [resetMs,   setResetMs]   = useState(() => msUntilNextMonday());
 
   const crystals   = SaveService.loadGachaState().crystals;
   const lvl        = guildLevel(state.guildXp);
@@ -45,6 +63,11 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const totalContrib = NPC_TOTAL_CONTRIBUTION + state.playerWeeklyContribution;
   const weeklyPct    = Math.min(100, (totalContrib / WEEKLY_GOAL) * 100);
   const bossHpPct    = (state.bossCurrentHp / GUILD_BOSS_MAX_HP) * 100;
+
+  useEffect(() => {
+    const id = setInterval(() => setResetMs(msUntilNextMonday()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -128,7 +151,12 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
 
             <div className="guild-progress-row" style={{ marginTop: 10 }}>
-              <span className="guild-progress-label">Wochenziel</span>
+              <span className="guild-progress-label">
+                Wochenziel
+                <span className={`guild-reset-timer${resetMs < 24 * 3600_000 ? ' guild-reset-timer--urgent' : ''}`}>
+                  {' '}↺ {resetMs < 24 * 3600_000 ? formatHMS(resetMs) : `${Math.ceil(resetMs / 86400000)}T`}
+                </span>
+              </span>
               <span className="guild-progress-xp">{totalContrib.toLocaleString('de-DE')} / {WEEKLY_GOAL.toLocaleString('de-DE')} 💎</span>
             </div>
             <div className="guild-bar">

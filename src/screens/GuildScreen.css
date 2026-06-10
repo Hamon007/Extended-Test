@@ -765,3 +765,19 @@
   border: 1px solid #4a1515;
   cursor: pointer;
 }
+
+/* ── Weekly reset timer ────────────────────────────────────────── */
+.guild-reset-timer {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: rgba(160,200,255,0.7);
+  margin-left: 6px;
+}
+.guild-reset-timer--urgent {
+  color: #ff9090;
+  animation: guildResetPulse 1.5s ease-in-out infinite;
+}
+@keyframes guildResetPulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
