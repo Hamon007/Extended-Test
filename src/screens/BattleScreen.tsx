@@ -54,7 +54,11 @@ function fmtRegen(ms: number): string {
   return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
 }
 
-const BattleScreen: React.FC = () => {
+interface BattleScreenProps {
+  onNavigate?: (screen: string) => void;
+}
+
+const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const battle = useBattleStore();
   const deck   = useDeckStore();
   const energy = useEnergyStore();
@@ -525,7 +529,7 @@ const BattleScreen: React.FC = () => {
     return (
       <>
         {rewardDetails.isVictory ? (
-          <VictoryScreen details={rewardDetails} onContinue={handleContinue} />
+          <VictoryScreen details={rewardDetails} onContinue={handleContinue} onNavigate={onNavigate} />
         ) : (
           <DefeatScreen
             details={rewardDetails}

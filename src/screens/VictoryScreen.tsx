@@ -8,11 +8,15 @@ import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import { WinStreakService } from '../services/WinStreakService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { FusionSystem } from '../services/FusionSystem';
+import { LevelSystem } from '../services/LevelSystem';
+import { PULL_COST_MULTI } from '../config/GameConfig';
 import './VictoryScreen.css';
 
 interface Props {
   details:    RewardDetails;
   onContinue: () => void;
+  onNavigate?: (screen: string) => void;
 }
 
 // Animated number counter
@@ -43,7 +47,7 @@ const GRADE_COLORS: Record<string, string> = {
   S: '#ff9800', SS: '#f44336', SSS: '#ffd700',
 };
 
-const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
+const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => {
   // Post-battle account state for XP progress bar
   const accountAfter = useMemo(() => SaveService.loadAccountState(), []);
   const xpToNext     = AccountProgressionService.xpToNextLevel(accountAfter.level);
@@ -85,6 +89,23 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
       .sort((a, b) => b.pct - a.pct)
       .slice(0, 3);
   }, [masteryUps]);
+
+  // Post-battle quick actions (only shown if onNavigate is available)
+  const quickActions = useMemo(() => {
+    if (!onNavigate) return [];
+    const actions: { icon: string; label: string; screen: string }[] = [];
+    const gState = SaveService.loadGachaState();
+    const fusionReady = FusionSystem.buildGroups(gState.inventory).some(g => g.canFuse);
+    if (fusionReady) actions.push({ icon: '🔮', label: 'FUSION', screen: 'fusion' });
+    const deck = SaveService.loadDeck();
+    const canTrain = deck.uuids.some(uuid => {
+      const inst = gState.inventory.find(i => i.uuid === uuid);
+      return inst ? (inst.level ?? 1) < LevelSystem.levelCap(inst.rarity) : false;
+    });
+    if (canTrain) actions.push({ icon: '⚔', label: 'TRAINIEREN', screen: 'training' });
+    if (gState.crystals >= PULL_COST_MULTI) actions.push({ icon: '✨', label: '10× ZIEHEN', screen: 'gacha' });
+    return actions.slice(0, 3);
+  }, [onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Next floor preview (tower mode only)
   const currentFloor = details.towerFloor;
@@ -352,6 +373,22 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue }) => {
             ) : (
               <div className="victory-next-floor__tag">◆ Normale Etage</div>
             )}
+          </div>
+        )}
+
+        {/* Quick Actions — one-tap navigation to next activity */}
+        {quickActions.length > 0 && (
+          <div className="victory-quick-actions">
+            {quickActions.map(a => (
+              <button
+                key={a.screen}
+                className="victory-quick-btn"
+                onClick={() => { onContinue(); onNavigate?.(a.screen); }}
+              >
+                <span className="victory-quick-btn__icon">{a.icon}</span>
+                <span className="victory-quick-btn__label">{a.label}</span>
+              </button>
+            ))}
           </div>
         )}
 

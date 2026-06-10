@@ -236,7 +236,7 @@ const App: React.FC = () => {
         {screen === 'fusion' && (
           <FusionScreen onBack={goBack} />
         )}
-        {screen === 'battle'     && <BattleScreen />}
+        {screen === 'battle'     && <BattleScreen onNavigate={navTo} />}
         {screen === 'guild'      && <GuildScreen onBack={goBack} />}
         {screen === 'training'   && <CardTrainingScreen onBack={goBack} />}
         {screen === 'collection' && <CollectionScreen />}
