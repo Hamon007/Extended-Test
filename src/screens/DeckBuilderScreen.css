@@ -309,6 +309,39 @@
 }
 .db-slot:hover .db-slot__remove { opacity: 1; }
 
+/* ── Deck-Tipp ─────────────────────────────────────────────── */
+.db-weak-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  background: rgba(100, 50, 0, 0.35);
+  border: 1px solid rgba(200, 120, 0, 0.4);
+  border-radius: 5px;
+  padding: 6px 10px;
+  margin: 0 10px 4px;
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: #f0c070;
+}
+.db-weak-hint__icon {
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.db-weak-hint__text {
+  flex: 1;
+  line-height: 1.4;
+}
+.db-weak-hint__atk {
+  color: #ffd060;
+  font-weight: 600;
+}
+.db-weak-hint__sub {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
 /* ── Inventar-Sektion ─────────────────────────────────────── */
 .db-inventory-section {
   flex: 1;

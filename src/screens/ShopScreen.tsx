@@ -35,6 +35,15 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
   const dailyOffers  = ShopService.getDailyOffers();
   const fixedItems   = ShopService.SHOP_ITEMS.filter(i => !i.rotating);
 
+  // Pull goal: progress toward the next 10-pull
+  const pullGoalPct    = Math.min(1, crystals / PULL_COST_MULTI);
+  const crystalsNeeded = Math.max(0, PULL_COST_MULTI - crystals);
+
+  // Mark cheapest daily offer as today's tip
+  const cheapestDailyId = dailyOffers.length > 0
+    ? [...dailyOffers].sort((a, b) => a.cost - b.cost)[0]!.id
+    : null;
+
   const handleBuy = useCallback((item: ShopItem) => {
     const result = ShopService.purchase(item);
     if (!result.ok) {
@@ -46,14 +55,17 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
     setTimeout(() => setToast(''), 2500);
   }, []);
 
-  const ItemCard: React.FC<{ item: ShopItem }> = ({ item }) => {
+  const ItemCard: React.FC<{ item: ShopItem; isTip?: boolean }> = ({ item, isTip }) => {
     const boughtToday = ShopService.getBoughtToday(item.id);
     const { ok, reason } = ShopService.canBuy(item);
     return (
-      <div className={`shop-item ${!ok ? 'shop-item--disabled' : ''}`}>
+      <div className={`shop-item ${!ok ? 'shop-item--disabled' : ''} ${isTip ? 'shop-item--tip' : ''}`}>
         <div className="shop-item__icon">{item.icon}</div>
         <div className="shop-item__info">
-          <div className="shop-item__name">{item.name}</div>
+          <div className="shop-item__name-row">
+            <div className="shop-item__name">{item.name}</div>
+            {isTip && <span className="shop-item__tip-badge">TIPP</span>}
+          </div>
           <div className="shop-item__desc">{item.description}</div>
           {boughtToday > 0 && (
             <div className="shop-item__bought">{boughtToday}/{item.maxPerDay} heute</div>
@@ -100,6 +112,26 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
           </div>
         </div>
 
+        {/* Pull Goal Tracker */}
+        <div className="shop-pull-goal">
+          <div className="shop-pull-goal__header">
+            <span className="shop-pull-goal__label">
+              {pullGoalPct >= 1
+                ? '✦ Jetzt 10× ziehen!'
+                : pullGoalPct >= 0.8
+                  ? `Fast bereit — noch 💎 ${crystalsNeeded.toLocaleString('de-DE')} bis 10×`
+                  : `10× Ziehziel — noch 💎 ${crystalsNeeded.toLocaleString('de-DE')}`}
+            </span>
+            <span className="shop-pull-goal__pct">{Math.round(pullGoalPct * 100)}%</span>
+          </div>
+          <div className="shop-pull-goal__bar-track">
+            <div
+              className={`shop-pull-goal__bar-fill ${pullGoalPct >= 1 ? 'shop-pull-goal__bar-fill--ready' : pullGoalPct >= 0.8 ? 'shop-pull-goal__bar-fill--near' : ''}`}
+              style={{ width: `${Math.round(pullGoalPct * 100)}%` }}
+            />
+          </div>
+        </div>
+
         {/* Daily Offers */}
         <div className="shop-section-header">
           <span className="shop-section-title">Tagesangebote</span>
@@ -107,7 +139,9 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
         </div>
         <div className="shop-daily-badge">📅 {ShopService.todayISO()}</div>
         <div className="shop-items">
-          {dailyOffers.map(item => <ItemCard key={item.id} item={item} />)}
+          {dailyOffers.map(item => (
+            <ItemCard key={item.id} item={item} isTip={item.id === cheapestDailyId} />
+          ))}
         </div>
 
         {/* Fixed Items */}

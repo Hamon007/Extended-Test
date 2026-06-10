@@ -88,6 +88,23 @@ const DeckBuilderScreen: React.FC = () => {
     }, 0);
   }, [deck.uuids, inventory]);
 
+  // Weakest card in deck by effective ATK (only if deck has 3+ cards)
+  const weakestCard = useMemo(() => {
+    if (deck.uuids.length < 3) return null;
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    let weakest: { name: string; atk: number; uuid: string } | null = null;
+    for (const uuid of deck.uuids) {
+      const inst = invMap.get(uuid);
+      if (!inst) continue;
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) continue;
+      const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
+      const atk = stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
+      if (!weakest || atk < weakest.atk) weakest = { name: card.name, atk, uuid };
+    }
+    return weakest;
+  }, [deck.uuids, inventory]);
+
   // Element distribution of current deck
   const deckElementDist = useMemo(() => {
     const invMap = new Map(inventory.map(i => [i.uuid, i]));
@@ -235,6 +252,18 @@ const DeckBuilderScreen: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* ── Deck-Tipp: Schwächste Karte ── */}
+      {weakestCard && (
+        <div className="db-weak-hint">
+          <span className="db-weak-hint__icon">⚠</span>
+          <span className="db-weak-hint__text">
+            Schwächste Karte: <strong>{weakestCard.name}</strong>
+            <span className="db-weak-hint__atk"> · ⚔ {weakestCard.atk.toLocaleString('de-DE')}</span>
+            <span className="db-weak-hint__sub"> — ersetzen oder trainieren?</span>
+          </span>
+        </div>
+      )}
 
       {/* ── Inventar ── */}
       <div className="db-inventory-section">

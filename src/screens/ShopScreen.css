@@ -254,6 +254,81 @@
   opacity: 0.65;
 }
 
+/* Pull Goal Tracker */
+.shop-pull-goal {
+  background: linear-gradient(90deg, rgba(60,30,90,0.55), rgba(30,15,60,0.55));
+  border: 1px solid rgba(130,80,200,0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+.shop-pull-goal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.shop-pull-goal__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: #c4a4f0;
+}
+.shop-pull-goal__pct {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+.shop-pull-goal__bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.shop-pull-goal__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7b2d8b, #c2185b);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.shop-pull-goal__bar-fill--near {
+  background: linear-gradient(90deg, #f57f17, #e91e63);
+  animation: pullGoalNear 1s ease-in-out infinite alternate;
+}
+@keyframes pullGoalNear {
+  from { box-shadow: none; }
+  to   { box-shadow: 0 0 8px rgba(255,120,0,0.6); }
+}
+.shop-pull-goal__bar-fill--ready {
+  background: linear-gradient(90deg, #f9a825, #ff6f00);
+  animation: pullGoalReady 0.8s ease-in-out infinite alternate;
+}
+@keyframes pullGoalReady {
+  from { box-shadow: 0 0 6px rgba(255,160,0,0.5); }
+  to   { box-shadow: 0 0 16px rgba(255,200,0,0.9); }
+}
+
+/* Shop item tip badge */
+.shop-item__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.shop-item__tip-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  background: linear-gradient(90deg, #c2185b, #7b2d8b);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.shop-item--tip {
+  border-color: rgba(194,24,91,0.4);
+}
+
 /* Footer */
 .shop-footer {
   margin-top: 20px;
