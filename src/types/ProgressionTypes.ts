@@ -52,7 +52,7 @@ export interface RewardDetails {
   streakMilestoneBonus?: number; // extra crystals from streak milestone (0 = none)
   winStreak?:       number;
   // New personal records
-  newRecords?:      Array<'combo' | 'damage' | 'streak'>;
+  newRecords?:      Array<'combo' | 'damage' | 'streak' | 'floor'>;
   // Tower context (set when in tower mode)
   towerFloor?:      number;
   // Recovery bonus (post-defeat bounce-back)

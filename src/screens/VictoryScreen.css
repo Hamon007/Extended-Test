@@ -596,6 +596,16 @@
   animation-delay: 0.15s;
 }
 
+.victory-record--floor {
+  background: linear-gradient(90deg, rgba(0,20,0,0.7), rgba(0,160,60,0.3), rgba(0,20,0,0.7));
+  border: 1px solid rgba(0,200,80,0.7);
+  color: #60ffaa;
+  text-shadow: 0 0 14px rgba(0,220,100,0.8);
+  animation-delay: 0s;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
 /* ── Next Floor Preview ──────────────────────────────────── */
 .victory-next-floor {
   display: flex;

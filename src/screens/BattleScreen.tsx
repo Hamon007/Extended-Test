@@ -343,10 +343,12 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     // Detect new personal records (before recording stats)
     if (details.isVictory) {
       const prevStats = BattleStatsService.load();
-      const newRecords: Array<'combo' | 'damage' | 'streak'> = [];
+      const newRecords: Array<'combo' | 'damage' | 'streak' | 'floor'> = [];
       if (maxCombo > 0 && maxCombo > prevStats.bestCombo) newRecords.push('combo');
       const currentStreak = WinStreakService.get();
       if (currentStreak > prevStats.bestWinStreak)        newRecords.push('streak');
+      // New highest tower floor record
+      if (isTowerMode && towerFloor > TowerService.getHighestFloor()) newRecords.push('floor');
       if (newRecords.length > 0) finalDetails = { ...finalDetails, newRecords };
     }
 
@@ -1073,6 +1075,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           <span className="battle-firstwin-chip__icon">🌅</span>
           <span className="battle-firstwin-chip__text">
             Erster Sieg heute: <strong>+{FirstWinService.FIRST_WIN_BONUS.toLocaleString('de-DE')} 💎</strong>
+          </span>
+        </div>
+      )}
+
+      {/* Pre-Boss Approach Warning: next floor is a boss */}
+      {isTowerMode && !isBoss && TowerService.isBossFloor(towerFloor + 1) && (
+        <div className="battle-boss-approach-chip">
+          <span className="battle-boss-approach-chip__icon">💀</span>
+          <span className="battle-boss-approach-chip__text">
+            ACHTUNG — <strong>Etage {towerFloor + 1} ist eine BOSS-ETAGE!</strong>
           </span>
         </div>
       )}

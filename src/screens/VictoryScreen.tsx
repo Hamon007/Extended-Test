@@ -157,6 +157,11 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
         {/* New personal record banners */}
         {newRecords.length > 0 && (
           <div className="victory-records">
+            {newRecords.includes('floor') && (
+              <div className="victory-record victory-record--floor">
+                🏆 NEUER ETAGEN-REKORD — ETAGE {details.towerFloor}!
+              </div>
+            )}
             {newRecords.includes('combo') && (
               <div className="victory-record victory-record--combo">
                 🌀 NEUE BESTMARKE — MAX COMBO!
