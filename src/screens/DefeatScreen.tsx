@@ -156,6 +156,15 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           </div>
         )}
 
+        {(details.winStreak ?? 0) >= 3 && (
+          <div className="defeat-streak-broken">
+            <span className="defeat-streak-broken__icon">💔</span>
+            <span className="defeat-streak-broken__text">
+              Sieg-Serie gebrochen! <strong>{details.winStreak}×</strong> in Folge
+            </span>
+          </div>
+        )}
+
         <div className="defeat-divider" />
 
         {/* Battle stats */}

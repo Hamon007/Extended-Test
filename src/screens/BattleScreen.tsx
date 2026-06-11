@@ -251,6 +251,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         newLevel: r.newLevel,
       }));
 
+    // Capture streak before applyRewards resets it on defeat
+    const preDefeatStreak = WinStreakService.get();
     const details = ProgressionService.applyRewards(
       battle.state.result,
       battle.state.enemyData,
@@ -344,6 +346,11 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       const currentStreak = WinStreakService.get();
       if (currentStreak > prevStats.bestWinStreak)        newRecords.push('streak');
       if (newRecords.length > 0) finalDetails = { ...finalDetails, newRecords };
+    }
+
+    // Attach pre-defeat streak so DefeatScreen can show the broken-streak banner
+    if (!details.isVictory && preDefeatStreak >= 1) {
+      finalDetails = { ...finalDetails, winStreak: preDefeatStreak };
     }
 
     // Embed tower floor context for VictoryScreen next-floor preview

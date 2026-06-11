@@ -259,6 +259,49 @@
   to   { box-shadow: 0 0 16px rgba(255, 160, 0, 0.7); }
 }
 
+/* ── Streak Broken Banner ────────────────────────────────── */
+.defeat-streak-broken {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, rgba(180,0,60,0.25), rgba(255,40,80,0.12));
+  border: 1px solid rgba(255, 60, 100, 0.5);
+  border-radius: 20px;
+  color: #ff6688;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  margin: 4px 0 8px;
+  animation: streakBrokenIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), streakBrokenPulse 2s ease-in-out 0.4s infinite alternate;
+}
+
+.defeat-streak-broken__icon {
+  font-size: 1rem;
+  animation: streakHeartbreak 0.5s ease 0.2s both;
+}
+
+.defeat-streak-broken__text strong {
+  color: #ff4466;
+}
+
+@keyframes streakBrokenIn {
+  from { opacity: 0; transform: scale(0.8) translateY(-6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes streakBrokenPulse {
+  from { box-shadow: 0 0 6px rgba(255, 60, 100, 0.3); }
+  to   { box-shadow: 0 0 18px rgba(255, 60, 100, 0.65); }
+}
+
+@keyframes streakHeartbreak {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.4) rotate(-10deg); }
+  70%  { transform: scale(0.9) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
 /* ── Tactical Analysis ───────────────────────────────────── */
 .defeat-analysis {
   background: rgba(20,10,30,0.7);
