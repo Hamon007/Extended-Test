@@ -1359,3 +1359,79 @@
   font-weight: 700;
   text-shadow: 0 0 8px rgba(255,160,60,0.5);
 }
+
+/* ── Card Performance (top damage dealers) ───────────────────── */
+.victory-card-perf {
+  width: 100%;
+  margin: 0.4rem 0;
+  padding: 0.55rem 0.8rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+}
+
+.victory-card-perf__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaa;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.45rem;
+}
+
+.victory-card-perf__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.victory-card-perf__row:last-child { margin-bottom: 0; }
+
+.victory-card-perf__row--mvp .victory-card-perf__name {
+  color: #ffd060;
+  font-weight: 700;
+}
+
+.victory-card-perf__rank { font-size: 1rem; flex-shrink: 0; }
+
+.victory-card-perf__info { flex: 1; min-width: 0; }
+
+.victory-card-perf__name {
+  font-size: 0.72rem;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.2rem;
+}
+
+.victory-card-perf__bar-track {
+  height: 4px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.victory-card-perf__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4488ff, #88aaff);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.victory-card-perf__row--mvp .victory-card-perf__bar-fill {
+  background: linear-gradient(90deg, #ffaa00, #ffd060);
+}
+
+.victory-card-perf__dmg {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #88aaff;
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.victory-card-perf__row--mvp .victory-card-perf__dmg {
+  color: #ffd060;
+}

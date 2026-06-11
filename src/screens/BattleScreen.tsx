@@ -349,8 +349,22 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       setNemesisId(NemesisService.getNemesisId());
     }
 
+    // Card performance stats: aggregate damage per card name from battle log
+    const cardDmgMap: Record<string, { total: number; plays: number }> = {};
+    for (const entry of battle.state.log) {
+      if (entry.actor === 'player' && entry.cardName && entry.damage > 0) {
+        const prev = cardDmgMap[entry.cardName] ?? { total: 0, plays: 0 };
+        cardDmgMap[entry.cardName] = { total: prev.total + entry.damage, plays: prev.plays + 1 };
+      }
+    }
+    const cardPerformance = Object.entries(cardDmgMap)
+      .map(([cardName, s]) => ({ cardName, totalDamage: s.total, plays: s.plays }))
+      .sort((a, b) => b.totalDamage - a.totalDamage)
+      .slice(0, 3);
+    const mvpCardName = cardPerformance[0]?.cardName;
+
     // Apply Fortune rune crystal multiplier
-    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade, ...(nemesisBonus > 0 ? { nemesisBonus } : {}) };
+    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade, ...(nemesisBonus > 0 ? { nemesisBonus } : {}), ...(cardPerformance.length > 0 ? { cardPerformance, mvpCardName } : {}) };
     if (crystalRuneMultRef.current > 1.0 && details.isVictory) {
       const boosted = Math.round(details.crystalsGained * crystalRuneMultRef.current);
       const extra = boosted - details.crystalsGained;

@@ -266,6 +266,29 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           </div>
         )}
 
+        {/* Card Performance — top damage dealers this battle */}
+        {details.cardPerformance && details.cardPerformance.length > 0 && (
+          <div className="victory-card-perf">
+            <div className="victory-card-perf__title">⚔ Kampf-Bestleister</div>
+            {details.cardPerformance.map((c, i) => {
+              const maxDmg = details.cardPerformance![0]!.totalDamage;
+              const barPct = maxDmg > 0 ? Math.round((c.totalDamage / maxDmg) * 100) : 0;
+              return (
+                <div key={i} className={`victory-card-perf__row ${i === 0 ? 'victory-card-perf__row--mvp' : ''}`}>
+                  <span className="victory-card-perf__rank">{i === 0 ? '👑' : i === 1 ? '🥈' : '🥉'}</span>
+                  <div className="victory-card-perf__info">
+                    <div className="victory-card-perf__name">{c.cardName}</div>
+                    <div className="victory-card-perf__bar-track">
+                      <div className="victory-card-perf__bar-fill" style={{ width: `${barPct}%` }} />
+                    </div>
+                  </div>
+                  <span className="victory-card-perf__dmg">{c.totalDamage.toLocaleString('de-DE')}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* Season SP Progress */}
         {details.spEarned && details.spEarned > 0 && details.spTotal !== undefined && details.spRank && (
           <div className="victory-season-sp">
