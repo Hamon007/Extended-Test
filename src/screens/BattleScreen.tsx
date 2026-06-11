@@ -40,6 +40,7 @@ import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS }
 import { WeeklyPassService } from '../services/WeeklyPassService';
 import { DailyBossService } from '../services/DailyBossService';
 import { FlashChallengeService } from '../services/FlashChallengeService';
+import { RageModeService } from '../services/RageModeService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -111,6 +112,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [seasonRankUp, setSeasonRankUp] = useState<{ rank: string; icon: string; color: string } | null>(null);
   const isDailyBossModeRef = useRef(false);
   const [dailyBossDefeated, setDailyBossDefeated] = useState(() => DailyBossService.isDefeatedToday());
+  const [rageModeActive,    setRageModeActive]    = useState(() => RageModeService.isActive());
   const [flashChallengeMs, setFlashChallengeMs]   = useState(() => FlashChallengeService.msRemaining());
   const [flashProgress,    setFlashProgress]      = useState(() => FlashChallengeService.getProgress());
   const rewardApplied  = useRef(false);
@@ -495,6 +497,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       }
     } else {
       RecoveryService.activate();
+      RageModeService.recordDefeat();
+      setRageModeActive(RageModeService.isActive());
+    }
+
+    // Rage Mode: 2× crystals after 3+ consecutive defeats
+    if (details.isVictory) {
+      const rageModeBonus = RageModeService.recordVictory(finalDetails.crystalsGained);
+      if (rageModeBonus > 0) {
+        const gstRage = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gstRage, crystals: gstRage.crystals + rageModeBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + rageModeBonus,
+          rageModeBonus,
+        };
+        setRageModeActive(false);
+      }
     }
 
     // Weekend Bonus: +25% crystals on Sat/Sun victories
@@ -1536,6 +1555,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           <span className="battle-weekend-chip__text">
             WOCHENEND-BONUS aktiv: <strong>+25% Kristalle</strong>
           </span>
+        </div>
+      )}
+
+      {/* Rage Mode banner — 3+ consecutive defeats */}
+      {rageModeActive && (
+        <div className="battle-rage-mode">
+          <span className="battle-rage-mode__icon">😡</span>
+          <div className="battle-rage-mode__text">
+            <span className="battle-rage-mode__title">RAGE MODE! ×2 💎</span>
+            <span className="battle-rage-mode__sub">
+              {RageModeService.getLossCount()} Niederlagen in Folge — nächster Sieg verdoppelt alle Kristalle!
+            </span>
+          </div>
+          <span className="battle-rage-mode__mult">×2</span>
         </div>
       )}
 

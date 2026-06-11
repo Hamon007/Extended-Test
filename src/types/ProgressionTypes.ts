@@ -85,6 +85,8 @@ export interface RewardDetails {
   comboJackpotBonus?: number;
   // Perfect Victory: +100 for winning with ≥ 95% HP remaining
   perfectBonus?: number;
+  // Rage Mode: 2× crystals after 3+ consecutive defeats
+  rageModeBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

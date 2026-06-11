@@ -424,6 +424,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Rage Mode ×2 */}
+          {details.rageModeBonus && details.rageModeBonus > 0 && (
+            <div className="reward-row reward-row--ragemode">
+              <span className="reward-row__label">😡 RAGE MODE! ×2 KRISTALLE!</span>
+              <span className="reward-row__value reward-row__value--ragemode">
+                +<CountUp target={details.rageModeBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Daily Boss Victory Bonus */}
           {details.dailyBossBonus && details.dailyBossBonus > 0 && (
             <div className="reward-row reward-row--dailyboss">

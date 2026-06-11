@@ -176,6 +176,20 @@
 }
 .reward-row__value--lucky7 { color: #cc80ff; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 14px rgba(180,80,255,0.9); }
 
+/* Rage Mode ×2 */
+.reward-row--ragemode {
+  background: linear-gradient(135deg, rgba(80,5,5,0.97), rgba(60,3,3,0.93));
+  border: 2px solid rgba(255,40,40,0.8);
+  animation-delay: 0.27s;
+  animation: reward-slide-in 0.4s ease 0.27s both, rage-shake 0.4s ease-in-out 0.5s 3;
+}
+@keyframes rage-shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+.reward-row__value--ragemode { color: #ff4040; font-weight: 900; font-size: 1.15rem; text-shadow: 0 0 16px rgba(255,40,40,0.9); }
+
 /* Daily Boss Bonus */
 .reward-row--dailyboss {
   background: linear-gradient(135deg, rgba(80,20,5,0.95), rgba(60,10,5,0.9));
