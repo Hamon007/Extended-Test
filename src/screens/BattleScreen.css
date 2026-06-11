@@ -3801,3 +3801,19 @@
   font-weight: 700;
   font-size: 0.68rem;
 }
+
+/* ── Player Hurt Flash ─────────────────────────────────────────── */
+.arena-player-hurt-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  border-radius: inherit;
+  background: rgba(220,0,0,0.22);
+  animation: playerHurtFade 0.35s ease-out forwards;
+}
+
+@keyframes playerHurtFade {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}

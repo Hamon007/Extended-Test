@@ -1937,6 +1937,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [awakeningToast, setAwakeningToast] = useState<string | null>(null);
   const [superToast,     setSuperToast]     = useState<{ name: string; quote: string; damage: number } | null>(null);
   const [critFlash,      setCritFlash]      = useState(false);
+  const [playerHurtFlash, setPlayerHurtFlash] = useState(false);
   const [enemyHit,       setEnemyHit]       = useState(false);
   const [limitBreakUsed,   setLimitBreakUsed]   = useState(false);
   const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
@@ -1980,12 +1981,14 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     lastEnemyHpRef.current = state.enemy.hp;
   }, [state.enemy.hp]);
 
-  // Spieler nimmt Schaden → Einschlag-Sound, Haptik, harter Shake
+  // Spieler nimmt Schaden → Einschlag-Sound, Haptik, harter Shake + roter Flash
   useEffect(() => {
     if (state.player.hp < lastPlayerHpRef.current) {
       AudioService.enemyHit();
       AudioService.vibrate(40);
       triggerShake(2);
+      setPlayerHurtFlash(true);
+      setTimeout(() => setPlayerHurtFlash(false), 350);
     }
     lastPlayerHpRef.current = state.player.hp;
   }, [state.player.hp, triggerShake]);
@@ -2307,6 +2310,9 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
       {/* Critical Flash */}
       {critFlash && <div className="arena-crit-flash" />}
+
+      {/* Player Hurt Flash — red vignette when player takes damage */}
+      {playerHurtFlash && <div className="arena-player-hurt-flash" aria-hidden="true" />}
 
       {/* Combo Burst Overlay */}
       {comboBurst === 'triple' && (
