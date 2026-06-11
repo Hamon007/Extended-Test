@@ -39,6 +39,7 @@ import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorServ
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS } from '../services/DailyElementService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
 import { DailyBossService } from '../services/DailyBossService';
+import { FlashChallengeService } from '../services/FlashChallengeService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -110,6 +111,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [seasonRankUp, setSeasonRankUp] = useState<{ rank: string; icon: string; color: string } | null>(null);
   const isDailyBossModeRef = useRef(false);
   const [dailyBossDefeated, setDailyBossDefeated] = useState(() => DailyBossService.isDefeatedToday());
+  const [flashChallengeMs, setFlashChallengeMs]   = useState(() => FlashChallengeService.msRemaining());
+  const [flashProgress,    setFlashProgress]      = useState(() => FlashChallengeService.getProgress());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -182,11 +185,13 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const dailyTrial = useMemo(() => DailyTrialService.today(), []);
   const dailyDone  = DailyTrialService.isCompleted();
 
-  // Energy regen ticker (lobby only)
+  // Energy regen ticker + flash challenge countdown (lobby only)
   useEffect(() => {
     const id = setInterval(() => {
       setEnergyRegenMs(EnergyService.msUntilNextRegen());
       energy.refresh();
+      setFlashChallengeMs(FlashChallengeService.msRemaining());
+      setFlashProgress(FlashChallengeService.getProgress());
     }, 1000);
     return () => clearInterval(id);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -552,6 +557,19 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       // Weekly Battle Pass progress
       WeeklyPassService.recordWin();
 
+      // Flash Challenge events
+      FlashChallengeService.recordEvent('win_3');
+      FlashChallengeService.recordEvent('win_5');
+      if (details.playerHpPct !== undefined && (details.playerHpPct ?? 1) >= 0.95) {
+        FlashChallengeService.recordEvent('perfect_win');
+        FlashChallengeService.recordEvent('win_no_loss');
+      }
+      if (maxCombo >= 5) FlashChallengeService.recordEvent('combo_5');
+      const hpPctFC = details.playerHpPct ?? 1;
+      if (hpPctFC < 0.20 && hpPctFC > 0) FlashChallengeService.recordEvent('clutch_win');
+      if (isTowerMode && TowerService.isBossFloor(towerFloor)) FlashChallengeService.recordEvent('tower_boss');
+      setFlashProgress(FlashChallengeService.getProgress());
+
       // Lucky 7: jackpot on every 7th daily win
       const l7bonus = LuckySeven.recordWin();
       if (l7bonus > 0) {
@@ -623,6 +641,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       AchievementService.recordProgress('wins_50');
       AchievementService.recordProgress('wins_100');
       const streak = WinStreakService.get();
+      if (streak >= 2)  FlashChallengeService.recordEvent('win_streak_2');
       if (streak >= 3)  QuestService.recordEvent('win_streak_3');
       if (streak >= 5)  AchievementService.recordProgress('win_streak_5');
       if (streak >= 10) AchievementService.recordProgress('win_streak_10');
@@ -1247,6 +1266,35 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         </div>
       )}
+
+      {/* Flash Challenge Banner */}
+      {(() => {
+        const fc = FlashChallengeService.getActiveChallenge();
+        const active = flashChallengeMs > 0;
+        const done = FlashChallengeService.isCompleted();
+        const mins = Math.ceil(flashChallengeMs / 60000);
+        const progress = flashProgress;
+        if (!active && done) return null; // clean after completion
+        if (!active) return null;         // only show during the 60-min window
+        return (
+          <div className={`battle-flash-challenge${done ? ' battle-flash-challenge--done' : ''}`}>
+            <span className="battle-flash-challenge__icon">{fc.icon}</span>
+            <div className="battle-flash-challenge__text">
+              <span className="battle-flash-challenge__title">
+                {done ? '✓ CHALLENGE ABGESCHLOSSEN' : `⚡ FLASH-CHALLENGE · ${mins}min`}
+              </span>
+              <span className="battle-flash-challenge__sub">
+                {done
+                  ? `+${fc.crystals} 💎 erhalten!`
+                  : `${fc.label} (${progress}/${fc.target}) → +${fc.crystals} 💎`}
+              </span>
+            </div>
+            {!done && (
+              <span className="battle-flash-challenge__reward">{fc.crystals} 💎</span>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Rival Chip — NPC one rank above the player */}
       {rival && (
