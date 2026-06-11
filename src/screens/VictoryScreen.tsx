@@ -374,6 +374,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Lucky 7 jackpot */}
+          {details.luckySevenBonus && details.luckySevenBonus > 0 && (
+            <div className="reward-row reward-row--lucky7">
+              <span className="reward-row__label">🎰 LUCKY 7! JACKPOT!</span>
+              <span className="reward-row__value reward-row__value--lucky7">
+                +<CountUp target={details.luckySevenBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Crystal Rain surprise bonus */}
           {details.crystalRainBonus && details.crystalRainBonus > 0 && (
             <div className="reward-row reward-row--crystalrain">

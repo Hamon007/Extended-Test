@@ -29,6 +29,7 @@ import { EventService }     from '../services/EventService';
 import { LeaderboardService, type LeaderboardEntry } from '../services/LeaderboardService';
 import { PowerMilestoneService, type PowerMilestone } from '../services/PowerMilestoneService';
 import { BonusHourService } from '../services/BonusHourService';
+import { LuckySeven }       from '../services/LuckySeven';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -875,6 +876,27 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               </span>
             </div>
           )}
+          {/* Lucky 7 progress */}
+          {(() => {
+            const winsToday = LuckySeven.getWinsToday();
+            const nextJackpot = LuckySeven.winsUntilNext();
+            const done7 = winsToday > 0 && winsToday % 7 === 0;
+            const progress = winsToday % 7;
+            return (
+              <div
+                className={`main-daily-item main-daily-item--lucky7 ${done7 ? 'main-daily-item--done' : ''}`}
+                onClick={() => onNavigate?.('battle')} style={{ cursor: 'pointer' }}>
+                <span className="main-daily-item__check main-daily-item__check--lucky7">
+                  {progress}/7
+                </span>
+                <span className="main-daily-item__label">
+                  🎰 Lucky 7
+                  {!done7 && <span className="main-daily-item__reward"> noch {nextJackpot} Siege → +777 💎</span>}
+                  {done7 && <span className="main-daily-item__reward"> JACKPOT erreicht!</span>}
+                </span>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

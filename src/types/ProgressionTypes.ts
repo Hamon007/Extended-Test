@@ -68,6 +68,8 @@ export interface RewardDetails {
   bonusHourBonus?:  number;
   // Crystal Rain: rare 10% chance surprise bonus on victory
   crystalRainBonus?: number;
+  // Lucky 7: jackpot on every 7th daily victory
+  luckySevenBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

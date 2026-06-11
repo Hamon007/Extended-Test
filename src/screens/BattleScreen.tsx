@@ -34,6 +34,7 @@ import { NemesisService, NEMESIS_CRYSTAL_BONUS } from '../services/NemesisServic
 import { LeaderboardService } from '../services/LeaderboardService';
 import { BonusHourService }  from '../services/BonusHourService';
 import { CrystalRainService } from '../services/CrystalRainService';
+import { LuckySeven }         from '../services/LuckySeven';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -452,6 +453,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           ...finalDetails,
           crystalsGained: finalDetails.crystalsGained + rainAmount,
           crystalRainBonus: rainAmount,
+        };
+      }
+
+      // Lucky 7: jackpot on every 7th daily win
+      const l7bonus = LuckySeven.recordWin();
+      if (l7bonus > 0) {
+        const gst2 = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst2, crystals: gst2.crystals + l7bonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + l7bonus,
+          luckySevenBonus: l7bonus,
         };
       }
     }
