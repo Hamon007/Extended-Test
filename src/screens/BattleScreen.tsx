@@ -35,6 +35,7 @@ import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
+import { AccountProgressionService } from '../services/AccountProgressionService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -120,6 +121,11 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const leaderBonus        = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
   const formation          = useMemo(() => FormationService.compute(deckCards), [deckCards]);
   const dailyCardAtkBoost  = DailyCardService.getAtkBonus();
+  const accountXpProgress  = useMemo(() => {
+    const acc = SaveService.loadAccountState();
+    const needed = AccountProgressionService.xpToNextLevel(acc.level);
+    return needed > 0 ? acc.xp / needed : 1;
+  }, []);
 
   // Power comparison: effective ATK per card
   const deckPower = useMemo(() => {
@@ -1012,6 +1018,22 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Account Level-Up teaser (shown when ≥75% XP progress) */}
+      {accountXpProgress >= 0.75 && accountXpProgress < 1 && (
+        <div className="battle-levelup-tease">
+          <span className="battle-levelup-tease__icon">✦</span>
+          <div className="battle-levelup-tease__text">
+            <span className="battle-levelup-tease__title">
+              {accountXpProgress >= 0.9 ? 'FAST DA — Level-Up beim nächsten Sieg!' : 'Level-Up ist nah!'}
+            </span>
+            <div className="battle-levelup-tease__bar-track">
+              <div className="battle-levelup-tease__bar-fill" style={{ width: `${Math.round(accountXpProgress * 100)}%` }} />
+            </div>
+          </div>
+          <span className="battle-levelup-tease__pct">{Math.round(accountXpProgress * 100)}%</span>
+        </div>
+      )}
 
       {/* Nächster Meilenstein */}
       {nextMilestone && (
