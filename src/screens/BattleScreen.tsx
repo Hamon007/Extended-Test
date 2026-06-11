@@ -36,6 +36,7 @@ import { BonusHourService }  from '../services/BonusHourService';
 import { CrystalRainService } from '../services/CrystalRainService';
 import { LuckySeven }         from '../services/LuckySeven';
 import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorService';
+import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS } from '../services/DailyElementService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -153,6 +154,13 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const BASE_CARD_COUNT = 3.5;
     return Math.round(BASE_AVG_ATK_PER_CARD * floorScale * BASE_CARD_COUNT);
   }, [towerFloor]);
+
+  // Daily element blessing — which element gets +15% ATK today
+  const blessedElement = useMemo(() => getBlessedElement(), []);
+  const deckHasBlessing = useMemo(
+    () => deckCards.some(c => c.element === blessedElement),
+    [deckCards, blessedElement],
+  );
 
   // Rival: NPC ranked just above the player — shows as a competitive target in the lobby
   const rival = useMemo(() => {
@@ -743,7 +751,11 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
   const startFloorBattle = (cursed = false, tripleReward = false) => {
     const { enemy, tact } = buildTowerEnemy(cursed, tripleReward);
-    const meta: BattleMeta = { leaderBonus, formation, dailyCardAtkBoost };
+    const meta: BattleMeta = {
+      leaderBonus, formation, dailyCardAtkBoost,
+      elementBlessingElement: blessedElement,
+      elementBlessingBoost: BLESSING_ATK_BONUS,
+    };
     const type = isBoss ? 'boss' : tact ? 'elite' : 'normal';
     setPendingMeta({ enemy, meta, tact });
     setLoreOverlay({ floor: towerFloor, type });
@@ -1057,6 +1069,33 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
               </span>
             </div>
             <span className="battle-nemesis-banner__rage">⚔</span>
+          </div>
+        );
+      })()}
+
+      {/* Daily Element Blessing Banner */}
+      {(() => {
+        const label = ELEMENT_LABELS[blessedElement] ?? blessedElement;
+        const color = ELEMENT_COLORS[blessedElement] ?? '#888888';
+        return (
+          <div
+            className="battle-element-blessing"
+            style={{ '--bless-color': color } as React.CSSProperties}
+          >
+            <span className="battle-element-blessing__icon">{label.split(' ')[0]}</span>
+            <div className="battle-element-blessing__text">
+              <span className="battle-element-blessing__title">
+                TAGESSEGEN: {label.split(' ').slice(1).join(' ')}
+              </span>
+              <span className="battle-element-blessing__sub">
+                {deckHasBlessing
+                  ? `+${Math.round(BLESSING_ATK_BONUS * 100)}% ATK für deine ${label.split(' ').slice(1).join(' ')}-Karten!`
+                  : `${label.split(' ').slice(1).join(' ')}-Karten im Deck für +${Math.round(BLESSING_ATK_BONUS * 100)}% ATK!`}
+              </span>
+            </div>
+            {deckHasBlessing && (
+              <span className="battle-element-blessing__active">AKTIV ✓</span>
+            )}
           </div>
         );
       })()}

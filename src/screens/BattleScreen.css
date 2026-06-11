@@ -3131,6 +3131,68 @@
   letter-spacing: 0.1em;
 }
 
+/* ── Daily Element Blessing Banner ─────────────────────────── */
+
+.battle-element-blessing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10,10,20,0.88);
+  border: 1px solid color-mix(in srgb, var(--bless-color, #888) 50%, transparent);
+  border-left: 3px solid var(--bless-color, #888);
+  border-radius: 8px;
+  padding: 7px 12px;
+  margin: 5px 0;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--bless-color, #888) 25%, transparent);
+}
+
+.battle-element-blessing__icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 5px var(--bless-color, #888));
+}
+
+.battle-element-blessing__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.battle-element-blessing__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bless-color, #888);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--bless-color, #888) 70%, transparent);
+}
+
+.battle-element-blessing__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.battle-element-blessing__active {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: var(--bless-color, #888);
+  flex-shrink: 0;
+  animation: blessing-active-pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes blessing-active-pulse {
+  from { opacity: 0.7; }
+  to   { opacity: 1.0; }
+}
+
 /* ── Lucky Floor Banner ─────────────────────────────────────── */
 
 .battle-lucky-floor-banner {

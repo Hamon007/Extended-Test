@@ -218,12 +218,14 @@ export interface RuneBoost {
 }
 
 export interface BattleMeta {
-  leaderBonus?:       LeaderBonus | null;
-  formation?:         FormationResult | null;
-  dailyModifier?:     DailyModifier | null;
-  maxRounds?:         number;
-  runeBoost?:         RuneBoost | null;
-  dailyCardAtkBoost?: number; // fractional bonus e.g. 0.05 = +5%
+  leaderBonus?:            LeaderBonus | null;
+  formation?:              FormationResult | null;
+  dailyModifier?:          DailyModifier | null;
+  maxRounds?:              number;
+  runeBoost?:              RuneBoost | null;
+  dailyCardAtkBoost?:      number; // fractional bonus e.g. 0.05 = +5%
+  elementBlessingElement?: string; // which element gets a daily ATK boost
+  elementBlessingBoost?:   number; // fractional bonus e.g. 0.15 = +15%
 }
 
 /** Erstellt einen frischen BattleState. */
@@ -279,6 +281,15 @@ function initBattle(
       ...player,
       hand: player.hand.map(c => ({ ...c, atk: Math.round(c.atk * mult) })),
       deck: player.deck.map(c => ({ ...c, atk: Math.round(c.atk * mult) })),
+    };
+  }
+  if (meta.elementBlessingElement && meta.elementBlessingBoost && meta.elementBlessingBoost > 0) {
+    const el   = meta.elementBlessingElement;
+    const mult = 1 + meta.elementBlessingBoost;
+    player = {
+      ...player,
+      hand: player.hand.map(c => c.card?.element === el ? { ...c, atk: Math.round(c.atk * mult) } : c),
+      deck: player.deck.map(c => c.card?.element === el ? { ...c, atk: Math.round(c.atk * mult) } : c),
     };
   }
 
