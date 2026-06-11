@@ -62,6 +62,8 @@ export interface RewardDetails {
   // Active event crystal bonus
   eventBonus?:      number;
   eventName?:       string;
+  // Nemesis revenge bonus (+50% crystals for defeating your nemesis)
+  nemesisBonus?:    number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

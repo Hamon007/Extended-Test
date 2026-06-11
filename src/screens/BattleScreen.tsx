@@ -304,14 +304,15 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
     // Nemesis tracking
     const enemyId = battle.state.enemyData.id;
+    let nemesisBonus = 0;
     if (details.isVictory) {
       const wasNemesis = NemesisService.recordVictory(enemyId);
       if (wasNemesis) {
         // +50% crystal bonus for slaying nemesis
-        const bonus = Math.round(details.crystalsGained * NEMESIS_CRYSTAL_BONUS);
+        nemesisBonus = Math.round(details.crystalsGained * NEMESIS_CRYSTAL_BONUS);
         const gn = SaveService.loadGachaState();
-        SaveService.saveGachaState({ ...gn, crystals: gn.crystals + bonus });
-        details.crystalsGained += bonus;
+        SaveService.saveGachaState({ ...gn, crystals: gn.crystals + nemesisBonus });
+        details.crystalsGained += nemesisBonus;
       }
       setNemesisId(NemesisService.getNemesisId());
     } else {
@@ -320,7 +321,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     }
 
     // Apply Fortune rune crystal multiplier
-    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade };
+    let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade, ...(nemesisBonus > 0 ? { nemesisBonus } : {}) };
     if (crystalRuneMultRef.current > 1.0 && details.isVictory) {
       const boosted = Math.round(details.crystalsGained * crystalRuneMultRef.current);
       const extra = boosted - details.crystalsGained;

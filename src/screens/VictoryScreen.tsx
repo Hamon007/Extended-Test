@@ -365,6 +365,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Nemesis Revenge Bonus */}
+          {details.nemesisBonus && details.nemesisBonus > 0 && (
+            <div className="reward-row reward-row--nemesis">
+              <span className="reward-row__label">💀 NEMESIS BEZWUNGEN! ×1.5</span>
+              <span className="reward-row__value reward-row__value--nemesis">
+                +<CountUp target={details.nemesisBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Recovery Bonus (Comeback-Bonus nach Niederlage) */}
           {details.recoveryBonus && details.recoveryBonus > 0 && (
             <div className="reward-row reward-row--recovery">
