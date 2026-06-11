@@ -26,6 +26,7 @@ import { PvpHistoryService } from '../services/PvpHistoryService';
 import { WeekendBonusService } from '../services/WeekendBonusService';
 import { DailyCardService } from '../services/DailyCardService';
 import { EventService }     from '../services/EventService';
+import { LeaderboardService, type LeaderboardEntry } from '../services/LeaderboardService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -177,6 +178,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   });
   const seasonState = SeasonService.load();
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
+  // Leaderboard — computed from power score, stable per render
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
@@ -337,6 +340,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       : 0;
 
     setDeckStats(found > 0 ? { atk: totalAtk + masteryAtk, def: totalDef, power } : null);
+
+    // Build leaderboard power score (same formula as ProfileScreen)
+    const accState = SaveService.loadAccountState();
+    const uniqueOwned = new Set(gachaState.inventory.map(i => i.cardId)).size;
+    const towerHighest = TowerService.getHighestFloor?.() ?? TowerService.getFloor();
+    const totalMastery = Array.from(new Set(gachaState.inventory.map(i => i.cardId)))
+      .reduce((s, id) => s + CardMasteryService.getMasteryInfo(id).level, 0);
+    const playerPower = (totalAtk + masteryAtk)
+      + accState.level * 1_000
+      + totalMastery * 500
+      + uniqueOwned * 200
+      + towerHighest * 300;
+    LeaderboardService.recordRank(playerPower);
+    setLeaderboard(LeaderboardService.getNearby(playerPower, 2));
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -906,6 +923,43 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             </span>
           </div>
           <span className="main-fusion-banner__arrow">›</span>
+        </div>
+      )}
+
+      {/* ── Rangliste ── */}
+      {leaderboard.length > 0 && (
+        <div
+          className="main-leaderboard"
+          onClick={() => onNavigate?.('profile')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('profile')}
+        >
+          <div className="main-leaderboard__header">
+            <span className="main-leaderboard__title">🏆 RANGLISTE</span>
+            <span className="main-leaderboard__total">von {LeaderboardService.getTotalPlayers().toLocaleString('de-DE')}</span>
+          </div>
+          <div className="main-leaderboard__rows">
+            {leaderboard.map(entry => (
+              <div
+                key={entry.rank}
+                className={`main-lb-row ${entry.isPlayer ? 'main-lb-row--player' : ''}`}
+              >
+                <span className="main-lb-row__rank">#{entry.rank}</span>
+                <span className="main-lb-row__avatar">{entry.avatar}</span>
+                <span className="main-lb-row__name">
+                  {entry.name}
+                  {entry.title ? <span className="main-lb-row__title"> {entry.title}</span> : null}
+                </span>
+                <span className="main-lb-row__power">{entry.power.toLocaleString('de-DE')}</span>
+                {entry.isPlayer && entry.delta !== 0 && (
+                  <span className={`main-lb-row__delta ${entry.delta > 0 ? 'main-lb-row__delta--up' : 'main-lb-row__delta--down'}`}>
+                    {entry.delta > 0 ? `▲${entry.delta}` : `▼${Math.abs(entry.delta)}`}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

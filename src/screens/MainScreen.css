@@ -2169,3 +2169,122 @@
   opacity: 0.85;
   box-shadow: 0 0 12px rgba(160,80,255,0.5);
 }
+
+/* ── Rangliste Widget ───────────────────────────────────────── */
+
+.main-leaderboard {
+  margin: 0 10px 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(18,10,24,0.95), rgba(10,6,16,0.98));
+  border: 1px solid rgba(240,185,30,0.3);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.main-leaderboard:hover {
+  border-color: rgba(240,185,30,0.6);
+}
+
+.main-leaderboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.main-leaderboard__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #f0d080;
+  letter-spacing: 0.1em;
+}
+
+.main-leaderboard__total {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #8a6520;
+  opacity: 0.8;
+}
+
+.main-leaderboard__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px 0;
+}
+
+.main-lb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: #c0a860;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.main-lb-row:last-child { border-bottom: none; }
+
+.main-lb-row--player {
+  background: rgba(240,185,30,0.08);
+  color: #f0d080;
+  font-weight: 700;
+}
+
+.main-lb-row__rank {
+  flex-shrink: 0;
+  width: 30px;
+  font-size: 0.62rem;
+  color: #8a6520;
+  text-align: right;
+}
+
+.main-lb-row--player .main-lb-row__rank {
+  color: #f0d080;
+}
+
+.main-lb-row__avatar {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  width: 20px;
+  text-align: center;
+}
+
+.main-lb-row__name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-lb-row__title {
+  font-size: 0.58rem;
+  opacity: 0.65;
+}
+
+.main-lb-row__power {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  color: #c9a84c;
+}
+
+.main-lb-row__delta {
+  flex-shrink: 0;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.main-lb-row__delta--up {
+  color: #50c878;
+  background: rgba(80,200,120,0.12);
+}
+
+.main-lb-row__delta--down {
+  color: #ff5555;
+  background: rgba(255,85,85,0.12);
+}
