@@ -662,6 +662,15 @@
   color: #90caf9;
 }
 
+.victory-next-floor__reward {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  color: #ffd060;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
 /* ── Post-Battle Quick Actions ────────────────────────────── */
 .victory-quick-actions {
   display: flex;
@@ -711,6 +720,72 @@
   color: #b39ddb;
   letter-spacing: 0.08em;
   font-weight: 700;
+}
+
+/* ── Streak Flash ──────────────────────────────────────────── */
+.victory-streak-flash {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(90deg, rgba(255,100,0,0.18), rgba(255,200,0,0.12));
+  border: 1px solid rgba(255,140,0,0.55);
+  border-radius: 22px;
+  padding: 6px 14px;
+  margin: 4px 0 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #ffa040;
+  letter-spacing: 0.05em;
+  animation: streakFlashIn 0.45s cubic-bezier(0.34,1.56,0.64,1), streakFlashGlow 2s ease-in-out 0.45s infinite alternate;
+  position: relative;
+  overflow: hidden;
+}
+
+.victory-streak-flash--mega {
+  background: linear-gradient(90deg, rgba(255,40,40,0.25), rgba(255,200,0,0.18));
+  border-color: rgba(255,60,60,0.7);
+  color: #ff8888;
+  animation: streakFlashIn 0.45s cubic-bezier(0.34,1.56,0.64,1), streakMegaGlow 1.5s ease-in-out 0.45s infinite alternate;
+}
+
+.victory-streak-flash__fire {
+  font-size: 1.1rem;
+  animation: streakFireBounce 0.6s ease-in-out infinite alternate;
+}
+
+.victory-streak-flash__text strong {
+  color: #ffcc44;
+}
+
+.victory-streak-flash--mega .victory-streak-flash__text strong {
+  color: #ff6666;
+}
+
+.victory-streak-flash__hint {
+  font-size: 0.6rem;
+  color: #c08060;
+  margin-left: auto;
+  opacity: 0.9;
+}
+
+@keyframes streakFlashIn {
+  from { opacity: 0; transform: scale(0.85) translateX(-10px); }
+  to   { opacity: 1; transform: scale(1) translateX(0); }
+}
+
+@keyframes streakFlashGlow {
+  from { box-shadow: 0 0 6px rgba(255,140,0,0.3); }
+  to   { box-shadow: 0 0 18px rgba(255,140,0,0.65); }
+}
+
+@keyframes streakMegaGlow {
+  from { box-shadow: 0 0 8px rgba(255,60,60,0.4); }
+  to   { box-shadow: 0 0 24px rgba(255,60,60,0.8); }
+}
+
+@keyframes streakFireBounce {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-2px) scale(1.15); }
 }
 
 /* ── Near Mastery Hints ───────────────────────────────────── */

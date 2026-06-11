@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { CardDatabase } from '../services/CardDatabase';
+import { EnemyDatabase } from '../services/EnemyDatabase';
 import { TowerService } from '../services/TowerService';
 import { SaveService } from '../services/SaveService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
@@ -67,6 +68,8 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
 
   const streakReward  = WinStreakService.getRewardMultiplier(details.winStreak ?? 0);
   const hasMultiplier = streakReward.multiplier > 1.0;
+  const winStreak     = details.winStreak ?? 0;
+  const showStreakFlash = winStreak >= 5;
 
   // Cards close to next mastery level (75%+), excluding ones that just leveled up
   const nearMastery = useMemo(() => {
@@ -163,6 +166,19 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
               <div className="victory-record victory-record--streak">
                 🔥 NEUE BESTMARKE — SIEG-SERIE!
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Streak Flash — shown for 5+ win streaks */}
+        {showStreakFlash && (
+          <div className={`victory-streak-flash${winStreak >= 10 ? ' victory-streak-flash--mega' : ''}`}>
+            <span className="victory-streak-flash__fire">🔥</span>
+            <span className="victory-streak-flash__text">
+              {winStreak >= 10 ? 'LEGENDS-SERIE' : 'SERIE LÄUFT!'} · <strong>{winStreak}× IN FOLGE</strong>
+            </span>
+            {winStreak < 10 && (
+              <span className="victory-streak-flash__hint">noch {10 - winStreak} bis LEGENDS</span>
             )}
           </div>
         )}
@@ -373,6 +389,11 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             ) : (
               <div className="victory-next-floor__tag">◆ Normale Etage</div>
             )}
+            {(() => {
+              const base = EnemyDatabase.getFirst();
+              const est = Math.round((base?.rewardCrystals ?? 100) * (1 + nextFloor * 0.2));
+              return <div className="victory-next-floor__reward">💎 ~{est.toLocaleString('de-DE')} Kristalle</div>;
+            })()}
           </div>
         )}
 

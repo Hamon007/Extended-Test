@@ -1015,6 +1015,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* First-Win-of-Day chip */}
+      {FirstWinService.isAvailable() && (
+        <div className="battle-firstwin-chip">
+          <span className="battle-firstwin-chip__icon">🌅</span>
+          <span className="battle-firstwin-chip__text">
+            Erster Sieg heute: <strong>+{FirstWinService.FIRST_WIN_BONUS.toLocaleString('de-DE')} 💎</strong>
+          </span>
+        </div>
+      )}
+
       {/* Energie / Ausdauertränke */}
       <div className="battle-energy">
         <div className="battle-energy__pips" aria-label={`Energie ${energy.energy} von ${energy.max}`}>
