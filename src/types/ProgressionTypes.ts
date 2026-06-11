@@ -95,6 +95,8 @@ export interface RewardDetails {
   questsCompleted?: Array<{ title: string; crystals: number }>;
   // Weekly Battle Pass milestones newly reached (not yet claimed)
   passNewMilestones?: Array<{ label: string; crystals: number; icon: string }>;
+  // Streak Shield absorbed a defeat (streak preserved)
+  streakShielded?: boolean;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

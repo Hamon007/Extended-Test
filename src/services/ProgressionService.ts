@@ -157,7 +157,8 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
   }
 
   if (result.outcome === 'defeat') {
-    WinStreakService.resetOnDefeat();
+    const defeatOutcome = WinStreakService.resetOnDefeat();
+    const streakShielded = defeatOutcome === 'shielded';
     const updatedState = {
       ...state,
       crystals: state.crystals + DEFEAT_CONSOLATION,
@@ -192,6 +193,7 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
         newMaxStamina: accountResult.newState.maxStamina,
         newMaxMana:     accountResult.newState.maxMana,
       } : null,
+      ...(streakShielded ? { streakShielded: true } : {}),
     };
   }
 

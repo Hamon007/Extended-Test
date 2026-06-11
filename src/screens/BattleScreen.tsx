@@ -88,6 +88,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [towerEvent,     setTowerEvent]     = useState<TowerEvent | null>(null);
   const [eventToast,     setEventToast]     = useState('');
   const [winStreak,      setWinStreak]      = useState(() => WinStreakService.get());
+  const [hasStreakShield, setHasStreakShield] = useState(() => WinStreakService.hasShield());
   const [isPvpMode,      setIsPvpMode]      = useState(false);
   const pvpOpponentRef = useRef<string>('');
   const [towerMilestone, setTowerMilestone] = useState<TowerMilestone | null>(null);
@@ -777,6 +778,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     setIsPvpMode(false);
     pvpConsumedRef.current = false;
     setWinStreak(WinStreakService.get());
+    setHasStreakShield(WinStreakService.hasShield());
     rewardApplied.current = false;
     energy.refresh();
   }, [battle, energy, rewardDetails, isTowerMode]);
@@ -1236,11 +1238,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
       <div className="battle-select-header">
         <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
-        {winStreak >= 1 && (
-          <div className={`battle-streak-chip ${winStreak >= 3 ? 'battle-streak-chip--hot' : ''}`}>
-            🔥 {winStreak}{streakReward.multiplier > 1.0 && <> · ×{streakReward.multiplier.toFixed(1)}</>}
-          </div>
-        )}
+        <div className="battle-select-header__streaks">
+          {winStreak >= 1 && (
+            <div className={`battle-streak-chip ${winStreak >= 3 ? 'battle-streak-chip--hot' : ''}`}>
+              🔥 {winStreak}{streakReward.multiplier > 1.0 && <> · ×{streakReward.multiplier.toFixed(1)}</>}
+            </div>
+          )}
+          {hasStreakShield && (
+            <div className="battle-streak-shield-badge" title="Streak-Schutzschild aktiv — nächste Niederlage absorbiert!">
+              🛡 <span className="battle-streak-shield-badge__text">SCHUTZSCHILD</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Revenge chip — appears when the player returns to their last defeat floor */}

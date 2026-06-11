@@ -498,3 +498,40 @@
   font-family: 'EB Garamond', serif;
   font-style: italic;
 }
+
+/* ── Streak Shield saved notification ────────────────────────────── */
+.defeat-streak-shielded {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  margin: 0.4rem 0;
+  background: linear-gradient(135deg, rgba(40,100,220,0.28), rgba(20,60,160,0.22));
+  border: 1px solid rgba(100,180,255,0.55);
+  border-radius: 10px;
+  animation: shieldSave 0.7s cubic-bezier(0.18,1.4,0.4,1) both;
+}
+
+@keyframes shieldSave {
+  from { opacity: 0; transform: scale(0.7) rotate(-4deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.defeat-streak-shielded__icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(100,200,255,0.8));
+  flex-shrink: 0;
+}
+
+.defeat-streak-shielded__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: #99ddff;
+  line-height: 1.4;
+}
+
+.defeat-streak-shielded__text strong {
+  color: #bbeeFF;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 10px rgba(120,200,255,0.7);
+}

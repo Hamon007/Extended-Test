@@ -157,7 +157,15 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           </div>
         )}
 
-        {(details.winStreak ?? 0) >= 3 && (
+        {details.streakShielded ? (
+          <div className="defeat-streak-shielded">
+            <span className="defeat-streak-shielded__icon">🛡</span>
+            <span className="defeat-streak-shielded__text">
+              <strong>SCHUTZSCHILD AKTIVIERT!</strong><br />
+              Deine {details.winStreak}× Sieg-Serie wurde gerettet!
+            </span>
+          </div>
+        ) : (details.winStreak ?? 0) >= 3 && (
           <div className="defeat-streak-broken">
             <span className="defeat-streak-broken__icon">💔</span>
             <span className="defeat-streak-broken__text">
