@@ -3586,3 +3586,43 @@
   opacity: 0.7;
   filter: drop-shadow(0 0 4px rgba(255,80,80,0.5));
 }
+
+/* ── Relic Bonus Chip ─────────────────────────────────────────── */
+.battle-relic-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.75rem;
+  margin: 0.35rem 0;
+  background: linear-gradient(135deg, rgba(120,60,200,0.22), rgba(80,20,140,0.18));
+  border: 1px solid rgba(180,120,255,0.35);
+  border-radius: 20px;
+  font-size: 0.72rem;
+  animation: relicChipGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes relicChipGlow {
+  from { box-shadow: 0 0 6px rgba(160,80,255,0.25); }
+  to   { box-shadow: 0 0 14px rgba(180,100,255,0.5); }
+}
+
+.battle-relic-chip__icon {
+  font-size: 0.95rem;
+  filter: drop-shadow(0 0 4px rgba(200,140,255,0.6));
+}
+
+.battle-relic-chip__label {
+  color: #cc99ff;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.battle-relic-chip__bonuses {
+  color: #e8c8ff;
+  font-weight: 600;
+  opacity: 0.9;
+  border-left: 1px solid rgba(180,120,255,0.4);
+  padding-left: 0.45rem;
+  white-space: nowrap;
+}

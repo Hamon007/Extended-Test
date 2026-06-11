@@ -47,6 +47,7 @@ import { ElementalService }  from '../services/ElementalService';
 import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
 import { AccountProgressionService } from '../services/AccountProgressionService';
+import { RelicService }              from '../services/RelicService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -1504,6 +1505,32 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           <span className="battle-milestone-preview__reward">+{nextMilestone.crystals.toLocaleString('de-DE')} 💎</span>
         </div>
       )}
+
+      {/* Aktive Relikt-Boni */}
+      {(() => {
+        const relicCount = RelicService.getUnlocked().length;
+        if (relicCount === 0) return null;
+        const crystalB = RelicService.totalCrystalBonus();
+        const atkB     = RelicService.totalAtkBonus();
+        const xpB      = RelicService.totalXpBonus();
+        const hpB      = RelicService.totalBonusStartHpPct();
+        const parts: string[] = [];
+        if (crystalB > 0) parts.push(`+${Math.round(crystalB * 100)}% 💎`);
+        if (atkB     > 0) parts.push(`+${Math.round(atkB     * 100)}% ATK`);
+        if (xpB      > 0) parts.push(`+${Math.round(xpB      * 100)}% EP`);
+        if (hpB      > 0) parts.push(`+${Math.round(hpB      * 100)}% HP`);
+        return (
+          <div className="battle-relic-chip">
+            <span className="battle-relic-chip__icon">🏺</span>
+            <span className="battle-relic-chip__label">
+              {relicCount} Relik{relicCount === 1 ? 't' : 'te'} aktiv
+            </span>
+            {parts.length > 0 && (
+              <span className="battle-relic-chip__bonuses">{parts.join(' | ')}</span>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Leader-Karte + Formation */}
       {leaderBonus && (
