@@ -3043,6 +3043,90 @@
   to   { box-shadow: 0 0 6px rgba(240,185,30,0.4); }
 }
 
+/* ── Rival Chip ─────────────────────────────────────────────── */
+
+.battle-rival-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(0,30,80,0.88) 0%, rgba(0,20,60,0.82) 100%);
+  border: 1px solid rgba(60,140,255,0.5);
+  border-left: 3px solid #3b9eff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 0;
+  box-shadow: 0 0 16px rgba(59,158,255,0.18), inset 0 0 10px rgba(59,158,255,0.06);
+  animation: rival-shimmer 4s ease-in-out infinite alternate;
+}
+
+@keyframes rival-shimmer {
+  from { box-shadow: 0 0 10px rgba(59,158,255,0.12), inset 0 0 8px rgba(59,158,255,0.04); }
+  to   { box-shadow: 0 0 22px rgba(59,158,255,0.35), inset 0 0 14px rgba(59,158,255,0.10); }
+}
+
+.battle-rival-chip__icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 5px rgba(80,180,255,0.6));
+}
+
+.battle-rival-chip__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.battle-rival-chip__label {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #3b9eff;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 10px rgba(59,158,255,0.7);
+}
+
+.battle-rival-chip__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: #a8d4ff;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.battle-rival-chip__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.battle-rival-chip__power {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7ec8ff;
+  letter-spacing: 0.05em;
+}
+
+.battle-rival-chip__cta {
+  font-size: 0.55rem;
+  color: #3b9eff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+  animation: rival-cta-pulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes rival-cta-pulse {
+  from { opacity: 0.6; }
+  to   { opacity: 1.0; color: #7ec8ff; }
+}
+
 /* ── Nemesis Banner ─────────────────────────────────────────── */
 
 .battle-nemesis-banner {

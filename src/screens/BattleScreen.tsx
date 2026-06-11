@@ -31,6 +31,7 @@ import { WeekendBonusService } from '../services/WeekendBonusService';
 import { DailyCardService }   from '../services/DailyCardService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { NemesisService, NEMESIS_CRYSTAL_BONUS } from '../services/NemesisService';
+import { LeaderboardService } from '../services/LeaderboardService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -147,6 +148,15 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const BASE_CARD_COUNT = 3.5;
     return Math.round(BASE_AVG_ATK_PER_CARD * floorScale * BASE_CARD_COUNT);
   }, [towerFloor]);
+
+  // Rival: NPC ranked just above the player — shows as a competitive target in the lobby
+  const rival = useMemo(() => {
+    if (deckPower === 0) return null;
+    const nearby = LeaderboardService.getNearby(deckPower, 1);
+    const playerEntry = nearby.find(e => e.isPlayer);
+    if (!playerEntry || playerEntry.rank <= 1) return null;
+    return nearby.find(e => !e.isPlayer && e.rank === playerEntry.rank - 1) ?? null;
+  }, [deckPower]);
 
   // Tagesprüfung
   const dailyTrial = useMemo(() => DailyTrialService.today(), []);
@@ -970,6 +980,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Rival Chip — NPC one rank above the player */}
+      {rival && (
+        <div className="battle-rival-chip">
+          <span className="battle-rival-chip__icon">🎯</span>
+          <div className="battle-rival-chip__text">
+            <span className="battle-rival-chip__label">RIVALE #{rival.rank}</span>
+            <span className="battle-rival-chip__name">
+              {rival.avatar} {rival.name}{rival.title ? ` ${rival.title}` : ''}
+            </span>
+          </div>
+          <div className="battle-rival-chip__right">
+            <span className="battle-rival-chip__power">{rival.power.toLocaleString('de-DE')}</span>
+            <span className="battle-rival-chip__cta">Überhole ihn! ▲</span>
+          </div>
+        </div>
+      )}
 
       {/* Etagen-Info */}
       <div className="battle-tower-floor-banner">
