@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { SaveService } from '../services/SaveService';
 import { ShopService, type ShopItem } from '../services/ShopService';
+import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { PULL_COST_SINGLE, PULL_COST_MULTI } from '../config/GameConfig';
 import './ShopScreen.css';
 
@@ -23,12 +24,19 @@ interface ShopScreenProps {
 }
 
 const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
-  const [crystals, setCrystals] = useState(() => SaveService.loadGachaState().crystals);
-  const [toast,    setToast]    = useState('');
-  const [resetMs,  setResetMs]  = useState(() => msUntilMidnightUtc());
+  const [crystals,   setCrystals]   = useState(() => SaveService.loadGachaState().crystals);
+  const [toast,      setToast]      = useState('');
+  const [resetMs,    setResetMs]    = useState(() => msUntilMidnightUtc());
+  const [flashSale,  setFlashSale]  = useState<FlashSale>(() => FlashSaleService.getCurrent());
+  const [flashMs,    setFlashMs]    = useState(() => FlashSaleService.msUntilEnd());
 
   useEffect(() => {
-    const id = setInterval(() => setResetMs(msUntilMidnightUtc()), 1000);
+    const id = setInterval(() => {
+      setResetMs(msUntilMidnightUtc());
+      const ms = FlashSaleService.msUntilEnd();
+      setFlashMs(ms);
+      if (ms <= 0) setFlashSale(FlashSaleService.getCurrent()); // rotate
+    }, 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -98,6 +106,46 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
       {toast && <div className="shop-toast">{toast}</div>}
 
       <div className="shop-body">
+
+        {/* ── Flash Sale ── */}
+        <div className={`shop-flash-sale ${flashMs < 600_000 ? 'shop-flash-sale--urgent' : ''}`}>
+          <div className="shop-flash-sale__header">
+            <span className="shop-flash-sale__badge">⚡ BLITZANGEBOT</span>
+            <span className="shop-flash-sale__timer">⏰ {formatHMS(flashMs)}</span>
+          </div>
+          <div className="shop-flash-sale__body">
+            <span className="shop-flash-sale__icon">{flashSale.icon}</span>
+            <div className="shop-flash-sale__info">
+              <div className="shop-flash-sale__name">{flashSale.name}</div>
+              <div className="shop-flash-sale__prices">
+                <span className="shop-flash-sale__original">💎 {flashSale.original.toLocaleString('de-DE')}</span>
+                <span className="shop-flash-sale__arrow">→</span>
+                <span className="shop-flash-sale__sale">💎 {flashSale.sale.toLocaleString('de-DE')}</span>
+                <span className="shop-flash-sale__discount">-{flashSale.discount}%</span>
+              </div>
+            </div>
+            <button
+              className="shop-flash-sale__btn"
+              disabled={crystals < flashSale.sale}
+              onClick={() => {
+                const item = ShopService.SHOP_ITEMS.find(i => i.id === flashSale.itemId);
+                if (!item) return;
+                // Apply flash discount: override cost temporarily
+                const discountedItem: ShopItem = { ...item, cost: flashSale.sale };
+                const result = ShopService.purchase(discountedItem);
+                if (!result.ok) {
+                  setToast(`❌ ${result.reason}`);
+                } else {
+                  setCrystals(SaveService.loadGachaState().crystals);
+                  setToast(`⚡ Blitzangebot: ${flashSale.name} gekauft!`);
+                }
+                setTimeout(() => setToast(''), 2500);
+              }}
+            >
+              {crystals >= flashSale.sale ? 'Kaufen' : '—'}
+            </button>
+          </div>
+        </div>
 
         {/* Pull Affordability Widget */}
         <div className="shop-pull-power">
