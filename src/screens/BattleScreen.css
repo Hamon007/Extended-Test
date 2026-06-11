@@ -3043,6 +3043,94 @@
   to   { box-shadow: 0 0 6px rgba(240,185,30,0.4); }
 }
 
+/* ── Season Rank-Up Overlay ─────────────────────────────────── */
+
+.season-rankup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: rankup-show 0.5s cubic-bezier(0.34,1.56,0.5,1), rankup-hide 0.6s ease 4.4s forwards;
+}
+
+@keyframes rankup-show {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes rankup-hide {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.season-rankup-overlay__bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.season-rankup-overlay__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 50px;
+  border: 2px solid var(--rank-color, #ffd700);
+  border-radius: 20px;
+  background: rgba(10,5,20,0.96);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--rank-color, #ffd700) 60%, transparent),
+              0 0 120px color-mix(in srgb, var(--rank-color, #ffd700) 30%, transparent);
+  animation: rankup-bounce 0.5s cubic-bezier(0.34,1.56,0.5,1) 0.1s both;
+  text-align: center;
+}
+
+@keyframes rankup-bounce {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+.season-rankup-overlay__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+}
+
+.season-rankup-overlay__icon {
+  font-size: 4rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px var(--rank-color, #ffd700));
+  animation: rankup-icon-spin 0.6s cubic-bezier(0.34,1.56,0.5,1) 0.2s both;
+}
+
+@keyframes rankup-icon-spin {
+  0%   { transform: rotate(-30deg) scale(0); }
+  60%  { transform: rotate(10deg)  scale(1.3); }
+  100% { transform: rotate(0deg)   scale(1);   }
+}
+
+.season-rankup-overlay__rank {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--rank-color, #ffd700);
+  text-shadow: 0 0 30px color-mix(in srgb, var(--rank-color, #ffd700) 90%, transparent);
+  letter-spacing: 0.08em;
+}
+
+.season-rankup-overlay__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.1em;
+}
+
 /* ── Rival Chip ─────────────────────────────────────────────── */
 
 .battle-rival-chip {

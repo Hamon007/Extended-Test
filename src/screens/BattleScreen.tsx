@@ -100,6 +100,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const highestFloor = TowerService.getHighestFloor();
   const [energyRegenMs, setEnergyRegenMs] = useState(() => EnergyService.msUntilNextRegen());
   const [nemesisId,    setNemesisId]     = useState(() => NemesisService.getNemesisId());
+  const [seasonRankUp, setSeasonRankUp] = useState<{ rank: string; icon: string; color: string } | null>(null);
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -479,6 +480,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         const spAmount = isBossFloor ? SeasonService.SP_REWARDS.boss_win
           : isElite ? SeasonService.SP_REWARDS.elite_win
           : SeasonService.SP_REWARDS.tower_win;
+        const oldRank = SeasonService.getRankForSp(SeasonService.load().sp);
         SeasonService.addSp(spAmount);
         QuestService.recordEvent('earn_sp', spAmount);
         // Season rank achievements
@@ -487,6 +489,12 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         if (spNow >= 100)  AchievementService.recordProgress('season_fighter');
         if (spNow >= 1500) AchievementService.recordProgress('season_champion');
         if (spNow >= 6000) AchievementService.recordProgress('season_legend');
+        // Rank-up celebration overlay
+        const newRank = SeasonService.getRankForSp(spNow);
+        if (newRank !== oldRank) {
+          setSeasonRankUp({ rank: newRank, icon: SeasonService.RANK_ICONS[newRank], color: SeasonService.RANK_COLORS[newRank] });
+          setTimeout(() => setSeasonRankUp(null), 5000);
+        }
       }
       // Combat milestones
       if (towerFloor >= 100) AchievementService.recordProgress('tower_100');
@@ -941,6 +949,19 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
   return (
     <div className="battle-screen--select">
+      {/* Season Rank-Up Overlay */}
+      {seasonRankUp && (
+        <div className="season-rankup-overlay" style={{ '--rank-color': seasonRankUp.color } as React.CSSProperties}>
+          <div className="season-rankup-overlay__bg" />
+          <div className="season-rankup-overlay__content">
+            <div className="season-rankup-overlay__label">RANG AUFGESTIEGEN!</div>
+            <div className="season-rankup-overlay__icon">{seasonRankUp.icon}</div>
+            <div className="season-rankup-overlay__rank">{seasonRankUp.rank}</div>
+            <div className="season-rankup-overlay__sub">Neue Belohnungen freigeschalten!</div>
+          </div>
+        </div>
+      )}
+
       {eventToast && <div className="event-toast">{eventToast}</div>}
 
       <div className="battle-select-header">
