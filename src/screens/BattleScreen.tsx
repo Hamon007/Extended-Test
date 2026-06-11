@@ -37,7 +37,7 @@ import { CrystalRainService } from '../services/CrystalRainService';
 import { LuckySeven }         from '../services/LuckySeven';
 import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS } from '../services/DailyElementService';
-import { WeeklyPassService } from '../services/WeeklyPassService';
+import { WeeklyPassService, PASS_MILESTONES } from '../services/WeeklyPassService';
 import { DailyBossService } from '../services/DailyBossService';
 import { FlashChallengeService } from '../services/FlashChallengeService';
 import { RageModeService } from '../services/RageModeService';
@@ -544,6 +544,9 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       }
     }
 
+    // Weekly pass milestone IDs reached this victory (populated inside the isVictory block below)
+    let passNewIds: number[] = [];
+
     // Crystal Rain: rare 10% surprise bonus on any victory
     if (details.isVictory) {
       const rainAmount = CrystalRainService.roll();
@@ -573,8 +576,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         isDailyBossModeRef.current = false;
       }
 
-      // Weekly Battle Pass progress
-      WeeklyPassService.recordWin();
+      // Weekly Battle Pass progress — capture newly-reached milestones for VictoryScreen
+      passNewIds = WeeklyPassService.recordWin();
 
       // Flash Challenge events
       FlashChallengeService.recordEvent('win_3');
@@ -640,10 +643,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     setEnemyTaunt(EnemyTauntService.getTaunt(resultTrigger, resultTier));
     setTimeout(() => setEnemyTaunt(null), 4000);
 
-    setRewardDetails(finalDetails);
-
-    // Aufgaben-Fortschritt + Achievements
+    // ── Quest / Achievement / SP tracking (BEFORE setRewardDetails so all data reaches VictoryScreen) ──
     if (battle.state.result.outcome === 'victory') {
+      // Snapshot which quests were already completed before recording
+      const preDailyCompleted = new Set(
+        QuestService.getDailyQuests().filter(q => q.progress.completed).map(q => q.def.id)
+      );
+      const preWeeklyCompleted = new Set(
+        QuestService.getWeeklyQuests().filter(q => q.progress.completed).map(q => q.def.id)
+      );
+
       QuestService.recordEvent('win_battles');
       if (isTowerMode) {
         QuestService.recordEvent('reach_floor', 1, { floor: towerFloor });
@@ -675,7 +684,6 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         const oldRank = SeasonService.getRankForSp(SeasonService.load().sp);
         SeasonService.addSp(spAmount);
         QuestService.recordEvent('earn_sp', spAmount);
-        // Attach SP to reward details
         const spNowForDetails = SeasonService.load().sp;
         finalDetails = {
           ...finalDetails,
@@ -683,23 +691,39 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           spTotal:  spNowForDetails,
           spRank:   SeasonService.getRankForSp(spNowForDetails),
         };
-        // Season rank achievements
-        const updatedState = SeasonService.load();
-        const spNow = updatedState.sp;
+        const spNow = SeasonService.load().sp;
         if (spNow >= 100)  AchievementService.recordProgress('season_fighter');
         if (spNow >= 1500) AchievementService.recordProgress('season_champion');
         if (spNow >= 6000) AchievementService.recordProgress('season_legend');
-        // Rank-up celebration overlay
         const newRank = SeasonService.getRankForSp(spNow);
         if (newRank !== oldRank) {
           setSeasonRankUp({ rank: newRank, icon: SeasonService.RANK_ICONS[newRank], color: SeasonService.RANK_COLORS[newRank] });
           setTimeout(() => setSeasonRankUp(null), 5000);
         }
       }
-      // Combat milestones
       if (towerFloor >= 100) AchievementService.recordProgress('tower_100');
       const maxComboCheck = battle.state.maxComboReached ?? 0;
       if (maxComboCheck >= 10) AchievementService.recordProgress('combo_10');
+
+      // Detect newly completed quests — attach to finalDetails for VictoryScreen
+      const newlyDone = [
+        ...QuestService.getDailyQuests().filter(q => q.progress.completed && !preDailyCompleted.has(q.def.id)),
+        ...QuestService.getWeeklyQuests().filter(q => q.progress.completed && !preWeeklyCompleted.has(q.def.id)),
+      ].map(q => ({ title: q.def.title, crystals: q.def.crystalReward }));
+      if (newlyDone.length > 0) {
+        finalDetails = { ...finalDetails, questsCompleted: newlyDone };
+      }
+
+      // Weekly Pass milestones newly reached — show on VictoryScreen
+      if (passNewIds && passNewIds.length > 0) {
+        const newMilestones = passNewIds
+          .map(id => PASS_MILESTONES.find(m => m.id === id))
+          .filter((m): m is typeof PASS_MILESTONES[number] => m !== undefined)
+          .map(m => ({ label: m.label, crystals: m.crystals, icon: m.icon }));
+        if (newMilestones.length > 0) {
+          finalDetails = { ...finalDetails, passNewMilestones: newMilestones };
+        }
+      }
     }
 
     // PvP: Ergebnis speichern + Achievements
@@ -732,6 +756,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       combo:    battle.state.maxComboReached ?? 0,
       winStreak: WinStreakService.get(),
     });
+
+    setRewardDetails(finalDetails);
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContinue = useCallback(() => {

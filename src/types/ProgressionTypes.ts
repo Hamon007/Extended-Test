@@ -91,6 +91,10 @@ export interface RewardDetails {
   spEarned?: number;
   spTotal?: number;
   spRank?: string;
+  // Quest completions triggered by this battle
+  questsCompleted?: Array<{ title: string; crystals: number }>;
+  // Weekly Battle Pass milestones newly reached (not yet claimed)
+  passNewMilestones?: Array<{ label: string; crystals: number; icon: string }>;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

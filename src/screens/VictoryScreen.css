@@ -1186,6 +1186,60 @@
   to   { box-shadow: 0 0 30px rgba(255,120,0,0.6),  inset 0 0 16px rgba(255,80,0,0.16); }
 }
 
+/* ── Quest Completions ───────────────────────────────────── */
+.victory-quest-completions {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.victory-quest-completions__title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: rgba(180,140,255,0.7);
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+.reward-row--questdone {
+  background: linear-gradient(135deg, rgba(30,15,60,0.85), rgba(50,20,90,0.6));
+  border: 1px solid rgba(140,80,240,0.55);
+  animation: reward-slide-in 0.4s ease 0.55s both, questdone-shimmer 2s ease-in-out 1s infinite alternate;
+}
+
+@keyframes questdone-shimmer {
+  from { box-shadow: 0 0 5px rgba(140,80,240,0.2); }
+  to   { box-shadow: 0 0 14px rgba(160,100,255,0.5); }
+}
+
+.reward-row--questdone .reward-row__label { color: #c090ff; }
+
+.reward-row__value--questdone {
+  color: #d0a0ff;
+  font-weight: 900;
+  text-shadow: 0 0 10px rgba(180,120,255,0.7);
+}
+
+.reward-row--passmilestone {
+  background: linear-gradient(135deg, rgba(30,20,5,0.85), rgba(60,40,5,0.65));
+  border: 1px solid rgba(255,190,50,0.5);
+  animation: reward-slide-in 0.4s ease 0.58s both, passmile-glow 1.8s ease-in-out 1s infinite alternate;
+}
+
+@keyframes passmile-glow {
+  from { box-shadow: 0 0 5px rgba(255,190,30,0.2); }
+  to   { box-shadow: 0 0 16px rgba(255,200,60,0.55); }
+}
+
+.reward-row--passmilestone .reward-row__label { color: #f0c060; }
+
+.reward-row__value--passmilestone {
+  color: #ffd070;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255,200,50,0.6);
+}
+
 /* De-emphasised continue button when quick fight is available */
 .victory-btn--secondary {
   background: linear-gradient(135deg, #0d1108, #141f0a, #0d1108);

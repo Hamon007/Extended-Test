@@ -543,6 +543,36 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Quest Completions triggered by this battle */}
+          {details.questsCompleted && details.questsCompleted.length > 0 && (
+            <div className="victory-quest-completions">
+              <div className="victory-quest-completions__title">📜 Quest abgeschlossen!</div>
+              {details.questsCompleted.map((q, i) => (
+                <div key={i} className="reward-row reward-row--questdone">
+                  <span className="reward-row__label">✓ {q.title}</span>
+                  <span className="reward-row__value reward-row__value--questdone">
+                    +<CountUp target={q.crystals} />
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Weekly Pass — newly reached milestones */}
+          {details.passNewMilestones && details.passNewMilestones.length > 0 && (
+            <div className="victory-quest-completions">
+              <div className="victory-quest-completions__title">🗓 Wöchentlicher Pass</div>
+              {details.passNewMilestones.map((m, i) => (
+                <div key={i} className="reward-row reward-row--passmilestone">
+                  <span className="reward-row__label">{m.icon} {m.label} erreicht!</span>
+                  <span className="reward-row__value reward-row__value--passmilestone">
+                    +{m.crystals.toLocaleString('de-DE')} 💎 abrufbar
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Ausdauertrank */}
           {details.potionsGained && details.potionsGained > 0 && (
             <div className="reward-row reward-row--xp">
