@@ -365,6 +365,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Bonus Hour ×2 */}
+          {details.bonusHourBonus && details.bonusHourBonus > 0 && (
+            <div className="reward-row reward-row--bonushour">
+              <span className="reward-row__label">⚡ BONUS-STUNDE! ×2</span>
+              <span className="reward-row__value reward-row__value--bonushour">
+                +<CountUp target={details.bonusHourBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Nemesis Revenge Bonus */}
           {details.nemesisBonus && details.nemesisBonus > 0 && (
             <div className="reward-row reward-row--nemesis">

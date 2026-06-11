@@ -64,6 +64,8 @@ export interface RewardDetails {
   eventName?:       string;
   // Nemesis revenge bonus (+50% crystals for defeating your nemesis)
   nemesisBonus?:    number;
+  // Bonus Hour double crystals (active first 15 min of even UTC hours)
+  bonusHourBonus?:  number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

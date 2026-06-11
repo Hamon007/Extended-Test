@@ -32,6 +32,7 @@ import { DailyCardService }   from '../services/DailyCardService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { NemesisService, NEMESIS_CRYSTAL_BONUS } from '../services/NemesisService';
 import { LeaderboardService } from '../services/LeaderboardService';
+import { BonusHourService }  from '../services/BonusHourService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -422,6 +423,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           ...finalDetails,
           crystalsGained: finalDetails.crystalsGained + weekendBonus,
           weekendBonus,
+        };
+      }
+    }
+
+    // Bonus Hour: 2× crystal multiplier during the first 15 min of even UTC hours
+    if (details.isVictory) {
+      const bhBonus = BonusHourService.getBonus(finalDetails.crystalsGained);
+      if (bhBonus > 0) {
+        const gst = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst, crystals: gst.crystals + bhBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + bhBonus,
+          bonusHourBonus: bhBonus,
         };
       }
     }

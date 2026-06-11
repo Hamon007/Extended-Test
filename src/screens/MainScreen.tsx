@@ -28,6 +28,7 @@ import { DailyCardService } from '../services/DailyCardService';
 import { EventService }     from '../services/EventService';
 import { LeaderboardService, type LeaderboardEntry } from '../services/LeaderboardService';
 import { PowerMilestoneService, type PowerMilestone } from '../services/PowerMilestoneService';
+import { BonusHourService } from '../services/BonusHourService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -182,6 +183,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   // Leaderboard — computed from power score, stable per render
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [powerMilestone, setPowerMilestone] = useState<PowerMilestone | null>(null);
+  const [bonusHourActive, setBonusHourActive] = useState(() => BonusHourService.isActive());
+  const [bonusHourMs,     setBonusHourMs]     = useState(() => BonusHourService.isActive() ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
@@ -195,6 +198,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       const freshEnergy = EnergyService.load();
       setEnergy(prev => prev.energy !== freshEnergy.energy ? freshEnergy : prev);
       setActiveExps(ExpeditionService.getActive());
+      const bhActive = BonusHourService.isActive();
+      setBonusHourActive(bhActive);
+      setBonusHourMs(bhActive ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -443,6 +449,26 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             <span className="main-event-banner__desc">{activeEvent.bannerDesc}</span>
           </div>
           <span className="main-event-banner__days">{EventService.getDaysLeft()}T</span>
+        </div>
+      )}
+
+      {/* ── Bonus-Stunde Banner ── */}
+      {bonusHourActive ? (
+        <div className="main-bonushour main-bonushour--active" onClick={() => onNavigate?.('battle')}>
+          <span className="main-bonushour__icon">⚡</span>
+          <div className="main-bonushour__text">
+            <span className="main-bonushour__title">BONUS-STUNDE LÄUFT!</span>
+            <span className="main-bonushour__sub">×2 Kristalle auf alle Siege · {formatCountdown(bonusHourMs)}</span>
+          </div>
+          <span className="main-bonushour__cta">KÄMPFEN ▶</span>
+        </div>
+      ) : (
+        <div className="main-bonushour main-bonushour--countdown" onClick={() => onNavigate?.('battle')}>
+          <span className="main-bonushour__icon">⚡</span>
+          <div className="main-bonushour__text">
+            <span className="main-bonushour__title">NÄCHSTE BONUS-STUNDE</span>
+            <span className="main-bonushour__sub">×2 Kristalle in {formatCountdown(bonusHourMs)}</span>
+          </div>
         </div>
       )}
 
