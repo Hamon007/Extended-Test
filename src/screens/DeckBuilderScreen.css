@@ -651,6 +651,54 @@
   font-weight: 700;
   text-shadow: 0 0 3px rgba(255,140,0,0.6);
 }
+.db-elem-chip--blessed {
+  border-color: color-mix(in srgb, var(--bless-color, #888) 60%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--bless-color, #888) 40%, transparent);
+}
+.db-elem-chip__bless {
+  color: gold;
+  font-size: 0.55rem;
+}
+
+/* ── Daily Blessing Bar ─────────────────────────────────────── */
+.db-blessing-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(20,20,30,0.6);
+  border: 1px solid rgba(120,120,160,0.25);
+  margin-bottom: 6px;
+  font-size: 0.6rem;
+  color: rgba(180,170,220,0.8);
+}
+.db-blessing-bar--active {
+  border-color: color-mix(in srgb, var(--bless-color, #888) 50%, transparent);
+  background: color-mix(in srgb, var(--bless-color, #888) 8%, rgba(10,10,20,0.7));
+}
+.db-blessing-bar--synergy {
+  border-color: color-mix(in srgb, var(--bless-color, #888) 70%, transparent);
+  background: color-mix(in srgb, var(--bless-color, #888) 15%, rgba(10,10,20,0.75));
+  animation: bless-bar-synergy 1.4s ease-in-out infinite alternate;
+}
+@keyframes bless-bar-synergy {
+  from { box-shadow: 0 0 4px color-mix(in srgb, var(--bless-color, #888) 30%, transparent); }
+  to   { box-shadow: 0 0 14px color-mix(in srgb, var(--bless-color, #888) 60%, transparent); }
+}
+.db-blessing-bar__icon { font-size: 0.9rem; flex-shrink: 0; }
+.db-blessing-bar__label {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex: 1;
+  color: color-mix(in srgb, var(--bless-color, #888) 80%, white);
+}
+.db-blessing-bar__count {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--bless-color, #888) 90%, white);
+}
 
 /* ── Formation Bonuses ─────────────────────────────────────── */
 .db-formations {

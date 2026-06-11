@@ -11,6 +11,7 @@ import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types
 import type { Rarity } from '../types/Card';
 import { AchievementService } from '../services/AchievementService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import './DeckBuilderScreen.css';
 
 type SortKey = 'rarity' | 'name' | 'atk' | 'hp' | 'mp';
@@ -129,6 +130,18 @@ const DeckBuilderScreen: React.FC = () => {
       .filter((card): card is NonNullable<typeof card> => card !== null);
     return FormationService.compute(deckCards);
   }, [deck.uuids, inventory]);
+
+  // Daily Blessing integration
+  const blessedElement = useMemo(() => getBlessedElement(), []);
+  const blessedLabel   = ELEMENT_LABELS[blessedElement] ?? blessedElement;
+  const blessedColor   = ELEMENT_COLORS[blessedElement] ?? '#888888';
+  const blessingCount  = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    return deck.uuids.filter(uuid => {
+      const inst = invMap.get(uuid);
+      return inst ? CardDatabase.getById(inst.cardId)?.element === blessedElement : false;
+    }).length;
+  }, [deck.uuids, inventory, blessedElement]);
 
   // Near-formations: tags that need 1-2 more cards to activate (count === 2)
   const nearFormations = useMemo(() => {
@@ -261,17 +274,36 @@ const DeckBuilderScreen: React.FC = () => {
             💧 {validation.totalMP} / {MAX_DECK_COST} MP
           </span>
         </div>
+        {/* Daily Element Blessing indicator */}
+        <div
+          className={`db-blessing-bar${blessingCount >= 3 ? ' db-blessing-bar--synergy' : blessingCount >= 1 ? ' db-blessing-bar--active' : ''}`}
+          style={{ '--bless-color': blessedColor } as React.CSSProperties}
+        >
+          <span className="db-blessing-bar__icon">{blessedLabel.split(' ')[0]}</span>
+          <span className="db-blessing-bar__label">
+            TAGESSEGEN: {blessedLabel.split(' ').slice(1).join(' ')}
+          </span>
+          <span className="db-blessing-bar__count">
+            {blessingCount >= 3
+              ? `✦ SYNERGIE! +${(blessingCount - 2) * 100} 💎`
+              : blessingCount >= 1
+                ? `${blessingCount}/3 → Synergie-Bonus`
+                : `0/3 · +100 💎/Karte ab 3`}
+          </span>
+        </div>
+
         {/* Element distribution */}
         {deckElementDist.length > 0 && (
           <div className="db-elem-dist">
             {deckElementDist.map(([elem, count]) => (
               <span
                 key={elem}
-                className={`db-elem-chip${count >= 3 ? ' db-elem-chip--active' : count === 2 ? ' db-elem-chip--near' : ''}`}
+                className={`db-elem-chip${count >= 3 ? ' db-elem-chip--active' : count === 2 ? ' db-elem-chip--near' : ''}${elem === blessedElement ? ' db-elem-chip--blessed' : ''}`}
               >
                 {ELEM_ICON[elem] ?? '◆'}{elem} ×{count}
                 {count >= 3 && <span className="db-elem-chip__bonus">✦</span>}
                 {count === 2 && <span className="db-elem-chip__need">+1!</span>}
+                {elem === blessedElement && <span className="db-elem-chip__bless">☀</span>}
               </span>
             ))}
           </div>
