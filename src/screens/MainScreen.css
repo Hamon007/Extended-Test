@@ -2845,3 +2845,72 @@
   color: #88ccff;
   font-weight: 600;
 }
+
+/* ── World Boss Chip ────────────────────────────────────────────── */
+.main-world-boss-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  margin: 0.3rem 0;
+  background: linear-gradient(135deg, rgba(120,0,60,0.22), rgba(60,0,100,0.16));
+  border: 1px solid rgba(220,60,120,0.45);
+  border-radius: 10px;
+  cursor: pointer;
+  animation: wbChipGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes wbChipGlow {
+  from { box-shadow: 0 0 6px rgba(200,40,100,0.2); }
+  to   { box-shadow: 0 0 16px rgba(220,60,120,0.45); }
+}
+
+.main-world-boss-chip--dead {
+  border-color: rgba(60,200,100,0.4);
+  background: rgba(20,70,30,0.16);
+  animation: none;
+}
+
+.main-world-boss-chip__icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.main-world-boss-chip__info { flex: 1; min-width: 0; }
+
+.main-world-boss-chip__title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ff80b0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.2rem;
+}
+
+.main-world-boss-chip--dead .main-world-boss-chip__title { color: #60d080; }
+
+.main-world-boss-chip__bar-track {
+  height: 4px;
+  background: rgba(255,80,120,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.main-world-boss-chip__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #cc0044, #ff4488);
+  border-radius: 2px;
+}
+
+.main-world-boss-chip__claim {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffd060;
+  flex-shrink: 0;
+  animation: claimGlow 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes claimGlow {
+  from { text-shadow: 0 0 4px rgba(255,200,60,0.4); }
+  to   { text-shadow: 0 0 12px rgba(255,200,60,0.85); }
+}

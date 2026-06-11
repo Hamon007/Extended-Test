@@ -49,6 +49,7 @@ import { BattleManager, type BattleMeta, type RuneBoost } from '../services/Batt
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RelicService }              from '../services/RelicService';
 import { BountyService }             from '../services/BountyService';
+import { WorldBossService }          from '../services/WorldBossService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -634,6 +635,9 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           };
         }
       }
+
+      // World Boss: register player's battle damage contribution
+      WorldBossService.recordBattleDamage(totalDamage);
 
       // Bounty Board: collect reward if this enemy was a daily bounty target
       {
@@ -1720,6 +1724,51 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
                 <span className="battle-bounty-row__reward">💎 {b.crystals}</span>
               </div>
             ))}
+          </div>
+        );
+      })()}
+
+      {/* World Boss Event Banner */}
+      {(() => {
+        const hpPct   = WorldBossService.getHpPct();
+        const isDead  = WorldBossService.isDead();
+        const canClaim = WorldBossService.canClaim();
+        const contrib  = WorldBossService.getPlayerDamage();
+        return (
+          <div className={`battle-world-boss ${isDead ? 'battle-world-boss--dead' : ''}`}>
+            <div className="battle-world-boss__header">
+              <span className="battle-world-boss__icon">{WorldBossService.getBossIcon()}</span>
+              <span className="battle-world-boss__title">
+                {isDead ? 'WELTBOSS BESIEGT' : 'WELTBOSS'} — {WorldBossService.getBossName()}
+              </span>
+              {canClaim && (
+                <button
+                  className="battle-world-boss__claim"
+                  onClick={() => {
+                    WorldBossService.claimReward();
+                    void SaveService.uploadSave();
+                  }}
+                >
+                  💎 {WorldBossService.REWARD_CRYSTALS} BEANSPRUCHEN
+                </button>
+              )}
+            </div>
+            <div className="battle-world-boss__bar-track">
+              <div
+                className="battle-world-boss__bar-fill"
+                style={{ width: `${Math.max(0, Math.round(hpPct * 100))}%` }}
+              />
+            </div>
+            <div className="battle-world-boss__footer">
+              <span className="battle-world-boss__hp">
+                {isDead ? '💀 GEFALLEN' : `HP ${Math.round(hpPct * 100)}%`}
+              </span>
+              {contrib > 0 && (
+                <span className="battle-world-boss__contrib">
+                  Dein Beitrag: {contrib.toLocaleString('de-DE')}
+                </span>
+              )}
+            </div>
           </div>
         );
       })()}

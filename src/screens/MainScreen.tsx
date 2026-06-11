@@ -36,6 +36,7 @@ import { WeeklyPassService } from '../services/WeeklyPassService';
 import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
+import { WorldBossService } from '../services/WorldBossService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -1080,6 +1081,40 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               </span>
             </div>
             <span className="main-bounty-chip__reward">+{total} 💎</span>
+          </div>
+        );
+      })()}
+
+      {/* ── World Boss Chip ── */}
+      {(() => {
+        const hpPct   = WorldBossService.getHpPct();
+        const isDead  = WorldBossService.isDead();
+        const canClaim = WorldBossService.canClaim();
+        const [wbState, setWbState] = [null, () => {}]; // read-only display
+        void wbState; void setWbState;
+        return (
+          <div
+            className={`main-world-boss-chip ${isDead ? 'main-world-boss-chip--dead' : ''}`}
+            onClick={() => {
+              if (canClaim) { WorldBossService.claimReward(); }
+              onNavigate?.('battle');
+            }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && onNavigate?.('battle')}
+          >
+            <span className="main-world-boss-chip__icon">{WorldBossService.getBossIcon()}</span>
+            <div className="main-world-boss-chip__info">
+              <span className="main-world-boss-chip__title">
+                {isDead ? '✓ WELTBOSS BESIEGT' : `WELTBOSS — ${Math.round(hpPct * 100)}% HP`}
+              </span>
+              <div className="main-world-boss-chip__bar-track">
+                <div className="main-world-boss-chip__bar-fill" style={{ width: `${Math.round(hpPct * 100)}%` }} />
+              </div>
+            </div>
+            {canClaim && (
+              <span className="main-world-boss-chip__claim">💎 {WorldBossService.REWARD_CRYSTALS}</span>
+            )}
           </div>
         );
       })()}
