@@ -2914,3 +2914,58 @@
   from { text-shadow: 0 0 4px rgba(255,200,60,0.4); }
   to   { text-shadow: 0 0 12px rgba(255,200,60,0.85); }
 }
+
+/* ── Turm-Rang Badge ─────────────────────────────────────────── */
+
+.main-floor-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 10px 4px;
+  padding: 7px 12px;
+  background: color-mix(in srgb, var(--title-color, #888) 10%, #0a0810 90%);
+  border: 1px solid color-mix(in srgb, var(--title-color, #888) 40%, transparent);
+  border-radius: 10px;
+  cursor: pointer;
+  animation: mainTitleGlow 3s ease-in-out infinite;
+}
+
+@keyframes mainTitleGlow {
+  0%, 100% { box-shadow: 0 0 6px color-mix(in srgb, var(--title-color, #888) 20%, transparent); }
+  50%       { box-shadow: 0 0 16px color-mix(in srgb, var(--title-color, #888) 45%, transparent); }
+}
+
+.main-floor-title__icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.main-floor-title__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-floor-title__name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: color-mix(in srgb, var(--title-color, #ccc) 90%, #fff 10%);
+  text-transform: uppercase;
+}
+
+.main-floor-title__floor {
+  font-size: 0.62rem;
+  color: #888;
+  margin-top: 1px;
+}
+
+.main-floor-title__next {
+  font-size: 0.58rem;
+  color: #666;
+  text-align: right;
+  flex-shrink: 0;
+  max-width: 40%;
+  line-height: 1.3;
+}

@@ -1435,3 +1435,53 @@
 .victory-card-perf__row--mvp .victory-card-perf__dmg {
   color: #ffd060;
 }
+
+/* ── Title Unlock ────────────────────────────────────────────── */
+
+.victory-title-unlock {
+  margin: 0.8rem 0;
+  padding: 0.8rem 1rem;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--title-color, #888) 18%, #100820) 0%, #0d0818 90%);
+  border: 1.5px solid color-mix(in srgb, var(--title-color, #888) 60%, transparent);
+  border-radius: 12px;
+  text-align: center;
+  animation: titleUnlockPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+             titleUnlockGlow 2.5s 0.5s ease-in-out infinite;
+}
+
+@keyframes titleUnlockPop {
+  0%   { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes titleUnlockGlow {
+  0%, 100% { box-shadow: 0 0 12px color-mix(in srgb, var(--title-color, #888) 35%, transparent); }
+  50%       { box-shadow: 0 0 28px color-mix(in srgb, var(--title-color, #888) 70%, transparent); }
+}
+
+.victory-title-unlock__eyebrow {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: color-mix(in srgb, var(--title-color, #aaa) 80%, #fff 20%);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.victory-title-unlock__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.victory-title-unlock__icon {
+  font-size: 1.6rem;
+}
+
+.victory-title-unlock__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--title-color, #ddd) 90%, #fff 10%);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--title-color, #888) 60%, transparent);
+}

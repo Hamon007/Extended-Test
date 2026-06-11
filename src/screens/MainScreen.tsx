@@ -37,6 +37,7 @@ import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
+import { FloorTitleService } from '../services/FloorTitleService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -581,6 +582,34 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
       </div>
 
+      {/* ── Turm-Rang Badge ── */}
+      {(() => {
+        const playerTitle = FloorTitleService.getPlayerTitle();
+        const highestFloor = TowerService.getHighestFloor();
+        const nextTitle = FloorTitleService.getNextTitle(highestFloor);
+        return (
+          <div
+            className="main-floor-title"
+            style={{ '--title-color': playerTitle.color } as React.CSSProperties}
+            onClick={() => onNavigate?.('battle')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && onNavigate?.('battle')}
+          >
+            <span className="main-floor-title__icon">{playerTitle.icon}</span>
+            <div className="main-floor-title__info">
+              <span className="main-floor-title__name">{playerTitle.title}</span>
+              <span className="main-floor-title__floor">Etage {highestFloor} erreicht</span>
+            </div>
+            {nextTitle && (
+              <span className="main-floor-title__next">
+                Nächster Rang ab Etage {nextTitle.minFloor}: {nextTitle.icon} {nextTitle.title}
+              </span>
+            )}
+          </div>
+        );
+      })()}
+
       {/* ── Team-Kampfkraft + Win-Streak ── */}
       {(deckStats && deckStats.power > 0 || winStreak > 0) && (
         <div className="main-power">
@@ -1090,8 +1119,6 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         const hpPct   = WorldBossService.getHpPct();
         const isDead  = WorldBossService.isDead();
         const canClaim = WorldBossService.canClaim();
-        const [wbState, setWbState] = [null, () => {}]; // read-only display
-        void wbState; void setWbState;
         return (
           <div
             className={`main-world-boss-chip ${isDead ? 'main-world-boss-chip--dead' : ''}`}

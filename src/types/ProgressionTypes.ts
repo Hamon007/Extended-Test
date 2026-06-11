@@ -103,6 +103,8 @@ export interface RewardDetails {
   // Bounty Board: crystal bonus for defeating today's bounty target
   bountyBonus?: number;
   bountyEnemyName?: string;
+  // Floor Title unlocked by advancing past a threshold floor this battle
+  titleUnlocked?: { title: string; icon: string; color: string };
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

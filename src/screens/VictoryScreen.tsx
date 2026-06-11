@@ -266,6 +266,20 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           </div>
         )}
 
+        {/* Floor Title Unlock — shown when a new title tier is crossed */}
+        {details.titleUnlocked && (
+          <div
+            className="victory-title-unlock"
+            style={{ '--title-color': details.titleUnlocked.color } as React.CSSProperties}
+          >
+            <div className="victory-title-unlock__eyebrow">🏆 NEUER RANG FREIGESCHALTEN</div>
+            <div className="victory-title-unlock__badge">
+              <span className="victory-title-unlock__icon">{details.titleUnlocked.icon}</span>
+              <span className="victory-title-unlock__name">{details.titleUnlocked.title}</span>
+            </div>
+          </div>
+        )}
+
         {/* Card Performance — top damage dealers this battle */}
         {details.cardPerformance && details.cardPerformance.length > 0 && (
           <div className="victory-card-perf">

@@ -50,6 +50,7 @@ import { AccountProgressionService } from '../services/AccountProgressionService
 import { RelicService }              from '../services/RelicService';
 import { BountyService }             from '../services/BountyService';
 import { WorldBossService }          from '../services/WorldBossService';
+import { FloorTitleService }         from '../services/FloorTitleService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -650,6 +651,14 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             bountyEnemyName: battle.state.enemyData.name,
           };
         }
+      }
+    }
+
+    // Floor Title unlock: check if clearing this floor crosses a title boundary
+    if (isTowerMode && details.isVictory) {
+      const titleUnlock = FloorTitleService.checkTitleUnlock(towerFloor, towerFloor + 1);
+      if (titleUnlock) {
+        finalDetails = { ...finalDetails, titleUnlocked: titleUnlock };
       }
     }
 
@@ -1270,6 +1279,21 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
       <div className="battle-select-header">
         <h1 className="battle-select-title">🗼 TURM DER PRÜFUNG</h1>
+        {/* Player Floor Title badge */}
+        {(() => {
+          const playerTitle = FloorTitleService.getPlayerTitle();
+          const nextTitle   = FloorTitleService.getNextTitle(TowerService.getHighestFloor());
+          return (
+            <div
+              className="battle-floor-title-badge"
+              style={{ '--title-color': playerTitle.color } as React.CSSProperties}
+              title={nextTitle ? `Nächster Rang: ${nextTitle.icon} ${nextTitle.title} ab Etage ${nextTitle.minFloor}` : 'Höchster Rang erreicht!'}
+            >
+              <span className="battle-floor-title-badge__icon">{playerTitle.icon}</span>
+              <span className="battle-floor-title-badge__name">{playerTitle.title}</span>
+            </div>
+          );
+        })()}
         <div className="battle-select-header__streaks">
           {winStreak >= 1 && (
             <div className={`battle-streak-chip ${winStreak >= 3 ? 'battle-streak-chip--hot' : ''}`}>
