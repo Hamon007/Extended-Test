@@ -2131,9 +2131,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   // Gegner-Absicht: vorhergesagter Schaden des nächsten Gegnerzugs
   const incomingDamage = canPlay ? BattleManager.forecastEnemyDamage(state) : 0;
 
+  const playerHpPct2 = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
+  const isDangerZone = playerHpPct2 > 0 && playerHpPct2 < 0.25 && result?.outcome !== 'victory' && result?.outcome !== 'defeat';
+
   return (
-    <div className="battle-arena" ref={arenaRef}>
+    <div className={`battle-arena${isDangerZone ? ' battle-arena--danger' : ''}`} ref={arenaRef}>
       <div className="arena-bg-pulse" aria-hidden="true" />
+      {isDangerZone && <div className="arena-danger-vignette" aria-hidden="true" />}
 
       {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}
       <div className="damage-numbers-layer">
