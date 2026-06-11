@@ -254,28 +254,45 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           </section>
 
           {/* ── Mitglieder ── */}
-          <section className="guild-section">
-            <div className="guild-section__title">MITGLIEDER ({members.length})</div>
-            <div className="guild-members-list">
-              {members.map(m => (
-                <div
-                  key={m.id}
-                  className={`guild-member ${m.isPlayer ? 'guild-member--player' : ''}`}
-                >
-                  <div className="guild-member__left">
-                    <span className="guild-member__role">
-                      {m.role === 'leader' ? '👑' : m.role === 'officer' ? '⭐' : '·'}
+          {(() => {
+            const sorted = [...members].sort((a, b) => b.weeklyContribution - a.weeklyContribution);
+            const playerRank = sorted.findIndex(m => m.isPlayer) + 1;
+            const RANK_MEDALS = ['🥇', '🥈', '🥉'];
+            return (
+              <section className="guild-section">
+                <div className="guild-section__title">
+                  BEITRAG-RANGLISTE ({members.length})
+                  {playerRank > 0 && (
+                    <span className={`guild-player-rank ${playerRank <= 3 ? 'guild-player-rank--top' : ''}`}>
+                      {playerRank <= 3 ? RANK_MEDALS[playerRank - 1] : `#${playerRank}`} Du
                     </span>
-                    <span className="guild-member__name">{m.name}</span>
-                    {m.isPlayer && <span className="guild-member__you">Du</span>}
-                  </div>
-                  <span className="guild-member__contrib">
-                    {m.weeklyContribution.toLocaleString('de-DE')} 💎
-                  </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          </section>
+                <div className="guild-members-list">
+                  {sorted.map((m, idx) => (
+                    <div
+                      key={m.id}
+                      className={`guild-member ${m.isPlayer ? 'guild-member--player' : ''} ${idx === 0 ? 'guild-member--first' : ''}`}
+                    >
+                      <div className="guild-member__left">
+                        <span className="guild-member__rank">
+                          {idx < 3 ? RANK_MEDALS[idx] : `#${idx + 1}`}
+                        </span>
+                        <span className="guild-member__role">
+                          {m.role === 'leader' ? '👑' : m.role === 'officer' ? '⭐' : ''}
+                        </span>
+                        <span className="guild-member__name">{m.name}</span>
+                        {m.isPlayer && <span className="guild-member__you">Du</span>}
+                      </div>
+                      <span className="guild-member__contrib">
+                        {m.weeklyContribution.toLocaleString('de-DE')} 💎
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
 
         </div>
       ) : (

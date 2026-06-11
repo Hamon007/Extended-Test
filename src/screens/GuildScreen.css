@@ -107,6 +107,9 @@
 }
 
 .guild-section__title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-family: 'Cinzel', serif;
   font-size: 8px;
   color: #8a6520;
@@ -436,6 +439,42 @@
   font-family: 'Cinzel', serif;
   font-size: 10px;
   color: #8a6520;
+}
+
+.guild-member__rank {
+  font-size: 12px;
+  min-width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.guild-member--first {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.3);
+}
+
+.guild-player-rank {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  color: #c9a84c;
+  margin-left: 8px;
+  padding: 1px 6px;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.guild-player-rank--top {
+  color: #ffd700;
+  background: rgba(255,215,0,0.15);
+  border-color: rgba(255,215,0,0.45);
+  animation: rankGoldPulse 2s ease-in-out infinite;
+}
+
+@keyframes rankGoldPulse {
+  0%,100% { box-shadow: none; }
+  50%      { box-shadow: 0 0 8px rgba(255,215,0,0.4); }
 }
 
 /* ── Tab-Leiste ───────────────────────────────────────────── */
