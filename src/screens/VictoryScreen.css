@@ -628,6 +628,53 @@
   margin-top: 2px;
 }
 
+/* ── Season SP Progress ───────────────────────────────────── */
+.victory-season-sp {
+  width: 100%;
+  background: rgba(20,15,40,0.7);
+  border: 1px solid rgba(100,80,180,0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+.victory-season-sp__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.victory-season-sp__icon { font-size: 0.9rem; }
+.victory-season-sp__rank {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+.victory-season-sp__earned {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #b0a0f0;
+  background: rgba(100,80,200,0.2);
+  border-radius: 10px;
+  padding: 1px 6px;
+}
+.victory-season-sp__total {
+  font-size: 0.55rem;
+  color: rgba(160,150,200,0.7);
+}
+.victory-season-sp__bar-wrap {
+  height: 3px;
+  background: rgba(60,50,100,0.4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.victory-season-sp__bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
 /* ── Bond Level-Ups ───────────────────────────────────────── */
 .victory-bonds {
   width: 100%;

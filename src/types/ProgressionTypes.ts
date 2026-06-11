@@ -87,6 +87,10 @@ export interface RewardDetails {
   perfectBonus?: number;
   // Rage Mode: 2× crystals after 3+ consecutive defeats
   rageModeBonus?: number;
+  // Season SP earned this battle
+  spEarned?: number;
+  spTotal?: number;
+  spRank?: string;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

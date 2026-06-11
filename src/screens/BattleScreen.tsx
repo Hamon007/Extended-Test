@@ -675,6 +675,14 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         const oldRank = SeasonService.getRankForSp(SeasonService.load().sp);
         SeasonService.addSp(spAmount);
         QuestService.recordEvent('earn_sp', spAmount);
+        // Attach SP to reward details
+        const spNowForDetails = SeasonService.load().sp;
+        finalDetails = {
+          ...finalDetails,
+          spEarned: spAmount,
+          spTotal:  spNowForDetails,
+          spRank:   SeasonService.getRankForSp(spNowForDetails),
+        };
         // Season rank achievements
         const updatedState = SeasonService.load();
         const spNow = updatedState.sp;

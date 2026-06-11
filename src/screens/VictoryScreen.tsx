@@ -8,6 +8,7 @@ import { AccountProgressionService } from '../services/AccountProgressionService
 import { RARITY_COLOR } from '../types/Card';
 import { BOND_ICONS, BOND_NAMES } from '../services/CardBondService';
 import { WinStreakService } from '../services/WinStreakService';
+import { SeasonService } from '../services/SeasonService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem } from '../services/FusionSystem';
 import { LevelSystem } from '../services/LevelSystem';
@@ -232,6 +233,31 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
                 <span className="victory-stat__label">Runden</span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Season SP Progress */}
+        {details.spEarned && details.spEarned > 0 && details.spTotal !== undefined && details.spRank && (
+          <div className="victory-season-sp">
+            <div className="victory-season-sp__header">
+              <span className="victory-season-sp__icon">{SeasonService.RANK_ICONS[details.spRank as keyof typeof SeasonService.RANK_ICONS] ?? '◆'}</span>
+              <span className="victory-season-sp__rank" style={{ color: SeasonService.RANK_COLORS[details.spRank as keyof typeof SeasonService.RANK_COLORS] ?? '#aaa' }}>
+                {details.spRank}
+              </span>
+              <span className="victory-season-sp__earned">+{details.spEarned} SP</span>
+              <span className="victory-season-sp__total">{details.spTotal} SP gesamt</span>
+            </div>
+            {(() => {
+              const { progress, nextRank } = SeasonService.progressToNext(details.spTotal ?? 0);
+              return nextRank ? (
+                <div className="victory-season-sp__bar-wrap">
+                  <div className="victory-season-sp__bar-fill" style={{
+                    width: `${Math.round(progress * 100)}%`,
+                    background: SeasonService.RANK_COLORS[details.spRank as keyof typeof SeasonService.RANK_COLORS] ?? '#7060c0',
+                  }} />
+                </div>
+              ) : null;
+            })()}
           </div>
         )}
 
