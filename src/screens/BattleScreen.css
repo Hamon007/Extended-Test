@@ -3131,6 +3131,54 @@
   letter-spacing: 0.1em;
 }
 
+/* ── Lucky Floor Banner ─────────────────────────────────────── */
+
+.battle-lucky-floor-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(50,40,0,0.9) 0%, rgba(35,28,0,0.85) 100%);
+  border: 1.5px solid rgba(255,210,0,0.6);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 0;
+  box-shadow: 0 0 20px rgba(255,200,0,0.25);
+  animation: lf-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes lf-glow {
+  from { box-shadow: 0 0 12px rgba(255,200,0,0.18); }
+  to   { box-shadow: 0 0 28px rgba(255,200,0,0.45); }
+}
+
+.battle-lucky-floor-banner__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(255,215,0,0.7));
+}
+
+.battle-lucky-floor-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-lucky-floor-banner__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 12px rgba(255,215,0,0.8);
+}
+
+.battle-lucky-floor-banner__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #d4a800;
+  letter-spacing: 0.04em;
+}
+
 /* ── Rival Chip ─────────────────────────────────────────────── */
 
 .battle-rival-chip {

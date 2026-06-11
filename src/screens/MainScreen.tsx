@@ -31,6 +31,7 @@ import { PowerMilestoneService, type PowerMilestone } from '../services/PowerMil
 import { BonusHourService } from '../services/BonusHourService';
 import { LuckySeven }       from '../services/LuckySeven';
 import { SimulatedFeedService } from '../services/SimulatedFeedService';
+import { LuckyFloorService } from '../services/LuckyFloorService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -570,24 +571,28 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       {/* ── Tower floor map strip ── */}
       {onNavigate && (() => {
         const floorNums = [towerFloor - 1, towerFloor, towerFloor + 1, towerFloor + 2, towerFloor + 3].filter(f => f >= 1);
+        const luckyFloors = LuckyFloorService.getLuckyFloors();
         return (
           <div className="main-floor-strip">
             {floorNums.map(f => {
-              const isCur  = f === towerFloor;
-              const isBoss = TowerService.isBossFloor(f);
+              const isCur   = f === towerFloor;
+              const isBoss  = TowerService.isBossFloor(f);
+              const isLucky = luckyFloors.includes(f);
               return (
                 <div
                   key={f}
                   className={[
                     'main-floor-node',
-                    isCur  ? 'main-floor-node--current' : '',
-                    isBoss ? 'main-floor-node--boss'    : '',
+                    isCur   ? 'main-floor-node--current' : '',
+                    isBoss  ? 'main-floor-node--boss'    : '',
+                    isLucky ? 'main-floor-node--lucky'   : '',
                     f < towerFloor ? 'main-floor-node--done' : '',
                   ].join(' ')}
                 >
                   <div className="main-floor-node__icon">{isBoss ? '💀' : isCur ? '⚔' : f < towerFloor ? '✓' : '🗼'}</div>
                   <div className="main-floor-node__num">{f}</div>
-                  {isBoss && <div className="main-floor-node__tag">BOSS</div>}
+                  {isBoss  && <div className="main-floor-node__tag">BOSS</div>}
+                  {isLucky && <div className="main-floor-node__tag main-floor-node__tag--lucky">⭐+30%</div>}
                 </div>
               );
             })}

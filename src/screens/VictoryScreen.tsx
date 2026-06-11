@@ -374,6 +374,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Lucky Floor +30% bonus */}
+          {details.luckyFloorBonus && details.luckyFloorBonus > 0 && (
+            <div className="reward-row reward-row--luckyfloor">
+              <span className="reward-row__label">⭐ GLÜCKSETAGE! +30%</span>
+              <span className="reward-row__value reward-row__value--luckyfloor">
+                +<CountUp target={details.luckyFloorBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Lucky 7 jackpot */}
           {details.luckySevenBonus && details.luckySevenBonus > 0 && (
             <div className="reward-row reward-row--lucky7">

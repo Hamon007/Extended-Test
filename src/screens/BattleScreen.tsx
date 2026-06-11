@@ -35,6 +35,7 @@ import { LeaderboardService } from '../services/LeaderboardService';
 import { BonusHourService }  from '../services/BonusHourService';
 import { CrystalRainService } from '../services/CrystalRainService';
 import { LuckySeven }         from '../services/LuckySeven';
+import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -466,6 +467,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           crystalsGained: finalDetails.crystalsGained + l7bonus,
           luckySevenBonus: l7bonus,
         };
+      }
+
+      // Lucky Floor +30% bonus
+      if (isTowerMode && LuckyFloorService.isLucky(towerFloor)) {
+        const lfBonus = Math.round(finalDetails.crystalsGained * LUCKY_FLOOR_BONUS);
+        if (lfBonus > 0) {
+          const gst3 = SaveService.loadGachaState();
+          SaveService.saveGachaState({ ...gst3, crystals: gst3.crystals + lfBonus });
+          finalDetails = {
+            ...finalDetails,
+            crystalsGained: finalDetails.crystalsGained + lfBonus,
+            luckyFloorBonus: lfBonus,
+          };
+        }
       }
     }
 
@@ -1045,6 +1060,17 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Lucky Floor Banner */}
+      {isTowerMode && LuckyFloorService.isLucky(towerFloor) && (
+        <div className="battle-lucky-floor-banner">
+          <span className="battle-lucky-floor-banner__icon">⭐</span>
+          <div className="battle-lucky-floor-banner__text">
+            <span className="battle-lucky-floor-banner__title">GLÜCKSETAGE! +30% 💎</span>
+            <span className="battle-lucky-floor-banner__sub">Etage {towerFloor} ist heute ein Bonus-Floor!</span>
+          </div>
+        </div>
+      )}
 
       {/* Rival Chip — NPC one rank above the player */}
       {rival && (

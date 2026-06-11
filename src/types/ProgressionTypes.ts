@@ -70,6 +70,8 @@ export interface RewardDetails {
   crystalRainBonus?: number;
   // Lucky 7: jackpot on every 7th daily victory
   luckySevenBonus?: number;
+  // Lucky Floor: +30% crystals on today's 3 seeded floors
+  luckyFloorBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

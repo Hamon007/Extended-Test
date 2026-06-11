@@ -2501,3 +2501,20 @@
   min-width: 24px;
   text-align: center;
 }
+
+/* ── Lucky Floor Node ───────────────────────────────────────── */
+
+.main-floor-node--lucky {
+  border-color: rgba(255,210,0,0.6) !important;
+  box-shadow: 0 0 10px rgba(255,200,0,0.3) !important;
+}
+
+.main-floor-node__tag--lucky {
+  background: rgba(255,200,0,0.85);
+  color: #222;
+  font-size: 0.45rem;
+  font-weight: 900;
+  padding: 1px 3px;
+  border-radius: 2px;
+  letter-spacing: 0.02em;
+}
