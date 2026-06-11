@@ -1922,6 +1922,77 @@
   flex-shrink: 0;
 }
 
+/* ── Active Event Banner ─────────────────────────────────────── */
+@keyframes eventBannerShine {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes eventBannerPulse {
+  0%,100% { box-shadow: 0 0 12px color-mix(in srgb, var(--ec, #ffd060) 30%, transparent); }
+  50%      { box-shadow: 0 0 24px color-mix(in srgb, var(--ec, #ffd060) 60%, transparent); }
+}
+
+.main-event-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  margin: 0 0 0;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ec, #ffd060) 15%, #0a0510),
+    color-mix(in srgb, var(--ec, #ffd060) 8%, #0a0510)
+  );
+  border-bottom: 1px solid color-mix(in srgb, var(--ec, #ffd060) 45%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ec, #ffd060) 25%, transparent);
+  cursor: pointer;
+  animation: eventBannerPulse 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.main-event-banner__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.main-event-banner__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.main-event-banner__name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--ec, #ffd060);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--ec, #ffd060) 50%, transparent);
+}
+
+.main-event-banner__desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+}
+
+.main-event-banner__days {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--ec, #ffd060);
+  background: color-mix(in srgb, var(--ec, #ffd060) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ec, #ffd060) 40%, transparent);
+  border-radius: 4px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
 /* ── Daily Card Widget ────────────────────────────────────────── */
 @keyframes dailyCardIn {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }

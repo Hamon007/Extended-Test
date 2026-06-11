@@ -25,6 +25,7 @@ import { WinStreakService } from '../services/WinStreakService';
 import { PvpHistoryService } from '../services/PvpHistoryService';
 import { WeekendBonusService } from '../services/WeekendBonusService';
 import { DailyCardService } from '../services/DailyCardService';
+import { EventService }     from '../services/EventService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -151,6 +152,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [collectionMilestone] = useState(() => CollectionMilestoneService.getProgress().next);
   const [dailyCard]           = useState(() => DailyCardService.getCard());
   const [dailyCardOwned]      = useState(() => DailyCardService.isOwned());
+  const activeEvent           = EventService.getActive();
   const [fusionReady] = useState(() => {
     const inv = SaveService.loadGachaState().inventory;
     const groups = FusionSystem.buildGroups(inv);
@@ -385,6 +387,22 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               : `Pity: ${pityCounter}/100 — SSR-Garantie nähert sich!`}
           </span>
           <span className="main-pity-hint__arrow">›</span>
+        </div>
+      )}
+
+      {/* ── Aktives Event Banner ── */}
+      {activeEvent && (
+        <div
+          className="main-event-banner"
+          style={{ '--ec': activeEvent.color } as React.CSSProperties}
+          onClick={() => onNavigate?.('battle')}
+        >
+          <span className="main-event-banner__icon">{activeEvent.icon}</span>
+          <div className="main-event-banner__text">
+            <span className="main-event-banner__name">{activeEvent.name}</span>
+            <span className="main-event-banner__desc">{activeEvent.bannerDesc}</span>
+          </div>
+          <span className="main-event-banner__days">{EventService.getDaysLeft()}T</span>
         </div>
       )}
 

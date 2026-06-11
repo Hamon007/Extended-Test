@@ -154,6 +154,8 @@
 .reward-row--firstwin    { background: rgba(255,180,0,0.14);  border: 1px solid #ffa000; animation-delay: 0.45s; }
 .reward-row--recovery    { background: rgba(60,100,240,0.14); border: 1px solid rgba(80,140,255,0.55); animation-delay: 0.46s; }
 .reward-row--weekend     { background: rgba(255,180,0,0.16);  border: 1px solid rgba(255,180,0,0.55);  animation-delay: 0.44s; }
+.reward-row--event       { background: rgba(255,215,0,0.18);  border: 1px solid rgba(255,215,0,0.6);   animation-delay: 0.41s; }
+.reward-row__value--event { color: #ffd060; font-weight: 900; text-shadow: 0 0 8px rgba(255,200,0,0.5); }
 .reward-row--streak-mult {
   background: linear-gradient(135deg, rgba(255,80,0,0.14), rgba(255,180,0,0.1));
   border: 1px solid rgba(255,130,0,0.6);

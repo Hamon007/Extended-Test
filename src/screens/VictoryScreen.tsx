@@ -355,6 +355,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Active Event Bonus */}
+          {details.eventBonus && details.eventBonus > 0 && (
+            <div className="reward-row reward-row--event">
+              <span className="reward-row__label">🌟 {details.eventName ?? 'Event-Bonus'}!</span>
+              <span className="reward-row__value reward-row__value--event">
+                +<CountUp target={details.eventBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Recovery Bonus (Comeback-Bonus nach Niederlage) */}
           {details.recoveryBonus && details.recoveryBonus > 0 && (
             <div className="reward-row reward-row--recovery">

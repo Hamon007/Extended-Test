@@ -19,6 +19,7 @@ import { AccountProgressionService } from './AccountProgressionService';
 import { ActivityFeedService } from './ActivityFeedService';
 import { WinStreakService } from './WinStreakService';
 import { RelicService } from './RelicService';
+import { EventService } from './EventService';
 
 // ── UUID-Generierung (identisch zu GachaSystem) ───────────────
 
@@ -77,8 +78,10 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
     const streakReward = WinStreakService.getRewardMultiplier(newStreak);
     const relicCrystalBonus = 1 + RelicService.totalCrystalBonus();
     const relicXpBonus      = 1 + RelicService.totalXpBonus();
-    const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier * relicCrystalBonus);
-    const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier * relicXpBonus);
+    const eventCrystalMult  = EventService.getCrystalMult();
+    const eventXpMult       = EventService.getXpMult();
+    const boostedCrystals = Math.round(result.rewardCrystals * streakReward.multiplier * relicCrystalBonus * eventCrystalMult);
+    const boostedXp       = Math.round(result.rewardXp       * streakReward.multiplier * relicXpBonus      * eventXpMult);
 
     // Streak milestone bonus crystals (triggered exactly on milestone)
     const STREAK_MILESTONES: Record<number, number> = {
@@ -146,6 +149,10 @@ function applyRewards(result: BattleResult, enemy: EnemyData): RewardDetails {
       } : null,
       streakMilestoneBonus: streakBonus > 0 ? streakBonus : undefined,
       winStreak: newStreak,
+      ...(eventCrystalMult > 1 ? {
+        eventBonus: Math.round(result.rewardCrystals * streakReward.multiplier * relicCrystalBonus * (eventCrystalMult - 1)),
+        eventName:  EventService.getActive()?.name,
+      } : {}),
     };
   }
 

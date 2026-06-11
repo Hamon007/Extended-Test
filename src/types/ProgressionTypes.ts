@@ -59,6 +59,9 @@ export interface RewardDetails {
   recoveryBonus?:   number;
   // Weekend bonus (+25% on Sat/Sun)
   weekendBonus?:    number;
+  // Active event crystal bonus
+  eventBonus?:      number;
+  eventName?:       string;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
