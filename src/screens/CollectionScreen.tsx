@@ -50,7 +50,11 @@ function sortCards(cards: Card[], sort: FilterState['sort']): Card[] {
 
 // ── Hauptkomponente ───────────────────────────────────────────
 
-const CollectionScreen: React.FC = () => {
+interface CollectionScreenProps {
+  onNavigate?: (screen: string) => void;
+}
+
+const CollectionScreen: React.FC<CollectionScreenProps> = ({ onNavigate }) => {
   const [filter,       setFilter]       = useState<FilterState>(DEFAULT_FILTER);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [filtersOpen,  setFiltersOpen]  = useState(false);
@@ -77,6 +81,21 @@ const CollectionScreen: React.FC = () => {
       .filter(r => byRarity[r])
       .map(r => [r, byRarity[r]!] as [string, { total: number; owned: number }]);
   }, [ownedMap]);
+
+  // "Almost complete" rarity tiers (missing ≤ 2 cards, not already done)
+  const almostComplete = useMemo(() => {
+    return rarityStats
+      .filter(([, { total, owned }]) => {
+        const missing = total - owned;
+        return missing > 0 && missing <= 2 && total > 0;
+      })
+      .map(([rarity, { total, owned }]) => {
+        const missing = total - owned;
+        const allCards = CardDatabase.getAll().filter(c => c.rarity === rarity);
+        const missingCards = allCards.filter(c => !ownedMap.has(c.id));
+        return { rarity, total, owned, missing, missingCards };
+      });
+  }, [rarityStats, ownedMap]);
 
   // Element completion stats
   const elementStats = useMemo(() => {
@@ -292,6 +311,42 @@ const CollectionScreen: React.FC = () => {
                   {owned}<span className="collection-rarity-row__total">/{total}</span>
                 </span>
               </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Fast-Komplett-Banner ── */}
+      {!filtersOpen && almostComplete.length > 0 && (
+        <div className="collection-almost-complete">
+          {almostComplete.map(({ rarity, total, owned, missing, missingCards }) => {
+            const color = RARITY_COLOR[rarity as Rarity] ?? '#9e9e9e';
+            return (
+              <div
+                key={rarity}
+                className="collection-almost-row"
+                style={{ '--ac': color } as React.CSSProperties}
+              >
+                <div className="collection-almost-row__left">
+                  <span className="collection-almost-row__fire">🔥</span>
+                  <div className="collection-almost-row__text">
+                    <span className="collection-almost-row__title" style={{ color }}>
+                      FAST KOMPLETT — {rarity}!
+                    </span>
+                    <span className="collection-almost-row__sub">
+                      {owned}/{total} · noch {missing} Karte{missing > 1 ? 'n' : ''}: {missingCards.map(c => c.name).join(', ')}
+                    </span>
+                  </div>
+                </div>
+                {onNavigate && (
+                  <button
+                    className="collection-almost-row__cta"
+                    onClick={() => onNavigate('gacha')}
+                  >
+                    ✨ Ziehen
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>

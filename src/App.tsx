@@ -239,7 +239,7 @@ const App: React.FC = () => {
         {screen === 'battle'     && <BattleScreen onNavigate={navTo} />}
         {screen === 'guild'      && <GuildScreen onBack={goBack} />}
         {screen === 'training'   && <CardTrainingScreen onBack={goBack} />}
-        {screen === 'collection' && <CollectionScreen />}
+        {screen === 'collection' && <CollectionScreen onNavigate={navTo} />}
         {screen === 'menu' && (
           <MenuScreen onNav={handleMenuNav} onBack={goBack} />
         )}

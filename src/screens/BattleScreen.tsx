@@ -1351,15 +1351,17 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [limitBreakUsed,   setLimitBreakUsed]   = useState(false);
   const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
   const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
-  const lastComboBurstRef = useRef(0);
-  const lastAwakenedCount = useRef(0);
-  const lastLogId         = useRef(0);
-  const lastEnemyHpRef    = useRef(state.enemy.hp);
-  const lastPlayerHpRef   = useRef(state.player.hp);
-  const wasBreakingRef    = useRef(false);
-  const resultSoundRef    = useRef(false);
-  const resolvingRef      = useRef(false);
-  const arenaRef          = useRef<HTMLDivElement>(null);
+  const [rageToast,      setRageToast]      = useState(false);
+  const lastComboBurstRef  = useRef(0);
+  const lastAwakenedCount  = useRef(0);
+  const lastLogId          = useRef(0);
+  const lastEnemyHpRef     = useRef(state.enemy.hp);
+  const lastPlayerHpRef    = useRef(state.player.hp);
+  const wasBreakingRef     = useRef(false);
+  const resultSoundRef     = useRef(false);
+  const resolvingRef       = useRef(false);
+  const rageTriggeredRef   = useRef(false);
+  const arenaRef           = useRef<HTMLDivElement>(null);
   const popupId = React.useRef(0);
 
   // Screen-Shake via Web Animations API (retriggert zuverlässig).
@@ -1406,6 +1408,18 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     }
     wasBreakingRef.current = combo.isBreaking;
   }, [combo.isBreaking]);
+
+  // Enemy Rage Mode — triggers once when enemy HP drops below 25%
+  useEffect(() => {
+    const pct = state.enemy.hpMax > 0 ? state.enemy.hp / state.enemy.hpMax : 1;
+    if (!rageTriggeredRef.current && pct > 0 && pct < 0.25 && state.enemy.hp < state.enemy.hpMax) {
+      rageTriggeredRef.current = true;
+      setRageToast(true);
+      AudioService.vibrate([30, 20, 40, 20]);
+      triggerShake(1);
+      setTimeout(() => setRageToast(false), 2800);
+    }
+  }, [state.enemy.hp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Combo milestone burst at 3× and MAX_COMBO
   useEffect(() => {
@@ -1715,6 +1729,15 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
         </div>
       )}
 
+      {/* Enemy Rage Mode Toast */}
+      {rageToast && (
+        <div className="arena-rage-toast">
+          <span className="arena-rage-toast__icon">💢</span>
+          <span className="arena-rage-toast__text">WUTRAUSCH!</span>
+          <span className="arena-rage-toast__sub">Gegner auf dem letzten Atem — jetzt angreifen!</span>
+        </div>
+      )}
+
       {/* Limit Break Animation */}
       {limitBreakAnim && (
         <div className="arena-limit-overlay">
@@ -1781,6 +1804,9 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             <span className="arena-stat-label">MP {player.mp}/{player.mpMax}</span>
             <MpBar current={player.mp} max={player.mpMax} />
           </div>
+          {DailyCardService.getAtkBonus() > 0 && (
+            <div className="arena-daily-boost-chip">⭐ +5% ATK heute</div>
+          )}
         </div>
 
         {/* Karten-Hand */}
