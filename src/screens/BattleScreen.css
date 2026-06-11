@@ -2749,3 +2749,86 @@
   from { box-shadow: 0 0 4px rgba(220,50,50,0.2); }
   to   { box-shadow: 0 0 14px rgba(220,50,50,0.5); }
 }
+
+/* ── Enemy Threat Panel ──────────────────────────────────────── */
+.battle-threat-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 12px 8px;
+  padding: 8px 14px;
+  background: rgba(10,6,14,0.7);
+  border: 1px solid rgba(100,60,140,0.35);
+  border-radius: 8px;
+  animation: threatPanelIn 0.3s ease;
+}
+
+@keyframes threatPanelIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.battle-threat-panel--boss {
+  border-color: rgba(200,40,40,0.45);
+  background: rgba(14,4,4,0.75);
+}
+
+.battle-threat-panel__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: #c8a8e8;
+  letter-spacing: 0.05em;
+}
+
+.battle-threat-panel--boss .battle-threat-panel__name {
+  color: #ff8080;
+}
+
+.battle-threat-panel__title {
+  font-size: 0.62rem;
+  color: #7a6090;
+  font-style: italic;
+}
+
+.battle-threat-panel__stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.battle-threat-panel__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.battle-threat-panel__stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: #6a5070;
+  letter-spacing: 0.06em;
+}
+
+.battle-threat-panel__stat-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: #e0c8f0;
+  font-weight: 700;
+}
+
+.battle-threat-panel--boss .battle-threat-panel__stat-val {
+  color: #ff9090;
+}
+
+.battle-threat-panel__divider {
+  color: rgba(100,80,120,0.5);
+  font-size: 0.7rem;
+}
+
+.battle-threat-panel__approx {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.58rem;
+  color: #5a4868;
+  font-style: italic;
+  margin-left: 4px;
+}

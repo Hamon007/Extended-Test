@@ -885,6 +885,22 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const streakReward = WinStreakService.getRewardMultiplier(winStreak);
   const nextMilestone = TowerMilestoneService.getNextMilestone(towerFloor);
 
+  // Enemy threat preview for the lobby (computed once per floor, not randomised)
+  const enemyThreat = useMemo(() => {
+    const base = EnemyDatabase.getFirst();
+    if (!base) return null;
+    const tactEnemy = TowerService.getFloorEnemy(towerFloor);
+    const scaleMult = 1 + towerFloor * 0.15;
+    const atkMult   = 1 + towerFloor * 0.1;
+    return {
+      name:  tactEnemy?.name ?? (isBoss ? 'Boss' : 'Turmwächter'),
+      title: tactEnemy?.title ?? `Etage ${towerFloor}`,
+      hp:    Math.round(base.stats.hp * scaleMult),
+      atk:   Math.round((base.cards[0]?.atk ?? 500) * atkMult),
+      isExact: !!tactEnemy,
+    };
+  }, [towerFloor, isBoss]);
+
   return (
     <div className="battle-screen--select">
       {eventToast && <div className="event-toast">{eventToast}</div>}
@@ -935,6 +951,36 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         </div>
       </div>
+
+      {/* Enemy threat preview */}
+      {enemyThreat && (
+        <div className={`battle-threat-panel ${isBoss ? 'battle-threat-panel--boss' : ''}`}>
+          <div className="battle-threat-panel__name">
+            {isBoss ? '💀' : towerFloor % 5 === 0 ? '⚡' : '⚔'} {enemyThreat.name}
+            {enemyThreat.title && (
+              <span className="battle-threat-panel__title"> · {enemyThreat.title}</span>
+            )}
+          </div>
+          <div className="battle-threat-panel__stats">
+            <span className="battle-threat-panel__stat">
+              <span className="battle-threat-panel__stat-label">HP</span>
+              <span className="battle-threat-panel__stat-val">
+                ~{enemyThreat.hp.toLocaleString('de-DE')}
+              </span>
+            </span>
+            <span className="battle-threat-panel__divider">·</span>
+            <span className="battle-threat-panel__stat">
+              <span className="battle-threat-panel__stat-label">ATK</span>
+              <span className="battle-threat-panel__stat-val">
+                ~{enemyThreat.atk.toLocaleString('de-DE')}
+              </span>
+            </span>
+            {!enemyThreat.isExact && (
+              <span className="battle-threat-panel__approx">Schätzwerte</span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Nächster Meilenstein */}
       {nextMilestone && (
