@@ -24,6 +24,7 @@ import { CollectionMilestoneService } from '../services/CollectionMilestoneServi
 import { WinStreakService } from '../services/WinStreakService';
 import { PvpHistoryService } from '../services/PvpHistoryService';
 import { WeekendBonusService } from '../services/WeekendBonusService';
+import { DailyCardService } from '../services/DailyCardService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -148,6 +149,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     return { owned: uniqueOwned, total };
   });
   const [collectionMilestone] = useState(() => CollectionMilestoneService.getProgress().next);
+  const [dailyCard]           = useState(() => DailyCardService.getCard());
+  const [dailyCardOwned]      = useState(() => DailyCardService.isOwned());
   const [fusionReady] = useState(() => {
     const inv = SaveService.loadGachaState().inventory;
     const groups = FusionSystem.buildGroups(inv);
@@ -510,6 +513,44 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             <span className="main-weekend-banner__sub">+25% Kristalle auf alle Siege heute</span>
           </div>
           <span className="main-weekend-banner__arrow">▶</span>
+        </div>
+      )}
+
+      {/* ── Karte des Tages ── */}
+      {dailyCard && (
+        <div
+          className={`main-daily-card ${dailyCardOwned ? 'main-daily-card--owned' : 'main-daily-card--missing'}`}
+          onClick={() => setDetailCard(dailyCard)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && setDetailCard(dailyCard)}
+        >
+          <div className="main-daily-card__left">
+            <img className="main-daily-card__img" src={dailyCard.image} alt={dailyCard.name} />
+            {dailyCardOwned && <div className="main-daily-card__owned-badge">✓</div>}
+          </div>
+          <div className="main-daily-card__info">
+            <div className="main-daily-card__eyebrow">⭐ KARTE DES TAGES</div>
+            <div className="main-daily-card__name">{dailyCard.name}</div>
+            <div className="main-daily-card__rarity">{dailyCard.rarity} · {dailyCard.element}</div>
+            {dailyCardOwned ? (
+              <div className="main-daily-card__bonus">+5% ATK Bonus heute aktiv!</div>
+            ) : (
+              <div className="main-daily-card__cta-hint">Nicht besessen — Beschwöre jetzt!</div>
+            )}
+          </div>
+          <div className="main-daily-card__right">
+            {dailyCardOwned ? (
+              <span className="main-daily-card__status main-daily-card__status--owned">BESESSEN</span>
+            ) : (
+              <button
+                className="main-daily-card__summon-btn"
+                onClick={e => { e.stopPropagation(); onNavigate?.('gacha'); }}
+              >
+                ✨ Ziehen
+              </button>
+            )}
+          </div>
         </div>
       )}
 

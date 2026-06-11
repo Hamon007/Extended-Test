@@ -1921,3 +1921,180 @@
   opacity: 0.5;
   flex-shrink: 0;
 }
+
+/* ── Daily Card Widget ────────────────────────────────────────── */
+@keyframes dailyCardIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes dailyCardOwnedPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(80,220,120,0.2); }
+  50%       { box-shadow: 0 0 18px rgba(80,220,120,0.45); }
+}
+
+@keyframes dailyCardMissingPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(200,140,255,0.18); }
+  50%       { box-shadow: 0 0 20px rgba(200,140,255,0.42); }
+}
+
+.main-daily-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  margin: 0 0 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  animation: dailyCardIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  transition: opacity 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-daily-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.03) 100%);
+  pointer-events: none;
+}
+
+.main-daily-card--owned {
+  background: linear-gradient(135deg, rgba(0,40,20,0.82), rgba(0,80,40,0.55));
+  border: 1px solid rgba(60,200,100,0.55);
+  animation: dailyCardIn 0.4s cubic-bezier(0.34,1.56,0.64,1),
+             dailyCardOwnedPulse 2.8s ease-in-out 0.4s infinite;
+}
+
+.main-daily-card--missing {
+  background: linear-gradient(135deg, rgba(30,10,55,0.88), rgba(70,20,110,0.55));
+  border: 1px solid rgba(160,80,240,0.5);
+  animation: dailyCardIn 0.4s cubic-bezier(0.34,1.56,0.64,1),
+             dailyCardMissingPulse 2.5s ease-in-out 0.4s infinite;
+}
+
+.main-daily-card:hover { opacity: 0.88; }
+
+.main-daily-card__left {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.main-daily-card__img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.main-daily-card__owned-badge {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  background: #2ecc71;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 900;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff;
+  line-height: 1;
+}
+
+.main-daily-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.main-daily-card__eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  color: #ffd700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.main-daily-card__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f0e8d8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.04em;
+}
+
+.main-daily-card__rarity {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: rgba(200,180,240,0.7);
+  letter-spacing: 0.06em;
+}
+
+.main-daily-card__bonus {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #60ee96;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.main-daily-card__cta-hint {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: rgba(200,160,255,0.85);
+  font-style: italic;
+}
+
+.main-daily-card__right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.main-daily-card__status {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.main-daily-card__status--owned {
+  background: rgba(46,204,113,0.2);
+  color: #2ecc71;
+  border: 1px solid rgba(46,204,113,0.4);
+}
+
+.main-daily-card__summon-btn {
+  background: linear-gradient(135deg, #5b0ea6, #9c27b0);
+  border: 1px solid rgba(200,100,255,0.6);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  color: #e8c8ff;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.main-daily-card__summon-btn:hover {
+  opacity: 0.85;
+  box-shadow: 0 0 12px rgba(160,80,255,0.5);
+}
