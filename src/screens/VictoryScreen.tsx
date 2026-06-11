@@ -424,6 +424,18 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Element Synergy Bonus */}
+          {details.elementSynergyBonus && details.elementSynergyBonus > 0 && (
+            <div className="reward-row reward-row--elemsynergy">
+              <span className="reward-row__label">
+                ✨ ELEMENT-SYNERGIE! {details.elementSynergyCount}× Karten
+              </span>
+              <span className="reward-row__value reward-row__value--elemsynergy">
+                +<CountUp target={details.elementSynergyBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Floor Record Bonus */}
           {details.floorRecordBonus && details.floorRecordBonus > 0 && (
             <div className="reward-row reward-row--floorrecord">

@@ -3192,6 +3192,14 @@
   from { opacity: 0.7; }
   to   { opacity: 1.0; }
 }
+.battle-element-blessing__active--synergy {
+  color: #e080ff;
+  animation: synergy-badge-glow 1s ease-in-out infinite alternate;
+}
+@keyframes synergy-badge-glow {
+  from { color: #e080ff; text-shadow: 0 0 4px rgba(200,80,255,0.5); }
+  to   { color: #f0a0ff; text-shadow: 0 0 12px rgba(220,120,255,0.9); }
+}
 
 /* ── Lucky Floor Banner ─────────────────────────────────────── */
 

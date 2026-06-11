@@ -72,6 +72,9 @@ export interface RewardDetails {
   luckySevenBonus?: number;
   // Lucky Floor: +30% crystals on today's 3 seeded floors
   luckyFloorBonus?: number;
+  // Element Synergy Bonus: extra crystals when 3+ cards share the daily blessed element
+  elementSynergyBonus?: number;
+  elementSynergyCount?: number; // how many blessed-element cards triggered it
   // Floor Record Bonus: crystals for setting a new tower best (floor × 25)
   floorRecordBonus?: number;
   // Clutch Victory: bonus for winning with < 20% HP remaining (+150)

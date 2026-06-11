@@ -158,10 +158,13 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
   // Daily element blessing — which element gets +15% ATK today
   const blessedElement = useMemo(() => getBlessedElement(), []);
-  const deckHasBlessing = useMemo(
-    () => deckCards.some(c => c.element === blessedElement),
+  const deckBlessingCount = useMemo(
+    () => deckCards.filter(c => c.element === blessedElement).length,
     [deckCards, blessedElement],
   );
+  const deckHasBlessing  = deckBlessingCount >= 1;
+  const deckHasSynergy   = deckBlessingCount >= 3; // 3+ cards = element synergy bonus
+  const elementSynergyBonus = deckHasSynergy ? (deckBlessingCount - 2) * 100 : 0; // +100 per card above 2
 
   // Rival: NPC ranked just above the player — shows as a competitive target in the lobby
   const rival = useMemo(() => {
@@ -427,6 +430,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           clutchBonus,
         };
       }
+    }
+
+    // Element Synergy Bonus: +100 per blessed-element card above 2 in deck
+    if (details.isVictory && deckHasSynergy && elementSynergyBonus > 0) {
+      const gstSyn = SaveService.loadGachaState();
+      SaveService.saveGachaState({ ...gstSyn, crystals: gstSyn.crystals + elementSynergyBonus });
+      finalDetails = {
+        ...finalDetails,
+        crystalsGained: finalDetails.crystalsGained + elementSynergyBonus,
+        elementSynergyBonus,
+        elementSynergyCount: deckBlessingCount,
+      };
     }
 
     // Attach pre-defeat streak so DefeatScreen can show the broken-streak banner
@@ -1117,12 +1132,17 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
                 TAGESSEGEN: {label.split(' ').slice(1).join(' ')}
               </span>
               <span className="battle-element-blessing__sub">
-                {deckHasBlessing
-                  ? `+${Math.round(BLESSING_ATK_BONUS * 100)}% ATK für deine ${label.split(' ').slice(1).join(' ')}-Karten!`
-                  : `${label.split(' ').slice(1).join(' ')}-Karten im Deck für +${Math.round(BLESSING_ATK_BONUS * 100)}% ATK!`}
+                {deckHasSynergy
+                  ? `SYNERGIE! ${deckBlessingCount}× ${label.split(' ').slice(1).join(' ')} → +${elementSynergyBonus} 💎 Bonus!`
+                  : deckHasBlessing
+                    ? `+${Math.round(BLESSING_ATK_BONUS * 100)}% ATK (${deckBlessingCount}/3 für Synergie-Bonus!)`
+                    : `${label.split(' ').slice(1).join(' ')}-Karten im Deck für +${Math.round(BLESSING_ATK_BONUS * 100)}% ATK!`}
               </span>
             </div>
-            {deckHasBlessing && (
+            {deckHasSynergy && (
+              <span className="battle-element-blessing__active battle-element-blessing__active--synergy">SYNERGY!</span>
+            )}
+            {deckHasBlessing && !deckHasSynergy && (
               <span className="battle-element-blessing__active">AKTIV ✓</span>
             )}
           </div>
