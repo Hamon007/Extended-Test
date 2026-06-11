@@ -48,6 +48,7 @@ import { TowerLore }            from '../data/towerLore';
 import { BattleManager, type BattleMeta, type RuneBoost } from '../services/BattleManager';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { RelicService }              from '../services/RelicService';
+import { BountyService }             from '../services/BountyService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -616,6 +617,19 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             ...finalDetails,
             crystalsGained: finalDetails.crystalsGained + lfBonus,
             luckyFloorBonus: lfBonus,
+          };
+        }
+      }
+
+      // Bounty Board: collect reward if this enemy was a daily bounty target
+      {
+        const bountyAmt = BountyService.checkAndCollect(battle.state.enemyData.id);
+        if (bountyAmt > 0) {
+          finalDetails = {
+            ...finalDetails,
+            crystalsGained: finalDetails.crystalsGained + bountyAmt,
+            bountyBonus:     bountyAmt,
+            bountyEnemyName: battle.state.enemyData.name,
           };
         }
       }
@@ -1664,6 +1678,34 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
                 {remaining === 1 ? 'Noch 1 — fast da!' : `Noch ${remaining}`}
               </span>
             </div>
+          </div>
+        );
+      })()}
+
+      {/* Bounty Board */}
+      {(() => {
+        const bounties = BountyService.getAll();
+        const active   = bounties.filter(b => !b.collected);
+        if (active.length === 0 && bounties.every(b => b.collected)) {
+          return (
+            <div className="battle-bounty-board battle-bounty-board--done">
+              <span className="battle-bounty-board__title">🎯 Kopfgelder</span>
+              <span className="battle-bounty-board__all-done">✓ Alle heute gesammelt!</span>
+            </div>
+          );
+        }
+        if (bounties.length === 0) return null;
+        return (
+          <div className="battle-bounty-board">
+            <div className="battle-bounty-board__title">🎯 Tages-Kopfgelder</div>
+            {bounties.map((b, i) => (
+              <div key={i} className={`battle-bounty-row ${b.collected ? 'battle-bounty-row--done' : ''}`}>
+                <span className="battle-bounty-row__name">
+                  {b.collected ? '✓ ' : '◆ '}{b.enemyName}
+                </span>
+                <span className="battle-bounty-row__reward">💎 {b.crystals}</span>
+              </div>
+            ))}
           </div>
         );
       })()}

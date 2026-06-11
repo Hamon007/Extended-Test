@@ -1347,3 +1347,15 @@
   opacity: 1;
   box-shadow: 0 0 10px rgba(76,175,80,0.25);
 }
+
+/* ── Bounty reward row ─────────────────────────────────────────── */
+.reward-row--bounty {
+  background: linear-gradient(90deg, rgba(180,80,0,0.15), rgba(220,130,0,0.1));
+  border-left: 3px solid #e09040;
+}
+
+.reward-row__value--bounty {
+  color: #ffa040;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255,160,60,0.5);
+}

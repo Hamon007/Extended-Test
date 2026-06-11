@@ -97,6 +97,9 @@ export interface RewardDetails {
   passNewMilestones?: Array<{ label: string; crystals: number; icon: string }>;
   // Streak Shield absorbed a defeat (streak preserved)
   streakShielded?: boolean;
+  // Bounty Board: crystal bonus for defeating today's bounty target
+  bountyBonus?: number;
+  bountyEnemyName?: string;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

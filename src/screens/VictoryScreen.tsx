@@ -572,6 +572,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Bounty Board reward */}
+          {details.bountyBonus && details.bountyBonus > 0 && (
+            <div className="reward-row reward-row--bounty">
+              <span className="reward-row__label">🎯 KOPFGELD: {details.bountyEnemyName}</span>
+              <span className="reward-row__value reward-row__value--bounty">
+                +<CountUp target={details.bountyBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Quest Completions triggered by this battle */}
           {details.questsCompleted && details.questsCompleted.length > 0 && (
             <div className="victory-quest-completions">
