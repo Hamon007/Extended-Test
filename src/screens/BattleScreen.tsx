@@ -37,6 +37,7 @@ import { CrystalRainService } from '../services/CrystalRainService';
 import { LuckySeven }         from '../services/LuckySeven';
 import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS } from '../services/DailyElementService';
+import { WeeklyPassService } from '../services/WeeklyPassService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -489,6 +490,9 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           crystalRainBonus: rainAmount,
         };
       }
+
+      // Weekly Battle Pass progress
+      WeeklyPassService.recordWin();
 
       // Lucky 7: jackpot on every 7th daily win
       const l7bonus = LuckySeven.recordWin();

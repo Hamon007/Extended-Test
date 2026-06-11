@@ -32,6 +32,7 @@ import { BonusHourService } from '../services/BonusHourService';
 import { LuckySeven }       from '../services/LuckySeven';
 import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import { LuckyFloorService } from '../services/LuckyFloorService';
+import { WeeklyPassService } from '../services/WeeklyPassService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -117,6 +118,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [feedIndex,     setFeedIndex]     = useState(0);
   const [simFeed,       setSimFeed]       = useState(() => SimulatedFeedService.generate(10));
   const [simIndex,      setSimIndex]      = useState(0);
+  const [_forceRefresh, setForceRefresh]  = useState(0);
   const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
   const [towerFloor,    setTowerFloor]    = useState(() => TowerService.getFloor());
   const [questBadge,    setQuestBadge]    = useState(0);
@@ -907,6 +909,63 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           })()}
         </div>
       </div>
+
+      {/* ── Wöchentlicher Battle Pass ── */}
+      {(() => {
+        const ps = WeeklyPassService.getPassState();
+        const claimable = ps.milestones.filter(m => m.reached && !m.claimed);
+        const currentMs = ps.milestones.find(m => !m.claimed);
+        const displayMs = ps.milestones.slice(0, 10);
+        return (
+          <div className="main-weekly-pass">
+            <div className="main-weekly-pass__header">
+              <span className="main-weekly-pass__title">🗓 Wöchentlicher Pass</span>
+              {claimable.length > 0 && (
+                <span className="main-weekly-pass__badge">{claimable.length} abrufbar!</span>
+              )}
+              {ps.complete && (
+                <span className="main-weekly-pass__complete">✓ ABGESCHLOSSEN</span>
+              )}
+              {!ps.complete && currentMs && (
+                <span className="main-weekly-pass__next">
+                  {ps.wins}/{currentMs.winsNeeded} Siege
+                </span>
+              )}
+            </div>
+            <div className="main-weekly-pass__track">
+              {displayMs.map(m => (
+                <button
+                  key={m.id}
+                  className={`main-weekly-pass__node${
+                    m.claimed ? ' main-weekly-pass__node--claimed' :
+                    m.reached ? ' main-weekly-pass__node--ready' : ''
+                  }`}
+                  onClick={() => {
+                    if (m.reached && !m.claimed) {
+                      WeeklyPassService.claimMilestone(m.id);
+                      setForceRefresh(c => c + 1);
+                    }
+                  }}
+                  title={`${m.label}: ${m.crystals} 💎 (${m.winsNeeded} Siege)`}
+                >
+                  <span className="main-weekly-pass__node-icon">
+                    {m.claimed ? '✓' : m.reached ? m.icon : m.id}
+                  </span>
+                  <span className="main-weekly-pass__node-reward">+{m.crystals}</span>
+                </button>
+              ))}
+            </div>
+            {!ps.complete && (
+              <div className="main-weekly-pass__bar-wrap">
+                <div
+                  className="main-weekly-pass__bar-fill"
+                  style={{ width: `${Math.min(100, ps.wins / 75 * 100)}%` }}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Nächster Erfolg-Prompt ── */}
       {nearestAch && nearestAch.pct > 0 && (
