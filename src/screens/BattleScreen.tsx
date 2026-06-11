@@ -27,6 +27,7 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem }       from '../services/FusionSystem';
 import { FirstWinService } from '../services/FirstWinService';
 import { RecoveryService } from '../services/RecoveryService';
+import { WeekendBonusService } from '../services/WeekendBonusService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
@@ -368,6 +369,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       }
     } else {
       RecoveryService.activate();
+    }
+
+    // Weekend Bonus: +25% crystals on Sat/Sun victories
+    if (details.isVictory) {
+      const weekendBonus = WeekendBonusService.applyBonus(finalDetails.crystalsGained);
+      if (weekendBonus > 0) {
+        const gst = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst, crystals: gst.crystals + weekendBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + weekendBonus,
+          weekendBonus,
+        };
+      }
     }
 
     // Embed tower floor context for VictoryScreen next-floor preview
@@ -1031,6 +1046,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Weekend Bonus chip */}
+      {WeekendBonusService.isActive() && (
+        <div className="battle-weekend-chip">
+          <span className="battle-weekend-chip__icon">🎉</span>
+          <span className="battle-weekend-chip__text">
+            WOCHENEND-BONUS aktiv: <strong>+25% Kristalle</strong>
+          </span>
+        </div>
+      )}
 
       {/* Recovery Bonus chip */}
       {RecoveryService.isActive() && (

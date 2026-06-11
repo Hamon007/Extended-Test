@@ -153,6 +153,7 @@
 .reward-row--streak      { background: rgba(244,67,54,0.12);  border: 1px solid #c62828; animation-delay: 0.55s; }
 .reward-row--firstwin    { background: rgba(255,180,0,0.14);  border: 1px solid #ffa000; animation-delay: 0.45s; }
 .reward-row--recovery    { background: rgba(60,100,240,0.14); border: 1px solid rgba(80,140,255,0.55); animation-delay: 0.46s; }
+.reward-row--weekend     { background: rgba(255,180,0,0.16);  border: 1px solid rgba(255,180,0,0.55);  animation-delay: 0.44s; }
 .reward-row--streak-mult {
   background: linear-gradient(135deg, rgba(255,80,0,0.14), rgba(255,180,0,0.1));
   border: 1px solid rgba(255,130,0,0.6);

@@ -57,6 +57,8 @@ export interface RewardDetails {
   towerFloor?:      number;
   // Recovery bonus (post-defeat bounce-back)
   recoveryBonus?:   number;
+  // Weekend bonus (+25% on Sat/Sun)
+  weekendBonus?:    number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

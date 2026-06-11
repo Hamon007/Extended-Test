@@ -340,6 +340,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Weekend Bonus (+25% on Sat/Sun) */}
+          {details.weekendBonus && details.weekendBonus > 0 && (
+            <div className="reward-row reward-row--weekend">
+              <span className="reward-row__label">🎉 Wochenend-Bonus!</span>
+              <span className="reward-row__value">
+                +<CountUp target={details.weekendBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Recovery Bonus (Comeback-Bonus nach Niederlage) */}
           {details.recoveryBonus && details.recoveryBonus > 0 && (
             <div className="reward-row reward-row--recovery">

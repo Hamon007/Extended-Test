@@ -23,6 +23,7 @@ import { FusionSystem } from '../services/FusionSystem';
 import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
 import { WinStreakService } from '../services/WinStreakService';
 import { PvpHistoryService } from '../services/PvpHistoryService';
+import { WeekendBonusService } from '../services/WeekendBonusService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -499,6 +500,18 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* ── Wochenend-Bonus Banner ── */}
+      {WeekendBonusService.isActive() && onNavigate && (
+        <div className="main-weekend-banner" onClick={() => onNavigate('battle')}>
+          <span className="main-weekend-banner__icon">🎉</span>
+          <div className="main-weekend-banner__text">
+            <span className="main-weekend-banner__title">WOCHENEND-BONUS!</span>
+            <span className="main-weekend-banner__sub">+25% Kristalle auf alle Siege heute</span>
+          </div>
+          <span className="main-weekend-banner__arrow">▶</span>
+        </div>
+      )}
 
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (
