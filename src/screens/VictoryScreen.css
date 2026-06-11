@@ -160,6 +160,89 @@
 .reward-row__value--nemesis { color: #ff6060; font-weight: 900; text-shadow: 0 0 10px rgba(255,60,60,0.7); }
 .reward-row--bonushour   { background: rgba(255,200,0,0.22);  border: 1px solid rgba(255,220,60,0.65); animation-delay: 0.37s; }
 .reward-row__value--bonushour { color: #ffe060; font-weight: 900; text-shadow: 0 0 10px rgba(255,220,60,0.7); }
+.reward-row--crystalrain { background: rgba(0,180,255,0.18);  border: 1px solid rgba(80,200,255,0.6);  animation-delay: 0.35s; }
+.reward-row__value--crystalrain { color: #80dfff; font-weight: 900; text-shadow: 0 0 12px rgba(80,200,255,0.8); }
+
+/* ── Crystal Rain Overlay ────────────────────────────────────── */
+
+.crystal-rain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.crystal-drop {
+  position: absolute;
+  top: -2rem;
+  font-size: 1.2rem;
+  animation: crystal-fall linear both;
+  filter: drop-shadow(0 0 4px rgba(100,220,255,0.7));
+}
+
+.crystal-drop--0 { left:  5%; animation-duration: 2.1s; animation-delay: 0.0s; }
+.crystal-drop--1 { left: 12%; animation-duration: 1.8s; animation-delay: 0.2s; }
+.crystal-drop--2 { left: 20%; animation-duration: 2.4s; animation-delay: 0.1s; }
+.crystal-drop--3 { left: 30%; animation-duration: 1.9s; animation-delay: 0.4s; }
+.crystal-drop--4 { left: 38%; animation-duration: 2.2s; animation-delay: 0.0s; }
+
+/* 20 drops — spread across the screen */
+.crystal-drop:nth-child(5n+1) { left:  5%; }
+.crystal-drop:nth-child(5n+2) { left: 22%; }
+.crystal-drop:nth-child(5n+3) { left: 43%; }
+.crystal-drop:nth-child(5n+4) { left: 64%; }
+.crystal-drop:nth-child(5n+0) { left: 82%; }
+.crystal-drop:nth-child(n+1)  { animation-delay: calc(var(--i, 0) * 0.12s); }
+.crystal-drop:nth-child(1)  { animation-delay: 0.00s; animation-duration: 2.0s; }
+.crystal-drop:nth-child(2)  { animation-delay: 0.10s; animation-duration: 1.7s; }
+.crystal-drop:nth-child(3)  { animation-delay: 0.20s; animation-duration: 2.3s; }
+.crystal-drop:nth-child(4)  { animation-delay: 0.05s; animation-duration: 1.9s; }
+.crystal-drop:nth-child(5)  { animation-delay: 0.30s; animation-duration: 2.1s; }
+.crystal-drop:nth-child(6)  { animation-delay: 0.15s; animation-duration: 1.8s; }
+.crystal-drop:nth-child(7)  { animation-delay: 0.40s; animation-duration: 2.2s; }
+.crystal-drop:nth-child(8)  { animation-delay: 0.08s; animation-duration: 2.0s; }
+.crystal-drop:nth-child(9)  { animation-delay: 0.25s; animation-duration: 1.6s; }
+.crystal-drop:nth-child(10) { animation-delay: 0.35s; animation-duration: 2.4s; }
+.crystal-drop:nth-child(11) { animation-delay: 0.18s; animation-duration: 2.1s; }
+.crystal-drop:nth-child(12) { animation-delay: 0.50s; animation-duration: 1.9s; }
+.crystal-drop:nth-child(13) { animation-delay: 0.12s; animation-duration: 2.3s; }
+.crystal-drop:nth-child(14) { animation-delay: 0.42s; animation-duration: 1.7s; }
+.crystal-drop:nth-child(15) { animation-delay: 0.28s; animation-duration: 2.0s; }
+.crystal-drop:nth-child(16) { animation-delay: 0.05s; animation-duration: 1.8s; }
+.crystal-drop:nth-child(17) { animation-delay: 0.38s; animation-duration: 2.2s; }
+.crystal-drop:nth-child(18) { animation-delay: 0.22s; animation-duration: 2.0s; }
+.crystal-drop:nth-child(19) { animation-delay: 0.48s; animation-duration: 1.9s; }
+.crystal-drop:nth-child(20) { animation-delay: 0.16s; animation-duration: 2.3s; }
+
+/* Distribute horizontal positions */
+.crystal-drop:nth-child(1)  { left:  4%; }
+.crystal-drop:nth-child(2)  { left: 10%; }
+.crystal-drop:nth-child(3)  { left: 16%; }
+.crystal-drop:nth-child(4)  { left: 22%; }
+.crystal-drop:nth-child(5)  { left: 28%; }
+.crystal-drop:nth-child(6)  { left: 34%; }
+.crystal-drop:nth-child(7)  { left: 40%; }
+.crystal-drop:nth-child(8)  { left: 46%; }
+.crystal-drop:nth-child(9)  { left: 52%; }
+.crystal-drop:nth-child(10) { left: 58%; }
+.crystal-drop:nth-child(11) { left: 64%; }
+.crystal-drop:nth-child(12) { left: 70%; }
+.crystal-drop:nth-child(13) { left: 76%; }
+.crystal-drop:nth-child(14) { left: 82%; }
+.crystal-drop:nth-child(15) { left: 88%; }
+.crystal-drop:nth-child(16) { left:  7%; }
+.crystal-drop:nth-child(17) { left: 19%; }
+.crystal-drop:nth-child(18) { left: 37%; }
+.crystal-drop:nth-child(19) { left: 55%; }
+.crystal-drop:nth-child(20) { left: 73%; }
+
+@keyframes crystal-fall {
+  0%   { transform: translateY(0) rotate(0deg)   scale(0.8); opacity: 0; }
+  10%  { opacity: 1; }
+  80%  { opacity: 0.9; }
+  100% { transform: translateY(110vh) rotate(360deg) scale(1.1); opacity: 0; }
+}
 .reward-row--streak-mult {
   background: linear-gradient(135deg, rgba(255,80,0,0.14), rgba(255,180,0,0.1));
   border: 1px solid rgba(255,130,0,0.6);

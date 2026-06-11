@@ -66,6 +66,8 @@ export interface RewardDetails {
   nemesisBonus?:    number;
   // Bonus Hour double crystals (active first 15 min of even UTC hours)
   bonusHourBonus?:  number;
+  // Crystal Rain: rare 10% chance surprise bonus on victory
+  crystalRainBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

@@ -125,6 +125,15 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
         ))}
       </div>
 
+      {/* Crystal Rain particle overlay */}
+      {details.crystalRainBonus && details.crystalRainBonus > 0 && (
+        <div className="crystal-rain-overlay" aria-hidden="true">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className={`crystal-drop crystal-drop--${i % 5}`}>💎</div>
+          ))}
+        </div>
+      )}
+
       <div className="victory-content">
 
         {/* Trophy + Titel */}
@@ -361,6 +370,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
               <span className="reward-row__label">🌟 {details.eventName ?? 'Event-Bonus'}!</span>
               <span className="reward-row__value reward-row__value--event">
                 +<CountUp target={details.eventBonus} />
+              </span>
+            </div>
+          )}
+
+          {/* Crystal Rain surprise bonus */}
+          {details.crystalRainBonus && details.crystalRainBonus > 0 && (
+            <div className="reward-row reward-row--crystalrain">
+              <span className="reward-row__label">💎 KRISTALL-REGEN! 🎊</span>
+              <span className="reward-row__value reward-row__value--crystalrain">
+                +<CountUp target={details.crystalRainBonus} />
               </span>
             </div>
           )}

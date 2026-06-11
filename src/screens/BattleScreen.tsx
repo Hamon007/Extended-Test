@@ -33,6 +33,7 @@ import { BattleStatsService } from '../services/BattleStatsService';
 import { NemesisService, NEMESIS_CRYSTAL_BONUS } from '../services/NemesisService';
 import { LeaderboardService } from '../services/LeaderboardService';
 import { BonusHourService }  from '../services/BonusHourService';
+import { CrystalRainService } from '../services/CrystalRainService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -437,6 +438,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           ...finalDetails,
           crystalsGained: finalDetails.crystalsGained + bhBonus,
           bonusHourBonus: bhBonus,
+        };
+      }
+    }
+
+    // Crystal Rain: rare 10% surprise bonus on any victory
+    if (details.isVictory) {
+      const rainAmount = CrystalRainService.roll();
+      if (rainAmount > 0) {
+        const gst = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst, crystals: gst.crystals + rainAmount });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + rainAmount,
+          crystalRainBonus: rainAmount,
         };
       }
     }
