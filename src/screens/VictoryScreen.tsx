@@ -19,6 +19,7 @@ interface Props {
   details:    RewardDetails;
   onContinue: () => void;
   onNavigate?: (screen: string) => void;
+  onQuickFight?: () => void; // skip lobby, start next floor immediately
 }
 
 // Animated number counter
@@ -49,7 +50,7 @@ const GRADE_COLORS: Record<string, string> = {
   S: '#ff9800', SS: '#f44336', SSS: '#ffd700',
 };
 
-const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => {
+const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQuickFight }) => {
   // Post-battle account state for XP progress bar
   const accountAfter = useMemo(() => SaveService.loadAccountState(), []);
   const xpToNext     = AccountProgressionService.xpToNextLevel(accountAfter.level);
@@ -605,8 +606,15 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
           </div>
         )}
 
+        {/* Quick Fight — skip lobby, start next floor */}
+        {onQuickFight && details.towerFloor && (
+          <button className="victory-quickfight-btn" onClick={onQuickFight}>
+            ⚔ ETAGE {details.towerFloor + 1} ANGREIFEN!
+          </button>
+        )}
+
         {/* Weiter-Button */}
-        <button className="victory-btn" onClick={onContinue}>
+        <button className={`victory-btn${onQuickFight ? ' victory-btn--secondary' : ''}`} onClick={onContinue}>
           ◀ Zurück zur Auswahl
         </button>
 

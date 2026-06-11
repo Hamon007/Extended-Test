@@ -763,6 +763,25 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     startFloorBattle();
   }, [battle, energy]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleQuickFight = useCallback(() => {
+    if (!energy.consume()) return;
+    // Advance floor (same as handleContinue does)
+    if (rewardDetails?.isVictory && isTowerMode) {
+      const next = TowerService.advanceFloor();
+      TowerService.updateHighestFloor(next);
+      setTowerFloor(next);
+      const milestone = TowerMilestoneService.checkFloor(next);
+      if (milestone) setTowerMilestone(milestone);
+    }
+    battle.resetBattle();
+    setRewardDetails(null);
+    setTacticalConfig(null);
+    rewardApplied.current = false;
+    setIsTowerMode(true);
+    // Start the next floor immediately (no event roll on quick continue)
+    startFloorBattle();
+  }, [battle, energy, rewardDetails, isTowerMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Enemy Taunt bubble ────────────────────────────────────
   const tauntBubble = enemyTaunt ? (
     <div className="enemy-taunt-bubble">
@@ -815,7 +834,12 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     return (
       <>
         {rewardDetails.isVictory ? (
-          <VictoryScreen details={rewardDetails} onContinue={handleContinue} onNavigate={onNavigate} />
+          <VictoryScreen
+            details={rewardDetails}
+            onContinue={handleContinue}
+            onNavigate={onNavigate}
+            onQuickFight={rewardDetails.isVictory && isTowerMode && energy.energy > 0 ? handleQuickFight : undefined}
+          />
         ) : (
           <DefeatScreen
             details={rewardDetails}
