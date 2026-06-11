@@ -226,13 +226,27 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     const needed = LevelSystem.xpToNext(curLv) - (target.xp ?? 0);
                     const nCards = Math.ceil(needed / 300);
                     const rCards = Math.ceil(needed / 600);
+                    const xpToMax = LevelSystem.totalXpForLevel(cap) - LevelSystem.totalXpForLevel(curLv) - (target.xp ?? 0);
+                    const pctToMax = cap > 1 ? Math.round(((curLv - 1 + (target.xp ?? 0) / LevelSystem.xpToNext(curLv)) / (cap - 1)) * 100) : 100;
                     return (
-                      <div className="training-td__xp-hint">
-                        <span className="training-td__xp-hint-val">+{needed.toLocaleString('de-DE')} XP</span>
-                        <span className="training-td__xp-hint-eq">
-                          ≈ {nCards}× N {rCards > 0 ? `· ${rCards}× R` : ''}
-                        </span>
-                      </div>
+                      <>
+                        <div className="training-td__xp-hint">
+                          <span className="training-td__xp-hint-val">+{needed.toLocaleString('de-DE')} XP</span>
+                          <span className="training-td__xp-hint-eq">
+                            ≈ {nCards}× N {rCards > 0 ? `· ${rCards}× R` : ''}
+                          </span>
+                        </div>
+                        {cap - curLv >= 2 && (
+                          <div className="training-td__max-hint">
+                            <div className="training-td__max-bar">
+                              <div className="training-td__max-bar-fill" style={{ width: `${pctToMax}%` }} />
+                            </div>
+                            <span className="training-td__max-label">
+                              bis Max: {xpToMax.toLocaleString('de-DE')} XP
+                            </span>
+                          </div>
+                        )}
+                      </>
                     );
                   })()}
                   {preview && preview.level > (target.level ?? 1) && (

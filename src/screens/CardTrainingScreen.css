@@ -307,6 +307,34 @@
 }
 @keyframes preview-in { from{opacity:0;transform:translateY(-3px);} to{opacity:1;transform:none;} }
 
+/* ── XP to Max bar ───────────────────────────────────────── */
+.training-td__max-hint {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.training-td__max-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.training-td__max-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9c27b0, #e91e63);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.training-td__max-label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.58rem;
+  color: rgba(180,140,200,0.7);
+  font-style: italic;
+}
+
 /* ── Stat delta preview ──────────────────────────────────── */
 .training-td__stat-deltas {
   display: flex;
