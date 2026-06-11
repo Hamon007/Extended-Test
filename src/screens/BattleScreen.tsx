@@ -985,6 +985,34 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         </div>
       )}
 
+      {/* Win Probability Indicator */}
+      {deckPower > 0 && enemyPowerEstimate > 0 && (() => {
+        const ratio = deckPower / enemyPowerEstimate;
+        const pct   = Math.min(100, Math.max(5, Math.round(ratio * 60)));
+        const label =
+          ratio >= 1.6 ? 'DOMINANZ' :
+          ratio >= 1.1 ? 'VORTEIL'  :
+          ratio >= 0.8 ? 'AUSGEGLICHEN' :
+          ratio >= 0.5 ? 'NACHTEIL' : 'GEFAHR';
+        const cls =
+          ratio >= 1.1 ? 'battle-win-prob--strong' :
+          ratio >= 0.8 ? 'battle-win-prob--even'   : 'battle-win-prob--weak';
+        return (
+          <div className={`battle-win-prob ${cls}`}>
+            <div className="battle-win-prob__header">
+              <span className="battle-win-prob__label">KAMPFSTÄRKE</span>
+              <span className="battle-win-prob__verdict">{label}</span>
+            </div>
+            <div className="battle-win-prob__track">
+              <div className="battle-win-prob__fill" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="battle-win-prob__sub">
+              Deck {deckPower.toLocaleString('de-DE')} · Gegner ~{enemyPowerEstimate.toLocaleString('de-DE')}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Nächster Meilenstein */}
       {nextMilestone && (
         <div className="battle-milestone-preview">

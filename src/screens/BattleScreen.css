@@ -2832,3 +2832,72 @@
   font-style: italic;
   margin-left: 4px;
 }
+
+/* ── Win Probability Indicator ───────────────────────────────── */
+.battle-win-prob {
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.battle-win-prob__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.battle-win-prob__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  color: rgba(200,180,240,0.6);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.battle-win-prob__verdict {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.battle-win-prob__track {
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.battle-win-prob__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.battle-win-prob__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  color: rgba(180,160,220,0.5);
+  letter-spacing: 0.04em;
+}
+
+.battle-win-prob--strong .battle-win-prob__verdict { color: #80e098; }
+.battle-win-prob--strong .battle-win-prob__fill    { background: linear-gradient(90deg, #1b5e20, #4caf50); }
+
+.battle-win-prob--even .battle-win-prob__verdict { color: #ffd060; }
+.battle-win-prob--even .battle-win-prob__fill    { background: linear-gradient(90deg, #5d4037, #ff9800); }
+
+.battle-win-prob--weak .battle-win-prob__verdict { color: #ff6060; }
+.battle-win-prob--weak .battle-win-prob__fill    {
+  background: linear-gradient(90deg, #7b1a1a, #f44336);
+  animation: weakPowerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes weakPowerPulse {
+  0%, 100% { opacity: 0.8; }
+  50%       { opacity: 1; box-shadow: 0 0 8px rgba(244,67,54,0.6); }
+}
