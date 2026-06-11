@@ -210,6 +210,74 @@
   letter-spacing: 1px;
 }
 
+/* ── Rarity Completion Bars ──────────────────────────────────── */
+.collection-rarity-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 12px 4px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+  flex-shrink: 0;
+}
+
+.collection-rarity-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+  flex: 1;
+  min-width: 80px;
+}
+
+.collection-rarity-row--done {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.collection-rarity-row:active { background: rgba(255,255,255,0.08); }
+
+.collection-rarity-row__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 20px;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.collection-rarity-row__bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.collection-rarity-row__bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.collection-rarity-row__frac {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.collection-rarity-row__total {
+  opacity: 0.45;
+  font-weight: 400;
+}
+
 /* ── Element Completion Bars ─────────────────────────────────── */
 .collection-elem-progress {
   display: grid;

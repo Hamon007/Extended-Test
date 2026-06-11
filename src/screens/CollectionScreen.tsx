@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import type { Card, Rarity, Element, CardType } from '../types/Card';
-import { RARITY_ORDER, ELEMENT_LABEL, TYPE_LABEL } from '../types/Card';
+import { RARITY_ORDER, ELEMENT_LABEL, TYPE_LABEL, RARITY_COLOR } from '../types/Card';
 import { CardDatabase } from '../services/CardDatabase';
 import { SaveService } from '../services/SaveService';
 import CardThumbnail from '../components/CardThumbnail';
@@ -62,6 +62,21 @@ const CollectionScreen: React.FC = () => {
     for (const inst of inv) m.set(inst.cardId, (m.get(inst.cardId) ?? 0) + 1);
     return m;
   }, []);
+
+  // Rarity completion stats
+  const rarityStats = useMemo(() => {
+    const all = CardDatabase.getAll();
+    const byRarity: Record<string, { total: number; owned: number }> = {};
+    for (const card of all) {
+      const r = card.rarity;
+      if (!byRarity[r]) byRarity[r] = { total: 0, owned: 0 };
+      byRarity[r]!.total++;
+      if (ownedMap.has(card.id)) byRarity[r]!.owned++;
+    }
+    return RARITY_ORDER
+      .filter(r => byRarity[r])
+      .map(r => [r, byRarity[r]!] as [string, { total: number; owned: number }]);
+  }, [ownedMap]);
 
   // Element completion stats
   const elementStats = useMemo(() => {
@@ -247,6 +262,38 @@ const CollectionScreen: React.FC = () => {
               ✕ Filter zurücksetzen
             </button>
           )}
+        </div>
+      )}
+
+      {/* ── Seltenheits-Abschluss ── */}
+      {!filtersOpen && rarityStats.length > 0 && (
+        <div className="collection-rarity-progress">
+          {rarityStats.map(([r, { total, owned }]) => {
+            const pct   = total > 0 ? (owned / total) * 100 : 0;
+            const color = RARITY_COLOR[r as Rarity] ?? '#9e9e9e';
+            const done  = owned === total;
+            return (
+              <button
+                key={r}
+                className={`collection-rarity-row ${done ? 'collection-rarity-row--done' : ''}`}
+                onClick={() => setFilter(f => ({ ...f, rarity: f.rarity === r ? '' : r as Rarity }))}
+                title={`${r}: ${owned}/${total} besessen`}
+              >
+                <span className="collection-rarity-row__label" style={{ color }}>
+                  {done ? '✓' : r}
+                </span>
+                <div className="collection-rarity-row__bar-track">
+                  <div
+                    className="collection-rarity-row__bar-fill"
+                    style={{ width: `${pct}%`, background: color }}
+                  />
+                </div>
+                <span className="collection-rarity-row__frac" style={{ color }}>
+                  {owned}<span className="collection-rarity-row__total">/{total}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 
