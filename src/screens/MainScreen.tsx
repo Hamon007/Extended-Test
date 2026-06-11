@@ -34,6 +34,8 @@ import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
 import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
+import { BountyService } from '../services/BountyService';
+import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -1050,6 +1052,43 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             {nearestAch.current} / {nearestAch.target}
             {nearestAch.pct >= 0.8 && <span className="main-next-ach__almost"> · Fast geschafft!</span>}
           </div>
+        </div>
+      )}
+
+      {/* ── Kopfgeld-Chip ── */}
+      {(() => {
+        const bounties = BountyService.getAll();
+        const remaining = bounties.filter(b => !b.collected);
+        if (remaining.length === 0) return null;
+        const total = remaining.reduce((s, b) => s + b.crystals, 0);
+        return (
+          <div
+            className="main-bounty-chip"
+            onClick={() => onNavigate?.('battle')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && onNavigate?.('battle')}
+          >
+            <span className="main-bounty-chip__icon">🎯</span>
+            <div className="main-bounty-chip__text">
+              <span className="main-bounty-chip__title">
+                {remaining.length} Kopfgeld{remaining.length > 1 ? 'er' : ''} ausstehend
+              </span>
+              <span className="main-bounty-chip__targets">
+                {remaining.slice(0, 2).map(b => b.enemyName).join(', ')}
+                {remaining.length > 2 ? ' …' : ''}
+              </span>
+            </div>
+            <span className="main-bounty-chip__reward">+{total} 💎</span>
+          </div>
+        );
+      })()}
+
+      {/* ── Streak Shield Chip ── */}
+      {WinStreakSvc.hasShield() && (
+        <div className="main-shield-chip" onClick={() => onNavigate?.('battle')} role="button" tabIndex={0}>
+          <span className="main-shield-chip__icon">🛡</span>
+          <span className="main-shield-chip__text">Streak-Schutzschild aktiv — nächste Niederlage absorbiert!</span>
         </div>
       )}
 

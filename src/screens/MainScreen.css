@@ -2774,3 +2774,74 @@
   color: rgba(200,160,240,0.7);
   letter-spacing: 0.05em;
 }
+
+/* ── Bounty Chip ────────────────────────────────────────────────── */
+.main-bounty-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  margin: 0.3rem 0;
+  background: linear-gradient(135deg, rgba(180,80,0,0.18), rgba(120,40,0,0.12));
+  border: 1px solid rgba(220,130,40,0.45);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.main-bounty-chip:active { opacity: 0.8; }
+
+.main-bounty-chip__icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.main-bounty-chip__text { flex: 1; min-width: 0; }
+
+.main-bounty-chip__title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #e09040;
+  letter-spacing: 0.04em;
+}
+
+.main-bounty-chip__targets {
+  display: block;
+  font-size: 0.62rem;
+  color: #b07030;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-bounty-chip__reward {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffc060;
+  flex-shrink: 0;
+}
+
+/* ── Streak Shield Chip ─────────────────────────────────────────── */
+.main-shield-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  margin: 0.25rem 0;
+  background: linear-gradient(135deg, rgba(40,100,220,0.18), rgba(20,60,160,0.12));
+  border: 1px solid rgba(100,180,255,0.4);
+  border-radius: 20px;
+  cursor: pointer;
+  animation: shieldChipPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes shieldChipPulse {
+  from { box-shadow: 0 0 6px rgba(80,160,255,0.2); }
+  to   { box-shadow: 0 0 14px rgba(100,180,255,0.5); }
+}
+
+.main-shield-chip__icon { font-size: 1rem; filter: drop-shadow(0 0 4px rgba(100,200,255,0.6)); }
+
+.main-shield-chip__text {
+  font-size: 0.68rem;
+  color: #88ccff;
+  font-weight: 600;
+}
