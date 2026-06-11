@@ -33,6 +33,7 @@ import { LuckySeven }       from '../services/LuckySeven';
 import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
+import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -195,6 +196,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [bonusHourMs,     setBonusHourMs]     = useState(() => BonusHourService.isActive() ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
+  const [flashSale,     setFlashSale]     = useState<FlashSale>(() => FlashSaleService.getCurrent());
+  const [flashSaleMs,   setFlashSaleMs]   = useState(() => FlashSaleService.msUntilEnd());
 
   // Countdown-Tick + Energy-Regen-Ticker
   useEffect(() => {
@@ -212,6 +215,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       const bhActive = BonusHourService.isActive();
       setBonusHourActive(bhActive);
       setBonusHourMs(bhActive ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
+      const fsMs = FlashSaleService.msUntilEnd();
+      setFlashSaleMs(fsMs);
+      if (fsMs <= 0) setFlashSale(FlashSaleService.getCurrent());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -479,6 +485,30 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <div className="main-bonushour__text">
             <span className="main-bonushour__title">NÄCHSTE BONUS-STUNDE</span>
             <span className="main-bonushour__sub">×2 Kristalle in {formatCountdown(bonusHourMs)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Blitzangebot (Flash Sale) ── */}
+      {flashSale && (
+        <div
+          className={`main-flash-sale${flashSaleMs < 3_600_000 ? ' main-flash-sale--urgent' : ''}`}
+          onClick={() => onNavigate?.('shop')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('shop')}
+        >
+          <span className="main-flash-sale__icon">{flashSale.icon}</span>
+          <div className="main-flash-sale__text">
+            <span className="main-flash-sale__label">
+              ⚡ BLITZANGEBOT — {flashSale.discount}% RABATT
+            </span>
+            <span className="main-flash-sale__name">{flashSale.name}</span>
+          </div>
+          <div className="main-flash-sale__right">
+            <span className="main-flash-sale__original">{flashSale.original} 💎</span>
+            <span className="main-flash-sale__price">{flashSale.sale} 💎</span>
+            <span className="main-flash-sale__timer">{formatCountdown(flashSaleMs)}</span>
           </div>
         </div>
       )}
