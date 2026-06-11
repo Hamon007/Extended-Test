@@ -401,6 +401,31 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       // New highest tower floor record
       if (isTowerMode && towerFloor > TowerService.getHighestFloor()) newRecords.push('floor');
       if (newRecords.length > 0) finalDetails = { ...finalDetails, newRecords };
+
+      // Floor Record Bonus: crystals = floor × 25 for setting a new best
+      if (isTowerMode && newRecords.includes('floor')) {
+        const floorRecordBonus = towerFloor * 25;
+        const gst = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst, crystals: gst.crystals + floorRecordBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + floorRecordBonus,
+          floorRecordBonus,
+        };
+      }
+
+      // Clutch Victory: extra crystals for winning with < 20% HP
+      const hpPct = details.playerHpPct ?? 1;
+      if (hpPct < 0.20 && hpPct > 0) {
+        const clutchBonus = 150;
+        const gst2 = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst2, crystals: gst2.crystals + clutchBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + clutchBonus,
+          clutchBonus,
+        };
+      }
     }
 
     // Attach pre-defeat streak so DefeatScreen can show the broken-streak banner

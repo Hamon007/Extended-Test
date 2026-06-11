@@ -424,6 +424,26 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Floor Record Bonus */}
+          {details.floorRecordBonus && details.floorRecordBonus > 0 && (
+            <div className="reward-row reward-row--floorrecord">
+              <span className="reward-row__label">🏆 ETAGEN-REKORD! Etage {details.towerFloor}</span>
+              <span className="reward-row__value reward-row__value--floorrecord">
+                +<CountUp target={details.floorRecordBonus} />
+              </span>
+            </div>
+          )}
+
+          {/* Clutch Victory — won with < 20% HP */}
+          {details.clutchBonus && details.clutchBonus > 0 && (
+            <div className="reward-row reward-row--clutch">
+              <span className="reward-row__label">💥 LETZTE KRAFT! +150</span>
+              <span className="reward-row__value reward-row__value--clutch">
+                +<CountUp target={details.clutchBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Recovery Bonus (Comeback-Bonus nach Niederlage) */}
           {details.recoveryBonus && details.recoveryBonus > 0 && (
             <div className="reward-row reward-row--recovery">

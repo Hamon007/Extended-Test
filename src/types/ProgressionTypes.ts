@@ -72,6 +72,10 @@ export interface RewardDetails {
   luckySevenBonus?: number;
   // Lucky Floor: +30% crystals on today's 3 seeded floors
   luckyFloorBonus?: number;
+  // Floor Record Bonus: crystals for setting a new tower best (floor × 25)
+  floorRecordBonus?: number;
+  // Clutch Victory: bonus for winning with < 20% HP remaining (+150)
+  clutchBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

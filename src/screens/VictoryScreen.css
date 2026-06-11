@@ -176,6 +176,32 @@
 }
 .reward-row__value--lucky7 { color: #cc80ff; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 14px rgba(180,80,255,0.9); }
 
+/* Floor Record Bonus */
+.reward-row--floorrecord {
+  background: linear-gradient(135deg, rgba(30,80,10,0.9), rgba(20,60,5,0.85));
+  border: 1.5px solid rgba(100,220,60,0.75);
+  animation-delay: 0.32s;
+  animation: reward-slide-in 0.4s ease 0.32s both, floor-record-glow 1.6s ease-in-out 0.9s infinite alternate;
+}
+@keyframes floor-record-glow {
+  from { box-shadow: 0 0 8px rgba(80,200,40,0.3); }
+  to   { box-shadow: 0 0 24px rgba(120,255,60,0.65); }
+}
+.reward-row__value--floorrecord { color: #80ff40; font-weight: 900; text-shadow: 0 0 12px rgba(100,255,50,0.8); }
+
+/* Clutch Victory */
+.reward-row--clutch {
+  background: linear-gradient(135deg, rgba(80,10,10,0.9), rgba(60,5,5,0.85));
+  border: 1.5px solid rgba(255,80,80,0.75);
+  animation-delay: 0.31s;
+  animation: reward-slide-in 0.4s ease 0.31s both, clutch-pulse 0.9s ease-in-out 0.8s infinite alternate;
+}
+@keyframes clutch-pulse {
+  from { box-shadow: 0 0 6px rgba(255,60,60,0.3); }
+  to   { box-shadow: 0 0 20px rgba(255,100,80,0.7); }
+}
+.reward-row__value--clutch { color: #ff8060; font-weight: 900; text-shadow: 0 0 12px rgba(255,80,60,0.8); }
+
 /* ── Crystal Rain Overlay ────────────────────────────────────── */
 
 .crystal-rain-overlay {
