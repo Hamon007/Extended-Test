@@ -33,6 +33,7 @@ import { LuckySeven }       from '../services/LuckySeven';
 import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
+import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -651,6 +652,34 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         </div>
       )}
+
+      {/* ── Element-Kalender ── */}
+      {(() => {
+        const upcoming = getUpcomingBlessings(7);
+        const DAY_LABELS = ['Heute', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        return (
+          <div className="main-element-calendar">
+            <div className="main-element-calendar__title">🗓 Element-Kalender · Nächste 7 Tage</div>
+            <div className="main-element-calendar__row">
+              {upcoming.map((day, i) => {
+                const label = ELEMENT_LABELS[day.element] ?? day.element;
+                const color = ELEMENT_COLORS[day.element] ?? '#888';
+                const dayName = i === 0 ? 'Heute' : DAY_LABELS[(day.date.getUTCDay() + 7) % 8] ?? '';
+                return (
+                  <div
+                    key={i}
+                    className={`main-element-calendar__day${i === 0 ? ' main-element-calendar__day--today' : ''}`}
+                    style={{ '--day-color': color } as React.CSSProperties}
+                  >
+                    <span className="main-element-calendar__day-icon">{label.split(' ')[0]}</span>
+                    <span className="main-element-calendar__day-name">{dayName}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (
