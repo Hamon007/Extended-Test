@@ -401,3 +401,108 @@
   border-color: rgba(220,80,90,0.35);
   color: #e09090;
 }
+
+/* ── Promotion Banner ── */
+
+.pvp-promo-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(255,215,0,0.08), rgba(180,100,255,0.06), rgba(255,215,0,0.08));
+  border-top: 1px solid rgba(255,215,0,0.25);
+  border-bottom: 1px solid rgba(255,215,0,0.25);
+  flex-shrink: 0;
+  animation: pvpPromoPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pvpPromoPulse {
+  0%, 100% { box-shadow: inset 0 0 20px rgba(255,215,0,0.04); }
+  50%      { box-shadow: inset 0 0 30px rgba(255,215,0,0.12); }
+}
+
+.pvp-promo-banner--imminent {
+  background: linear-gradient(90deg, rgba(255,180,0,0.14), rgba(255,215,0,0.10), rgba(255,180,0,0.14));
+  animation: pvpPromoImminentPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pvpPromoImminentPulse {
+  0%, 100% { box-shadow: inset 0 0 0 rgba(255,215,0,0); border-color: rgba(255,215,0,0.25); }
+  50%      { box-shadow: inset 0 0 24px rgba(255,200,0,0.18); border-color: rgba(255,215,0,0.6); }
+}
+
+.pvp-promo-banner__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.pvp-promo-banner__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pvp-promo-banner__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.pvp-promo-banner__sub {
+  font-size: 0.6rem;
+  color: #8a7aaa;
+  margin-top: 2px;
+}
+
+.pvp-promo-banner__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Strength / Rating Delta ── */
+
+.pvp-row__strength-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.pvp-strength {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.pvp-strength--hard {
+  background: rgba(220,60,60,0.15);
+  color: #f08080;
+  border: 1px solid rgba(200,60,60,0.3);
+}
+
+.pvp-strength--easy {
+  background: rgba(60,180,100,0.15);
+  color: #80e0a0;
+  border: 1px solid rgba(60,160,80,0.3);
+}
+
+.pvp-strength--even {
+  background: rgba(180,180,180,0.08);
+  color: #b0a0c8;
+  border: 1px solid rgba(160,160,160,0.2);
+}
+
+.pvp-row__delta {
+  font-size: 0.6rem;
+  color: #6a5a80;
+}

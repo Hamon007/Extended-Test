@@ -33,17 +33,27 @@ function RankBadge({ rating }: { rating: number }) {
 function OpponentRow({
   opponent,
   rank,
+  myRating,
   onChallenge,
   loading,
 }: {
   opponent:    PvpOpponent;
   rank:        number;
+  myRating:    number;
   onChallenge: (o: PvpOpponent) => void;
   loading:     boolean;
 }) {
   const ratio = opponent.pvpWins + opponent.pvpLosses > 0
     ? Math.round((opponent.pvpWins / (opponent.pvpWins + opponent.pvpLosses)) * 100)
     : 0;
+
+  const ratingDiff = opponent.rating - myRating;
+  const strength =
+    ratingDiff >  300 ? { label: '▲▲ Dominant',  cls: 'pvp-strength--hard'  } :
+    ratingDiff >   80 ? { label: '▲ Stärker',     cls: 'pvp-strength--hard'  } :
+    ratingDiff < -300 ? { label: '▼▼ Leichtsieg', cls: 'pvp-strength--easy'  } :
+    ratingDiff <  -80 ? { label: '▼ Schwächer',   cls: 'pvp-strength--easy'  } :
+                        { label: '= Ebenbürtig',   cls: 'pvp-strength--even'  };
 
   return (
     <div className="pvp-row">
@@ -54,6 +64,10 @@ function OpponentRow({
         <div className="pvp-row__meta">
           Lv.{opponent.accountLevel} · {opponent.pvpWins}S {opponent.pvpLosses}N
           {opponent.pvpWins + opponent.pvpLosses > 0 && ` · ${ratio}% WR`}
+        </div>
+        <div className="pvp-row__strength-row">
+          <span className={`pvp-strength ${strength.cls}`}>{strength.label}</span>
+          <span className="pvp-row__delta">+100 / -20 Pkt.</span>
         </div>
       </div>
 
@@ -218,6 +232,28 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
         </div>
       )}
 
+      {/* ── Promotion Banner ── */}
+      {nextTier && (nextTier.min - myRating) <= 200 && (
+        <div className={`pvp-promo-banner ${(nextTier.min - myRating) <= 100 ? 'pvp-promo-banner--imminent' : ''}`}>
+          <div className="pvp-promo-banner__icon">
+            {(nextTier.min - myRating) <= 100 ? '🏆' : '⚡'}
+          </div>
+          <div className="pvp-promo-banner__text">
+            <div className="pvp-promo-banner__title" style={{ color: nextTier.color }}>
+              {(nextTier.min - myRating) <= 100
+                ? `AUFSTIEG: 1 SIEG BIS ${nextTier.label.toUpperCase()}!`
+                : `2 SIEGE BIS ${nextTier.label.toUpperCase()}!`}
+            </div>
+            <div className="pvp-promo-banner__sub">
+              Fehlen: {nextTier.min - myRating} Pkt. · Sieg = +100 Pkt.
+            </div>
+          </div>
+          <div className="pvp-promo-banner__badge" style={{ color: nextTier.color, borderColor: nextTier.color }}>
+            {nextTier.label}
+          </div>
+        </div>
+      )}
+
       {/* ── Hinweistext ── */}
       <p className="pvp-info">
         Greife das gespeicherte Deck eines anderen Spielers an.
@@ -243,6 +279,7 @@ const PvpScreen: React.FC<Props> = ({ onBack, onStartBattle }) => {
               key={opp.userId}
               opponent={opp}
               rank={i + 1}
+              myRating={myRating}
               onChallenge={handleChallenge}
               loading={attacking}
             />
