@@ -30,6 +30,7 @@ import { RecoveryService } from '../services/RecoveryService';
 import { WeekendBonusService } from '../services/WeekendBonusService';
 import { DailyCardService }   from '../services/DailyCardService';
 import { BattleStatsService } from '../services/BattleStatsService';
+import { NemesisService, NEMESIS_CRYSTAL_BONUS } from '../services/NemesisService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -97,6 +98,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [bossRushCanAttempt,   setBossRushCanAttempt]   = useState(() => BossRushService.canAttempt());
   const highestFloor = TowerService.getHighestFloor();
   const [energyRegenMs, setEnergyRegenMs] = useState(() => EnergyService.msUntilNextRegen());
+  const [nemesisId,    setNemesisId]     = useState(() => NemesisService.getNemesisId());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -288,6 +290,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const enemyHpPct = battle.state.enemy.hpMax > 0
       ? battle.state.enemy.hp / battle.state.enemy.hpMax
       : 0;
+
+    // Nemesis tracking
+    const enemyId = battle.state.enemyData.id;
+    if (details.isVictory) {
+      const wasNemesis = NemesisService.recordVictory(enemyId);
+      if (wasNemesis) {
+        // +50% crystal bonus for slaying nemesis
+        const bonus = Math.round(details.crystalsGained * NEMESIS_CRYSTAL_BONUS);
+        const gn = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gn, crystals: gn.crystals + bonus });
+        details.crystalsGained += bonus;
+      }
+      setNemesisId(NemesisService.getNemesisId());
+    } else {
+      NemesisService.recordDefeat(enemyId);
+      setNemesisId(NemesisService.getNemesisId());
+    }
 
     // Apply Fortune rune crystal multiplier
     let finalDetails = { ...details, maxCombo, totalDamage, bondLevelUps, masteryLevelUps, playerHpPct, enemyHpPct, roundsElapsed, grade };
@@ -931,6 +950,26 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           <span className="battle-revenge-chip__sub">Beweise dich!</span>
         </div>
       )}
+
+      {/* Nemesis Banner — shown when player has a persistent nemesis enemy */}
+      {nemesisId && (() => {
+        const nemEnemy = EnemyDatabase.getAll().find(e => e.id === nemesisId)
+          ?? TowerService.getFloorEnemy(towerFloor);
+        const nemName = nemEnemy?.name ?? 'Unbekannter Feind';
+        const defeatCount = NemesisService.getNemesisCount(nemesisId);
+        return (
+          <div className="battle-nemesis-banner">
+            <span className="battle-nemesis-banner__skull">💀</span>
+            <div className="battle-nemesis-banner__text">
+              <span className="battle-nemesis-banner__title">NEMESIS: {nemName}</span>
+              <span className="battle-nemesis-banner__sub">
+                Hat dich {defeatCount}× besiegt · +50% 💎 bei Rache!
+              </span>
+            </div>
+            <span className="battle-nemesis-banner__rage">⚔</span>
+          </div>
+        );
+      })()}
 
       {/* Etagen-Info */}
       <div className="battle-tower-floor-banner">

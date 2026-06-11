@@ -3042,3 +3042,69 @@
   from { box-shadow: none; }
   to   { box-shadow: 0 0 6px rgba(240,185,30,0.4); }
 }
+
+/* ── Nemesis Banner ─────────────────────────────────────────── */
+
+.battle-nemesis-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(80,0,0,0.92) 0%, rgba(40,0,0,0.85) 100%);
+  border: 1px solid rgba(220, 30, 30, 0.6);
+  border-left: 3px solid #cc1111;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 0;
+  box-shadow: 0 0 18px rgba(200,20,20,0.25), inset 0 0 12px rgba(180,0,0,0.1);
+  animation: nemesis-pulse 3s ease-in-out infinite alternate;
+  cursor: default;
+}
+
+@keyframes nemesis-pulse {
+  from { box-shadow: 0 0 12px rgba(200,20,20,0.2), inset 0 0 8px rgba(180,0,0,0.05); }
+  to   { box-shadow: 0 0 28px rgba(200,20,20,0.45), inset 0 0 16px rgba(180,0,0,0.15); }
+}
+
+.battle-nemesis-banner__skull {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(255,50,50,0.7));
+}
+
+.battle-nemesis-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.battle-nemesis-banner__title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #ff4444;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 12px rgba(255,60,60,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.battle-nemesis-banner__sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #cc8888;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.battle-nemesis-banner__rage {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 4px rgba(255,80,80,0.5));
+}
