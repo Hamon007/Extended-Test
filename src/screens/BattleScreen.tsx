@@ -1642,6 +1642,32 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Achievement Proximity Alert — shown when closest achievement ≥ 60% done */}
+      {(() => {
+        const near = AchievementService.getNearestIncomplete();
+        if (!near || near.pct < 0.6) return null;
+        const remaining = near.target - near.current;
+        const fillPct   = Math.round(near.pct * 100);
+        return (
+          <div className="battle-achievement-alert">
+            <div className="battle-achievement-alert__header">
+              <span className="battle-achievement-alert__icon">{near.def.icon}</span>
+              <span className="battle-achievement-alert__title">{near.def.title}</span>
+              <span className="battle-achievement-alert__reward">💎 {near.def.crystals}</span>
+            </div>
+            <div className="battle-achievement-alert__bar-track">
+              <div className="battle-achievement-alert__bar-fill" style={{ width: `${fillPct}%` }} />
+            </div>
+            <div className="battle-achievement-alert__footer">
+              <span className="battle-achievement-alert__progress">{near.current}/{near.target}</span>
+              <span className="battle-achievement-alert__remaining">
+                {remaining === 1 ? 'Noch 1 — fast da!' : `Noch ${remaining}`}
+              </span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Weekend Bonus chip */}
       {WeekendBonusService.isActive() && (
         <div className="battle-weekend-chip">

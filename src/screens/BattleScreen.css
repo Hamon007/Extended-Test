@@ -3660,3 +3660,78 @@
   letter-spacing: 0.05em;
   font-size: 0.65rem;
 }
+
+/* ── Achievement Proximity Alert ────────────────────────────────── */
+.battle-achievement-alert {
+  padding: 0.55rem 0.8rem;
+  margin: 0.35rem 0;
+  background: linear-gradient(135deg, rgba(255,180,0,0.14), rgba(200,120,0,0.10));
+  border: 1px solid rgba(255,200,60,0.4);
+  border-radius: 10px;
+  animation: achievePop 0.4s cubic-bezier(0.18,1.4,0.4,1) both, achieveGlow 2.8s ease-in-out 0.5s infinite alternate;
+}
+
+@keyframes achievePop {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes achieveGlow {
+  from { box-shadow: 0 0 6px rgba(255,200,60,0.2); }
+  to   { box-shadow: 0 0 16px rgba(255,210,80,0.5); }
+}
+
+.battle-achievement-alert__header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.battle-achievement-alert__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.battle-achievement-alert__title {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #ffd060;
+  letter-spacing: 0.04em;
+}
+
+.battle-achievement-alert__reward {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ffe080;
+  letter-spacing: 0.04em;
+}
+
+.battle-achievement-alert__bar-track {
+  height: 5px;
+  background: rgba(255,200,60,0.18);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.battle-achievement-alert__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f0a000, #ffd060);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.battle-achievement-alert__footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #c89840;
+}
+
+.battle-achievement-alert__remaining {
+  color: #ffcc40;
+  font-weight: 700;
+}
