@@ -28,6 +28,7 @@ import { FusionSystem }       from '../services/FusionSystem';
 import { FirstWinService } from '../services/FirstWinService';
 import { RecoveryService } from '../services/RecoveryService';
 import { WeekendBonusService } from '../services/WeekendBonusService';
+import { DailyCardService }   from '../services/DailyCardService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
@@ -116,8 +117,9 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     [deckInstances],
   );
 
-  const leaderBonus = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
-  const formation   = useMemo(() => FormationService.compute(deckCards), [deckCards]);
+  const leaderBonus        = useMemo(() => LeaderService.computeBonus(deckCards[0]), [deckCards]);
+  const formation          = useMemo(() => FormationService.compute(deckCards), [deckCards]);
+  const dailyCardAtkBoost  = DailyCardService.getAtkBonus();
 
   // Power comparison: effective ATK per card
   const deckPower = useMemo(() => {
@@ -159,7 +161,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     pvpConsumedRef.current = true;
     setIsPvpMode(true);
     pvpOpponentRef.current = pending.opponent.displayName;
-    battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation });
+    battle.startBattle(deckInstances, pending.enemy, { leaderBonus, formation, dailyCardAtkBoost });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Enemy taunt on battle start
@@ -639,7 +641,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
 
   const startFloorBattle = (cursed = false, tripleReward = false) => {
     const { enemy, tact } = buildTowerEnemy(cursed, tripleReward);
-    const meta: BattleMeta = { leaderBonus, formation };
+    const meta: BattleMeta = { leaderBonus, formation, dailyCardAtkBoost };
     const type = isBoss ? 'boss' : tact ? 'elite' : 'normal';
     setPendingMeta({ enemy, meta, tact });
     setLoreOverlay({ floor: towerFloor, type });
@@ -721,8 +723,9 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const meta: BattleMeta = {
       leaderBonus,
       formation,
-      dailyModifier: dailyTrial.modifier,
-      maxRounds:     dailyTrial.modifier.kind === 'time_trial' ? dailyTrial.modifier.maxRounds : undefined,
+      dailyModifier:      dailyTrial.modifier,
+      maxRounds:          dailyTrial.modifier.kind === 'time_trial' ? dailyTrial.modifier.maxRounds : undefined,
+      dailyCardAtkBoost,
     };
     battle.startBattle(deckInstances, enemy, meta);
     DailyTrialService.markCompleted();
@@ -744,7 +747,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     rewardApplied.current       = false;
     setIsTowerMode(false);
     setTacticalConfig(null);
-    const meta: BattleMeta = { leaderBonus, formation };
+    const meta: BattleMeta = { leaderBonus, formation, dailyCardAtkBoost };
     battle.startBattle(deckInstances, wave1, meta);
   };
 
@@ -754,7 +757,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     lastStandShownRef.current = false;
     rewardApplied.current     = false;
     bossRushWaveRef.current   = wave;
-    const meta: BattleMeta = { leaderBonus, formation };
+    const meta: BattleMeta = { leaderBonus, formation, dailyCardAtkBoost };
     battle.startBattle(deckInstances, enemy, meta);
   };
 

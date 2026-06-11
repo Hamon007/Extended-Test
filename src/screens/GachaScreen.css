@@ -1044,3 +1044,109 @@
   letter-spacing: 0.04em;
   line-height: 1.4;
 }
+
+
+/* ── Missing High-Rarity Strip ───────────────────────────────── */
+.gacha-missing-strip {
+  margin: 0 0 10px;
+  background: rgba(20,10,40,0.5);
+  border: 1px solid rgba(160,80,240,0.25);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gacha-missing-strip__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(160,80,240,0.15);
+}
+
+.gacha-missing-strip__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #c9a0ff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gacha-missing-strip__count {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  color: rgba(180,140,240,0.6);
+  letter-spacing: 0.06em;
+}
+
+.gacha-missing-strip__scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 10px 12px;
+  scrollbar-width: none;
+}
+
+.gacha-missing-strip__scroll::-webkit-scrollbar { display: none; }
+
+.gacha-missing-card {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid color-mix(in srgb, var(--rc, #9e9e9e) 40%, transparent);
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  width: 68px;
+}
+
+.gacha-missing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--rc, #9e9e9e) 50%, transparent);
+}
+
+.gacha-missing-card__img-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.gacha-missing-card__img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 5px;
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+.gacha-missing-card__rarity-badge {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.44rem;
+  font-weight: 900;
+  background: rgba(0,0,0,0.85);
+  border-radius: 3px;
+  padding: 1px 4px;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  border: 1px solid currentColor;
+}
+
+.gacha-missing-card__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.46rem;
+  color: rgba(220,200,255,0.75);
+  text-align: center;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+}

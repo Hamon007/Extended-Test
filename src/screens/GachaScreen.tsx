@@ -104,6 +104,7 @@ const GachaScreen: React.FC = () => {
         <div className="gacha-main">
 
           <BannerCard />
+          <MissingHighRarityStrip inventory={state.inventory} onCardClick={openDetail} />
           <DropRateTable />
 
           {error && (
@@ -266,6 +267,55 @@ const PityBar: React.FC<PityBarProps> = ({ pity, total }) => {
       <p className="pity-bar-note">
         Reset bei SSR oder MR ✦ Bei Pull {PITY_THRESHOLD} garantierter SSR
       </p>
+    </div>
+  );
+};
+
+// ── Missing High-Rarity Strip ─────────────────────────────────
+
+const HIGH_RARITY_LABELS = ['SSR', 'MR', 'LR'];
+
+const MissingHighRarityStrip: React.FC<{
+  inventory: CardInstance[];
+  onCardClick: (cardId: string) => void;
+}> = ({ inventory, onCardClick }) => {
+  const missing = useMemo(() => {
+    const ownedIds = new Set(inventory.map(i => i.cardId));
+    return CardDatabase.getAll()
+      .filter(c => HIGH_RARITY_LABELS.some(r => c.rarity.startsWith(r)) && !ownedIds.has(c.id))
+      .sort((a, b) => (RARITY_SCORE[b.rarity.replace(/\+/g, '')] ?? 1) - (RARITY_SCORE[a.rarity.replace(/\+/g, '')] ?? 1))
+      .slice(0, 12);
+  }, [inventory]);
+
+  if (missing.length === 0) return null;
+
+  return (
+    <div className="gacha-missing-strip">
+      <div className="gacha-missing-strip__header">
+        <span className="gacha-missing-strip__title">✨ Noch nicht besessen</span>
+        <span className="gacha-missing-strip__count">{missing.length} SSR+ fehlen</span>
+      </div>
+      <div className="gacha-missing-strip__scroll">
+        {missing.map(card => {
+          const color = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+          return (
+            <button
+              key={card.id}
+              className="gacha-missing-card"
+              style={{ '--rc': color } as React.CSSProperties}
+              onClick={() => onCardClick(card.id)}
+            >
+              <div className="gacha-missing-card__img-wrap">
+                <img className="gacha-missing-card__img" src={card.image} alt={card.name} />
+                <div className="gacha-missing-card__rarity-badge" style={{ color }}>
+                  {card.rarity}
+                </div>
+              </div>
+              <div className="gacha-missing-card__name">{card.name}</div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };

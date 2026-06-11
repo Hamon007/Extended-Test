@@ -218,11 +218,12 @@ export interface RuneBoost {
 }
 
 export interface BattleMeta {
-  leaderBonus?:    LeaderBonus | null;
-  formation?:      FormationResult | null;
-  dailyModifier?:  DailyModifier | null;
-  maxRounds?:      number;
-  runeBoost?:      RuneBoost | null;
+  leaderBonus?:       LeaderBonus | null;
+  formation?:         FormationResult | null;
+  dailyModifier?:     DailyModifier | null;
+  maxRounds?:         number;
+  runeBoost?:         RuneBoost | null;
+  dailyCardAtkBoost?: number; // fractional bonus e.g. 0.05 = +5%
 }
 
 /** Erstellt einen frischen BattleState. */
@@ -272,6 +273,14 @@ function initBattle(
       deck: player.deck.map(c => ({ ...c, atk: Math.round(c.atk * meta.runeBoost!.atkMult!) })),
     };
   }
+  if (meta.dailyCardAtkBoost && meta.dailyCardAtkBoost > 0) {
+    const mult = 1 + meta.dailyCardAtkBoost;
+    player = {
+      ...player,
+      hand: player.hand.map(c => ({ ...c, atk: Math.round(c.atk * mult) })),
+      deck: player.deck.map(c => ({ ...c, atk: Math.round(c.atk * mult) })),
+    };
+  }
 
   const initialLog: BattleLogEntry[] = [log(0, 'system', '', 0, 0, `Battle gegen ${enemy.name} beginnt! Runde 1`)];
   if (meta.leaderBonus) {
@@ -291,6 +300,10 @@ function initBattle(
   if (meta.runeBoost) {
     const runeNames: Record<string, string> = { iron_shield: '🛡 Eisenschild', blood_rage: '🔥 Blutraserei', fortune: '🍀 Glücksauge' };
     initialLog.push(log(0, 'system', '', 0, 0, `${runeNames[meta.runeBoost.type]} aktiv!`));
+  }
+  if (meta.dailyCardAtkBoost && meta.dailyCardAtkBoost > 0) {
+    initialLog.push(log(0, 'system', '', 0, 0,
+      `⭐ Karte des Tages besessen — +${Math.round(meta.dailyCardAtkBoost * 100)}% ATK heute!`));
   }
 
   const state: BattleState = {
