@@ -165,6 +165,13 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           </div>
         )}
 
+        <div className="defeat-comeback-hint">
+          <span className="defeat-comeback-hint__icon">⚡</span>
+          <span className="defeat-comeback-hint__text">
+            Comeback-Bonus: nächster Sieg <strong>+50% 💎</strong>
+          </span>
+        </div>
+
         <div className="defeat-divider" />
 
         {/* Battle stats */}

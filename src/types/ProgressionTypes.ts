@@ -55,6 +55,8 @@ export interface RewardDetails {
   newRecords?:      Array<'combo' | 'damage' | 'streak'>;
   // Tower context (set when in tower mode)
   towerFloor?:      number;
+  // Recovery bonus (post-defeat bounce-back)
+  recoveryBonus?:   number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

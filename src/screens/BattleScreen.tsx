@@ -26,6 +26,7 @@ import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMil
 import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem }       from '../services/FusionSystem';
 import { FirstWinService } from '../services/FirstWinService';
+import { RecoveryService } from '../services/RecoveryService';
 import { BattleStatsService } from '../services/BattleStatsService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
@@ -351,6 +352,22 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     // Attach pre-defeat streak so DefeatScreen can show the broken-streak banner
     if (!details.isVictory && preDefeatStreak >= 1) {
       finalDetails = { ...finalDetails, winStreak: preDefeatStreak };
+    }
+
+    // Recovery Bonus: +50% crystals on first win after a defeat
+    if (details.isVictory) {
+      const recoveryBonus = RecoveryService.claim(finalDetails.crystalsGained);
+      if (recoveryBonus > 0) {
+        const gst = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gst, crystals: gst.crystals + recoveryBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + recoveryBonus,
+          recoveryBonus,
+        };
+      }
+    } else {
+      RecoveryService.activate();
     }
 
     // Embed tower floor context for VictoryScreen next-floor preview
@@ -1014,6 +1031,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Recovery Bonus chip */}
+      {RecoveryService.isActive() && (
+        <div className="battle-recovery-chip">
+          <span className="battle-recovery-chip__icon">⚡</span>
+          <span className="battle-recovery-chip__text">
+            Comeback-Bonus aktiv: <strong>nächster Sieg +50% 💎</strong>
+          </span>
+        </div>
+      )}
 
       {/* First-Win-of-Day chip */}
       {FirstWinService.isAvailable() && (
