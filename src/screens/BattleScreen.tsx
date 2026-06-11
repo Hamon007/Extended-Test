@@ -38,6 +38,7 @@ import { LuckySeven }         from '../services/LuckySeven';
 import { LuckyFloorService, LUCKY_FLOOR_BONUS } from '../services/LuckyFloorService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS, BLESSING_ATK_BONUS } from '../services/DailyElementService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
+import { DailyBossService } from '../services/DailyBossService';
 import { EnemyTauntService } from '../services/EnemyTauntService';
 import { BossRushService }   from '../services/BossRushService';
 import { ElementalService }  from '../services/ElementalService';
@@ -107,6 +108,8 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [energyRegenMs, setEnergyRegenMs] = useState(() => EnergyService.msUntilNextRegen());
   const [nemesisId,    setNemesisId]     = useState(() => NemesisService.getNemesisId());
   const [seasonRankUp, setSeasonRankUp] = useState<{ rank: string; icon: string; color: string } | null>(null);
+  const isDailyBossModeRef = useRef(false);
+  const [dailyBossDefeated, setDailyBossDefeated] = useState(() => DailyBossService.isDefeatedToday());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -506,6 +509,22 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         };
       }
 
+      // Daily Boss victory
+      if (isDailyBossModeRef.current) {
+        isDailyBossModeRef.current = false;
+        const dailyBossBonus = DailyBossService.claimVictory();
+        if (dailyBossBonus > 0) {
+          finalDetails = {
+            ...finalDetails,
+            crystalsGained: finalDetails.crystalsGained + dailyBossBonus,
+            dailyBossBonus,
+          };
+          setDailyBossDefeated(true);
+        }
+      } else {
+        isDailyBossModeRef.current = false;
+      }
+
       // Weekly Battle Pass progress
       WeeklyPassService.recordWin();
 
@@ -803,6 +822,21 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const type = isBoss ? 'boss' : tact ? 'elite' : 'normal';
     setPendingMeta({ enemy, meta, tact });
     setLoreOverlay({ floor: towerFloor, type });
+  };
+
+  const handleDailyBossStart = () => {
+    if (!deckComplete || dailyBossDefeated) return;
+    const boss = DailyBossService.getDailyBoss();
+    if (!boss) return;
+    if (!energy.consume()) return;
+    const meta: BattleMeta = {
+      leaderBonus, formation, dailyCardAtkBoost,
+      elementBlessingElement: blessedElement,
+      elementBlessingBoost: BLESSING_ATK_BONUS,
+    };
+    isDailyBossModeRef.current = true;
+    setPendingMeta({ enemy: boss, meta, tact: null });
+    setLoreOverlay({ floor: 0, type: 'boss' });
   };
 
   const handleTowerStart = () => {
@@ -1144,6 +1178,36 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             )}
             {deckHasBlessing && !deckHasSynergy && (
               <span className="battle-element-blessing__active">AKTIV ✓</span>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Daily Boss Banner */}
+      {(() => {
+        const boss = DailyBossService.getDailyBoss();
+        if (!boss) return null;
+        return (
+          <div className={`battle-daily-boss${dailyBossDefeated ? ' battle-daily-boss--defeated' : ''}`}>
+            <span className="battle-daily-boss__skull">👹</span>
+            <div className="battle-daily-boss__text">
+              <span className="battle-daily-boss__title">
+                {dailyBossDefeated ? 'TAGES-BOSS BESIEGT ✓' : 'TAGES-BOSS'}
+              </span>
+              <span className="battle-daily-boss__sub">
+                {dailyBossDefeated
+                  ? `${boss.name} — morgen neuer Herausforderer`
+                  : `${boss.name} · +${DailyBossService.DAILY_BOSS_REWARD} 💎`}
+              </span>
+            </div>
+            {!dailyBossDefeated && (
+              <button
+                className="battle-daily-boss__btn"
+                onClick={handleDailyBossStart}
+                disabled={!deckComplete}
+              >
+                KÄMPFEN
+              </button>
             )}
           </div>
         );

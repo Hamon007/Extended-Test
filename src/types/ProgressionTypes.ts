@@ -79,6 +79,8 @@ export interface RewardDetails {
   floorRecordBonus?: number;
   // Clutch Victory: bonus for winning with < 20% HP remaining (+150)
   clutchBonus?: number;
+  // Daily Boss: large bonus for defeating today's powered-up boss
+  dailyBossBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

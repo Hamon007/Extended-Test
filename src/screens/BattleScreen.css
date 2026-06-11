@@ -3201,6 +3201,70 @@
   to   { color: #f0a0ff; text-shadow: 0 0 12px rgba(220,120,255,0.9); }
 }
 
+/* ── Daily Boss Banner ──────────────────────────────────────── */
+
+.battle-daily-boss {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(80,15,5,0.95) 0%, rgba(50,8,3,0.9) 100%);
+  border: 1px solid rgba(255,80,20,0.65);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  animation: daily-boss-flicker 2s ease-in-out infinite alternate;
+}
+@keyframes daily-boss-flicker {
+  from { box-shadow: 0 0 6px rgba(255,60,10,0.3); border-color: rgba(255,80,20,0.65); }
+  to   { box-shadow: 0 0 18px rgba(255,100,30,0.6); border-color: rgba(255,120,50,0.85); }
+}
+.battle-daily-boss--defeated {
+  background: linear-gradient(90deg, rgba(15,25,15,0.8) 0%, rgba(10,20,10,0.75) 100%);
+  border-color: rgba(60,120,60,0.4);
+  animation: none;
+  opacity: 0.75;
+}
+.battle-daily-boss__skull { font-size: 1.4rem; flex-shrink: 0; }
+.battle-daily-boss__text  { flex: 1; min-width: 0; }
+.battle-daily-boss__title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #ff7030;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.battle-daily-boss--defeated .battle-daily-boss__title { color: #60c060; }
+.battle-daily-boss__sub {
+  display: block;
+  font-size: 0.68rem;
+  color: #d0a080;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.battle-daily-boss__btn {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #c83010, #e05020);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  animation: boss-btn-pulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes boss-btn-pulse {
+  from { box-shadow: 0 0 4px rgba(200,50,10,0.5); }
+  to   { box-shadow: 0 0 12px rgba(255,80,30,0.8); }
+}
+.battle-daily-boss__btn:disabled { opacity: 0.4; cursor: not-allowed; animation: none; }
+
 /* ── Lucky Floor Banner ─────────────────────────────────────── */
 
 .battle-lucky-floor-banner {

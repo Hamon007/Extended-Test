@@ -424,6 +424,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Daily Boss Victory Bonus */}
+          {details.dailyBossBonus && details.dailyBossBonus > 0 && (
+            <div className="reward-row reward-row--dailyboss">
+              <span className="reward-row__label">👹 TAGES-BOSS BEZWUNGEN!</span>
+              <span className="reward-row__value reward-row__value--dailyboss">
+                +<CountUp target={details.dailyBossBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Element Synergy Bonus */}
           {details.elementSynergyBonus && details.elementSynergyBonus > 0 && (
             <div className="reward-row reward-row--elemsynergy">

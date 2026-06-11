@@ -176,6 +176,19 @@
 }
 .reward-row__value--lucky7 { color: #cc80ff; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 14px rgba(180,80,255,0.9); }
 
+/* Daily Boss Bonus */
+.reward-row--dailyboss {
+  background: linear-gradient(135deg, rgba(80,20,5,0.95), rgba(60,10,5,0.9));
+  border: 1.5px solid rgba(255,100,30,0.8);
+  animation-delay: 0.28s;
+  animation: reward-slide-in 0.4s ease 0.28s both, dailyboss-burn 1.2s ease-in-out 0.7s infinite alternate;
+}
+@keyframes dailyboss-burn {
+  from { box-shadow: 0 0 8px rgba(255,80,20,0.4); }
+  to   { box-shadow: 0 0 26px rgba(255,120,40,0.75); }
+}
+.reward-row__value--dailyboss { color: #ff9040; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 14px rgba(255,100,30,0.9); }
+
 /* Element Synergy Bonus */
 .reward-row--elemsynergy {
   background: linear-gradient(135deg, rgba(60,10,80,0.9), rgba(40,5,60,0.85));
