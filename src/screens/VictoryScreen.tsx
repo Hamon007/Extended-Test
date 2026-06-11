@@ -13,6 +13,8 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem } from '../services/FusionSystem';
 import { LevelSystem } from '../services/LevelSystem';
 import { PULL_COST_MULTI } from '../config/GameConfig';
+import { LuckyFloorService } from '../services/LuckyFloorService';
+import { FloorTitleService } from '../services/FloorTitleService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -129,10 +131,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
   }, [onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Next floor preview (tower mode only)
-  const currentFloor = details.towerFloor;
-  const nextFloor    = currentFloor !== undefined ? currentFloor + 1 : undefined;
-  const nextIsBoss   = nextFloor !== undefined && TowerService.isBossFloor(nextFloor);
-  const nextIsMile   = nextFloor !== undefined && nextFloor % 5 === 0 && !nextIsBoss;
+  const currentFloor   = details.towerFloor;
+  const nextFloor      = currentFloor !== undefined ? currentFloor + 1 : undefined;
+  const nextIsBoss     = nextFloor !== undefined && TowerService.isBossFloor(nextFloor);
+  const nextIsMile     = nextFloor !== undefined && nextFloor % 5 === 0 && !nextIsBoss;
+  const nextIsLucky    = nextFloor !== undefined && LuckyFloorService.isLucky(nextFloor);
+  const nextTitleUnlock = nextFloor !== undefined
+    ? FloorTitleService.checkTitleUnlock(nextFloor - 1, nextFloor)
+    : null;
 
   return (
     <div className="victory-screen">
@@ -178,6 +184,18 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
                 <span>💥</span> LETZTE KRAFT!
               </div>
             )}
+          </div>
+        )}
+
+        {/* Session Bonus milestone banner */}
+        {details.sessionBonus && details.sessionBonus > 0 && (
+          <div className="victory-session-bonus">
+            <span className="victory-session-bonus__icon">{details.sessionBonusIcon ?? '🏆'}</span>
+            <div className="victory-session-bonus__text">
+              <span className="victory-session-bonus__label">{details.sessionBonusLabel ?? 'SESSION-BONUS'}</span>
+              <span className="victory-session-bonus__sub">{details.sessionWins} Siege in dieser Sitzung</span>
+            </div>
+            <span className="victory-session-bonus__reward">+{details.sessionBonus.toLocaleString('de-DE')} 💎</span>
           </div>
         )}
 
@@ -678,20 +696,41 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
 
         {/* Next floor preview */}
         {nextFloor !== undefined && (
-          <div className={`victory-next-floor ${nextIsBoss ? 'victory-next-floor--boss' : nextIsMile ? 'victory-next-floor--elite' : ''}`}>
+          <div className={`victory-next-floor${nextIsBoss ? ' victory-next-floor--boss' : nextIsMile ? ' victory-next-floor--elite' : ''}${nextIsLucky ? ' victory-next-floor--lucky' : ''}`}>
             <div className="victory-next-floor__label">NÄCHSTE ETAGE</div>
             <div className="victory-next-floor__num">{nextFloor}</div>
-            {nextIsBoss ? (
-              <div className="victory-next-floor__tag victory-next-floor__tag--boss">⚔ BOSS-ETAGE</div>
-            ) : nextIsMile ? (
-              <div className="victory-next-floor__tag victory-next-floor__tag--elite">⚡ ELITE-CHANCE</div>
-            ) : (
-              <div className="victory-next-floor__tag">◆ Normale Etage</div>
-            )}
+            <div className="victory-next-floor__tags">
+              {nextIsBoss && (
+                <div className="victory-next-floor__tag victory-next-floor__tag--boss">⚔ BOSS-ETAGE</div>
+              )}
+              {nextIsLucky && (
+                <div className="victory-next-floor__tag victory-next-floor__tag--lucky">⭐ GLÜCKSETAGE +30%</div>
+              )}
+              {nextIsMile && !nextIsLucky && (
+                <div className="victory-next-floor__tag victory-next-floor__tag--elite">⚡ ELITE-CHANCE</div>
+              )}
+              {!nextIsBoss && !nextIsMile && !nextIsLucky && (
+                <div className="victory-next-floor__tag">◆ Normale Etage</div>
+              )}
+              {nextTitleUnlock && (
+                <div
+                  className="victory-next-floor__tag victory-next-floor__tag--title"
+                  style={{ '--title-color': nextTitleUnlock.color } as React.CSSProperties}
+                >
+                  {nextTitleUnlock.icon} RANG: {nextTitleUnlock.title}
+                </div>
+              )}
+            </div>
             {(() => {
               const base = EnemyDatabase.getFirst();
-              const est = Math.round((base?.rewardCrystals ?? 100) * (1 + nextFloor * 0.2));
-              return <div className="victory-next-floor__reward">💎 ~{est.toLocaleString('de-DE')} Kristalle</div>;
+              const mult = nextIsLucky ? 1.3 : 1;
+              const est = Math.round((base?.rewardCrystals ?? 100) * (1 + nextFloor * 0.2) * mult);
+              return (
+                <div className={`victory-next-floor__reward${nextIsLucky ? ' victory-next-floor__reward--lucky' : ''}`}>
+                  💎 ~{est.toLocaleString('de-DE')} Kristalle
+                  {nextIsLucky && <span className="victory-next-floor__reward-bonus"> (+30%)</span>}
+                </div>
+              );
             })()}
           </div>
         )}

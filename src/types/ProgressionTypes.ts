@@ -105,6 +105,11 @@ export interface RewardDetails {
   bountyEnemyName?: string;
   // Floor Title unlocked by advancing past a threshold floor this battle
   titleUnlocked?: { title: string; icon: string; color: string };
+  // Session Bonus: crystals for consecutive wins in one session
+  sessionBonus?: number;
+  sessionBonusLabel?: string;
+  sessionBonusIcon?: string;
+  sessionWins?: number; // total session wins so far
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

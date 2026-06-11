@@ -51,6 +51,7 @@ import { RelicService }              from '../services/RelicService';
 import { BountyService }             from '../services/BountyService';
 import { WorldBossService }          from '../services/WorldBossService';
 import { FloorTitleService }         from '../services/FloorTitleService';
+import { SessionBonusService }       from '../services/SessionBonusService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -651,6 +652,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             bountyEnemyName: battle.state.enemyData.name,
           };
         }
+      }
+    }
+
+    // Session Bonus: milestone crystals for wins within this session
+    if (details.isVictory) {
+      const sessionMilestone = SessionBonusService.recordWin();
+      const sessionWins = SessionBonusService.getSessionWins();
+      if (sessionMilestone) {
+        finalDetails = {
+          ...finalDetails,
+          sessionBonus:      sessionMilestone.crystals,
+          sessionBonusLabel: sessionMilestone.label,
+          sessionBonusIcon:  sessionMilestone.icon,
+          sessionWins,
+        };
+      } else {
+        finalDetails = { ...finalDetails, sessionWins };
       }
     }
 
@@ -1830,6 +1848,29 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </span>
         </div>
       )}
+
+      {/* Session Bonus Chip — progress to next session milestone */}
+      {(() => {
+        const next = SessionBonusService.getNextMilestone();
+        const wins = SessionBonusService.getSessionWins();
+        if (!next || wins === 0) return null;
+        const pct = Math.round((wins / next.wins) * 100);
+        return (
+          <div className="battle-session-bonus">
+            <div className="battle-session-bonus__header">
+              <span className="battle-session-bonus__icon">{next.icon}</span>
+              <span className="battle-session-bonus__title">
+                SESSION: {wins}/{next.wins} Siege
+              </span>
+              <span className="battle-session-bonus__reward">+{next.crystals} 💎</span>
+            </div>
+            <div className="battle-session-bonus__bar-track">
+              <div className="battle-session-bonus__bar-fill" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="battle-session-bonus__sub">{next.label} — noch {next.wins - wins} Siege!</div>
+          </div>
+        );
+      })()}
 
       {/* First-Win-of-Day chip */}
       {FirstWinService.isAvailable() && (
