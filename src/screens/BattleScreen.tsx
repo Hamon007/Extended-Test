@@ -433,6 +433,30 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           clutchBonus,
         };
       }
+
+      // Perfect Victory: +100 for winning with ≥ 95% HP remaining
+      if (hpPct >= 0.95) {
+        const perfectBonus = 100;
+        const gstPf = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gstPf, crystals: gstPf.crystals + perfectBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + perfectBonus,
+          perfectBonus,
+        };
+      }
+
+      // Combo Jackpot: +150 for hitting MAX_COMBO (5×) in a battle
+      if (maxCombo >= 5) {
+        const comboJackpotBonus = 150;
+        const gstCj = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gstCj, crystals: gstCj.crystals + comboJackpotBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + comboJackpotBonus,
+          comboJackpotBonus,
+        };
+      }
     }
 
     // Element Synergy Bonus: +100 per blessed-element card above 2 in deck

@@ -81,6 +81,10 @@ export interface RewardDetails {
   clutchBonus?: number;
   // Daily Boss: large bonus for defeating today's powered-up boss
   dailyBossBonus?: number;
+  // Combo Jackpot: +150 for hitting MAX_COMBO (5×) in a battle
+  comboJackpotBonus?: number;
+  // Perfect Victory: +100 for winning with ≥ 95% HP remaining
+  perfectBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

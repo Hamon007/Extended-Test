@@ -215,6 +215,32 @@
 }
 .reward-row__value--floorrecord { color: #80ff40; font-weight: 900; text-shadow: 0 0 12px rgba(100,255,50,0.8); }
 
+/* Perfect Victory */
+.reward-row--perfect {
+  background: linear-gradient(135deg, rgba(5,40,50,0.92), rgba(3,30,40,0.88));
+  border: 1.5px solid rgba(60,200,240,0.7);
+  animation-delay: 0.30s;
+  animation: reward-slide-in 0.4s ease 0.30s both, perfect-shimmer 2s ease-in-out 0.8s infinite alternate;
+}
+@keyframes perfect-shimmer {
+  from { box-shadow: 0 0 6px rgba(40,180,220,0.3); }
+  to   { box-shadow: 0 0 18px rgba(80,220,255,0.6); }
+}
+.reward-row__value--perfect { color: #60e0ff; font-weight: 900; text-shadow: 0 0 10px rgba(60,200,240,0.7); }
+
+/* Combo Jackpot */
+.reward-row--combojackpot {
+  background: linear-gradient(135deg, rgba(40,10,5,0.92), rgba(30,5,3,0.88));
+  border: 1.5px solid rgba(255,120,30,0.75);
+  animation-delay: 0.29s;
+  animation: reward-slide-in 0.4s ease 0.29s both, combo-jackpot-pop 0.8s ease-in-out 0.8s infinite alternate;
+}
+@keyframes combo-jackpot-pop {
+  from { box-shadow: 0 0 6px rgba(255,100,20,0.3); }
+  to   { box-shadow: 0 0 20px rgba(255,150,50,0.7); }
+}
+.reward-row__value--combojackpot { color: #ff9850; font-weight: 900; text-shadow: 0 0 12px rgba(255,120,30,0.8); }
+
 /* Clutch Victory */
 .reward-row--clutch {
   background: linear-gradient(135deg, rgba(80,10,10,0.9), rgba(60,5,5,0.85));

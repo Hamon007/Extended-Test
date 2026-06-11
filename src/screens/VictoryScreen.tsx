@@ -456,6 +456,26 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate }) => 
             </div>
           )}
 
+          {/* Perfect Victory — won with ≥ 95% HP */}
+          {details.perfectBonus && details.perfectBonus > 0 && (
+            <div className="reward-row reward-row--perfect">
+              <span className="reward-row__label">✨ PERFEKTER SIEG! +100</span>
+              <span className="reward-row__value reward-row__value--perfect">
+                +<CountUp target={details.perfectBonus} />
+              </span>
+            </div>
+          )}
+
+          {/* Combo Jackpot — hit MAX combo 5× */}
+          {details.comboJackpotBonus && details.comboJackpotBonus > 0 && (
+            <div className="reward-row reward-row--combojackpot">
+              <span className="reward-row__label">🌪️ KOMBO ×5 JACKPOT! +150</span>
+              <span className="reward-row__value reward-row__value--combojackpot">
+                +<CountUp target={details.comboJackpotBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Clutch Victory — won with < 20% HP */}
           {details.clutchBonus && details.clutchBonus > 0 && (
             <div className="reward-row reward-row--clutch">
