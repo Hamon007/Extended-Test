@@ -2288,3 +2288,106 @@
   color: #ff5555;
   background: rgba(255,85,85,0.12);
 }
+
+
+/* ── Power Milestone Toast ──────────────────────────────────── */
+
+.main-power-milestone {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 14px;
+  z-index: 500;
+  pointer-events: none;
+  animation: milestone-drop 0.4s cubic-bezier(0.34,1.56,0.5,1), milestone-fade 0.6s ease 3.9s forwards;
+  min-width: 240px;
+  justify-content: center;
+}
+
+@keyframes milestone-drop {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.8); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0)      scale(1);   }
+}
+
+@keyframes milestone-fade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.main-power-milestone--bronze {
+  background: linear-gradient(135deg, rgba(60,35,10,0.96), rgba(40,20,5,0.92));
+  border: 1.5px solid #c87941;
+  box-shadow: 0 0 30px rgba(200,121,65,0.5);
+}
+.main-power-milestone--silver {
+  background: linear-gradient(135deg, rgba(30,30,50,0.96), rgba(20,20,40,0.92));
+  border: 1.5px solid #9ab0c8;
+  box-shadow: 0 0 30px rgba(154,176,200,0.5);
+}
+.main-power-milestone--gold {
+  background: linear-gradient(135deg, rgba(50,35,0,0.96), rgba(35,25,0,0.92));
+  border: 1.5px solid #d4a800;
+  box-shadow: 0 0 35px rgba(212,168,0,0.6);
+}
+.main-power-milestone--legend {
+  background: linear-gradient(135deg, rgba(40,0,60,0.96), rgba(25,0,40,0.92));
+  border: 1.5px solid #b44fff;
+  box-shadow: 0 0 40px rgba(180,79,255,0.7), 0 0 80px rgba(180,79,255,0.3);
+}
+
+.main-power-milestone__icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  animation: milestone-spin 0.5s ease;
+}
+
+@keyframes milestone-spin {
+  0%   { transform: rotate(-20deg) scale(0.7); }
+  60%  { transform: rotate(10deg)  scale(1.2); }
+  100% { transform: rotate(0deg)   scale(1);   }
+}
+
+.main-power-milestone__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.main-power-milestone__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+}
+
+.main-power-milestone--gold   .main-power-milestone__title,
+.main-power-milestone--legend .main-power-milestone__title { color: #ffd96e; }
+
+.main-power-milestone__value {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.main-power-milestone--bronze .main-power-milestone__value { color: #e8954a; text-shadow: 0 0 12px rgba(232,149,74,0.8); }
+.main-power-milestone--silver .main-power-milestone__value { color: #c8dce8; text-shadow: 0 0 12px rgba(200,220,232,0.8); }
+.main-power-milestone--gold   .main-power-milestone__value { color: #ffd700; text-shadow: 0 0 16px rgba(255,215,0,0.9);   }
+.main-power-milestone--legend .main-power-milestone__value { color: #d88aff; text-shadow: 0 0 20px rgba(216,138,255,0.9); }
+
+.main-power-milestone__fx {
+  font-size: 1.2rem;
+  animation: fx-pulse 0.5s ease-in-out infinite alternate;
+  flex-shrink: 0;
+}
+
+@keyframes fx-pulse {
+  from { opacity: 0.5; transform: scale(0.9); }
+  to   { opacity: 1.0; transform: scale(1.1); }
+}

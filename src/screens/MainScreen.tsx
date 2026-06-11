@@ -27,6 +27,7 @@ import { WeekendBonusService } from '../services/WeekendBonusService';
 import { DailyCardService } from '../services/DailyCardService';
 import { EventService }     from '../services/EventService';
 import { LeaderboardService, type LeaderboardEntry } from '../services/LeaderboardService';
+import { PowerMilestoneService, type PowerMilestone } from '../services/PowerMilestoneService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -180,6 +181,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const seasonRank  = SeasonService.getRankForSp(seasonState.sp);
   // Leaderboard — computed from power score, stable per render
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [powerMilestone, setPowerMilestone] = useState<PowerMilestone | null>(null);
   // Track auth state reactively so feed loads after async AuthService.init()
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
 
@@ -341,6 +343,15 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
 
     setDeckStats(found > 0 ? { atk: totalAtk + masteryAtk, def: totalDef, power } : null);
 
+    // Power milestone check — fires once per newly-crossed threshold
+    if (power > 0) {
+      const hit = PowerMilestoneService.check(power);
+      if (hit) {
+        setPowerMilestone(hit);
+        setTimeout(() => setPowerMilestone(null), 4500);
+      }
+    }
+
     // Build leaderboard power score (same formula as ProfileScreen)
     const accState = SaveService.loadAccountState();
     const uniqueOwned = new Set(gachaState.inventory.map(i => i.cardId)).size;
@@ -372,6 +383,18 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </div>
         <button className="main-topbar__refresh" onClick={handleRefresh} aria-label="Aktualisieren">↺</button>
       </div>
+
+      {/* ── Power Milestone Toast ── */}
+      {powerMilestone && (
+        <div className={`main-power-milestone main-power-milestone--${powerMilestone.tier}`}>
+          <span className="main-power-milestone__icon">{powerMilestone.icon}</span>
+          <div className="main-power-milestone__text">
+            <span className="main-power-milestone__title">KAMPFKRAFT ERREICHT!</span>
+            <span className="main-power-milestone__value">{powerMilestone.label}</span>
+          </div>
+          <span className="main-power-milestone__fx">⚡</span>
+        </div>
+      )}
 
       {/* ── Kristall-Leiste ── */}
       <div className="main-crystal-bar">
