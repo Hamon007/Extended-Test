@@ -73,6 +73,22 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
   const winStreak     = details.winStreak ?? 0;
   const showStreakFlash = winStreak >= 5;
 
+  // Dynamic battle highlight chips based on performance metrics
+  const highlights = useMemo(() => {
+    const chips: Array<{ icon: string; label: string; variant: string }> = [];
+    if (roundsElapsed > 0 && roundsElapsed <= 3) chips.push({ icon: '⚡', label: 'BLITZSIEG', variant: 'speed' });
+    if (roundsElapsed >= 9)                       chips.push({ icon: '🛡', label: 'MARATHONKAMPF', variant: 'endure' });
+    if (playerHpPct >= 1.0)                       chips.push({ icon: '💎', label: 'UNBERÜHRT', variant: 'pristine' });
+    if (maxCombo >= 5)                            chips.push({ icon: '🌪', label: `MEISTERKOMBO ×${maxCombo}`, variant: 'combo' });
+    else if (maxCombo >= 3)                       chips.push({ icon: '🔥', label: `KOMBO ×${maxCombo}`, variant: 'combo-sm' });
+    if (totalDamage >= 15000)                     chips.push({ icon: '💥', label: 'VERNICHTEND', variant: 'power' });
+    if (playerHpPct > 0 && playerHpPct < 0.15)   chips.push({ icon: '❤', label: 'AUF DER KIPPE!', variant: 'clutch' });
+    if (grade === 'SSS')                          chips.push({ icon: '👑', label: 'SSS RANG!', variant: 'sss' });
+    else if (grade === 'SS')                      chips.push({ icon: '⭐', label: 'SS RANG!', variant: 'ss' });
+    if (winStreak >= 7)                           chips.push({ icon: '🔥', label: `${winStreak}× SERIE!`, variant: 'streak' });
+    return chips.slice(0, 5);
+  }, [roundsElapsed, playerHpPct, maxCombo, totalDamage, grade, winStreak]);
+
   // Cards close to next mastery level (75%+), excluding ones that just leveled up
   const nearMastery = useMemo(() => {
     const deck = SaveService.loadDeck();
@@ -234,6 +250,19 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
                 <span className="victory-stat__label">Runden</span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Battle Highlight Chips */}
+        {highlights.length > 0 && (
+          <div className="victory-highlights">
+            {highlights.map((h, i) => (
+              <div key={i} className={`victory-highlight-chip victory-highlight-chip--${h.variant}`}
+                style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
+                <span className="victory-highlight-chip__icon">{h.icon}</span>
+                <span className="victory-highlight-chip__label">{h.label}</span>
+              </div>
+            ))}
           </div>
         )}
 

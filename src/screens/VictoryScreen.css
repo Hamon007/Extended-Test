@@ -1186,6 +1186,98 @@
   to   { box-shadow: 0 0 30px rgba(255,120,0,0.6),  inset 0 0 16px rgba(255,80,0,0.16); }
 }
 
+/* ── Battle Highlight Chips ──────────────────────────────── */
+.victory-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 0 0 10px;
+  animation: reward-slide-in 0.35s ease 0.1s both;
+}
+
+.victory-highlight-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  animation: chipPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes chipPop {
+  from { opacity: 0; transform: scale(0.7) translateY(6px); }
+  60%  { transform: scale(1.08) translateY(-2px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.victory-highlight-chip__icon { font-size: 0.85rem; line-height: 1; }
+
+/* Variant colours */
+.victory-highlight-chip--speed {
+  background: rgba(255,230,0,0.15);
+  border: 1px solid rgba(255,230,0,0.6);
+  color: #ffe040;
+  text-shadow: 0 0 8px rgba(255,220,0,0.5);
+}
+.victory-highlight-chip--endure {
+  background: rgba(80,180,80,0.15);
+  border: 1px solid rgba(80,180,80,0.5);
+  color: #80e080;
+}
+.victory-highlight-chip--pristine {
+  background: rgba(80,200,255,0.15);
+  border: 1px solid rgba(80,200,255,0.55);
+  color: #80e0ff;
+  text-shadow: 0 0 8px rgba(60,200,255,0.4);
+}
+.victory-highlight-chip--combo,
+.victory-highlight-chip--combo-sm {
+  background: rgba(200,80,255,0.18);
+  border: 1px solid rgba(180,80,255,0.6);
+  color: #d080ff;
+  text-shadow: 0 0 8px rgba(180,80,255,0.5);
+}
+.victory-highlight-chip--power {
+  background: rgba(255,80,40,0.18);
+  border: 1px solid rgba(255,80,40,0.55);
+  color: #ff8060;
+}
+.victory-highlight-chip--clutch {
+  background: rgba(255,40,40,0.18);
+  border: 1px solid rgba(255,40,40,0.6);
+  color: #ff6060;
+  text-shadow: 0 0 8px rgba(255,30,30,0.5);
+}
+.victory-highlight-chip--sss {
+  background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,160,0,0.15));
+  border: 1px solid rgba(255,210,50,0.7);
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(255,200,0,0.8);
+  animation: chipPop 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards, sssGlow 1.4s ease-in-out 0.5s infinite alternate;
+}
+.victory-highlight-chip--ss {
+  background: rgba(255,180,50,0.18);
+  border: 1px solid rgba(255,180,50,0.6);
+  color: #ffb040;
+}
+.victory-highlight-chip--streak {
+  background: rgba(255,100,0,0.18);
+  border: 1px solid rgba(255,120,0,0.6);
+  color: #ff8030;
+  text-shadow: 0 0 8px rgba(255,100,0,0.4);
+}
+
+@keyframes sssGlow {
+  from { box-shadow: 0 0 6px rgba(255,200,0,0.3); }
+  to   { box-shadow: 0 0 18px rgba(255,200,0,0.7); }
+}
+
 /* ── Quest Completions ───────────────────────────────────── */
 .victory-quest-completions {
   width: 100%;
