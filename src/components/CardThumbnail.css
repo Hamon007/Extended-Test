@@ -165,3 +165,52 @@
   padding: 2px 4px;
   line-height: 1;
 }
+
+/* Missing card state */
+.card-thumb--missing {
+  opacity: 0.72;
+}
+
+.card-thumb--missing:hover,
+.card-thumb--missing:focus {
+  opacity: 1;
+}
+
+.card-thumb__locked-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(0,0,0,0.35);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.1) 8px,
+    rgba(0,0,0,0.1) 9px
+  );
+  pointer-events: none;
+}
+
+.card-thumb__missing-badge {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  font-family: 'Cinzel', serif;
+  font-size: 7px;
+  font-weight: 900;
+  background: rgba(0,0,0,0.82);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 5px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.card-thumb--missing:hover .card-thumb__missing-badge,
+.card-thumb--missing:focus .card-thumb__missing-badge {
+  opacity: 1;
+}

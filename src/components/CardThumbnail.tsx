@@ -3,6 +3,8 @@ import type { Card } from '../types/Card';
 import { RARITY_COLOR, ELEMENT_LABEL } from '../types/Card';
 import './CardThumbnail.css';
 
+const HIGH_RARITY_SET = new Set(['SSR', 'SSR+', 'MR', 'MR+', 'LR', 'LR+']);
+
 interface Props {
   card:         Card;
   onClick:      (card: Card) => void;
@@ -15,10 +17,11 @@ const CardThumbnail: React.FC<Props> = ({ card, onClick, owned, copiesOwned }) =
   const [imgError, setImgError] = useState(false);
 
   const rarityColor = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+  const isHighRarity = HIGH_RARITY_SET.has(card.rarity);
 
   return (
     <div
-      className={`card-thumb${owned ? ' card-thumb--owned' : ''}`}
+      className={`card-thumb${owned ? ' card-thumb--owned' : ' card-thumb--missing'}`}
       style={{ '--rarity-color': rarityColor } as React.CSSProperties}
       onClick={() => onClick(card)}
       role="button"
@@ -50,6 +53,18 @@ const CardThumbnail: React.FC<Props> = ({ card, onClick, owned, copiesOwned }) =
 
       {/* Nummer */}
       <div className="card-thumb__number">#{card.number}</div>
+
+      {/* Locked overlay for unowned cards */}
+      {!owned && (
+        <div className="card-thumb__locked-overlay" />
+      )}
+
+      {/* Missing high-rarity lure badge */}
+      {!owned && isHighRarity && (
+        <div className="card-thumb__missing-badge" style={{ color: rarityColor, borderColor: rarityColor }}>
+          ✨ Nicht besessen
+        </div>
+      )}
 
       {/* Besitz-Badge */}
       {owned && (
