@@ -8,6 +8,9 @@ import { FusionSystem } from '../services/FusionSystem';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { LevelSystem } from '../services/LevelSystem';
 import { RageModeService } from '../services/RageModeService';
+import { BountyService }   from '../services/BountyService';
+import { WorldBossService } from '../services/WorldBossService';
+import { WinStreakService } from '../services/WinStreakService';
 import './DefeatScreen.css';
 
 interface Props {
@@ -284,6 +287,29 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
             </div>
           </div>
         )}
+
+        {/* Pending rewards reminder */}
+        {(() => {
+          const pendingBounties  = BountyService.getAll().filter(b => !b.collected);
+          const worldBossReward  = WorldBossService.canClaim();
+          const hasShield        = WinStreakService.hasShield();
+          const items: string[]  = [];
+          if (pendingBounties.length > 0) {
+            const total = pendingBounties.reduce((s, b) => s + b.crystals, 0);
+            items.push(`🎯 ${pendingBounties.length} Kopfgeld${pendingBounties.length > 1 ? 'er' : ''} (${total} 💎)`);
+          }
+          if (worldBossReward) items.push(`💀 Weltboss-Belohnung (${WorldBossService.REWARD_CRYSTALS} 💎)`);
+          if (hasShield)       items.push('🛡 Schutzschild aktiv — nächste Niederlage absorbiert!');
+          if (items.length === 0) return null;
+          return (
+            <div className="defeat-pending-rewards">
+              <div className="defeat-pending-rewards__title">⚠ Noch nicht eingesammelt:</div>
+              {items.map((item, i) => (
+                <div key={i} className="defeat-pending-rewards__item">{item}</div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Trostpreis */}
         <div className="defeat-consolation">

@@ -535,3 +535,27 @@
   letter-spacing: 0.06em;
   text-shadow: 0 0 10px rgba(120,200,255,0.7);
 }
+
+/* ── Pending Rewards Reminder ──────────────────────────────────── */
+.defeat-pending-rewards {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255,200,60,0.08);
+  border: 1px solid rgba(255,200,60,0.3);
+  border-radius: 8px;
+}
+
+.defeat-pending-rewards__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #c8a040;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.04em;
+}
+
+.defeat-pending-rewards__item {
+  font-size: 0.68rem;
+  color: #d4b060;
+  padding: 0.1rem 0;
+  line-height: 1.5;
+}
