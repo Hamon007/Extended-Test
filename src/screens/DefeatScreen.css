@@ -289,6 +289,61 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Rage Mode Progress ──────────────────────────────────── */
+.defeat-rage-progress {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: rgba(60,10,10,0.35);
+  border: 1px solid rgba(200,40,40,0.4);
+  border-radius: 14px;
+  padding: 6px 12px;
+  margin: 4px 0 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ff9090;
+  letter-spacing: 0.04em;
+  animation: rageProgressIn 0.4s ease 0.5s both;
+}
+@keyframes rageProgressIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.defeat-rage-progress--active {
+  background: rgba(80,5,5,0.55);
+  border-color: rgba(255,40,40,0.7);
+  animation: rageProgressIn 0.4s ease 0.5s both, rage-border-pulse 0.9s ease-in-out 1s infinite alternate;
+}
+@keyframes rage-border-pulse {
+  from { border-color: rgba(255,40,40,0.7); box-shadow: 0 0 4px rgba(255,40,40,0.3); }
+  to   { border-color: rgba(255,80,80,0.9); box-shadow: 0 0 12px rgba(255,60,60,0.6); }
+}
+.defeat-rage-progress__icon { font-size: 1rem; }
+.defeat-rage-progress__text { flex: 1; }
+.defeat-rage-progress__text strong { color: #ff6060; }
+.defeat-rage-progress--active .defeat-rage-progress__text strong { color: #ff3030; }
+.defeat-rage-progress__bar-wrap {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  margin-top: 2px;
+}
+.defeat-rage-progress__dot {
+  width: 18px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(200,60,60,0.25);
+  border: 1px solid rgba(200,60,60,0.4);
+}
+.defeat-rage-progress__dot--filled {
+  background: rgba(255,50,50,0.6);
+  border-color: rgba(255,60,60,0.7);
+  box-shadow: 0 0 4px rgba(255,50,50,0.4);
+}
+
 /* ── Streak Broken Banner ────────────────────────────────── */
 .defeat-streak-broken {
   display: flex;

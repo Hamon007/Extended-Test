@@ -7,6 +7,7 @@ import { CardDatabase } from '../services/CardDatabase';
 import { FusionSystem } from '../services/FusionSystem';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { LevelSystem } from '../services/LevelSystem';
+import { RageModeService } from '../services/RageModeService';
 import './DefeatScreen.css';
 
 interface Props {
@@ -171,6 +172,38 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
             Comeback-Bonus: nächster Sieg <strong>+50% 💎</strong>
           </span>
         </div>
+
+        {/* Rage Mode progress */}
+        {(() => {
+          const losses = RageModeService.getLossCount();
+          const isRage = losses >= RageModeService.RAGE_THRESHOLD;
+          if (losses === 0) return null;
+          return (
+            <div className={`defeat-rage-progress${isRage ? ' defeat-rage-progress--active' : ''}`}>
+              {isRage ? (
+                <>
+                  <span className="defeat-rage-progress__icon">😡</span>
+                  <span className="defeat-rage-progress__text">
+                    <strong>RAGE MODE AKTIV!</strong> Nächster Sieg <strong>×2 💎</strong>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="defeat-rage-progress__icon">🔴</span>
+                  <span className="defeat-rage-progress__text">
+                    {losses}/{RageModeService.RAGE_THRESHOLD} Niederlagen
+                    {' — '}noch {RageModeService.RAGE_THRESHOLD - losses} → <strong>RAGE MODE ×2 💎</strong>
+                  </span>
+                  <div className="defeat-rage-progress__bar-wrap">
+                    {Array.from({ length: RageModeService.RAGE_THRESHOLD }).map((_, i) => (
+                      <div key={i} className={`defeat-rage-progress__dot${i < losses ? ' defeat-rage-progress__dot--filled' : ''}`} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="defeat-divider" />
 
