@@ -30,6 +30,7 @@ import { LeaderboardService, type LeaderboardEntry } from '../services/Leaderboa
 import { PowerMilestoneService, type PowerMilestone } from '../services/PowerMilestoneService';
 import { BonusHourService } from '../services/BonusHourService';
 import { LuckySeven }       from '../services/LuckySeven';
+import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import './MainScreen.css';
@@ -113,6 +114,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [energyMax,     setEnergyMax]     = useState(() => EnergyService.getMax());
   const [feedEvents,    setFeedEvents]    = useState<FeedEvent[]>([]);
   const [feedIndex,     setFeedIndex]     = useState(0);
+  const [simFeed,       setSimFeed]       = useState(() => SimulatedFeedService.generate(10));
+  const [simIndex,      setSimIndex]      = useState(0);
   const [profileCardId, setProfileCardId] = useState(() => localStorage.getItem('ci_profile_card_id') ?? 'azazel');
   const [towerFloor,    setTowerFloor]    = useState(() => TowerService.getFloor());
   const [questBadge,    setQuestBadge]    = useState(0);
@@ -199,6 +202,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       const freshEnergy = EnergyService.load();
       setEnergy(prev => prev.energy !== freshEnergy.energy ? freshEnergy : prev);
       setActiveExps(ExpeditionService.getActive());
+      setSimIndex(i => i + 1);
+      // Refresh simulated feed every 30s (matches SimulatedFeedService seed window)
+      if (Date.now() % 30_000 < 1000) setSimFeed(SimulatedFeedService.generate(10));
       const bhActive = BonusHourService.isActive();
       setBonusHourActive(bhActive);
       setBonusHourMs(bhActive ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
@@ -665,15 +671,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               {ActivityFeedService.formatEvent(feedEvents[feedIndex % feedEvents.length])}
             </span>
           </>
-        ) : !loggedIn ? (
-          <>
-            <span className="main-infobanner__icon">🔒</span>
-            <span className="main-infobanner__text">Anmelden für Live-Ereignisse</span>
-          </>
         ) : (
           <>
-            <span className="main-infobanner__icon">📡</span>
-            <span className="main-infobanner__text">Keine Ereignisse — ziehe SSR/MR oder fusioniere zu LR!</span>
+            <span className="main-infobanner__live-dot" style={{ background: '#4488ff' }} />
+            <span className="main-infobanner__text" key={simIndex}>
+              {simFeed[simIndex % simFeed.length]}
+            </span>
           </>
         )}
       </div>
