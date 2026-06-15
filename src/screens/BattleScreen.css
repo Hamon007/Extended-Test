@@ -4389,3 +4389,9 @@
   border-radius: 5px;
   padding: 2px 7px;
 }
+
+.battle-energy__full-at {
+  font-size: 0.59rem;
+  color: #5090b0;
+  font-style: italic;
+}

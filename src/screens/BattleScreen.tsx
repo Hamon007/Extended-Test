@@ -2093,6 +2093,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             {energy.energy < energy.max && energyRegenMs > 0 && (
               <span className="battle-energy__regen"> +1 in {fmtRegen(energyRegenMs)}</span>
             )}
+            {energy.energy === 0 && energyRegenMs > 0 && (() => {
+              // Predict the exact clock time when energy will be full
+              const msToFull = energyRegenMs + (energy.max - 1) * EnergyService.REGEN_MS;
+              const fullAt = new Date(Date.now() + msToFull);
+              const hh = String(fullAt.getHours()).padStart(2, '0');
+              const mm = String(fullAt.getMinutes()).padStart(2, '0');
+              return (
+                <span className="battle-energy__full-at"> · Voll um {hh}:{mm} Uhr</span>
+              );
+            })()}
           </span>
           <button
             className="battle-energy__potion"

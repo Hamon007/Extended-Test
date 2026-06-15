@@ -3050,3 +3050,24 @@
   text-transform: uppercase;
   cursor: help;
 }
+
+/* ── Power Delta Badge ────────────────────────────────────────── */
+
+.main-power-delta {
+  font-size: 0.62rem;
+  font-weight: 800;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.main-power-delta--up {
+  color: #60e060;
+  background: rgba(60, 180, 60, 0.12);
+  border: 1px solid rgba(60, 180, 60, 0.3);
+}
+
+.main-power-delta--down {
+  color: #e06060;
+  background: rgba(180, 60, 60, 0.12);
+  border: 1px solid rgba(180, 60, 60, 0.3);
+}

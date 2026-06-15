@@ -199,6 +199,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   // Leaderboard — computed from power score, stable per render
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [powerMilestone, setPowerMilestone] = useState<PowerMilestone | null>(null);
+  // Power spike tracking: compare current deck power to last-session snapshot
+  const [powerDelta, setPowerDelta] = useState<number | null>(null);
   const [bonusHourActive, setBonusHourActive] = useState(() => BonusHourService.isActive());
   const [bonusHourMs,     setBonusHourMs]     = useState(() => BonusHourService.isActive() ? BonusHourService.msRemaining() : BonusHourService.msUntilNext());
   // Track auth state reactively so feed loads after async AuthService.init()
@@ -373,6 +375,19 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       : 0;
 
     setDeckStats(found > 0 ? { atk: totalAtk + masteryAtk, def: totalDef, power } : null);
+
+    // Power delta: compare to last stored power, save current for next session
+    if (power > 0) {
+      const POWER_KEY = 'ci_last_session_power';
+      try {
+        const prev = parseInt(localStorage.getItem(POWER_KEY) ?? '0', 10);
+        if (prev > 0 && power !== prev) {
+          const delta = power - prev;
+          if (Math.abs(delta) >= 50) setPowerDelta(delta);
+        }
+        localStorage.setItem(POWER_KEY, String(power));
+      } catch { /* ignore */ }
+    }
 
     // Power milestone check — fires once per newly-crossed threshold
     if (power > 0) {
@@ -661,6 +676,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
                 >
                   {tier.icon} {tier.label}
                 </span>
+                {powerDelta !== null && (
+                  <span className={`main-power-delta${powerDelta > 0 ? ' main-power-delta--up' : ' main-power-delta--down'}`}>
+                    {powerDelta > 0 ? '▲' : '▼'} {Math.abs(powerDelta).toLocaleString('de-DE')}
+                  </span>
+                )}
               </>
             );
           })()}
