@@ -40,6 +40,8 @@ import { WorldBossService } from '../services/WorldBossService';
 import { DailyBossService, DAILY_BOSS_REWARD, isDefeatedToday as isDailyBossDefeated } from '../services/DailyBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
+import { BattleStatsService } from '../services/BattleStatsService';
+import { BattleHistoryService } from '../services/BattleHistoryService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
@@ -540,6 +542,55 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <span className="main-event-banner__days">{EventService.getDaysLeft()}T</span>
         </div>
       )}
+
+      {/* ── Heute's Sitzungs-Zusammenfassung ── */}
+      {(() => {
+        const earned   = DailyGoalService.getEarned();
+        if (earned < 100) return null; // only show after meaningful play
+        const best     = DailyGoalService.getAllTimeBest();
+        const history  = BattleHistoryService.getRecent();
+        const stats    = BattleStatsService.load();
+        const todayWins = history.filter(e => {
+          const hoursAgo = (Date.now() - e.timestamp) / 3_600_000;
+          return e.won && hoursAgo < 24;
+        }).length;
+        const todayLoss = history.filter(e => {
+          const hoursAgo = (Date.now() - e.timestamp) / 3_600_000;
+          return !e.won && hoursAgo < 24;
+        }).length;
+        const todayBattles = todayWins + todayLoss;
+        const winRate  = todayBattles > 0 ? Math.round((todayWins / todayBattles) * 100) : 0;
+        const vsRecord = best > 0 ? Math.round((earned / best) * 100) : 100;
+        return (
+          <div className="main-session-summary" onClick={() => onNavigate?.('battle')} role="button" tabIndex={0}>
+            <div className="main-session-summary__title">⚡ HEUTE</div>
+            <div className="main-session-summary__stats">
+              <div className="main-session-summary__stat">
+                <span className="main-session-summary__val">{earned.toLocaleString('de-DE')}</span>
+                <span className="main-session-summary__label">💎 verdient</span>
+              </div>
+              {todayBattles > 0 && (
+                <div className="main-session-summary__stat">
+                  <span className="main-session-summary__val">{todayWins}W/{todayLoss}L</span>
+                  <span className="main-session-summary__label">{winRate}% Sieg</span>
+                </div>
+              )}
+              <div className="main-session-summary__stat">
+                <span className="main-session-summary__val">{stats.totalWins.toLocaleString('de-DE')}</span>
+                <span className="main-session-summary__label">Siege ges.</span>
+              </div>
+            </div>
+            {best > 0 && (
+              <div className="main-session-summary__record-bar">
+                <div className="main-session-summary__record-fill" style={{ width: `${Math.min(100, vsRecord)}%` }} />
+                <span className="main-session-summary__record-label">
+                  {vsRecord >= 100 ? '🏅 Neuer Rekord!' : `${vsRecord}% des Rekords (${best.toLocaleString('de-DE')} 💎)`}
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Bonus-Stunde Banner ── */}
       {bonusHourActive ? (
