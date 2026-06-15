@@ -37,6 +37,7 @@ import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
+import { DailyBossService, DAILY_BOSS_REWARD, isDefeatedToday as isDailyBossDefeated } from '../services/DailyBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
@@ -170,6 +171,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     return { owned: uniqueOwned, total };
   });
   const [collectionMilestone] = useState(() => CollectionMilestoneService.getProgress().next);
+  const [dailyBossActive] = useState(() => {
+    const boss = DailyBossService.getDailyBoss();
+    return boss && !isDailyBossDefeated() ? boss : null;
+  });
   const [dailyCard]           = useState(() => DailyCardService.getCard());
   const [dailyCardOwned]      = useState(() => DailyCardService.isOwned());
   const activeEvent           = EventService.getActive();
@@ -842,6 +847,21 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* ── Daily Boss Alert ── */}
+      {dailyBossActive && onNavigate && (
+        <button
+          className="main-daily-boss-alert"
+          onClick={() => onNavigate('battle')}
+        >
+          <span className="main-daily-boss-alert__skull">👹</span>
+          <div className="main-daily-boss-alert__text">
+            <span className="main-daily-boss-alert__title">TAGES-BOSS: {dailyBossActive.name}</span>
+            <span className="main-daily-boss-alert__sub">Besiege ihn für +{DAILY_BOSS_REWARD.toLocaleString('de-DE')} 💎 — nur heute!</span>
+          </div>
+          <span className="main-daily-boss-alert__arrow">⚔</span>
+        </button>
+      )}
 
       {/* ── Energy Overflow Warning ── */}
       {energy.energy >= energyMax && energyMax > 0 && (
