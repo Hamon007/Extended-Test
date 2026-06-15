@@ -24,12 +24,18 @@ function cardPower(inst: CardInstance): number {
   return stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
 }
 
+const ELEM_ICONS: Record<string, string> = {
+  fire:'🔥',ice:'❄️',water:'💧',lightning:'⚡',wind:'🌪️',
+  earth:'🌿',light:'☀️',dark:'🌑',void:'🔮',death:'💀',chaos:'🔱',
+};
+
 const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
   const [gs,      setGs]      = useState(() => SaveService.loadGachaState());
   const [energy,  setEnergy]  = useState(() => EnergyService.load());
   const [eMax,    setEMax]    = useState(() => EnergyService.getMax());
   const [search,  setSearch]  = useState('');
   const [rFilter, setRFilter] = useState<Rarity | 'ALL'>('ALL');
+  const [eFilter, setEFilter] = useState<string>('ALL');
   const [sort,    setSort]    = useState<SortKey>('rarity');
   const [detail,  setDetail]  = useState<CardInstance | null>(null);
   const [toast,   setToast]   = useState('');
@@ -68,6 +74,16 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
   }
 
   // ── Card list ─────────────────────────────────────────────────
+  // Build unique element list from owned cards
+  const ownedElements = useMemo(() => {
+    const elems = new Set<string>();
+    gs.inventory.forEach(inst => {
+      const card = CardDatabase.getById(inst.cardId);
+      if (card?.element) elems.add(card.element);
+    });
+    return Array.from(elems).sort();
+  }, [gs.inventory]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return gs.inventory
@@ -75,7 +91,8 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
         const card = CardDatabase.getById(inst.cardId);
         const nameMatch = !q || (card?.name ?? inst.cardId).toLowerCase().includes(q);
         const rarityMatch = rFilter === 'ALL' || rarityMajor(inst.rarity) === rFilter;
-        return nameMatch && rarityMatch;
+        const elemMatch = eFilter === 'ALL' || card?.element === eFilter;
+        return nameMatch && rarityMatch && elemMatch;
       })
       .sort((a, b) => {
         if (sort === 'rarity') {
@@ -91,7 +108,7 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
         // newest: reverse array order (newest pulls at end of inventory)
         return gs.inventory.indexOf(b) - gs.inventory.indexOf(a);
       });
-  }, [gs.inventory, search, rFilter, sort]);
+  }, [gs.inventory, search, rFilter, eFilter, sort]);
 
   const stock = gs.crystalCards;
   const detailCard = detail ? CardDatabase.getById(detail.cardId) : null;
@@ -220,6 +237,26 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
               </button>
             ))}
           </div>
+          {ownedElements.length > 1 && (
+            <div className="inv-element-row">
+              <button
+                className={`inv-elem-btn${eFilter === 'ALL' ? ' inv-elem-btn--active' : ''}`}
+                onClick={() => setEFilter('ALL')}
+              >
+                Alle
+              </button>
+              {ownedElements.map(e => (
+                <button
+                  key={e}
+                  className={`inv-elem-btn${eFilter === e ? ' inv-elem-btn--active' : ''}`}
+                  onClick={() => setEFilter(e)}
+                  title={e}
+                >
+                  {ELEM_ICONS[e] ?? e}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="inv-sort-row">
             {(['rarity', 'name', 'newest', 'level', 'power'] as SortKey[]).map(s => (
               <button
