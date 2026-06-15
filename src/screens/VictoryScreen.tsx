@@ -17,6 +17,7 @@ import { LuckyFloorService } from '../services/LuckyFloorService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyLoginService } from '../services/DailyLoginService';
 import { LuckySpinService } from '../services/LuckySpinService';
+import { BattleStatsService } from '../services/BattleStatsService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -76,6 +77,11 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
   const hasMultiplier = streakReward.multiplier > 1.0;
   const winStreak     = details.winStreak ?? 0;
   const showStreakFlash = winStreak >= 5;
+
+  // Victory counter — total wins for "SIEG #N" display
+  const totalWins = useMemo(() => BattleStatsService.load().totalWins, []);
+  const VICTORY_MILESTONES = [10, 25, 50, 100, 250, 500, 1000, 2500];
+  const isVictoryMilestone = VICTORY_MILESTONES.includes(totalWins);
 
   // Dynamic battle highlight chips based on performance metrics
   const highlights = useMemo(() => {
@@ -170,6 +176,21 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
         {grade && (
           <div className="victory-grade" style={{ color: gradeColor, textShadow: `0 0 20px ${gradeColor}` }}>
             {grade}
+          </div>
+        )}
+
+        {/* Victory Counter */}
+        {totalWins > 0 && (
+          <div className={`victory-counter${isVictoryMilestone ? ' victory-counter--milestone' : ''}`}>
+            {isVictoryMilestone ? (
+              <>
+                <span className="victory-counter__milestone-icon">🏆</span>
+                <span className="victory-counter__num">{totalWins}. SIEG</span>
+                <span className="victory-counter__milestone-label">MEILENSTEIN!</span>
+              </>
+            ) : (
+              <span className="victory-counter__num">Sieg #{totalWins}</span>
+            )}
           </div>
         )}
 
@@ -648,6 +669,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
               <span className="reward-row__label">🎯 TAGESZIEL ERREICHT!</span>
               <span className="reward-row__value reward-row__value--daily-goal">
                 +<CountUp target={details.dailyGoalBonus} />
+              </span>
+            </div>
+          )}
+
+          {/* Hour Surge bonus */}
+          {details.hourSurgeBonus && details.hourSurgeBonus > 0 && (
+            <div className="reward-row reward-row--hoursurge">
+              <span className="reward-row__label">⚡ STUNDEN-SURGE! +50%</span>
+              <span className="reward-row__value reward-row__value--hoursurge">
+                +<CountUp target={details.hourSurgeBonus} />
               </span>
             </div>
           )}

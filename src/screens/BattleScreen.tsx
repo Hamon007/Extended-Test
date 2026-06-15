@@ -55,6 +55,7 @@ import { SessionBonusService }       from '../services/SessionBonusService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { BattleContractService, type BattleContract } from '../services/BattleContractService';
+import { HourSurgeService, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -125,6 +126,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [flashChallengeMs, setFlashChallengeMs]   = useState(() => FlashChallengeService.msRemaining());
   const [flashProgress,    setFlashProgress]      = useState(() => FlashChallengeService.getProgress());
   const [activeContract,   setActiveContract]     = useState<BattleContract | null>(() => BattleContractService.getActive());
+  const [surgeElement,     setSurgeElement]       = useState(() => HourSurgeService.getSurgeElement());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -204,6 +206,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       energy.refresh();
       setFlashChallengeMs(FlashChallengeService.msRemaining());
       setFlashProgress(FlashChallengeService.getProgress());
+      setSurgeElement(HourSurgeService.getSurgeElement()); // refreshes when hour flips
     }, 1000);
     return () => clearInterval(id);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -696,6 +699,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       const goalBonus = DailyGoalService.addEarned(finalDetails.crystalsGained);
       if (goalBonus > 0) {
         finalDetails = { ...finalDetails, dailyGoalBonus: goalBonus };
+      }
+    }
+
+    // Hour Surge: +50% bonus for deck cards matching the current hour's element
+    if (details.isVictory) {
+      const deckElements = deckCards.map(c => c.element);
+      const surgeBonus = HourSurgeService.applySurgeBonus(finalDetails.crystalsGained, deckElements);
+      if (surgeBonus > 0) {
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained:   finalDetails.crystalsGained + surgeBonus,
+          hourSurgeBonus:   surgeBonus,
+          hourSurgeElement: HourSurgeService.getSurgeElement(),
+        };
       }
     }
 
@@ -1379,6 +1396,38 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           )}
         </div>
       </div>
+
+      {/* Hour Surge chip — current hour's element bonus */}
+      {(() => {
+        const surge = surgeElement;
+        const name  = SURGE_ELEMENT_NAMES[surge];
+        const icon  = SURGE_ELEMENT_ICONS[surge];
+        const color = SURGE_ELEMENT_COLORS[surge];
+        const matchingCards = deckCards.filter(c => c.element === surge).length;
+        const msLeft = HourSurgeService.msRemaining();
+        const minLeft = Math.ceil(msLeft / 60000);
+        return (
+          <div
+            className={`battle-hour-surge${matchingCards > 0 ? ' battle-hour-surge--active' : ''}`}
+            style={{ '--surge-color': color } as React.CSSProperties}
+          >
+            <span className="battle-hour-surge__icon">{icon}</span>
+            <div className="battle-hour-surge__body">
+              <span className="battle-hour-surge__title">
+                STUNDEN-SURGE: {name.toUpperCase()}
+              </span>
+              <span className="battle-hour-surge__sub">
+                {matchingCards > 0
+                  ? `${matchingCards} deiner Karten — +50% 💎 aktiv!`
+                  : `Noch ${minLeft}min — keine ${name}-Karten im Deck`}
+              </span>
+            </div>
+            {matchingCards > 0 && (
+              <span className="battle-hour-surge__badge">+50%</span>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Battle Contract chip — one-battle micro-goal for bonus crystals */}
       {activeContract && (

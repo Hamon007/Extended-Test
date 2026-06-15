@@ -1718,3 +1718,55 @@
   color: #60c8ff;
   font-weight: 800;
 }
+
+/* ── Victory Counter ──────────────────────────────────────────── */
+
+@keyframes milestoneFlash {
+  0%, 100% { transform: scale(1); text-shadow: 0 0 8px rgba(255, 200, 50, 0.5); }
+  50%       { transform: scale(1.04); text-shadow: 0 0 20px rgba(255, 200, 50, 0.9); }
+}
+
+.victory-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: -4px 0 6px;
+}
+
+.victory-counter__num {
+  font-size: 0.72rem;
+  color: #556;
+  letter-spacing: 0.5px;
+}
+
+.victory-counter--milestone .victory-counter__num {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #ffd060;
+  animation: milestoneFlash 1.4s ease-in-out infinite;
+}
+
+.victory-counter__milestone-icon { font-size: 0.9rem; }
+
+.victory-counter__milestone-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #cc8820;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  align-self: flex-end;
+  margin-bottom: 1px;
+}
+
+/* ── Hour Surge reward row ────────────────────────────────────── */
+
+.reward-row--hoursurge {
+  background: linear-gradient(90deg, rgba(20, 10, 0, 0.6), rgba(15, 5, 0, 0.3));
+  border-left: 3px solid #cc7020;
+}
+
+.reward-row__value--hoursurge {
+  color: #ffaa40;
+  font-weight: 800;
+}

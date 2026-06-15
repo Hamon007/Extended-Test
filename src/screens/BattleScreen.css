@@ -4333,3 +4333,59 @@
   padding: 2px 7px;
   flex-shrink: 0;
 }
+
+/* ── Hour Surge Chip ──────────────────────────────────────────── */
+
+@keyframes surgePulse {
+  0%, 100% { box-shadow: 0 0 6px color-mix(in srgb, var(--surge-color, #888) 30%, transparent); }
+  50%       { box-shadow: 0 0 14px color-mix(in srgb, var(--surge-color, #888) 60%, transparent); }
+}
+
+.battle-hour-surge {
+  --surge-color: #888;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 10px;
+  padding: 7px 12px;
+  background: rgba(10, 10, 20, 0.7);
+  border: 1px solid color-mix(in srgb, var(--surge-color) 35%, transparent);
+  border-radius: 8px;
+  opacity: 0.65;
+}
+
+.battle-hour-surge--active {
+  opacity: 1;
+  animation: surgePulse 2s ease-in-out infinite;
+}
+
+.battle-hour-surge__icon { font-size: 1.1rem; }
+
+.battle-hour-surge__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.battle-hour-surge__title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--surge-color) 80%, white);
+  letter-spacing: 0.4px;
+}
+
+.battle-hour-surge__sub {
+  font-size: 0.59rem;
+  color: color-mix(in srgb, var(--surge-color) 50%, #444);
+}
+
+.battle-hour-surge__badge {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #ffd060;
+  background: rgba(255, 200, 50, 0.12);
+  border: 1px solid rgba(255, 200, 50, 0.3);
+  border-radius: 5px;
+  padding: 2px 7px;
+}

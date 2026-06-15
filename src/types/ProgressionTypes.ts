@@ -116,6 +116,9 @@ export interface RewardDetails {
   contractBonus?: number;
   contractLabel?: string;
   contractIcon?:  string;
+  // Hour Surge: +50% crystals when deck contains surge element cards
+  hourSurgeBonus?: number;
+  hourSurgeElement?: string;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
