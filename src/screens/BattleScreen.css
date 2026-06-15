@@ -2906,6 +2906,40 @@
   margin-left: 4px;
 }
 
+.battle-threat-panel__elem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-wrap: wrap;
+}
+
+.battle-threat-panel__elem-type {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  color: #c9a84c;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.battle-threat-panel__elem-adv {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: #66ee88;
+  flex: 1;
+  min-width: 0;
+}
+
+.battle-threat-panel__elem-neutral {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: #6a5a6a;
+  font-style: italic;
+  flex: 1;
+}
+
 /* ── Win Probability Indicator ───────────────────────────────── */
 .battle-win-prob {
   margin: 0 12px 8px;

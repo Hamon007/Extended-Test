@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SaveService } from '../services/SaveService';
-import { EnergyService } from '../services/EnergyService';
+import { EnergyService, POTION_RESTORE } from '../services/EnergyService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { ActivityFeedService, type FeedEvent } from '../services/ActivityFeedService';
 import { AuthService } from '../services/AuthService';
@@ -808,6 +808,14 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         );
       })()}
 
+      {/* ── Energy Overflow Warning ── */}
+      {energy.energy >= energyMax && energyMax > 0 && (
+        <div className="main-energy-overflow">
+          <span className="main-energy-overflow__icon">⚡</span>
+          <span className="main-energy-overflow__text">Ausdauer voll! Kämpfe jetzt — du verlierst Regeneration!</span>
+        </div>
+      )}
+
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (
         <button
@@ -822,6 +830,24 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             </span>
           </span>
           <span className="main-cta__arrow">▶</span>
+        </button>
+      )}
+
+      {/* ── Quick Potion Button (shown when energy=0 and potions available) ── */}
+      {energy.energy < 1 && energy.potions > 0 && (
+        <button
+          className="main-potion-quick"
+          onClick={() => {
+            const updated = EnergyService.usePotion();
+            setEnergy(updated);
+          }}
+        >
+          <span className="main-potion-quick__icon">🧪</span>
+          <span className="main-potion-quick__text">
+            <span className="main-potion-quick__label">TRANK BENUTZEN</span>
+            <span className="main-potion-quick__sub">+{POTION_RESTORE} ⚡ · Noch {energy.potions}×</span>
+          </span>
+          <span className="main-potion-quick__badge">+{POTION_RESTORE}</span>
         </button>
       )}
 

@@ -1360,6 +1360,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const streakReward = WinStreakService.getRewardMultiplier(winStreak);
   const nextMilestone = TowerMilestoneService.getNextMilestone(towerFloor);
 
+  // Element advantage lookup table
+  const ELEM_BEATS: Record<string, string[]> = {
+    fire: ['ice','earth','wind'], ice: ['wind','lightning'], water: ['fire','earth'],
+    lightning: ['water','wind'], wind: ['earth','lightning'], earth: ['water','ice'],
+    light: ['dark','void'], dark: ['light','void'], void: ['death','chaos'],
+    death: ['void'], chaos: ['death','dark'],
+  };
+  const ELEM_ICON: Record<string, string> = {
+    fire:'🔥',ice:'❄️',water:'💧',lightning:'⚡',wind:'🌪️',
+    earth:'🌿',light:'☀️',dark:'🌑',void:'🔮',death:'💀',chaos:'🔱',
+  };
+
   // Enemy threat preview for the lobby (computed once per floor, not randomised)
   const enemyThreat = useMemo(() => {
     const base = EnemyDatabase.getFirst();
@@ -1367,11 +1379,13 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     const tactEnemy = TowerService.getFloorEnemy(towerFloor);
     const scaleMult = 1 + towerFloor * 0.15;
     const atkMult   = 1 + towerFloor * 0.1;
+    const element   = tactEnemy?.element ?? '';
     return {
       name:  tactEnemy?.name ?? (isBoss ? 'Boss' : 'Turmwächter'),
       title: tactEnemy?.title ?? `Etage ${towerFloor}`,
       hp:    Math.round(base.stats.hp * scaleMult),
       atk:   Math.round((base.cards[0]?.atk ?? 500) * atkMult),
+      element,
       isExact: !!tactEnemy,
     };
   }, [towerFloor, isBoss]);
@@ -1708,6 +1722,28 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
               <span className="battle-threat-panel__approx">Schätzwerte</span>
             )}
           </div>
+          {/* Enemy element + deck advantage */}
+          {enemyThreat.element && (() => {
+            const elemIcon = ELEM_ICON[enemyThreat.element] ?? '👹';
+            const strongElems = Object.entries(ELEM_BEATS)
+              .filter(([, victims]) => victims.includes(enemyThreat.element))
+              .map(([e]) => e);
+            const deckAdvantage = deckCards.filter(c => strongElems.includes(c.element));
+            return (
+              <div className="battle-threat-panel__elem">
+                <span className="battle-threat-panel__elem-type">
+                  {elemIcon} {enemyThreat.element.toUpperCase()}
+                </span>
+                {deckAdvantage.length > 0 ? (
+                  <span className="battle-threat-panel__elem-adv">
+                    ▲ {deckAdvantage.map(c => c.name).join(', ')} {deckAdvantage.length === 1 ? 'hat' : 'haben'} Vorteil!
+                  </span>
+                ) : (
+                  <span className="battle-threat-panel__elem-neutral">— Kein Element-Vorteil im Deck</span>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 
