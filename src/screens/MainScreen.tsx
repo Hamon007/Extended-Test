@@ -886,6 +886,71 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         </button>
       )}
 
+      {/* ── Smart "What To Do Next" Suggestions ── */}
+      {onNavigate && (() => {
+        const suggestions: Array<{ icon: string; text: string; sub: string; screen: string; priority: number }> = [];
+        const gs = SaveService.loadGachaState();
+        const deck = SaveService.loadDeck();
+
+        // Fusion ready
+        if (FusionSystem.buildGroups(gs.inventory).some(g => g.canFuse)) {
+          suggestions.push({ icon: '🔮', text: 'Fusion verfügbar!', sub: 'Kombiniere Karten zu höherer Seltenheit', screen: 'fusion', priority: 10 });
+        }
+
+        // Crystal pull ready
+        if (gs.crystals >= PULL_COST_MULTI) {
+          suggestions.push({ icon: '✨', text: '10× Beschwörung bereit!', sub: `${gs.crystals.toLocaleString('de-DE')} 💎 vorhanden`, screen: 'gacha', priority: 9 });
+        }
+
+        // Near mastery level-up card
+        const nearMasteryCard = deck.uuids.map(uuid => {
+          const inst = gs.inventory.find(i => i.uuid === uuid);
+          if (!inst) return null;
+          const info = CardMasteryService.getMasteryInfo(inst.cardId);
+          if (info.nextThreshold === null) return null;
+          const pct = info.nextThreshold > 0 ? info.plays / info.nextThreshold : 0;
+          if (pct < 0.85) return null;
+          return { name: CardDatabase.getById(inst.cardId)?.name ?? inst.cardId, pct };
+        }).filter((x): x is NonNullable<typeof x> => x !== null)[0];
+        if (nearMasteryCard) {
+          suggestions.push({ icon: '⭐', text: `${nearMasteryCard.name} fast auf nächster Meisterschaft!`, sub: `${Math.round(nearMasteryCard.pct * 100)}% — spiel ein paar mehr Kämpfe`, screen: 'battle', priority: 7 });
+        }
+
+        // Quest completion pending
+        const claimableQuests = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()].filter(q => q.progress.completed && !q.progress.claimed);
+        if (claimableQuests.length > 0) {
+          suggestions.push({ icon: '🎁', text: `${claimableQuests.length} Quest${claimableQuests.length > 1 ? 's' : ''} abholbereit!`, sub: 'Kristall-Belohnung wartet auf dich', screen: 'quests', priority: 11 });
+        }
+
+        // Energy available → battle
+        if (energy.energy >= 1 && suggestions.length < 2) {
+          suggestions.push({ icon: '⚔', text: `Etage ${towerFloor} herausfordern`, sub: 'Ausdauer vorhanden — Zeit zu kämpfen!', screen: 'battle', priority: 5 });
+        }
+
+        const top = suggestions.sort((a, b) => b.priority - a.priority).slice(0, 2);
+        if (top.length === 0) return null;
+
+        return (
+          <div className="main-smart-tips">
+            <span className="main-smart-tips__header">Nächste Aktion</span>
+            {top.map((s, i) => (
+              <button
+                key={i}
+                className="main-smart-tip"
+                onClick={() => onNavigate(s.screen)}
+              >
+                <span className="main-smart-tip__icon">{s.icon}</span>
+                <div className="main-smart-tip__body">
+                  <span className="main-smart-tip__text">{s.text}</span>
+                  <span className="main-smart-tip__sub">{s.sub}</span>
+                </div>
+                <span className="main-smart-tip__arrow">›</span>
+              </button>
+            ))}
+          </div>
+        );
+      })()}
+
       {/* ── Live-Ereignisse Banner ── */}
       <div className={`main-infobanner${feedEvents.length > 0 ? ' main-infobanner--live' : ''}`}>
         {feedEvents.length > 0 ? (

@@ -454,6 +454,81 @@
   flex-shrink: 0;
 }
 
+/* ── Smart Tips "What To Do Next" ────────────────────────────── */
+
+.main-smart-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 10px 6px;
+}
+
+.main-smart-tips__header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #5a4868;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 2px;
+}
+
+.main-smart-tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  text-align: left;
+}
+
+.main-smart-tip:hover {
+  background: rgba(201,168,76,0.12);
+  border-color: rgba(201,168,76,0.28);
+}
+
+.main-smart-tip:active { transform: scale(0.99); }
+
+.main-smart-tip__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.main-smart-tip__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-smart-tip__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--gold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-smart-tip__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: #6a5878;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-smart-tip__arrow {
+  font-size: 0.9rem;
+  color: var(--gold-dark);
+  flex-shrink: 0;
+}
+
 /* ── Info-Banner ─────────────────────────────────────────────── */
 
 .main-infobanner {
