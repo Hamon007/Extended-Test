@@ -673,6 +673,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Daily Duo bonus */}
+          {details.dailyDuoBonus && details.dailyDuoBonus > 0 && (
+            <div className="reward-row reward-row--dailyduo">
+              <span className="reward-row__label">💞 TAGES-DUO BONUS!</span>
+              <span className="reward-row__value reward-row__value--dailyduo">
+                +<CountUp target={details.dailyDuoBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Hourly First Win bonus */}
           {details.hourlyFirstWinBonus && details.hourlyFirstWinBonus > 0 && (
             <div className="reward-row reward-row--hourly">

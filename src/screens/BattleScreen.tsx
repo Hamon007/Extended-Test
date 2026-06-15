@@ -57,6 +57,7 @@ import { ComebackBonusService } from '../services/ComebackBonusService';
 import { BattleContractService, type BattleContract } from '../services/BattleContractService';
 import { HourSurgeService, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
 import { HourlyFirstWinService } from '../services/HourlyFirstWinService';
+import { DailyDuoService } from '../services/DailyDuoService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -700,6 +701,19 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       const goalBonus = DailyGoalService.addEarned(finalDetails.crystalsGained);
       if (goalBonus > 0) {
         finalDetails = { ...finalDetails, dailyGoalBonus: goalBonus };
+      }
+    }
+
+    // Daily Duo: bonus when both Duo-of-the-Day cards are in the active deck
+    if (details.isVictory) {
+      const deckCardIds = deckCards.map(c => c.id);
+      const duoBonus = DailyDuoService.applyBonus(deckCardIds);
+      if (duoBonus > 0) {
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + duoBonus,
+          dailyDuoBonus:  duoBonus,
+        };
       }
     }
 
@@ -2061,6 +2075,35 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
                 Noch {(DAILY_GOAL - Math.min(earned, DAILY_GOAL)).toLocaleString('de-DE')} 💎 bis Bonus!
               </div>
             )}
+          </div>
+        );
+      })()}
+
+      {/* Daily Duo chip */}
+      {(() => {
+        const duo = DailyDuoService.getDailyDuo();
+        if (!duo) return null;
+        const deckIds = deckCards.map(c => c.id);
+        const isActive = DailyDuoService.isDuoActive(deckIds);
+        const { owns0, owns1 } = DailyDuoService.playerOwnsDuo();
+        const has0 = deckIds.includes(duo[0].id);
+        const has1 = deckIds.includes(duo[1].id);
+        return (
+          <div className={`battle-daily-duo${isActive ? ' battle-daily-duo--active' : ''}`}>
+            <span className="battle-daily-duo__icon">💞</span>
+            <div className="battle-daily-duo__body">
+              <span className="battle-daily-duo__title">TAGES-DUO</span>
+              <span className="battle-daily-duo__cards">
+                <span className={has0 ? 'battle-daily-duo__card--in' : owns0 ? 'battle-daily-duo__card--owned' : 'battle-daily-duo__card--missing'}>
+                  {has0 ? '✓' : owns0 ? '○' : '✗'} {duo[0].name}
+                </span>
+                {' + '}
+                <span className={has1 ? 'battle-daily-duo__card--in' : owns1 ? 'battle-daily-duo__card--owned' : 'battle-daily-duo__card--missing'}>
+                  {has1 ? '✓' : owns1 ? '○' : '✗'} {duo[1].name}
+                </span>
+              </span>
+            </div>
+            <span className="battle-daily-duo__reward">+{DailyDuoService.DUO_BONUS} 💎</span>
           </div>
         );
       })()}

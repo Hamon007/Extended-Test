@@ -121,6 +121,8 @@ export interface RewardDetails {
   hourSurgeElement?: string;
   // Hourly First Win: small bonus for first victory in each UTC hour
   hourlyFirstWinBonus?: number;
+  // Daily Duo: both duo cards in deck → +100💎 per win
+  dailyDuoBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

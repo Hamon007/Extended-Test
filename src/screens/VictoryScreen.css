@@ -1777,3 +1777,15 @@
   background: linear-gradient(90deg, rgba(10, 10, 30, 0.6), rgba(5, 5, 15, 0.3));
   border-left: 3px solid #5060a0;
 }
+
+/* ── Daily Duo reward row ─────────────────────────────────────── */
+
+.reward-row--dailyduo {
+  background: linear-gradient(90deg, rgba(25, 5, 20, 0.6), rgba(15, 0, 10, 0.3));
+  border-left: 3px solid #c050a0;
+}
+
+.reward-row__value--dailyduo {
+  color: #ff80d0;
+  font-weight: 800;
+}

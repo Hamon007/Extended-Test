@@ -4505,3 +4505,66 @@
 .battle-synergy-hint__icon { font-size: 0.85rem; }
 
 .battle-synergy-hint__text strong { color: #90d060; }
+
+/* ── Daily Duo Chip ───────────────────────────────────────────── */
+
+@keyframes duoHeartbeat {
+  0%, 100% { transform: scale(1); }
+  25%       { transform: scale(1.03); }
+  50%       { transform: scale(0.98); }
+  75%       { transform: scale(1.02); }
+}
+
+.battle-daily-duo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 10px 2px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #150010 0%, #0a0008 100%);
+  border: 1px solid rgba(200, 60, 160, 0.25);
+  border-radius: 8px;
+  opacity: 0.8;
+}
+
+.battle-daily-duo--active {
+  opacity: 1;
+  border-color: rgba(255, 80, 200, 0.5);
+  animation: duoHeartbeat 1.6s ease-in-out infinite;
+}
+
+.battle-daily-duo__icon { font-size: 1.1rem; }
+
+.battle-daily-duo__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-daily-duo__title {
+  font-size: 0.63rem;
+  font-weight: 800;
+  color: #cc60a0;
+  letter-spacing: 0.5px;
+}
+
+.battle-daily-duo__cards {
+  font-size: 0.59rem;
+  color: #805070;
+}
+
+.battle-daily-duo__card--in    { color: #e080c0; font-weight: 700; }
+.battle-daily-duo__card--owned { color: #906070; }
+.battle-daily-duo__card--missing { color: #504050; text-decoration: line-through; }
+
+.battle-daily-duo__reward {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #ffd060;
+  background: rgba(255, 200, 50, 0.12);
+  border: 1px solid rgba(255, 200, 50, 0.3);
+  border-radius: 5px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
