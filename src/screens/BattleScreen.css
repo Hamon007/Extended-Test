@@ -294,6 +294,28 @@
   letter-spacing: 1px;
 }
 
+.arena-topbar--danger {
+  border-bottom-color: rgba(220,50,50,0.4);
+  background: rgba(30,5,5,0.92);
+  animation: topbarDanger 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes topbarDanger {
+  from { background: rgba(30,5,5,0.92); }
+  to   { background: rgba(50,10,10,0.95); }
+}
+
+.arena-round--danger {
+  color: #ff5555;
+  font-weight: 700;
+  animation: roundDanger 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes roundDanger {
+  from { color: #ff5555; }
+  to   { color: #ff9999; }
+}
+
 .arena-phase {
   flex: 1;
   text-align: center;

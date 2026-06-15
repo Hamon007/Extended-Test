@@ -2852,8 +2852,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       </div>
 
       {/* Topbar */}
-      <div className="arena-topbar">
-        <span className="arena-round">Runde {round} / {MAX_ROUNDS}</span>
+      <div className={`arena-topbar${round >= MAX_ROUNDS - 2 && phase !== 'ended' ? ' arena-topbar--danger' : ''}`}>
+        <span className={`arena-round${round >= MAX_ROUNDS - 2 ? ' arena-round--danger' : ''}`}>
+          {round >= MAX_ROUNDS - 2 && phase !== 'ended'
+            ? `⚠ ${MAX_ROUNDS - round} Runden!`
+            : `Runde ${round} / ${MAX_ROUNDS}`}
+        </span>
         <span className={`arena-phase arena-phase--${phase}`}>
           {phase === 'player_turn' && 'Dein Zug'}
           {phase === 'enemy_turn'  && '⚔ Gegnerzug …'}
