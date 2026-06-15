@@ -159,7 +159,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     return needed > 0 ? acc.xp / needed : 1;
   }, []);
 
-  // Power comparison: effective ATK per card
+  // Power comparison: effective ATK per card + weak spot detection
   const deckPower = useMemo(() => {
     if (deckInstances.length === 0) return 0;
     return deckInstances.reduce((sum, inst) => {
@@ -168,6 +168,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level);
       return sum + stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
     }, 0);
+  }, [deckInstances]);
+
+  const deckWeakSpot = useMemo(() => {
+    if (deckInstances.length < 2) return null;
+    const withAtk = deckInstances.map(inst => {
+      const card = CardDatabase.getById(inst.cardId);
+      if (!card) return null;
+      const atk = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level).atk;
+      return { name: card.name, atk, level: inst.level, rarity: inst.rarity };
+    }).filter((x): x is NonNullable<typeof x> => x !== null);
+    if (withAtk.length < 2) return null;
+    const avgAtk = withAtk.reduce((s, x) => s + x.atk, 0) / withAtk.length;
+    const weakest = withAtk.reduce((a, b) => a.atk < b.atk ? a : b);
+    if (weakest.atk < avgAtk * 0.65) {
+      return { name: weakest.name, atk: weakest.atk, avgAtk: Math.round(avgAtk) };
+    }
+    return null;
   }, [deckInstances]);
 
   // Enemy estimated power based on floor scaling (avg base ATK ≈ 2600 per card × floor scale)
@@ -1576,6 +1593,19 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             Tipp: Eine weitere {ELEMENT_LABELS[blessedElement]?.split(' ').slice(1).join(' ')}-Karte
             {' '}→ <strong>ELEMENT-SYNERGIE</strong> (+100💎 pro Bonus-Karte)
           </span>
+        </div>
+      )}
+
+      {/* Deck Weak Spot Alert — highlights the significantly underperforming card */}
+      {deckWeakSpot && (
+        <div className="battle-weak-spot">
+          <span className="battle-weak-spot__icon">⚠</span>
+          <div className="battle-weak-spot__text">
+            <span className="battle-weak-spot__title">SCHWACHSTELLE: {deckWeakSpot.name}</span>
+            <span className="battle-weak-spot__sub">
+              ATK {deckWeakSpot.atk.toLocaleString('de-DE')} · Ø {deckWeakSpot.avgAtk.toLocaleString('de-DE')} — Trainiere oder ersetze diese Karte!
+            </span>
+          </div>
         </div>
       )}
 
