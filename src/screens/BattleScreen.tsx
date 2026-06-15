@@ -2041,6 +2041,32 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Lucky 7 countdown chip */}
+      {(() => {
+        const winsToday = LuckySeven.getWinsToday();
+        const needed    = LuckySeven.winsUntilNext();
+        if (winsToday === 0 && needed === 7) return null; // hide before first win
+        const isNearJackpot = needed <= 2;
+        return (
+          <div className={`battle-lucky7-chip${isNearJackpot ? ' battle-lucky7-chip--near' : ''}`}>
+            <span className="battle-lucky7-chip__icon">🎰</span>
+            <div className="battle-lucky7-chip__body">
+              <span className="battle-lucky7-chip__title">
+                {needed === 1 ? 'JACKPOT BEIM NÄCHSTEN SIEG!' : `LUCKY 7: noch ${needed} Siege`}
+              </span>
+              <span className="battle-lucky7-chip__sub">
+                Heute {winsToday} Siege · alle 7 Siege → +777 💎
+              </span>
+            </div>
+            <span className="battle-lucky7-chip__pips">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <span key={i} className={`battle-lucky7-chip__pip${i < (7 - needed) ? ' battle-lucky7-chip__pip--filled' : ''}`}>●</span>
+              ))}
+            </span>
+          </div>
+        );
+      })()}
+
       {/* Comeback Bonus chip — shown after 24h+ absence */}
       {ComebackBonusService.isActive() && (() => {
         const remaining = ComebackBonusService.getRemaining();

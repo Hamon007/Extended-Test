@@ -4395,3 +4395,74 @@
   color: #5090b0;
   font-style: italic;
 }
+
+/* ── Lucky 7 Countdown Chip ───────────────────────────────────── */
+
+@keyframes lucky7Shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes jackpotPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.02); }
+}
+
+.battle-lucky7-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 10px 2px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #0d0a00 0%, #080600 100%);
+  border: 1px solid rgba(200, 160, 20, 0.3);
+  border-radius: 8px;
+}
+
+.battle-lucky7-chip--near {
+  border-color: rgba(255, 200, 30, 0.7);
+  animation: jackpotPulse 1.3s ease-in-out infinite;
+}
+
+.battle-lucky7-chip__icon { font-size: 1.1rem; }
+
+.battle-lucky7-chip__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.battle-lucky7-chip__title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #d4a820;
+  letter-spacing: 0.4px;
+}
+
+.battle-lucky7-chip--near .battle-lucky7-chip__title {
+  background: linear-gradient(90deg, #ffd040, #ffaa00, #ffd040);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: lucky7Shimmer 1.5s linear infinite;
+}
+
+.battle-lucky7-chip__sub {
+  font-size: 0.59rem;
+  color: #806820;
+}
+
+.battle-lucky7-chip__pips {
+  display: flex;
+  gap: 3px;
+}
+
+.battle-lucky7-chip__pip {
+  font-size: 0.55rem;
+  color: rgba(200, 160, 20, 0.2);
+}
+
+.battle-lucky7-chip__pip--filled {
+  color: #d4a820;
+}
