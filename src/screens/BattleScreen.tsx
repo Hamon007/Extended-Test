@@ -3117,6 +3117,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
               selectIndex={selectedIds.indexOf(card.instanceId)}
               onToggle={() => handleToggleCard(card)}
               enemyElement={state.enemyData.element}
+              enemyHp={enemy.hp}
             />
           ))}
         </div>
@@ -3248,10 +3249,11 @@ interface PlayerHandCardProps {
   selectIndex:  number;   // -1 = nicht ausgewählt, ≥0 = Spielreihenfolge
   onToggle:     () => void;
   enemyElement: string;
+  enemyHp?:    number;
 }
 
 const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
-  card, canPlay, playerMp, selectIndex, onToggle, enemyElement,
+  card, canPlay, playerMp, selectIndex, onToggle, enemyElement, enemyHp,
 }) => {
   const [imgErr,    setImgErr]   = useState(false);
   const [striking,  setStriking] = useState(false);
@@ -3271,6 +3273,8 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
   const elemMatchup = card.card?.element
     ? ElementalService.getMatchup(card.card.element, enemyElement)
     : 'neutral';
+  // Killing blow: this card's ATK alone would finish the enemy
+  const canKill = !card.played && !card.destroyed && enemyHp !== undefined && enemyHp > 0 && card.atk >= enemyHp;
 
   const handleClick = () => {
     if (!blocked) onToggle();
@@ -3299,6 +3303,7 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
         ${card.played                             ? 'hand-card--played'    : ''}
         ${card.destroyed                          ? 'hand-card--destroyed' : ''}
         ${noMp && !card.played                    ? 'hand-card--no-mp'     : ''}
+        ${canKill                                 ? 'hand-card--kill'      : ''}
         ${!blocked && !isSelected && !striking    ? 'hand-card--playable'  : ''}
       `}
       style={{ '--rc': rc } as React.CSSProperties}
@@ -3312,6 +3317,7 @@ const PlayerHandCard: React.FC<PlayerHandCardProps> = ({
           ? <img src={card.image} alt={card.name} onError={() => setImgErr(true)} />
           : <div className="hand-card__placeholder">🌑</div>}
         {card.played && <div className="hand-card__played-overlay">✓</div>}
+        {canKill && !card.played && <div className="hand-card__kill-badge">💀 KILL</div>}
         <div className="hand-card__gradient" />
       </div>
       <div className={`hand-card__mp ${noMp ? 'hand-card__mp--low' : ''}`}>

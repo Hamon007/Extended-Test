@@ -670,6 +670,42 @@
   cursor: pointer;
 }
 
+/* Killing Blow indicator */
+@keyframes killPulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,60,60,0.6), 0 0 10px rgba(255,60,60,0.25); }
+  50%       { box-shadow: 0 0 0 2px rgba(255,80,80,0.9), 0 0 18px rgba(255,60,60,0.55); }
+}
+
+.hand-card--kill {
+  animation: killPulse 0.9s ease-in-out infinite;
+  border-color: rgba(255,80,60,0.8) !important;
+}
+
+.hand-card__kill-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #cc0000, #ff4400);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.42rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 14;
+  box-shadow: 0 1px 6px rgba(200,0,0,0.6);
+  white-space: nowrap;
+  animation: killBadgePop 0.4s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes killBadgePop {
+  from { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  to   { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
 .hand-card__select-order {
   position: absolute;
   top: -16px;
