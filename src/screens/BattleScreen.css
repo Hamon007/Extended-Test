@@ -4644,3 +4644,82 @@
   padding: 2px 7px;
   flex-shrink: 0;
 }
+
+/* ── Battle History Strip ─────────────────────────────────────── */
+
+.battle-history-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.battle-history-strip__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #5a4868;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.battle-history-strip__entries {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.battle-history-pip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  min-width: 38px;
+  flex-shrink: 0;
+}
+
+.battle-history-pip--win {
+  background: rgba(80,200,80,0.12);
+  border: 1px solid rgba(80,200,80,0.3);
+}
+
+.battle-history-pip--loss {
+  background: rgba(200,50,50,0.1);
+  border: 1px solid rgba(200,50,50,0.25);
+}
+
+.battle-history-pip__result {
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.battle-history-pip--win  .battle-history-pip__result { color: #66dd66; }
+.battle-history-pip--loss .battle-history-pip__result { color: #dd5555; }
+
+.battle-history-pip__grade {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.battle-history-pip__crystals {
+  font-size: 0.55rem;
+  color: #c9a84c;
+  white-space: nowrap;
+}
+
+.battle-history-strip__avg {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.62rem;
+  color: #705880;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

@@ -58,6 +58,7 @@ import { BattleContractService, type BattleContract } from '../services/BattleCo
 import { HourSurgeService, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
 import { HourlyFirstWinService } from '../services/HourlyFirstWinService';
 import { DailyDuoService } from '../services/DailyDuoService';
+import { BattleHistoryService } from '../services/BattleHistoryService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -927,6 +928,13 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       damage:   lifetimeDamage,
       combo:    battle.state.maxComboReached ?? 0,
       winStreak: WinStreakService.get(),
+    });
+
+    BattleHistoryService.addEntry({
+      floor:    isTowerMode ? towerFloor : 0,
+      won:      victory,
+      crystals: finalDetails.crystalsGained,
+      grade:    finalDetails.grade,
     });
 
     setRewardDetails(finalDetails);
@@ -1801,6 +1809,35 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             <div className="battle-win-prob__sub">
               Deck {deckPower.toLocaleString('de-DE')} · Gegner ~{enemyPowerEstimate.toLocaleString('de-DE')}
             </div>
+          </div>
+        );
+      })()}
+
+      {/* Recent Battle History Strip */}
+      {(() => {
+        const history = BattleHistoryService.getRecent();
+        if (history.length === 0) return null;
+        const GRADE_COLOR: Record<string, string> = {
+          D:'#9e9e9e',C:'#8bc34a',B:'#03a9f4',A:'#9c27b0',
+          S:'#ff9800',SS:'#f44336',SSS:'#ffd700',
+        };
+        return (
+          <div className="battle-history-strip">
+            <span className="battle-history-strip__label">Letzte Kämpfe</span>
+            <div className="battle-history-strip__entries">
+              {history.map((e, i) => (
+                <div key={i} className={`battle-history-pip${e.won ? ' battle-history-pip--win' : ' battle-history-pip--loss'}`}>
+                  <span className="battle-history-pip__result">{e.won ? '✓' : '✗'}</span>
+                  {e.grade && (
+                    <span className="battle-history-pip__grade" style={{ color: GRADE_COLOR[e.grade] ?? '#aaa' }}>
+                      {e.grade}
+                    </span>
+                  )}
+                  {e.won && <span className="battle-history-pip__crystals">+{e.crystals.toLocaleString('de-DE')}💎</span>}
+                </div>
+              ))}
+            </div>
+            <span className="battle-history-strip__avg">Ø {BattleHistoryService.avgCrystals().toLocaleString('de-DE')}💎/Sieg</span>
           </div>
         );
       })()}
