@@ -4967,3 +4967,138 @@
   color: #60d060;
   flex-shrink: 0;
 }
+
+/* ── Deck Line-Up Preview ─────────────────────────────────── */
+
+.battle-lineup {
+  margin: 8px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.battle-lineup__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(200,180,150,0.6);
+  text-align: center;
+}
+
+.battle-lineup__cards {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* Individual card thumbnail */
+.battle-lineup__card {
+  position: relative;
+  width: 54px;
+  height: 72px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid var(--rc, #555);
+  background: rgba(20,14,30,0.9);
+  flex-shrink: 0;
+  cursor: default;
+  animation: lineupCardIn 0.35s cubic-bezier(.22,1,.36,1) both;
+  animation-delay: calc(var(--i, 0) * 0.06s);
+}
+
+@keyframes lineupCardIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.88); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.battle-lineup__card--blessed {
+  border-color: var(--lc, #ffee00);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--lc, #ffee00) 50%, transparent);
+}
+
+.battle-lineup__card--bonded {
+  box-shadow: 0 0 5px rgba(180,140,255,0.4);
+}
+
+.battle-lineup__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.battle-lineup__art-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+/* Gradient overlay at bottom */
+.battle-lineup__grad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Name + level at bottom */
+.battle-lineup__foot {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  z-index: 2;
+}
+
+.battle-lineup__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.44rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.battle-lineup__level {
+  font-size: 0.42rem;
+  font-weight: 700;
+  color: var(--rc, #aaa);
+  line-height: 1;
+}
+
+/* Bond icon — top-left corner */
+.battle-lineup__bond {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 0.65rem;
+  line-height: 1;
+  z-index: 3;
+  filter: drop-shadow(0 0 3px rgba(180,140,255,0.9));
+}
+
+/* Blessed element sun — top-right corner */
+.battle-lineup__bless {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 0.6rem;
+  line-height: 1;
+  z-index: 3;
+  color: var(--lc, #ffee00);
+  text-shadow: 0 0 4px var(--lc, #ffee00);
+}

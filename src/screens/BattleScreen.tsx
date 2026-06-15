@@ -20,7 +20,7 @@ import { CardDatabase }         from '../services/CardDatabase';
 import { AudioService }         from '../services/AudioService';
 import { PvpService } from '../services/PvpService';
 import { AchievementService } from '../services/AchievementService';
-import { CardBondService }    from '../services/CardBondService';
+import { CardBondService, BOND_ICONS } from '../services/CardBondService';
 import { SeasonService }      from '../services/SeasonService';
 import { TowerMilestoneService, type TowerMilestone } from '../services/TowerMilestoneService';
 import { CardMasteryService } from '../services/CardMasteryService';
@@ -2485,6 +2485,50 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
             Serie geschützt — Schutzschild absorbiert eine Niederlage
           </span>
           <span className="battle-streak-safe__badge">🔥 {winStreak}×</span>
+        </div>
+      )}
+
+      {/* ── Deck Line-Up Preview ── */}
+      {deckInstances.length > 0 && (
+        <div className="battle-lineup">
+          <span className="battle-lineup__label">DEIN TEAM</span>
+          <div className="battle-lineup__cards">
+            {deckInstances.map((inst, idx) => {
+              const card    = CardDatabase.getById(inst.cardId);
+              const bond    = CardBondService.getCardBond(inst.cardId);
+              const bondLvl = bond?.level ?? 0;
+              const bondIcon = bondLvl > 0 ? (BOND_ICONS[bondLvl] ?? '') : '';
+              const elem    = card?.element ?? '';
+              const elemMeta = ELEMENT_META[elem];
+              const rc      = RARITY_COLOR[inst.rarity] ?? '#9e9e9e';
+              const isBlessed = elem === blessedElement;
+              return (
+                <div
+                  key={inst.uuid}
+                  className={`battle-lineup__card${isBlessed ? ' battle-lineup__card--blessed' : ''}${bondLvl > 0 ? ' battle-lineup__card--bonded' : ''}`}
+                  style={{ '--rc': rc, '--lc': elemMeta?.color ?? '#888', '--i': idx } as React.CSSProperties}
+                >
+                  {card?.image && (
+                    <img className="battle-lineup__art" src={card.image} alt={card.name} />
+                  )}
+                  {!card?.image && (
+                    <span className="battle-lineup__art-fallback">{elemMeta?.icon ?? '?'}</span>
+                  )}
+                  <div className="battle-lineup__grad" />
+                  <div className="battle-lineup__foot">
+                    <span className="battle-lineup__name">{card?.name?.split(' ')[0] ?? '?'}</span>
+                    <span className="battle-lineup__level">Lv{inst.level}</span>
+                  </div>
+                  {bondIcon && (
+                    <span className="battle-lineup__bond">{bondIcon}</span>
+                  )}
+                  {isBlessed && (
+                    <span className="battle-lineup__bless">☀</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
