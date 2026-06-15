@@ -56,6 +56,7 @@ import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/Dai
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { BattleContractService, type BattleContract } from '../services/BattleContractService';
 import { HourSurgeService, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
+import { HourlyFirstWinService } from '../services/HourlyFirstWinService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -699,6 +700,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       const goalBonus = DailyGoalService.addEarned(finalDetails.crystalsGained);
       if (goalBonus > 0) {
         finalDetails = { ...finalDetails, dailyGoalBonus: goalBonus };
+      }
+    }
+
+    // Hourly First Win: small bonus for first victory in current UTC hour
+    if (details.isVictory) {
+      const hwBonus = HourlyFirstWinService.claim();
+      if (hwBonus > 0) {
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained:    finalDetails.crystalsGained + hwBonus,
+          hourlyFirstWinBonus: hwBonus,
+        };
       }
     }
 
@@ -2083,6 +2096,16 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           </div>
         );
       })()}
+
+      {/* Hourly First Win chip */}
+      {HourlyFirstWinService.isAvailable() && (
+        <div className="battle-hourly-firstwin">
+          <span className="battle-hourly-firstwin__icon">⏰</span>
+          <span className="battle-hourly-firstwin__text">
+            Erster Sieg dieser Stunde: <strong>+{HourlyFirstWinService.HOURLY_FIRST_WIN_BONUS} 💎</strong>
+          </span>
+        </div>
+      )}
 
       {/* First-Win-of-Day chip */}
       {FirstWinService.isAvailable() && (

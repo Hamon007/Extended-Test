@@ -119,6 +119,8 @@ export interface RewardDetails {
   // Hour Surge: +50% crystals when deck contains surge element cards
   hourSurgeBonus?: number;
   hourSurgeElement?: string;
+  // Hourly First Win: small bonus for first victory in each UTC hour
+  hourlyFirstWinBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

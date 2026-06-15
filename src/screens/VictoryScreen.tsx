@@ -673,6 +673,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Hourly First Win bonus */}
+          {details.hourlyFirstWinBonus && details.hourlyFirstWinBonus > 0 && (
+            <div className="reward-row reward-row--hourly">
+              <span className="reward-row__label">⏰ Erster Sieg dieser Stunde!</span>
+              <span className="reward-row__value">+{details.hourlyFirstWinBonus} 💎</span>
+            </div>
+          )}
+
           {/* Hour Surge bonus */}
           {details.hourSurgeBonus && details.hourSurgeBonus > 0 && (
             <div className="reward-row reward-row--hoursurge">

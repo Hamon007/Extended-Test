@@ -1770,3 +1770,10 @@
   color: #ffaa40;
   font-weight: 800;
 }
+
+/* ── Hourly First Win reward row ──────────────────────────────── */
+
+.reward-row--hourly {
+  background: linear-gradient(90deg, rgba(10, 10, 30, 0.6), rgba(5, 5, 15, 0.3));
+  border-left: 3px solid #5060a0;
+}

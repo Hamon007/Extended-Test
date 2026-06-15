@@ -4466,3 +4466,23 @@
 .battle-lucky7-chip__pip--filled {
   color: #d4a820;
 }
+
+/* ── Hourly First Win Chip ────────────────────────────────────── */
+
+.battle-hourly-firstwin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 10px 2px;
+  padding: 6px 12px;
+  background: linear-gradient(90deg, rgba(20, 20, 40, 0.7), rgba(10, 10, 20, 0.4));
+  border: 1px solid rgba(100, 100, 200, 0.3);
+  border-radius: 6px;
+  font-size: 0.64rem;
+}
+
+.battle-hourly-firstwin__icon { font-size: 0.9rem; }
+
+.battle-hourly-firstwin__text { color: #8090cc; }
+
+.battle-hourly-firstwin__text strong { color: #a0b0ff; }
