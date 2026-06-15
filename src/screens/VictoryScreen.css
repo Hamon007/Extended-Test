@@ -1611,3 +1611,48 @@
   margin-left: 6px;
   vertical-align: middle;
 }
+
+/* ── Gacha Pull Nudge ────────────────────────────────────────── */
+
+.victory-pull-nudge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0.5rem 0;
+  padding: 8px 12px;
+  background: radial-gradient(ellipse at center, rgba(180, 120, 255, 0.08) 0%, transparent 70%);
+  border: 1px dashed rgba(180, 120, 255, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.victory-pull-nudge:hover { border-color: rgba(180, 120, 255, 0.6); }
+
+.victory-pull-nudge__icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.victory-pull-nudge__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.victory-pull-nudge__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #c090ff;
+}
+
+.victory-pull-nudge__battles {
+  font-size: 0.58rem;
+  color: #8060aa;
+  margin-top: 1px;
+}
+
+.victory-pull-nudge__crystals {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffd060;
+  flex-shrink: 0;
+}

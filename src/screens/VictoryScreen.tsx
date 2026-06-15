@@ -764,6 +764,35 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           </div>
         )}
 
+        {/* Gacha pull progress nudge */}
+        {(() => {
+          const gs       = SaveService.loadGachaState();
+          const crystals = gs.crystals;
+          const needed   = PULL_COST_MULTI - (crystals % PULL_COST_MULTI);
+          const base     = EnemyDatabase.getFirst();
+          const estPer   = Math.round((base?.rewardCrystals ?? 150) * (1 + (details.towerFloor ?? 1) * 0.2));
+          const battlesLeft = estPer > 0 ? Math.max(1, Math.ceil(needed / estPer)) : null;
+          if (crystals < 200 || needed > PULL_COST_MULTI * 0.9) return null;
+          return (
+            <div className="victory-pull-nudge" onClick={() => { onContinue(); onNavigate?.('gacha'); }}>
+              <span className="victory-pull-nudge__icon">✨</span>
+              <div className="victory-pull-nudge__text">
+                <span className="victory-pull-nudge__label">
+                  {needed <= 0
+                    ? 'Genug für eine 10er-Beschwörung!'
+                    : `Noch ${needed.toLocaleString('de-DE')} 💎 zur nächsten Beschwörung`}
+                </span>
+                {battlesLeft !== null && needed > 0 && (
+                  <span className="victory-pull-nudge__battles">
+                    ≈ {battlesLeft} {battlesLeft === 1 ? 'weiterer Kampf' : 'weitere Kämpfe'}
+                  </span>
+                )}
+              </div>
+              <span className="victory-pull-nudge__crystals">{crystals.toLocaleString('de-DE')} 💎</span>
+            </div>
+          );
+        })()}
+
         {/* Quick Fight — skip lobby, start next floor */}
         {onQuickFight && details.towerFloor && (
           <button className="victory-quickfight-btn" onClick={onQuickFight}>
