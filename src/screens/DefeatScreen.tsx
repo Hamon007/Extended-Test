@@ -316,8 +316,17 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           <div className="defeat-consolation__label">Trostpreis</div>
           <div className="defeat-consolation__value">
             <span className="defeat-consolation__icon">💎</span>
-            <span className="defeat-consolation__amount">+{DEFEAT_CONSOLATION}</span>
+            <span className="defeat-consolation__amount">+{details.crystalsGained}</span>
           </div>
+          {details.crystalsGained > DEFEAT_CONSOLATION && (
+            <div className={`defeat-near-miss-bonus${enemyHpPct < 0.05 ? ' defeat-near-miss-bonus--ultra' : ''}`}>
+              <span className="defeat-near-miss-bonus__icon">⚡</span>
+              <span className="defeat-near-miss-bonus__text">
+                {enemyHpPct < 0.05 ? 'SO KNAPP! Knappster Kampf!' : enemyHpPct < 0.15 ? 'FAST GEWONNEN!' : 'NAH DRAN!'}
+                {' '}+{details.crystalsGained - DEFEAT_CONSOLATION} 💎 Bonus
+              </span>
+            </div>
+          )}
           {(details.accountXpGained ?? 0) > 0 && (
             <div className="defeat-consolation__value">
               <span className="defeat-consolation__icon">✦</span>

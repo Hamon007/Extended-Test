@@ -150,6 +150,40 @@
   font-style: italic;
 }
 
+.defeat-near-miss-bonus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255,180,0,0.12);
+  border: 1px solid rgba(255,180,0,0.35);
+}
+
+.defeat-near-miss-bonus--ultra {
+  background: rgba(255,60,60,0.15);
+  border-color: rgba(255,80,80,0.45);
+  animation: nearMissFlash 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes nearMissFlash {
+  from { box-shadow: 0 0 0 transparent; }
+  to   { box-shadow: 0 0 10px rgba(255,80,80,0.4); }
+}
+
+.defeat-near-miss-bonus__icon { font-size: 0.9rem; }
+
+.defeat-near-miss-bonus__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: #ffcc44;
+  font-weight: 600;
+}
+
+.defeat-near-miss-bonus--ultra .defeat-near-miss-bonus__text { color: #ff9999; }
+
 /* ── Aktionen ─────────────────────────────────────────────── */
 .defeat-actions {
   margin-top: 24px;

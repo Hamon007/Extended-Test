@@ -937,6 +937,17 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       grade:    finalDetails.grade,
     });
 
+    // Near-Miss Bonus: extra consolation crystals based on how close the player came
+    if (!victory && finalDetails.enemyHpPct !== undefined && finalDetails.enemyHpPct > 0) {
+      const ep = finalDetails.enemyHpPct;
+      const nearMissBonus = ep < 0.05 ? 150 : ep < 0.15 ? 75 : ep < 0.30 ? 25 : 0;
+      if (nearMissBonus > 0) {
+        const gs = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gs, crystals: gs.crystals + nearMissBonus });
+        finalDetails = { ...finalDetails, crystalsGained: finalDetails.crystalsGained + nearMissBonus };
+      }
+    }
+
     setRewardDetails(finalDetails);
   }, [battle.state?.result]); // eslint-disable-line react-hooks/exhaustive-deps
 
