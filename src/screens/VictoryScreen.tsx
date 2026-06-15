@@ -121,6 +121,20 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
       .slice(0, 3);
   }, [masteryUps]);
 
+  // MVP card training nudge — look up the MVP card to check trainability
+  const mvpTrainable = useMemo(() => {
+    if (!details.mvpCardName || !onNavigate) return null;
+    const gState = SaveService.loadGachaState();
+    const inst = gState.inventory.find(i => {
+      const c = CardDatabase.getById(i.cardId);
+      return c?.name === details.mvpCardName;
+    });
+    if (!inst) return null;
+    const cap = LevelSystem.levelCap(inst.rarity);
+    if ((inst.level ?? 1) >= cap) return null; // already max level
+    return { name: details.mvpCardName, level: inst.level ?? 1, cap };
+  }, [details.mvpCardName, onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Post-battle quick actions (only shown if onNavigate is available)
   const quickActions = useMemo(() => {
     if (!onNavigate) return [];
@@ -905,6 +919,25 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
                 <span className="victory-quick-btn__label">{a.label}</span>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* MVP card training nudge */}
+        {mvpTrainable && (
+          <div
+            className="victory-mvp-nudge"
+            onClick={() => { onContinue(); onNavigate?.('training'); }}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="victory-mvp-nudge__icon">⭐</span>
+            <div className="victory-mvp-nudge__body">
+              <span className="victory-mvp-nudge__title">MVP: {mvpTrainable.name}</span>
+              <span className="victory-mvp-nudge__sub">
+                Lv {mvpTrainable.level} → {mvpTrainable.level + 1} — stärke deinen besten Kämpfer!
+              </span>
+            </div>
+            <span className="victory-mvp-nudge__cta">TRAINIEREN ▶</span>
           </div>
         )}
 

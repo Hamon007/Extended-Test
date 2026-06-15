@@ -2020,3 +2020,73 @@
   font-weight: 900;
   text-shadow: 0 0 8px rgba(80, 240, 80, 0.6);
 }
+
+/* ── MVP Training Nudge ───────────────────────────────────────── */
+
+.victory-mvp-nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 6px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(40,20,0,0.85), rgba(80,40,0,0.6));
+  border: 1px solid rgba(255,180,40,0.45);
+  border-radius: 8px;
+  cursor: pointer;
+  animation: mvpNudgeIn 0.4s cubic-bezier(.22,1,.36,1) both;
+  animation-delay: 0.8s;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.victory-mvp-nudge:hover,
+.victory-mvp-nudge:focus {
+  background: linear-gradient(90deg, rgba(60,30,0,0.9), rgba(100,55,0,0.7));
+  border-color: rgba(255,200,60,0.7);
+  outline: none;
+}
+
+@keyframes mvpNudgeIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.victory-mvp-nudge__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  animation: mvpStarPulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes mvpStarPulse {
+  from { transform: scale(1);    text-shadow: 0 0 4px rgba(255,220,60,0.4); }
+  to   { transform: scale(1.15); text-shadow: 0 0 12px rgba(255,220,60,0.9); }
+}
+
+.victory-mvp-nudge__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.victory-mvp-nudge__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffcc50;
+  letter-spacing: 0.04em;
+}
+
+.victory-mvp-nudge__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.68rem;
+  color: rgba(255,200,100,0.7);
+}
+
+.victory-mvp-nudge__cta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ffaa30;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
