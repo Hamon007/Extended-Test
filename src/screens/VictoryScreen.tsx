@@ -752,16 +752,34 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           )}
 
           {/* Karten-Drops */}
-          {details.newCards.length > 0 && (
-            <div className="victory-cards">
-              <div className="victory-cards__title">🃏 Neue Karten erhalten!</div>
-              <div className="victory-cards__grid">
-                {details.newCards.map(inst => (
-                  <RewardCardItem key={inst.uuid} cardId={inst.cardId} />
-                ))}
+          {details.newCards.length > 0 && (() => {
+            // Find weakest deck card ATK for comparison
+            const gs = SaveService.loadGachaState();
+            const deck = SaveService.loadDeck();
+            let weakestAtk = 0;
+            let weakestName = '';
+            for (const uuid of deck.uuids) {
+              const inst = gs.inventory.find(i => i.uuid === uuid);
+              if (!inst) continue;
+              const c = CardDatabase.getById(inst.cardId);
+              if (!c) continue;
+              const stats = FusionSystem.getEffectiveStats(c, inst.rarity, inst.level ?? 1);
+              if (weakestAtk === 0 || stats.atk < weakestAtk) {
+                weakestAtk = stats.atk;
+                weakestName = c.name;
+              }
+            }
+            return (
+              <div className="victory-cards">
+                <div className="victory-cards__title">🃏 Neue Karten erhalten!</div>
+                <div className="victory-cards__grid">
+                  {details.newCards.map(inst => (
+                    <RewardCardItem key={inst.uuid} cardId={inst.cardId} weakestDeckAtk={weakestAtk} weakestDeckName={weakestName} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {details.newCards.length === 0 && (
             <div className="victory-no-drop">
@@ -904,7 +922,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
 
 // ── Einzelne Belohnungs-Karte ─────────────────────────────────
 
-const RewardCardItem: React.FC<{ cardId: string }> = ({ cardId }) => {
+const RewardCardItem: React.FC<{ cardId: string; weakestDeckAtk?: number; weakestDeckName?: string }> = ({ cardId, weakestDeckAtk, weakestDeckName }) => {
   const card = CardDatabase.getById(cardId);
   const [imgErr, setImgErr] = useState(false);
 
@@ -918,12 +936,20 @@ const RewardCardItem: React.FC<{ cardId: string }> = ({ cardId }) => {
   }
 
   const rc = RARITY_COLOR[card.rarity] ?? '#9e9e9e';
+  const newCardAtk = FusionSystem.getEffectiveStats(card, card.rarity, 1).atk;
+  const isUpgrade = weakestDeckAtk !== undefined && weakestDeckAtk > 0 && newCardAtk > weakestDeckAtk;
 
   return (
     <div
-      className="reward-card"
+      className={`reward-card${isUpgrade ? ' reward-card--upgrade' : ''}`}
       style={{ '--rc': rc } as React.CSSProperties}
     >
+      {isUpgrade && (
+        <div className="reward-card__upgrade-badge">
+          ⬆ UPGRADE
+          {weakestDeckName && <span className="reward-card__upgrade-vs"> vs {weakestDeckName}</span>}
+        </div>
+      )}
       <div className="reward-card__art">
         {!imgErr ? (
           <img
@@ -939,6 +965,7 @@ const RewardCardItem: React.FC<{ cardId: string }> = ({ cardId }) => {
         {card.rarity}
       </div>
       <div className="reward-card__name">{card.name}</div>
+      <div className="reward-card__atk">ATK {newCardAtk.toLocaleString('de-DE')}</div>
     </div>
   );
 };
