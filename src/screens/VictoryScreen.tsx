@@ -365,9 +365,12 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           <div className="victory-bonds victory-mastery">
             <div className="victory-bonds__title">⚔ Meisterschaft erhöht!</div>
             {masteryUps.map((m, i) => (
-              <div key={i} className="victory-bond-row">
+              <div key={i} className={`victory-bond-row${m.isDailyCard ? ' victory-mastery-row--daily' : ''}`}>
                 <span className="victory-mastery-row__stars">{m.stars}</span>
-                <span className="victory-bond-row__name">{m.cardName}</span>
+                <span className="victory-bond-row__name">
+                  {m.cardName}
+                  {m.isDailyCard && <span className="victory-mastery-row__daily-tag">⭐ ×2</span>}
+                </span>
                 <span className="victory-bond-row__level">Stufe {m.newLevel}</span>
               </div>
             ))}

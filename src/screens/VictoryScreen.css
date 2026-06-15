@@ -1596,3 +1596,18 @@
   color: #80d060;
   font-weight: 800;
 }
+
+/* ── Mastery Daily Card bonus ────────────────────────────────── */
+
+.victory-mastery-row--daily {
+  background: linear-gradient(90deg, rgba(255, 200, 30, 0.07), transparent);
+  border-radius: 6px;
+}
+
+.victory-mastery-row__daily-tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #ffd060;
+  margin-left: 6px;
+  vertical-align: middle;
+}

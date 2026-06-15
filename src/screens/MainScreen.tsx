@@ -39,6 +39,7 @@ import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
+import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -644,12 +645,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       {/* ── Team-Kampfkraft + Win-Streak ── */}
       {(deckStats && deckStats.power > 0 || winStreak > 0) && (
         <div className="main-power">
-          {deckStats && deckStats.power > 0 && (
-            <>
-              <span className="main-power__label">⚔ KAMPFKRAFT</span>
-              <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
-            </>
-          )}
+          {deckStats && deckStats.power > 0 && (() => {
+            const tier     = getDeckTier(deckStats.power);
+            const nextTier = getNextTier(deckStats.power);
+            return (
+              <>
+                <span className="main-power__label">⚔ KAMPFKRAFT</span>
+                <span className="main-power__value">{deckStats.power.toLocaleString('de-DE')}</span>
+                <span
+                  className="main-deck-tier"
+                  style={{ '--tier-color': tier.color } as React.CSSProperties}
+                  title={nextTier ? `Nächster Rang: ${nextTier.icon} ${nextTier.label} (${nextTier.minPower.toLocaleString('de-DE')})` : 'Höchster Rang!'}
+                >
+                  {tier.icon} {tier.label}
+                </span>
+              </>
+            );
+          })()}
           {winStreak > 0 && (() => {
             const sr = WinStreakService.getRewardMultiplier(winStreak);
             return (

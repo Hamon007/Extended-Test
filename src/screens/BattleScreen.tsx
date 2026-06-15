@@ -284,14 +284,17 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         if (cardId) playCountByCard[cardId] = (playCountByCard[cardId] ?? 0) + 1;
       }
     }
-    const masteryLevelUps: { cardName: string; newLevel: number; stars: string }[] = [];
+    const dailyCardId = DailyCardService.getCard()?.id ?? '';
+    const masteryLevelUps: { cardName: string; newLevel: number; stars: string; isDailyCard?: boolean }[] = [];
     for (const [cardId, count] of Object.entries(playCountByCard)) {
-      const res = CardMasteryService.recordPlays(cardId, count);
+      const bonusCount = cardId === dailyCardId ? count * 2 : count; // 2× mastery for Card of the Day
+      const res = CardMasteryService.recordPlays(cardId, bonusCount);
       if (res.leveledUp) {
         masteryLevelUps.push({
-          cardName: CardDatabase.getById(cardId)?.name ?? cardId,
-          newLevel: res.newLevel,
-          stars:    CardMasteryService.MASTERY_LEVELS[res.newLevel]?.stars ?? '',
+          cardName:    CardDatabase.getById(cardId)?.name ?? cardId,
+          newLevel:    res.newLevel,
+          stars:       CardMasteryService.MASTERY_LEVELS[res.newLevel]?.stars ?? '',
+          isDailyCard: cardId === dailyCardId,
         });
         AchievementService.recordProgress('mastery_first');
         if (res.newLevel >= CardMasteryService.MASTERY_LEVELS.length - 1) {
