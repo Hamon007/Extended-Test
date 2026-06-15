@@ -110,6 +110,8 @@ export interface RewardDetails {
   sessionBonusLabel?: string;
   sessionBonusIcon?: string;
   sessionWins?: number; // total session wins so far
+  // Daily Crystal Goal: bonus for reaching the 2000-crystal daily earning target
+  dailyGoalBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

@@ -38,6 +38,7 @@ import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
+import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -605,6 +606,36 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               <span className="main-floor-title__next">
                 Nächster Rang ab Etage {nextTitle.minFloor}: {nextTitle.icon} {nextTitle.title}
               </span>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* ── Daily Crystal Goal ── */}
+      {(() => {
+        const earned = DailyGoalService.getEarned();
+        const pct    = DailyGoalService.getProgress();
+        const done   = DailyGoalService.isClaimed();
+        if (earned === 0 && !done) return null;
+        return (
+          <div
+            className={`main-daily-goal${done ? ' main-daily-goal--done' : ''}`}
+            onClick={() => onNavigate?.('battle')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && onNavigate?.('battle')}
+          >
+            <span className="main-daily-goal__icon">{done ? '✅' : '🎯'}</span>
+            <div className="main-daily-goal__info">
+              <span className="main-daily-goal__title">
+                {done ? 'Tagesziel erreicht!' : `Tagesziel: ${earned.toLocaleString('de-DE')} / ${DAILY_GOAL.toLocaleString('de-DE')} 💎`}
+              </span>
+              <div className="main-daily-goal__bar-track">
+                <div className="main-daily-goal__bar-fill" style={{ width: `${Math.min(100, Math.round(pct * 100))}%` }} />
+              </div>
+            </div>
+            {!done && (
+              <span className="main-daily-goal__reward">+{DAILY_GOAL_REWARD} 💎</span>
             )}
           </div>
         );

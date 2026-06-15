@@ -4004,3 +4004,65 @@
   font-size: 0.6rem;
   color: #8060aa;
 }
+
+/* ── Daily Crystal Goal Chip ─────────────────────────────────── */
+
+.battle-daily-goal {
+  margin: 6px 10px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #12180a 0%, #0a1005 100%);
+  border: 1px solid rgba(80, 180, 60, 0.35);
+  border-radius: 8px;
+}
+
+.battle-daily-goal--done {
+  border-color: rgba(80, 200, 80, 0.5);
+  background: linear-gradient(135deg, #101a0a 0%, #0a1508 100%);
+}
+
+.battle-daily-goal__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.battle-daily-goal__icon { font-size: 0.9rem; }
+
+.battle-daily-goal__title {
+  flex: 1;
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: #80c860;
+  letter-spacing: 0.4px;
+}
+
+.battle-daily-goal--done .battle-daily-goal__title { color: #60e060; }
+
+.battle-daily-goal__reward {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #ffd060;
+}
+
+.battle-daily-goal__bar-track {
+  height: 4px;
+  background: rgba(80, 180, 60, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.battle-daily-goal__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3a8020, #80d040);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.battle-daily-goal--done .battle-daily-goal__bar-fill { background: #60e060; }
+
+.battle-daily-goal__sub {
+  font-size: 0.59rem;
+  color: #508030;
+}

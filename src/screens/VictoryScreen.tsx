@@ -637,6 +637,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Daily Crystal Goal reached this battle */}
+          {details.dailyGoalBonus && details.dailyGoalBonus > 0 && (
+            <div className="reward-row reward-row--daily-goal">
+              <span className="reward-row__label">🎯 TAGESZIEL ERREICHT!</span>
+              <span className="reward-row__value reward-row__value--daily-goal">
+                +<CountUp target={details.dailyGoalBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Quest Completions triggered by this battle */}
           {details.questsCompleted && details.questsCompleted.length > 0 && (
             <div className="victory-quest-completions">

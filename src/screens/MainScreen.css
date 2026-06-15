@@ -2969,3 +2969,65 @@
   max-width: 40%;
   line-height: 1.3;
 }
+
+/* ── Daily Crystal Goal widget ───────────────────────────────── */
+
+.main-daily-goal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 10px;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, #0d1808 0%, #081005 100%);
+  border: 1px solid rgba(80, 180, 60, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.main-daily-goal--done {
+  border-color: rgba(80, 220, 80, 0.45);
+}
+
+.main-daily-goal__icon { font-size: 1.1rem; flex-shrink: 0; }
+
+.main-daily-goal__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-daily-goal__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #70c050;
+  margin-bottom: 4px;
+}
+
+.main-daily-goal--done .main-daily-goal__title { color: #60e060; }
+
+.main-daily-goal__bar-track {
+  height: 4px;
+  background: rgba(80, 180, 60, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.main-daily-goal__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3a8020, #70d030);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.main-daily-goal--done .main-daily-goal__bar-fill {
+  background: #60e060;
+  width: 100% !important;
+}
+
+.main-daily-goal__reward {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffd060;
+  flex-shrink: 0;
+}

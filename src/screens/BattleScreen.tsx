@@ -52,6 +52,7 @@ import { BountyService }             from '../services/BountyService';
 import { WorldBossService }          from '../services/WorldBossService';
 import { FloorTitleService }         from '../services/FloorTitleService';
 import { SessionBonusService }       from '../services/SessionBonusService';
+import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -669,6 +670,14 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         };
       } else {
         finalDetails = { ...finalDetails, sessionWins };
+      }
+    }
+
+    // Daily Crystal Goal: track today's battle earnings; bonus fires once when 2000💎 is hit
+    if (details.isVictory) {
+      const goalBonus = DailyGoalService.addEarned(finalDetails.crystalsGained);
+      if (goalBonus > 0) {
+        finalDetails = { ...finalDetails, dailyGoalBonus: goalBonus };
       }
     }
 
@@ -1868,6 +1877,35 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
               <div className="battle-session-bonus__bar-fill" style={{ width: `${pct}%` }} />
             </div>
             <div className="battle-session-bonus__sub">{next.label} — noch {next.wins - wins} Siege!</div>
+          </div>
+        );
+      })()}
+
+      {/* Daily Crystal Goal chip */}
+      {(() => {
+        const earned = DailyGoalService.getEarned();
+        const pct    = DailyGoalService.getProgress();
+        const done   = DailyGoalService.isClaimed();
+        if (earned === 0 && !done) return null;
+        return (
+          <div className={`battle-daily-goal${done ? ' battle-daily-goal--done' : ''}`}>
+            <div className="battle-daily-goal__header">
+              <span className="battle-daily-goal__icon">{done ? '✓' : '💎'}</span>
+              <span className="battle-daily-goal__title">
+                {done ? 'TAGESZIEL ERREICHT!' : `TAGESZIEL: ${earned.toLocaleString('de-DE')} / ${DAILY_GOAL.toLocaleString('de-DE')} 💎`}
+              </span>
+              {!done && (
+                <span className="battle-daily-goal__reward">+{DAILY_GOAL_REWARD} 💎</span>
+              )}
+            </div>
+            <div className="battle-daily-goal__bar-track">
+              <div className="battle-daily-goal__bar-fill" style={{ width: `${Math.round(pct * 100)}%` }} />
+            </div>
+            {!done && (
+              <div className="battle-daily-goal__sub">
+                Noch {(DAILY_GOAL - Math.min(earned, DAILY_GOAL)).toLocaleString('de-DE')} 💎 bis Bonus!
+              </div>
+            )}
           </div>
         );
       })()}
