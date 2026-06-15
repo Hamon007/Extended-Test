@@ -11,6 +11,7 @@ import { RARITY_COLOR, RARITY_ORDER, RARITY_MAJORS, rarityMajor } from '../types
 import type { Rarity } from '../types/Card';
 import { AchievementService } from '../services/AchievementService';
 import { CardMasteryService } from '../services/CardMasteryService';
+import { CardBondService, BOND_ICONS, BOND_NAMES, BOND_ATK_BONUS } from '../services/CardBondService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import './DeckBuilderScreen.css';
 
@@ -476,6 +477,12 @@ const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onRemove }) => {
   const [imgErr, setImgErr] = useState(false);
   const rc = RARITY_COLOR[slot.instance?.rarity ?? 'N'] ?? '#9e9e9e';
 
+  // Bond data for this card
+  const bondData = slot.instance ? CardBondService.getCardBond(slot.instance.cardId) : null;
+  const bondPct  = bondData ? CardBondService.progressToNext(bondData) : 0;
+  const hasBond  = bondData !== null && bondData.level > 0;
+  const bondAtk  = hasBond ? BOND_ATK_BONUS[bondData.level] ?? 0 : 0;
+
   if (slot.missing) {
     return (
       <div className="db-slot db-slot--missing" onClick={() => onRemove(slot.uuid)}>
@@ -487,7 +494,7 @@ const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onRemove }) => {
 
   return (
     <div
-      className="db-slot"
+      className={`db-slot${hasBond ? ' db-slot--bonded' : ''}`}
       style={{ '--rc': rc } as React.CSSProperties}
       onClick={() => onRemove(slot.uuid)}
       title={`${slot.card?.name ?? slot.instance?.cardId} — Tippen zum Entfernen`}
@@ -503,6 +510,16 @@ const DeckSlot: React.FC<DeckSlotProps> = ({ slot, onRemove }) => {
         <div className="db-slot__placeholder">🌑</div>
       )}
       <div className="db-slot__gradient" />
+      {/* Bond level indicator */}
+      {bondData && (bondData.level > 0 || bondData.battles > 0) && (
+        <div className="db-slot__bond" title={`Bond: ${BOND_NAMES[bondData.level] || 'Keines'} (${bondData.battles} Kämpfe)`}>
+          <span className="db-slot__bond-icon">{BOND_ICONS[bondData.level] || '○'}</span>
+          {hasBond && <span className="db-slot__bond-atk">+{Math.round(bondAtk * 100)}%</span>}
+          <div className="db-slot__bond-bar">
+            <div className="db-slot__bond-fill" style={{ width: `${Math.round(bondPct * 100)}%` }} />
+          </div>
+        </div>
+      )}
       <div className="db-slot__footer">
         <span className="db-slot__rarity" style={{ color: rc }}>
           {slot.instance?.rarity}

@@ -742,3 +742,65 @@
   color: #d4a840;
   font-style: italic;
 }
+
+/* ── Bond Status in Deck Slots ─────────────────────────────── */
+
+/* Slot glow when card has active bond */
+.db-slot--bonded {
+  box-shadow: 0 0 0 1px rgba(180,140,255,0.35), inset 0 0 12px rgba(140,100,255,0.12);
+}
+
+/* Bond info overlay — top-right corner of deck slot */
+.db-slot__bond {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.db-slot__bond-icon {
+  font-size: 0.72rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 3px rgba(180,140,255,0.8));
+}
+
+.db-slot__bond-atk {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #c8a8ff;
+  text-shadow: 0 0 6px rgba(180,140,255,0.9);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+/* Progress bar toward next bond level */
+.db-slot__bond-bar {
+  width: 30px;
+  height: 3px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.db-slot__bond-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9060e0, #c8a8ff);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Pulse animation for fully-bonded max-level cards */
+@keyframes bondMaxGlow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(200,168,255,0.4), inset 0 0 14px rgba(160,120,255,0.18); }
+  50%       { box-shadow: 0 0 0 2px rgba(200,168,255,0.7), inset 0 0 20px rgba(160,120,255,0.30); }
+}
+.db-slot--bonded .db-slot__bond-fill[style*="width: 100"] {
+  background: linear-gradient(90deg, #c060ff, #ffe8ff);
+  box-shadow: 0 0 6px rgba(200,168,255,0.7);
+}
