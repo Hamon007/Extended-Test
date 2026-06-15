@@ -1540,6 +1540,17 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Element Synergy Hint — shows when player has 2 blessed-element cards but not 3 */}
+      {deckComplete && deckBlessingCount === 2 && !deckHasSynergy && (
+        <div className="battle-synergy-hint">
+          <span className="battle-synergy-hint__icon">💡</span>
+          <span className="battle-synergy-hint__text">
+            Tipp: Eine weitere {ELEMENT_LABELS[blessedElement]?.split(' ').slice(1).join(' ')}-Karte
+            {' '}→ <strong>ELEMENT-SYNERGIE</strong> (+100💎 pro Bonus-Karte)
+          </span>
+        </div>
+      )}
+
       {/* Daily Boss Banner */}
       {(() => {
         const boss = DailyBossService.getDailyBoss();

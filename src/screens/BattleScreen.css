@@ -4486,3 +4486,22 @@
 .battle-hourly-firstwin__text { color: #8090cc; }
 
 .battle-hourly-firstwin__text strong { color: #a0b0ff; }
+
+/* ── Element Synergy Hint ─────────────────────────────────────── */
+
+.battle-synergy-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 10px;
+  padding: 6px 12px;
+  background: rgba(10, 15, 10, 0.6);
+  border: 1px dashed rgba(100, 180, 60, 0.3);
+  border-radius: 6px;
+  font-size: 0.61rem;
+  color: #70a050;
+}
+
+.battle-synergy-hint__icon { font-size: 0.85rem; }
+
+.battle-synergy-hint__text strong { color: #90d060; }
