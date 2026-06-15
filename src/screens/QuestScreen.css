@@ -283,3 +283,65 @@
   font-size: 0.72rem;
   color: rgba(160,220,160,0.6);
 }
+
+/* ── Claim All Button ─────────────────────────────────────── */
+
+.quest-claim-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 24px);
+  margin: 8px 12px;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, rgba(50,80,20,0.9), rgba(30,60,10,0.8));
+  border: 1.5px solid rgba(100,200,60,0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quest-claim-all:hover,
+.quest-claim-all:focus {
+  background: linear-gradient(90deg, rgba(70,110,30,0.95), rgba(50,90,15,0.9));
+  border-color: rgba(120,220,70,0.8);
+  outline: none;
+}
+
+@keyframes claimAllPop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.04); }
+  60%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.quest-claim-all--anim {
+  animation: claimAllPop 0.5s ease-in-out;
+}
+
+.quest-claim-all__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  animation: claimIconSpin 1.5s ease-in-out infinite;
+}
+
+@keyframes claimIconSpin {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%       { transform: scale(1.2) rotate(10deg); }
+}
+
+.quest-claim-all__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #90e040;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+
+.quest-claim-all__reward {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #c9e880;
+  flex-shrink: 0;
+}

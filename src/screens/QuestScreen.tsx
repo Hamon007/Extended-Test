@@ -74,6 +74,8 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
     ? resetMs < 2 * 3600_000 && incompleteCount > 0
     : resetMs < 12 * 3600_000 && incompleteCount > 0;
 
+  const [claimAnim, setClaimAnim] = useState(false);
+
   function handleClaim(questId: string) {
     const reward = QuestService.claimReward(questId);
     if (!reward) return;
@@ -81,6 +83,26 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
     const result = AccountProgressionService.addAccountXp(acct, reward.xp);
     SaveService.saveAccountState(result.newState);
     showToast(`+${reward.crystals} 💎 · +${reward.xp.toLocaleString('de-DE')} XP`);
+    refresh();
+  }
+
+  function handleClaimAll() {
+    const claimable = list.filter(q => q.progress.completed && !q.progress.claimed);
+    if (claimable.length === 0) return;
+    let totalCrystals = 0;
+    let totalXp = 0;
+    for (const q of claimable) {
+      const reward = QuestService.claimReward(q.def.id);
+      if (reward) { totalCrystals += reward.crystals; totalXp += reward.xp; }
+    }
+    if (totalCrystals > 0 || totalXp > 0) {
+      const acct = SaveService.loadAccountState();
+      const result = AccountProgressionService.addAccountXp(acct, totalXp);
+      SaveService.saveAccountState(result.newState);
+      showToast(`ALLE ABGEHOLT! +${totalCrystals.toLocaleString('de-DE')} 💎 · +${totalXp.toLocaleString('de-DE')} XP`);
+      setClaimAnim(true);
+      setTimeout(() => setClaimAnim(false), 800);
+    }
     refresh();
   }
 
@@ -158,6 +180,18 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
             ↺ Neue Quests in {formatHMS(resetMs)}
           </div>
         </div>
+      )}
+
+      {/* Claim All button */}
+      {claimableCount > 0 && !allDone && (
+        <button
+          className={`quest-claim-all${claimAnim ? ' quest-claim-all--anim' : ''}`}
+          onClick={handleClaimAll}
+        >
+          <span className="quest-claim-all__icon">💎</span>
+          <span className="quest-claim-all__label">ALLE ABHOLEN ({claimableCount})</span>
+          <span className="quest-claim-all__reward">+{list.filter(q => q.progress.completed && !q.progress.claimed).reduce((s, q) => s + q.def.crystalReward, 0).toLocaleString('de-DE')} 💎</span>
+        </button>
       )}
 
       <div className="quest-list">
