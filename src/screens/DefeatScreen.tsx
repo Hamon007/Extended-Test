@@ -11,6 +11,8 @@ import { RageModeService } from '../services/RageModeService';
 import { BountyService }   from '../services/BountyService';
 import { WorldBossService } from '../services/WorldBossService';
 import { WinStreakService } from '../services/WinStreakService';
+import { QuestService } from '../services/QuestService';
+import { PULL_COST_MULTI } from '../config/GameConfig';
 import './DefeatScreen.css';
 
 interface Props {
@@ -117,12 +119,23 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
     ? `Rundengrenze (${MAX_ROUNDS}) erreicht — Gegner zu stark.`
     : 'Alle HP verloren.';
 
-  // Deck upgrade suggestion: weakest card + whether it can level up or fuse
-  const upgradeSuggestion = useMemo(() => {
+  // (upgradeSuggestion merged into powerUpPlan below)
+
+  // Power-up plan: ranked action steps for next attempt
+  const powerUpPlan = useMemo(() => {
+    const steps: Array<{ icon: string; label: string; sub: string; urgency: 'hot' | 'good' | 'ok' }> = [];
     const gState = SaveService.loadGachaState();
-    const deck = SaveService.loadDeck();
-    if (deck.uuids.length === 0) return null;
-    let weakest: { name: string; atk: number; canLevel: boolean } | null = null;
+    const deck   = SaveService.loadDeck();
+
+    // Fusion ready?
+    const fusionGroups = FusionSystem.buildGroups(gState.inventory).filter(g => g.canFuse);
+    if (fusionGroups.length > 0) {
+      const g = fusionGroups[0];
+      steps.push({ icon: '🔮', label: `Fusioniere ${g.card.name}`, sub: 'Seltenheit + ATK steigt sofort', urgency: 'hot' });
+    }
+
+    // Weakest deck card that can level up
+    let weakest: { name: string; atk: number } | null = null;
     for (const uuid of deck.uuids) {
       const inst = gState.inventory.find(i => i.uuid === uuid);
       if (!inst) continue;
@@ -131,10 +144,30 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
       const stats = FusionSystem.getEffectiveStats(card, inst.rarity, inst.level ?? 1);
       const atk = stats.atk + CardMasteryService.getAtkBonus(inst.cardId);
       const canLevel = (inst.level ?? 1) < LevelSystem.levelCap(inst.rarity);
-      if (!weakest || atk < weakest.atk) weakest = { name: card.name, atk, canLevel };
+      if (canLevel && (!weakest || atk < weakest.atk)) weakest = { name: card.name, atk };
     }
-    return weakest;
-  }, []);
+    if (weakest) {
+      steps.push({ icon: '⬆', label: `Trainiere ${weakest.name}`, sub: `${weakest.atk.toLocaleString('de-DE')} ATK — Level-Up möglich`, urgency: 'good' });
+    }
+
+    // Claimable quests?
+    const claimable = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()]
+      .filter(q => q.progress.completed && !q.progress.claimed);
+    if (claimable.length > 0) {
+      const total = claimable.reduce((s, q) => s + q.def.crystalReward, 0);
+      steps.push({ icon: '🎁', label: `${claimable.length} Quest${claimable.length > 1 ? 's' : ''} abholen`, sub: `+${total} 💎 für stärkere Beschwörungen`, urgency: 'good' });
+    }
+
+    // Crystals enough for pull?
+    if (gState.crystals >= PULL_COST_MULTI) {
+      steps.push({ icon: '✨', label: '10× Beschwörung möglich', sub: `${gState.crystals.toLocaleString('de-DE')} 💎 verfügbar — neue Karten ziehen`, urgency: 'good' });
+    }
+
+    // Always: retry suggestion
+    steps.push({ icon: '⚔', label: 'Nochmal kämpfen', sub: 'Comeback-Bonus aktiv: +50% Kristalle', urgency: 'ok' });
+
+    return steps.slice(0, 4);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalDamage  = details.totalDamage ?? 0;
   const maxCombo     = details.maxCombo    ?? 0;
@@ -270,21 +303,24 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           </div>
         </div>
 
-        {/* ── Deck-Verbesserung ── */}
-        {upgradeSuggestion && (
-          <div className="defeat-upgrade">
-            <div className="defeat-upgrade__header">◆ NÄCHSTE VERBESSERUNG</div>
-            <div className="defeat-upgrade__body">
-              <span className="defeat-upgrade__icon">⚔</span>
-              <span className="defeat-upgrade__text">
-                <strong>{upgradeSuggestion.name}</strong>
-                <span className="defeat-upgrade__atk"> ({upgradeSuggestion.atk.toLocaleString('de-DE')} ATK)</span>
-                {' — '}
-                {upgradeSuggestion.canLevel
-                  ? 'Trainiere diese Karte für mehr Kampfstärke!'
-                  : 'Fusioniere für die nächste Seltenheitsstufe!'}
-              </span>
+        {/* ── Power-Up Plan ── */}
+        {powerUpPlan.length > 0 && (
+          <div className="defeat-powerup-plan">
+            <div className="defeat-powerup-plan__header">
+              <span className="defeat-powerup-plan__title">🗺 NÄCHSTE SCHRITTE</span>
+              <span className="defeat-powerup-plan__sub">In dieser Reihenfolge:</span>
             </div>
+            {powerUpPlan.map((step, i) => (
+              <div key={i} className={`defeat-powerup-step defeat-powerup-step--${step.urgency}`}>
+                <span className="defeat-powerup-step__num">{i + 1}</span>
+                <span className="defeat-powerup-step__icon">{step.icon}</span>
+                <div className="defeat-powerup-step__body">
+                  <span className="defeat-powerup-step__label">{step.label}</span>
+                  <span className="defeat-powerup-step__sub">{step.sub}</span>
+                </div>
+                {step.urgency === 'hot' && <span className="defeat-powerup-step__badge">JETZT!</span>}
+              </div>
+            ))}
           </div>
         )}
 

@@ -593,3 +593,116 @@
   padding: 0.1rem 0;
   line-height: 1.5;
 }
+
+/* ── Power-Up Plan ──────────────────────────────────────────── */
+
+.defeat-powerup-plan {
+  margin: 10px 0;
+  padding: 12px 14px;
+  background: rgba(10, 15, 30, 0.7);
+  border: 1px solid rgba(80, 100, 200, 0.35);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.defeat-powerup-plan__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.defeat-powerup-plan__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #a0b8ff;
+  letter-spacing: 0.06em;
+}
+
+.defeat-powerup-plan__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.7rem;
+  color: rgba(160, 180, 255, 0.55);
+}
+
+.defeat-powerup-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid transparent;
+}
+
+.defeat-powerup-step--hot {
+  border-left-color: #ff6020;
+  background: rgba(255,80,0,0.08);
+}
+
+.defeat-powerup-step--good {
+  border-left-color: #4080ff;
+  background: rgba(40,80,200,0.07);
+}
+
+.defeat-powerup-step--ok {
+  border-left-color: rgba(120,120,160,0.4);
+}
+
+.defeat-powerup-step__num {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(160,180,255,0.5);
+  min-width: 14px;
+  flex-shrink: 0;
+}
+
+.defeat-powerup-step--hot .defeat-powerup-step__num { color: rgba(255,140,60,0.8); }
+
+.defeat-powerup-step__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.defeat-powerup-step__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.defeat-powerup-step__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #c0ccff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.defeat-powerup-step--hot .defeat-powerup-step__label { color: #ffb080; }
+
+.defeat-powerup-step__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: rgba(160,180,255,0.6);
+}
+
+.defeat-powerup-step__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #ff6020;
+  background: rgba(255,80,0,0.15);
+  border: 1px solid rgba(255,80,0,0.4);
+  border-radius: 4px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
