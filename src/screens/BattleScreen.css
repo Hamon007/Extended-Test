@@ -4815,3 +4815,107 @@
   color: #7a6080;
   white-space: nowrap;
 }
+
+/* ── Streak-at-Risk Warning ──────────────────────────────────── */
+
+@keyframes streakRiskFlicker {
+  0%, 100% { border-color: rgba(255, 140, 0, 0.5); }
+  50%       { border-color: rgba(255, 60, 0, 0.85); }
+}
+
+.battle-streak-risk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 12px;
+  padding: 9px 12px;
+  background: rgba(40, 15, 0, 0.85);
+  border: 1px solid rgba(255, 140, 0, 0.5);
+  border-radius: 8px;
+  animation: streakRiskFlicker 2s ease-in-out infinite;
+}
+
+.battle-streak-risk--high {
+  border-color: rgba(255, 60, 0, 0.7);
+  background: rgba(50, 10, 0, 0.9);
+  animation-duration: 1.2s;
+}
+
+.battle-streak-risk__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.battle-streak-risk__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.battle-streak-risk__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ff8c00;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.battle-streak-risk--high .battle-streak-risk__title {
+  color: #ff4500;
+}
+
+.battle-streak-risk__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: rgba(255, 140, 0, 0.7);
+}
+
+.battle-streak-risk__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.12);
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  border-radius: 6px;
+  padding: 3px 7px;
+  flex-shrink: 0;
+}
+
+/* ── Streak Safe (shield active) ─────────────────────────────── */
+
+.battle-streak-safe {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 12px;
+  padding: 8px 12px;
+  background: rgba(0, 30, 0, 0.7);
+  border: 1px solid rgba(80, 200, 80, 0.4);
+  border-radius: 8px;
+}
+
+.battle-streak-safe__icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.battle-streak-safe__text {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.78rem;
+  color: rgba(120, 220, 120, 0.85);
+  flex: 1;
+}
+
+.battle-streak-safe__badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #60d060;
+  flex-shrink: 0;
+}

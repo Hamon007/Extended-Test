@@ -2457,6 +2457,32 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Streak-at-Risk Warning — shown above fight button when streak ≥ 3 and no shield */}
+      {winStreak >= 3 && !hasStreakShield && (
+        <div className={`battle-streak-risk${winStreak >= 5 ? ' battle-streak-risk--high' : ''}`}>
+          <span className="battle-streak-risk__icon">⚠️</span>
+          <div className="battle-streak-risk__body">
+            <span className="battle-streak-risk__title">
+              {winStreak >= 5 ? `🔥 ${winStreak}er-SERIE UNGESCHÜTZT!` : `🔥 ${winStreak}er-SERIE STEHT AUF DEM SPIEL`}
+            </span>
+            <span className="battle-streak-risk__sub">
+              Niederlage beendet deine ×{WinStreakService.getRewardMultiplier(winStreak).multiplier.toFixed(1)}-Bonusstrecke
+              {winStreak >= 5 ? ' — kein Schutzschild!' : '!'}
+            </span>
+          </div>
+          <span className="battle-streak-risk__badge">×{WinStreakService.getRewardMultiplier(winStreak).multiplier.toFixed(1)}</span>
+        </div>
+      )}
+      {winStreak >= 5 && hasStreakShield && (
+        <div className="battle-streak-safe">
+          <span className="battle-streak-safe__icon">🛡</span>
+          <span className="battle-streak-safe__text">
+            Serie geschützt — Schutzschild absorbiert eine Niederlage
+          </span>
+          <span className="battle-streak-safe__badge">🔥 {winStreak}×</span>
+        </div>
+      )}
+
       <div className="battle-tower-spacer" />
 
       <button
