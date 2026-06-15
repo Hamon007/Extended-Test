@@ -213,6 +213,54 @@
   position: relative;
 }
 
+/* ── Combo Fever Vignette ────────────────────────────────── */
+
+.arena-combo-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  border-radius: inherit;
+  transition: box-shadow 0.3s ease-out;
+}
+
+@keyframes comboViglette2 {
+  from { box-shadow: inset 0 0 30px rgba(255,150,0,0.10); }
+  to   { box-shadow: inset 0 0 50px rgba(255,150,0,0.20); }
+}
+
+@keyframes comboVignette3 {
+  from { box-shadow: inset 0 0 40px rgba(255,100,0,0.20); }
+  to   { box-shadow: inset 0 0 70px rgba(255,80,0,0.38); }
+}
+
+@keyframes comboVignette4 {
+  from { box-shadow: inset 0 0 50px rgba(255,50,0,0.30); }
+  to   { box-shadow: inset 0 0 90px rgba(255,20,0,0.50); }
+}
+
+@keyframes comboVignetteMax {
+  0%   { box-shadow: inset 0 0 60px rgba(200,0,255,0.45), inset 0 0 20px rgba(255,200,0,0.25); }
+  50%  { box-shadow: inset 0 0 100px rgba(255,100,0,0.60), inset 0 0 40px rgba(200,0,255,0.40); }
+  100% { box-shadow: inset 0 0 60px rgba(200,0,255,0.45), inset 0 0 20px rgba(255,200,0,0.25); }
+}
+
+.arena-combo-vignette--low  { animation: comboViglette2   1.8s ease-in-out infinite alternate; }
+.arena-combo-vignette--mid  { animation: comboVignette3   1.2s ease-in-out infinite alternate; }
+.arena-combo-vignette--high { animation: comboVignette4   0.9s ease-in-out infinite alternate; }
+.arena-combo-vignette--max  { animation: comboVignetteMax 0.7s ease-in-out infinite; }
+
+/* bg pulse tints for each tier */
+.battle-arena--combo-low  .arena-bg-pulse { animation: bg-pulse 2s ease-in-out infinite alternate, comboLowBg  2s ease-in-out infinite alternate !important; }
+.battle-arena--combo-mid  .arena-bg-pulse { animation: bg-pulse 1.5s ease-in-out infinite alternate, comboMidBg  1.2s ease-in-out infinite alternate !important; }
+.battle-arena--combo-high .arena-bg-pulse { animation: bg-pulse 1s ease-in-out infinite alternate, comboHighBg  0.9s ease-in-out infinite alternate !important; }
+.battle-arena--combo-max  .arena-bg-pulse { animation: bg-pulse 0.7s ease-in-out infinite alternate, comboMaxBg  0.6s ease-in-out infinite !important; }
+
+@keyframes comboLowBg  { from { background: radial-gradient(ellipse at 50% 30%, rgba(60,30,0,0.15) 0%, transparent 70%); } to { background: radial-gradient(ellipse at 50% 30%, rgba(80,40,0,0.25) 0%, transparent 70%); } }
+@keyframes comboMidBg  { from { background: radial-gradient(ellipse at 50% 30%, rgba(100,40,0,0.20) 0%, transparent 70%); } to { background: radial-gradient(ellipse at 50% 30%, rgba(140,60,0,0.35) 0%, transparent 70%); } }
+@keyframes comboHighBg { from { background: radial-gradient(ellipse at 50% 30%, rgba(140,30,0,0.28) 0%, transparent 70%); } to { background: radial-gradient(ellipse at 50% 30%, rgba(200,30,0,0.45) 0%, transparent 70%); } }
+@keyframes comboMaxBg  { 0% { background: radial-gradient(ellipse at 50% 30%, rgba(120,0,200,0.40) 0%, transparent 70%); } 50% { background: radial-gradient(ellipse at 50% 30%, rgba(255,100,0,0.50) 0%, transparent 70%); } 100% { background: radial-gradient(ellipse at 50% 30%, rgba(120,0,200,0.40) 0%, transparent 70%); } }
+
 /* ── Danger Zone Vignette ────────────────────────────────── */
 .arena-danger-vignette {
   position: absolute;

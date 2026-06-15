@@ -2892,11 +2892,17 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
 
   const playerHpPct2 = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
   const isDangerZone = playerHpPct2 > 0 && playerHpPct2 < 0.25 && result?.outcome !== 'victory' && result?.outcome !== 'defeat';
+  const comboFeverTier = combo.count >= 5 ? 'max' : combo.count >= 4 ? 'high' : combo.count >= 3 ? 'mid' : combo.count >= 2 ? 'low' : null;
 
   return (
-    <div className={`battle-arena${isDangerZone ? ' battle-arena--danger' : ''}`} ref={arenaRef}>
+    <div className={[
+      'battle-arena',
+      isDangerZone ? 'battle-arena--danger' : '',
+      comboFeverTier ? `battle-arena--combo-${comboFeverTier}` : '',
+    ].filter(Boolean).join(' ')} ref={arenaRef}>
       <div className="arena-bg-pulse" aria-hidden="true" />
       {isDangerZone && <div className="arena-danger-vignette" aria-hidden="true" />}
+      {comboFeverTier && <div className={`arena-combo-vignette arena-combo-vignette--${comboFeverTier}`} aria-hidden="true" />}
 
       {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}
       <div className="damage-numbers-layer">
