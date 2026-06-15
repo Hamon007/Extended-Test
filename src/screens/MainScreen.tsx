@@ -40,6 +40,7 @@ import { WorldBossService } from '../services/WorldBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
+import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
@@ -460,6 +461,40 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           ✨ Beschwören
         </button>
       </div>
+      {/* ── Gacha Pull Progress Bar ── */}
+      {crystals < PULL_COST_MULTI && (
+        <div
+          className="main-pull-progress"
+          onClick={() => onNavigate?.('battle')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('battle')}
+        >
+          <div className="main-pull-progress__track">
+            <div
+              className="main-pull-progress__fill"
+              style={{ width: `${Math.min(100, Math.round((crystals / PULL_COST_MULTI) * 100))}%` }}
+            />
+          </div>
+          <span className="main-pull-progress__label">
+            {crystals.toLocaleString('de-DE')} / {PULL_COST_MULTI.toLocaleString('de-DE')} 💎 bis 10× Beschwörung
+          </span>
+        </div>
+      )}
+      {crystals >= PULL_COST_MULTI && (
+        <div
+          className="main-pull-progress main-pull-progress--ready"
+          onClick={() => onNavigate?.('gacha')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && onNavigate?.('gacha')}
+        >
+          <span className="main-pull-progress__ready-icon">✨</span>
+          <span className="main-pull-progress__ready-text">10× BESCHWÖRUNG BEREIT!</span>
+          <span className="main-pull-progress__ready-arrow">▶</span>
+        </div>
+      )}
+
       {/* ── Pity-Hinweis ── */}
       {pityCounter >= 70 && (
         <div
