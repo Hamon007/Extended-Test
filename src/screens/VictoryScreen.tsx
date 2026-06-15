@@ -138,6 +138,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
     return actions.slice(0, 3);
   }, [onNavigate]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Level-up overlay state: show the dramatic overlay, auto-dismiss after 3.5s
+  const [showLevelUp, setShowLevelUp] = useState(() => !!(details.accountLevelUp));
+  useEffect(() => {
+    if (!showLevelUp) return;
+    const id = setTimeout(() => setShowLevelUp(false), 3500);
+    return () => clearTimeout(id);
+  }, [showLevelUp]);
+
   // Next floor preview (tower mode only)
   const currentFloor   = details.towerFloor;
   const nextFloor      = currentFloor !== undefined ? currentFloor + 1 : undefined;
@@ -150,6 +158,41 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
 
   return (
     <div className="victory-screen">
+
+      {/* ── Account Level-Up Overlay ── */}
+      {showLevelUp && details.accountLevelUp && (
+        <div
+          className="victory-levelup-overlay"
+          onClick={() => setShowLevelUp(false)}
+          aria-label="Level-Up"
+        >
+          <div className="victory-levelup-overlay__burst" aria-hidden="true">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <div key={i} className={`vlu-burst vlu-burst--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+            ))}
+          </div>
+          <div className="victory-levelup-overlay__card">
+            <div className="vlu-eyebrow">LEVEL UP!</div>
+            <div className="vlu-level">
+              <span className="vlu-level__num">{details.accountLevelUp.newLevel}</span>
+            </div>
+            <div className="vlu-stats">
+              <div className="vlu-stat">
+                <span className="vlu-stat__icon">⚡</span>
+                <span className="vlu-stat__label">Ausdauer</span>
+                <span className="vlu-stat__val">{details.accountLevelUp.newMaxStamina}</span>
+              </div>
+              <div className="vlu-stat">
+                <span className="vlu-stat__icon">💧</span>
+                <span className="vlu-stat__label">Mana</span>
+                <span className="vlu-stat__val">{details.accountLevelUp.newMaxMana.toLocaleString('de-DE')}</span>
+              </div>
+            </div>
+            <div className="vlu-dismiss">Tippe zum Fortfahren</div>
+          </div>
+        </div>
+      )}
+
       {/* Hintergrund-Partikel */}
       <div className="victory-particles" aria-hidden="true">
         {Array.from({ length: 12 }).map((_, i) => (

@@ -1837,6 +1837,157 @@
   font-weight: 800;
 }
 
+/* ── Account Level-Up Overlay ────────────────────────────────── */
+
+@keyframes vluOverlayIn {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to   { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+@keyframes vluCardIn {
+  from { transform: scale(0.6) translateY(40px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+@keyframes vluLevelPop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes vluBurstOut {
+  from { transform: rotate(calc(var(--i) * 22.5deg)) translateY(0)  scale(1); opacity: 1; }
+  to   { transform: rotate(calc(var(--i) * 22.5deg)) translateY(-70px) scale(0); opacity: 0; }
+}
+
+@keyframes vluGoldShimmer {
+  0%, 100% { background-position: -200% center; }
+  50%       { background-position:  200% center; }
+}
+
+.victory-levelup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.82);
+  animation: vluOverlayIn 0.35s ease-out forwards;
+  cursor: pointer;
+}
+
+.victory-levelup-overlay__burst {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.vlu-burst {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: vluBurstOut 1.2s ease-out 0.4s forwards;
+}
+
+.vlu-burst--0 { background: #ffd700; width: 8px; height: 8px; }
+.vlu-burst--1 { background: #ffffff; width: 5px; height: 5px; }
+.vlu-burst--2 { background: #ff9800; width: 7px; height: 7px; }
+.vlu-burst--3 { background: #ffe082; width: 6px; height: 6px; }
+
+.victory-levelup-overlay__card {
+  background: linear-gradient(160deg, rgba(30, 20, 0, 0.97), rgba(20, 10, 0, 0.99));
+  border: 2px solid #c8a020;
+  border-radius: 18px;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow:
+    0 0 40px rgba(200, 160, 0, 0.5),
+    0 0 80px rgba(200, 160, 0, 0.2),
+    inset 0 1px 0 rgba(255, 220, 80, 0.2);
+  animation: vluCardIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  min-width: 240px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.vlu-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: #c8a020;
+  text-transform: uppercase;
+}
+
+.vlu-level {
+  position: relative;
+}
+
+.vlu-level__num {
+  font-family: 'Cinzel', serif;
+  font-size: 5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffe082, #ffd700, #ff9800, #ffd700, #ffe082);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: vluLevelPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both,
+             vluGoldShimmer 2.5s linear 0.9s infinite;
+  display: block;
+  line-height: 1;
+}
+
+.vlu-stats {
+  display: flex;
+  gap: 20px;
+  border-top: 1px solid rgba(200, 160, 0, 0.3);
+  padding-top: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+.vlu-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.vlu-stat__icon {
+  font-size: 1.3rem;
+}
+
+.vlu-stat__label {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: rgba(200, 160, 0, 0.7);
+  letter-spacing: 0.05em;
+}
+
+.vlu-stat__val {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.vlu-dismiss {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: rgba(200, 160, 0, 0.45);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
 /* ── Lucky Day reward row ─────────────────────────────────────── */
 
 .reward-row--luckyday {
