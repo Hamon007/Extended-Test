@@ -4281,3 +4281,55 @@
   border-radius: 6px;
   padding: 3px 8px;
 }
+
+/* ── Battle Contract Chip ─────────────────────────────────────── */
+
+@keyframes contractGlow {
+  0%, 100% { border-color: rgba(100, 200, 255, 0.3); }
+  50%       { border-color: rgba(100, 200, 255, 0.65); }
+}
+
+.battle-contract {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 10px 2px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, #000d1a 0%, #000810 100%);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 8px;
+  animation: contractGlow 2.2s ease-in-out infinite;
+}
+
+.battle-contract__icon { font-size: 1.2rem; }
+
+.battle-contract__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.battle-contract__title {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #60c8ff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.battle-contract__hint {
+  font-size: 0.59rem;
+  color: #306880;
+}
+
+.battle-contract__reward {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #ffd060;
+  background: rgba(255, 200, 50, 0.12);
+  border: 1px solid rgba(255, 200, 50, 0.3);
+  border-radius: 5px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}

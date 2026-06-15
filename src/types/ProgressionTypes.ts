@@ -112,6 +112,10 @@ export interface RewardDetails {
   sessionWins?: number; // total session wins so far
   // Daily Crystal Goal: bonus for reaching the 2000-crystal daily earning target
   dailyGoalBonus?: number;
+  // Battle Contract: bonus for meeting the per-battle micro-goal
+  contractBonus?: number;
+  contractLabel?: string;
+  contractIcon?:  string;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

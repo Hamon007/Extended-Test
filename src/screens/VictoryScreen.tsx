@@ -652,6 +652,18 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Battle Contract fulfilled */}
+          {details.contractBonus && details.contractBonus > 0 && (
+            <div className="reward-row reward-row--contract">
+              <span className="reward-row__label">
+                {details.contractIcon ?? '📜'} VERTRAG ERFÜLLT: {details.contractLabel}
+              </span>
+              <span className="reward-row__value reward-row__value--contract">
+                +<CountUp target={details.contractBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Quest Completions triggered by this battle */}
           {details.questsCompleted && details.questsCompleted.length > 0 && (
             <div className="victory-quest-completions">

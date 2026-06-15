@@ -54,6 +54,7 @@ import { FloorTitleService }         from '../services/FloorTitleService';
 import { SessionBonusService }       from '../services/SessionBonusService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { ComebackBonusService } from '../services/ComebackBonusService';
+import { BattleContractService, type BattleContract } from '../services/BattleContractService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -123,6 +124,7 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
   const [rageModeActive,    setRageModeActive]    = useState(() => RageModeService.isActive());
   const [flashChallengeMs, setFlashChallengeMs]   = useState(() => FlashChallengeService.msRemaining());
   const [flashProgress,    setFlashProgress]      = useState(() => FlashChallengeService.getProgress());
+  const [activeContract,   setActiveContract]     = useState<BattleContract | null>(() => BattleContractService.getActive());
   const rewardApplied  = useRef(false);
   const pvpConsumedRef = useRef(false);
 
@@ -697,6 +699,29 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       }
     }
 
+    // Battle Contract: evaluate condition on victory (clears on defeat too)
+    if (details.isVictory) {
+      const contractResult = BattleContractService.evaluate({
+        won:           true,
+        playerHpPct:   details.playerHpPct ?? 1,
+        roundsElapsed: details.roundsElapsed ?? 0,
+        maxCombo:      details.maxCombo ?? 0,
+        totalDamage:   details.totalDamage ?? 0,
+      });
+      if (contractResult?.met && contractResult.crystals > 0) {
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + contractResult.crystals,
+          contractBonus:  contractResult.crystals,
+          contractLabel:  contractResult.contract.label,
+          contractIcon:   contractResult.contract.icon,
+        };
+      }
+    } else {
+      BattleContractService.clear();
+    }
+    setActiveContract(null);
+
     // Floor Title unlock: check if clearing this floor crosses a title boundary
     if (isTowerMode && details.isVictory) {
       const titleUnlock = FloorTitleService.checkTitleUnlock(towerFloor, towerFloor + 1);
@@ -1051,6 +1076,10 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
     if (!energy.consume()) return;
     setIsTowerMode(true);
 
+    // Roll battle contract for this tower fight
+    const contract = BattleContractService.startBattle();
+    setActiveContract(contract);
+
     // Würfle ein Zufalls-Ereignis
     const ev = TowerEventService.rollEvent();
     if (ev) {
@@ -1350,6 +1379,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           )}
         </div>
       </div>
+
+      {/* Battle Contract chip — one-battle micro-goal for bonus crystals */}
+      {activeContract && (
+        <div className="battle-contract">
+          <span className="battle-contract__icon">{activeContract.icon}</span>
+          <div className="battle-contract__body">
+            <span className="battle-contract__title">VERTRAG: {activeContract.label}</span>
+            <span className="battle-contract__hint">{activeContract.hint}</span>
+          </div>
+          <span className="battle-contract__reward">+{activeContract.crystals} 💎</span>
+        </div>
+      )}
 
       {/* Hot Streak Escalation Banner — dramatic visual escalation at 5/10/15+ wins */}
       {winStreak >= 5 && (() => {
