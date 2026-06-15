@@ -1279,6 +1279,179 @@
   flex-shrink: 0;
 }
 
+/* ── Offline Return Bonus Modal ───────────────────────────── */
+
+.offline-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: offlineOverlayIn 0.3s ease both;
+}
+
+@keyframes offlineOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.offline-modal__box {
+  position: relative;
+  width: min(340px, 92vw);
+  background: linear-gradient(160deg, #080d1a 0%, #0d0520 100%);
+  border: 1px solid rgba(80,140,220,0.4);
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  text-align: center;
+  overflow: hidden;
+  animation: offlineBoxIn 0.4s cubic-bezier(.22,1,.36,1) both;
+  animation-delay: 0.1s;
+}
+
+@keyframes offlineBoxIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* Crystal rain drops */
+.offline-modal__rain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.offline-modal__drop {
+  position: absolute;
+  top: -20px;
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, rgba(80,160,255,0.7), transparent);
+  animation: rainFall 1.2s linear infinite;
+  animation-delay: calc(var(--di, 0) * 0.1s);
+  left: calc(var(--di, 0) * 8.5%);
+}
+
+.offline-modal__drop--0 { width: 3px; height: 10px; opacity: 0.6; }
+.offline-modal__drop--1 { width: 5px; height: 16px; opacity: 0.8; background: linear-gradient(to bottom, rgba(200,200,80,0.7), transparent); }
+.offline-modal__drop--2 { width: 3px; height: 12px; opacity: 0.5; }
+.offline-modal__drop--3 { width: 4px; height: 14px; opacity: 0.7; background: linear-gradient(to bottom, rgba(180,100,255,0.6), transparent); }
+
+@keyframes rainFall {
+  from { transform: translateY(0); opacity: 0.8; }
+  to   { transform: translateY(200px); opacity: 0; }
+}
+
+.offline-modal__moon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  display: block;
+  animation: moonFloat 3s ease-in-out infinite;
+}
+
+@keyframes moonFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+.offline-modal__title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e8c060;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.offline-modal__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.82rem;
+  color: rgba(180,180,210,0.75);
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.offline-modal__reward {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 20px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(80,140,220,0.2);
+  border-bottom: 1px solid rgba(80,140,220,0.2);
+}
+
+.offline-modal__reward-icon {
+  font-size: 1.6rem;
+  animation: gemSpin 2s ease-in-out infinite alternate;
+}
+
+@keyframes gemSpin {
+  from { transform: scale(1) rotate(-5deg); }
+  to   { transform: scale(1.1) rotate(5deg); }
+}
+
+.offline-modal__reward-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #e8c060;
+  letter-spacing: 0.02em;
+}
+
+.offline-modal__reward-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(200,170,80,0.7);
+  letter-spacing: 0.12em;
+  align-self: flex-end;
+  padding-bottom: 4px;
+}
+
+.offline-modal__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.offline-modal__btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.2s;
+}
+
+.offline-modal__btn--battle {
+  background: linear-gradient(135deg, rgba(40,80,160,0.9), rgba(20,50,120,0.8));
+  border-color: rgba(80,140,220,0.6);
+  color: #90c0ff;
+}
+
+.offline-modal__btn--battle:hover {
+  background: linear-gradient(135deg, rgba(60,100,180,0.95), rgba(40,70,140,0.9));
+  border-color: rgba(120,180,255,0.8);
+}
+
+.offline-modal__btn--close {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(200,200,220,0.6);
+}
+
+.offline-modal__btn--close:hover {
+  background: rgba(255,255,255,0.08);
+}
+
 .main-card__action-btn--spin {
   background: linear-gradient(135deg, rgba(80, 0, 120, 0.4), rgba(150, 0, 80, 0.3));
   border-color: rgba(200, 100, 255, 0.5);

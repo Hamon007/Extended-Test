@@ -1650,17 +1650,41 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       {/* ── Kartendetail-Modal ── */}
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
 
-      {/* ── Offline Einkommens-Toast ── */}
+      {/* ── Offline Return Bonus Modal ── */}
       {offlineResult && !loginReward && (
-        <div className="offline-toast" onClick={() => setOfflineResult(null)}>
-          <span className="offline-toast__icon">🌙</span>
-          <div className="offline-toast__text">
-            <span className="offline-toast__title">Willkommen zurück!</span>
-            <span className="offline-toast__sub">
-              +{offlineResult.crystals} 💎 in {offlineResult.hours}h verdient
-            </span>
+        <div className="offline-modal" onClick={() => setOfflineResult(null)}>
+          <div className="offline-modal__box" onClick={e => e.stopPropagation()}>
+            {/* Crystal rain particles */}
+            <div className="offline-modal__rain" aria-hidden="true">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className={`offline-modal__drop offline-modal__drop--${i % 4}`} style={{ '--di': i } as React.CSSProperties} />
+              ))}
+            </div>
+            <div className="offline-modal__moon">🌙</div>
+            <div className="offline-modal__title">Willkommen zurück!</div>
+            <div className="offline-modal__sub">
+              Während deiner Abwesenheit ({offlineResult.hours}h) haben deine Unsterblichen für dich gekämpft:
+            </div>
+            <div className="offline-modal__reward">
+              <span className="offline-modal__reward-icon">💎</span>
+              <span className="offline-modal__reward-val">+{offlineResult.crystals.toLocaleString('de-DE')}</span>
+              <span className="offline-modal__reward-label">KRISTALLE</span>
+            </div>
+            <div className="offline-modal__actions">
+              <button
+                className="offline-modal__btn offline-modal__btn--battle"
+                onClick={() => { setOfflineResult(null); onNavigate?.('battle'); }}
+              >
+                ⚔ Jetzt kämpfen
+              </button>
+              <button
+                className="offline-modal__btn offline-modal__btn--close"
+                onClick={() => setOfflineResult(null)}
+              >
+                OK
+              </button>
+            </div>
           </div>
-          <span className="offline-toast__close">✕</span>
         </div>
       )}
 
