@@ -15,6 +15,8 @@ import { LevelSystem } from '../services/LevelSystem';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { FloorTitleService } from '../services/FloorTitleService';
+import { DailyLoginService } from '../services/DailyLoginService';
+import { LuckySpinService } from '../services/LuckySpinService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -789,6 +791,35 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
                 )}
               </div>
               <span className="victory-pull-nudge__crystals">{crystals.toLocaleString('de-DE')} 💎</span>
+            </div>
+          );
+        })()}
+
+        {/* Tomorrow's Rewards preview — retention hook */}
+        {(() => {
+          const currentDay   = DailyLoginService.getStreakDay();
+          const tomorrowDay  = currentDay >= 7 ? 1 : currentDay + 1;
+          const tomorrowRew  = DailyLoginService.DAY_REWARDS[tomorrowDay - 1];
+          const spinReady    = LuckySpinService.canSpin();
+          if (!tomorrowRew) return null;
+          return (
+            <div className="victory-tomorrow">
+              <div className="victory-tomorrow__header">🌙 Morgen wartet auf dich</div>
+              <div className="victory-tomorrow__row">
+                <span className="victory-tomorrow__icon">📅</span>
+                <span className="victory-tomorrow__label">Login-Bonus Tag {tomorrowDay}</span>
+                <span className="victory-tomorrow__value">
+                  +{tomorrowRew.crystals.toLocaleString('de-DE')} 💎
+                  {tomorrowRew.potions > 0 && ` + ${tomorrowRew.potions}🧪`}
+                </span>
+              </div>
+              {spinReady && (
+                <div className="victory-tomorrow__row">
+                  <span className="victory-tomorrow__icon">🎡</span>
+                  <span className="victory-tomorrow__label">Glücksrad</span>
+                  <span className="victory-tomorrow__value victory-tomorrow__value--available">BEREIT!</span>
+                </div>
+              )}
             </div>
           );
         })()}

@@ -1656,3 +1656,53 @@
   color: #ffd060;
   flex-shrink: 0;
 }
+
+/* ── Tomorrow's Rewards Preview ──────────────────────────────── */
+
+.victory-tomorrow {
+  margin: 8px 0;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #080816 0%, #040410 100%);
+  border: 1px solid rgba(80, 80, 200, 0.25);
+  border-radius: 10px;
+}
+
+.victory-tomorrow__header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #8080cc;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.victory-tomorrow__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.victory-tomorrow__icon { font-size: 0.85rem; }
+
+.victory-tomorrow__label {
+  flex: 1;
+  font-size: 0.63rem;
+  color: #7070aa;
+}
+
+.victory-tomorrow__value {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #9090cc;
+}
+
+.victory-tomorrow__value--available {
+  color: #60d060;
+  animation: pulseGreen 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}

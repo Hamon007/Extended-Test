@@ -1351,6 +1351,31 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         </div>
       </div>
 
+      {/* Hot Streak Escalation Banner — dramatic visual escalation at 5/10/15+ wins */}
+      {winStreak >= 5 && (() => {
+        const tier = winStreak >= 15 ? 'legendary' : winStreak >= 10 ? 'unstoppable' : 'hot';
+        const icon = tier === 'legendary' ? '💀' : tier === 'unstoppable' ? '⚡' : '🔥';
+        const title =
+          tier === 'legendary'   ? `LEGENDÄR × ${winStreak}` :
+          tier === 'unstoppable' ? `UNSTOPPBAR × ${winStreak}` :
+          `FEUERSERIE × ${winStreak}`;
+        const sub =
+          tier === 'legendary'   ? 'Niemand kann dich aufhalten!' :
+          tier === 'unstoppable' ? `Noch ${15 - winStreak} bis LEGENDÄR!` :
+          `Noch ${10 - winStreak} bis UNSTOPPBAR!`;
+        const mult = WinStreakService.getRewardMultiplier(winStreak);
+        return (
+          <div className={`battle-hot-streak battle-hot-streak--${tier}`}>
+            <span className="battle-hot-streak__icon">{icon}</span>
+            <div className="battle-hot-streak__body">
+              <span className="battle-hot-streak__title">{title}</span>
+              <span className="battle-hot-streak__sub">{sub}</span>
+            </div>
+            <span className="battle-hot-streak__mult">×{mult.multiplier.toFixed(1)}</span>
+          </div>
+        );
+      })()}
+
       {/* Revenge chip — appears when the player returns to their last defeat floor */}
       {revengeFloor === towerFloor && (
         <div className="battle-revenge-chip">
@@ -1995,6 +2020,46 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           ? `✓ Deck bereit (${deckInstances.length}/${DECK_SIZE} Karten)`
           : `⚠ Deck unvollständig (${deckInstances.length}/${DECK_SIZE}) — Deckbuilder öffnen`}
       </div>
+
+      {/* ── Mastery Near Level-Up Alert ── */}
+      {deckComplete && (() => {
+        const NEAR_THRESHOLD = 0.75; // show when ≥75% toward next mastery level
+        const nearCards = deckInstances
+          .map(inst => {
+            const card = CardDatabase.getById(inst.cardId);
+            if (!card) return null;
+            const info = CardMasteryService.getMasteryInfo(inst.cardId);
+            if (info.nextThreshold === null) return null; // max level
+            const pct = info.nextThreshold > 0 ? info.plays / info.nextThreshold : 1;
+            if (pct < NEAR_THRESHOLD) return null;
+            return { card, info, pct };
+          })
+          .filter((x): x is NonNullable<typeof x> => x !== null)
+          .sort((a, b) => b.pct - a.pct)
+          .slice(0, 2); // show max 2 cards
+
+        if (nearCards.length === 0) return null;
+        return (
+          <div className="battle-mastery-alert">
+            <div className="battle-mastery-alert__header">⬆ Meisterschaft fast erreicht!</div>
+            {nearCards.map(({ card, info }) => {
+              const remaining = (info.nextThreshold ?? 0) - info.plays;
+              const fillPct = info.nextThreshold ? Math.round((info.plays / info.nextThreshold) * 100) : 100;
+              return (
+                <div key={card.id} className="battle-mastery-alert__row">
+                  <span className="battle-mastery-alert__name">{card.name}</span>
+                  <div className="battle-mastery-alert__bar-wrap">
+                    <div className="battle-mastery-alert__bar-fill" style={{ width: `${fillPct}%` }} />
+                  </div>
+                  <span className="battle-mastery-alert__remaining">
+                    {remaining <= 1 ? '⬆ Nächster Sieg!' : `noch ${remaining}×`}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* ── Power Comparison Widget ── */}
       {deckComplete && (() => {
