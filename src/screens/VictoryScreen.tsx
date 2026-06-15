@@ -716,6 +716,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* New daily crystal record */}
+          {details.newDailyRecord && details.newDailyRecord > 0 && (
+            <div className="reward-row reward-row--daily-record">
+              <span className="reward-row__label">🏅 NEUER TAGESREKORD!</span>
+              <span className="reward-row__value reward-row__value--daily-record">
+                <CountUp target={details.newDailyRecord} /> 💎
+              </span>
+            </div>
+          )}
+
           {/* Daily Duo bonus */}
           {details.dailyDuoBonus && details.dailyDuoBonus > 0 && (
             <div className="reward-row reward-row--dailyduo">

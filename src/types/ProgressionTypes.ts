@@ -125,6 +125,8 @@ export interface RewardDetails {
   dailyDuoBonus?: number;
   // Lucky Day: +10% crystals during the active 2-hour window (~20% of days)
   luckyDayBonus?: number;
+  // New daily crystal record: set when today's total surpasses all-time best
+  newDailyRecord?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────

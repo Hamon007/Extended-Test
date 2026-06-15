@@ -13,7 +13,8 @@ import { SaveService } from './SaveService';
 export const DAILY_GOAL = 2_000;        // crystal target
 export const DAILY_GOAL_REWARD = 200;   // bonus crystals on reaching goal
 
-const KEY = 'ci_daily_goal';
+const KEY      = 'ci_daily_goal';
+const BEST_KEY = 'ci_daily_crystal_best';
 
 interface GoalState {
   dateKey: string; // 'YYYY-MM-DD' UTC
@@ -72,5 +73,24 @@ export const DailyGoalService = {
   /** Progress fraction 0-1 (may exceed 1 if over-achieved). */
   getProgress(): number {
     return Math.min(1, load().earned / DAILY_GOAL);
+  },
+
+  /** Returns the all-time best daily crystal total. */
+  getAllTimeBest(): number {
+    return parseInt(localStorage.getItem(BEST_KEY) ?? '0', 10);
+  },
+
+  /**
+   * Check if today's earned total is a new daily record after adding crystals.
+   * Call AFTER addEarned. Returns the new record value if beaten, else 0.
+   */
+  checkDailyRecord(): number {
+    const earned = load().earned;
+    const prev   = DailyGoalService.getAllTimeBest();
+    if (earned > prev) {
+      try { localStorage.setItem(BEST_KEY, String(earned)); } catch { /* ignore */ }
+      return earned;
+    }
+    return 0;
   },
 };

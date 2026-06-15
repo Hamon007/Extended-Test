@@ -721,6 +721,11 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
       if (goalBonus > 0) {
         finalDetails = { ...finalDetails, dailyGoalBonus: goalBonus };
       }
+      // Check for new daily crystal record after adding
+      const newRecord = DailyGoalService.checkDailyRecord();
+      if (newRecord > 0) {
+        finalDetails = { ...finalDetails, newDailyRecord: newRecord };
+      }
     }
 
     // Daily Duo: bonus when both Duo-of-the-Day cards are in the active deck

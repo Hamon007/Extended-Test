@@ -1988,6 +1988,26 @@
   margin-top: 4px;
 }
 
+/* ── Daily Record reward row ──────────────────────────────────── */
+
+@keyframes dailyRecordPop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.reward-row--daily-record {
+  background: linear-gradient(90deg, rgba(0, 30, 20, 0.75), rgba(0, 15, 10, 0.5));
+  border-left: 3px solid #30d890;
+  animation: rewardRowIn 0.5s ease-out both, dailyRecordPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+.reward-row__value--daily-record {
+  color: #40ffb0;
+  font-weight: 900;
+  text-shadow: 0 0 10px rgba(40, 220, 140, 0.7);
+}
+
 /* ── Lucky Day reward row ─────────────────────────────────────── */
 
 .reward-row--luckyday {
