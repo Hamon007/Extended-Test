@@ -4723,3 +4723,73 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+/* ── Upcoming Floors Preview ──────────────────────────────────── */
+
+.battle-upcoming-floors {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 12px 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.battle-upcoming-floors__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  color: #4a3858;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.battle-upcoming-floor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+}
+
+.battle-upcoming-floor--boss {
+  border-color: rgba(200,50,50,0.35);
+  background: rgba(200,50,50,0.08);
+}
+
+.battle-upcoming-floor--elite {
+  border-color: rgba(100,150,255,0.3);
+  background: rgba(100,150,255,0.06);
+}
+
+.battle-upcoming-floor--lucky {
+  border-color: rgba(255,200,50,0.35);
+  background: rgba(255,200,50,0.06);
+}
+
+.battle-upcoming-floor__num {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9a8090;
+}
+
+.battle-upcoming-floor--boss .battle-upcoming-floor__num { color: #e05555; }
+.battle-upcoming-floor--elite .battle-upcoming-floor__num { color: #7090ff; }
+.battle-upcoming-floor--lucky .battle-upcoming-floor__num { color: #ffc830; }
+
+.battle-upcoming-floor__type { font-size: 0.75rem; }
+
+.battle-upcoming-floor__crystals {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.55rem;
+  color: #7a6080;
+  white-space: nowrap;
+}

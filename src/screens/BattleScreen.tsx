@@ -1842,6 +1842,36 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Upcoming Floors Preview (next 3 floors after current) */}
+      {isTowerMode && (() => {
+        const base = EnemyDatabase.getFirst();
+        const baseCrystals = base?.rewardCrystals ?? 100;
+        const upcomingFloors = [towerFloor + 1, towerFloor + 2, towerFloor + 3].map(f => {
+          const isBossF  = TowerService.isBossFloor(f);
+          const isEliteF = !isBossF && f % 5 === 0;
+          const isLucky  = LuckyFloorService.isLucky(f);
+          const est = Math.round(baseCrystals * (1 + f * 0.2) * (isLucky ? 1.3 : 1));
+          return { floor: f, isBoss: isBossF, isElite: isEliteF, isLucky, est };
+        });
+        return (
+          <div className="battle-upcoming-floors">
+            <span className="battle-upcoming-floors__label">Vorschau</span>
+            {upcomingFloors.map(f => (
+              <div
+                key={f.floor}
+                className={`battle-upcoming-floor${f.isBoss ? ' battle-upcoming-floor--boss' : f.isElite ? ' battle-upcoming-floor--elite' : f.isLucky ? ' battle-upcoming-floor--lucky' : ''}`}
+              >
+                <span className="battle-upcoming-floor__num">{f.floor}</span>
+                <span className="battle-upcoming-floor__type">
+                  {f.isBoss ? '💀' : f.isElite ? '⚡' : f.isLucky ? '⭐' : '◆'}
+                </span>
+                <span className="battle-upcoming-floor__crystals">~{f.est.toLocaleString('de-DE')}💎</span>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
+
       {/* Account Level-Up teaser (shown when ≥75% XP progress) */}
       {accountXpProgress >= 0.75 && accountXpProgress < 1 && (
         <div className="battle-levelup-tease">
