@@ -701,6 +701,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
             </div>
           )}
 
+          {/* Lucky Day +10% */}
+          {details.luckyDayBonus && details.luckyDayBonus > 0 && (
+            <div className="reward-row reward-row--luckyday">
+              <span className="reward-row__label">🍀 LUCKY DAY! +10%</span>
+              <span className="reward-row__value reward-row__value--luckyday">
+                +<CountUp target={details.luckyDayBonus} />
+              </span>
+            </div>
+          )}
+
           {/* Battle Contract fulfilled */}
           {details.contractBonus && details.contractBonus > 0 && (
             <div className="reward-row reward-row--contract">

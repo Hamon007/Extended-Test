@@ -43,6 +43,7 @@ import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/Dai
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
+import { LuckyDayService } from '../services/LuckyDayService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -213,6 +214,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [loggedIn,      setLoggedIn]      = useState(AuthService.isLoggedIn);
   const [flashSale,     setFlashSale]     = useState<FlashSale>(() => FlashSaleService.getCurrent());
   const [flashSaleMs,   setFlashSaleMs]   = useState(() => FlashSaleService.msUntilEnd());
+  const [luckyDayToday] = useState(() => LuckyDayService.isLuckyDay());
+  const [luckyDayActive, setLuckyDayActive] = useState(() => LuckyDayService.isActive());
+  const [luckyDayMs,     setLuckyDayMs]     = useState(() =>
+    LuckyDayService.isActive() ? LuckyDayService.msRemaining() : LuckyDayService.msUntilWindow()
+  );
 
   // Countdown-Tick + Energy-Regen-Ticker
   useEffect(() => {
@@ -233,6 +239,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       const fsMs = FlashSaleService.msUntilEnd();
       setFlashSaleMs(fsMs);
       if (fsMs <= 0) setFlashSale(FlashSaleService.getCurrent());
+      const ldActive = LuckyDayService.isActive();
+      setLuckyDayActive(ldActive);
+      setLuckyDayMs(ldActive ? LuckyDayService.msRemaining() : LuckyDayService.msUntilWindow());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -550,6 +559,28 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             <span className="main-bonushour__sub">×2 Kristalle in {formatCountdown(bonusHourMs)}</span>
           </div>
         </div>
+      )}
+
+      {/* ── Lucky Day Banner ── */}
+      {luckyDayToday && (
+        luckyDayActive ? (
+          <div className="main-lucky-day main-lucky-day--active" onClick={() => onNavigate?.('battle')}>
+            <span className="main-lucky-day__icon">🍀</span>
+            <div className="main-lucky-day__text">
+              <span className="main-lucky-day__title">LUCKY DAY AKTIV! +10% KRISTALLE</span>
+              <span className="main-lucky-day__sub">Bonus auf alle Siege · {formatCountdown(luckyDayMs > 0 ? luckyDayMs : 0)}</span>
+            </div>
+            <span className="main-lucky-day__cta">KÄMPFEN ▶</span>
+          </div>
+        ) : luckyDayMs > 0 ? (
+          <div className="main-lucky-day main-lucky-day--pending" onClick={() => onNavigate?.('battle')}>
+            <span className="main-lucky-day__icon">🍀</span>
+            <div className="main-lucky-day__text">
+              <span className="main-lucky-day__title">LUCKY DAY! Bonus startet in {formatCountdown(luckyDayMs)}</span>
+              <span className="main-lucky-day__sub">+10% Kristalle · Fenster: {LuckyDayService.getWindowLabel()}</span>
+            </div>
+          </div>
+        ) : null
       )}
 
       {/* ── Blitzangebot (Flash Sale) ── */}

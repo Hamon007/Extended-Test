@@ -59,6 +59,7 @@ import { HourSurgeService, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEME
 import { HourlyFirstWinService } from '../services/HourlyFirstWinService';
 import { DailyDuoService } from '../services/DailyDuoService';
 import { BattleHistoryService } from '../services/BattleHistoryService';
+import { LuckyDayService } from '../services/LuckyDayService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -757,6 +758,20 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
           crystalsGained:   finalDetails.crystalsGained + surgeBonus,
           hourSurgeBonus:   surgeBonus,
           hourSurgeElement: HourSurgeService.getSurgeElement(),
+        };
+      }
+    }
+
+    // Lucky Day: +10% crystal bonus during active window
+    if (details.isVictory) {
+      const luckyBonus = LuckyDayService.getBonus(finalDetails.crystalsGained);
+      if (luckyBonus > 0) {
+        const gstLucky = SaveService.loadGachaState();
+        SaveService.saveGachaState({ ...gstLucky, crystals: gstLucky.crystals + luckyBonus });
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + luckyBonus,
+          luckyDayBonus:  luckyBonus,
         };
       }
     }

@@ -3350,3 +3350,79 @@
   background: rgba(180, 60, 60, 0.12);
   border: 1px solid rgba(180, 60, 60, 0.3);
 }
+
+/* ── Lucky Day Banner ───────────────────────────────────────── */
+
+@keyframes luckyDayPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(80, 220, 80, 0.5); }
+  50%       { box-shadow: 0 0 12px 4px rgba(80, 220, 80, 0.3); }
+}
+
+@keyframes luckyDayGlow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.75; }
+}
+
+.main-lucky-day {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.main-lucky-day:active { transform: scale(0.98); }
+
+.main-lucky-day--active {
+  background: linear-gradient(135deg, rgba(30, 80, 30, 0.9), rgba(20, 60, 20, 0.95));
+  border: 1px solid rgba(80, 220, 80, 0.6);
+  animation: luckyDayPulse 2s ease-in-out infinite;
+}
+
+.main-lucky-day--pending {
+  background: rgba(20, 50, 20, 0.6);
+  border: 1px solid rgba(80, 200, 80, 0.3);
+}
+
+.main-lucky-day__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  animation: luckyDayGlow 2s ease-in-out infinite;
+}
+
+.main-lucky-day__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.main-lucky-day__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7dff7d;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-lucky-day__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.8rem;
+  color: rgba(160, 255, 160, 0.75);
+}
+
+.main-lucky-day__cta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #7dff7d;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}

@@ -123,6 +123,8 @@ export interface RewardDetails {
   hourlyFirstWinBonus?: number;
   // Daily Duo: both duo cards in deck → +100💎 per win
   dailyDuoBonus?: number;
+  // Lucky Day: +10% crystals during the active 2-hour window (~20% of days)
+  luckyDayBonus?: number;
 }
 
 // ── Daily-Bonus-Ergebnis ──────────────────────────────────────────────────────
