@@ -53,6 +53,7 @@ import { WorldBossService }          from '../services/WorldBossService';
 import { FloorTitleService }         from '../services/FloorTitleService';
 import { SessionBonusService }       from '../services/SessionBonusService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
+import { ComebackBonusService } from '../services/ComebackBonusService';
 import { GUARD_MP_COST }        from '../config/GameConfig';
 import type { Card }            from '../types/Card';
 import ComboDisplay             from '../components/ComboDisplay';
@@ -673,6 +674,18 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         };
       } else {
         finalDetails = { ...finalDetails, sessionWins };
+      }
+    }
+
+    // Comeback Bonus: +25% crystals on first 3 victories after 24h+ absence
+    if (details.isVictory) {
+      const cbBonus = ComebackBonusService.applyVictory(finalDetails.crystalsGained);
+      if (cbBonus > 0) {
+        finalDetails = {
+          ...finalDetails,
+          crystalsGained: finalDetails.crystalsGained + cbBonus,
+          recoveryBonus:  (finalDetails.recoveryBonus ?? 0) + cbBonus, // reuse recovery display slot
+        };
       }
     }
 
@@ -1909,6 +1922,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
                 Noch {(DAILY_GOAL - Math.min(earned, DAILY_GOAL)).toLocaleString('de-DE')} 💎 bis Bonus!
               </div>
             )}
+          </div>
+        );
+      })()}
+
+      {/* Comeback Bonus chip — shown after 24h+ absence */}
+      {ComebackBonusService.isActive() && (() => {
+        const remaining = ComebackBonusService.getRemaining();
+        return (
+          <div className="battle-comeback-bonus">
+            <span className="battle-comeback-bonus__icon">🔥</span>
+            <div className="battle-comeback-bonus__body">
+              <span className="battle-comeback-bonus__title">WILLKOMMEN ZURÜCK!</span>
+              <span className="battle-comeback-bonus__sub">
+                +25% Kristalle · noch {remaining} {remaining === 1 ? 'Sieg' : 'Siege'}
+              </span>
+            </div>
+            <span className="battle-comeback-bonus__badge">×1.25</span>
           </div>
         );
       })()}

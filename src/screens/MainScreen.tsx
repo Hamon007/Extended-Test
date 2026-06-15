@@ -40,6 +40,7 @@ import { WorldBossService } from '../services/WorldBossService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyGoalService, DAILY_GOAL, DAILY_GOAL_REWARD } from '../services/DailyGoalService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
+import { ComebackBonusService } from '../services/ComebackBonusService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -300,8 +301,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     return () => window.removeEventListener('focus', refresh);
   }, []);
 
-  // Offline Income — claim crystals earned while away
+  // Offline Income — claim crystals earned while away (comeback check must run first)
   useEffect(() => {
+    ComebackBonusService.checkOnStart(); // reads ci_last_active before OfflineIncome resets it
     const result = OfflineIncomeService.claim();
     if (result) {
       setOfflineResult(result);

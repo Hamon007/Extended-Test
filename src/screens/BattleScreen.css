@@ -4066,3 +4066,53 @@
   font-size: 0.59rem;
   color: #508030;
 }
+
+/* ── Comeback Bonus Chip ─────────────────────────────────────── */
+
+@keyframes comebackPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255, 100, 20, 0.4); }
+  50%       { box-shadow: 0 0 14px rgba(255, 140, 40, 0.75); }
+}
+
+.battle-comeback-bonus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 10px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, #1a0a00 0%, #0f0500 100%);
+  border: 1px solid rgba(255, 120, 30, 0.5);
+  border-radius: 8px;
+  animation: comebackPulse 2s ease-in-out infinite;
+}
+
+.battle-comeback-bonus__icon { font-size: 1.3rem; }
+
+.battle-comeback-bonus__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.battle-comeback-bonus__title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #ff8040;
+  letter-spacing: 0.6px;
+}
+
+.battle-comeback-bonus__sub {
+  font-size: 0.6rem;
+  color: #cc6020;
+}
+
+.battle-comeback-bonus__badge {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #ffd060;
+  background: rgba(255, 150, 30, 0.2);
+  border: 1px solid rgba(255, 150, 30, 0.4);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
