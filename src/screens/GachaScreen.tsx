@@ -10,7 +10,7 @@ import {
 import { RARITY_COLOR } from '../types/Card';
 import { GachaSystem } from '../services/GachaSystem';
 import { AudioService } from '../services/AudioService';
-import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
+import { CollectionMilestoneService, type CollectionMilestone } from '../services/CollectionMilestoneService';
 import CardDetailModal from '../components/CardDetailModal';
 import './GachaScreen.css';
 
@@ -34,8 +34,9 @@ function rarityIntensity(rarity: string): number {
 const GachaScreen: React.FC = () => {
   const store = useGachaStore();
   const { state, lastSingle, lastMulti, error, isPulling } = store;
-  const [detailCard,     setDetailCard]     = useState<Card | null>(null);
-  const [milestoneToast, setMilestoneToast] = useState<string | null>(null);
+  const [detailCard,       setDetailCard]       = useState<Card | null>(null);
+  const [milestoneToast,   setMilestoneToast]   = useState<string | null>(null);
+  const [milestoneBurst,   setMilestoneBurst]   = useState<CollectionMilestone | null>(null);
 
   const showResult = lastSingle !== null || lastMulti !== null;
 
@@ -44,6 +45,9 @@ const GachaScreen: React.FC = () => {
     if (!lastSingle && !lastMulti) return;
     const awarded = CollectionMilestoneService.checkAndAward();
     if (awarded.length > 0) {
+      const best = awarded[awarded.length - 1]!;
+      setMilestoneBurst(best);
+      setTimeout(() => setMilestoneBurst(null), 4000);
       const msg = awarded.map(m => `${m.label}: +${m.crystals.toLocaleString('de-DE')} 💎`).join(' · ');
       setMilestoneToast(msg);
       setTimeout(() => setMilestoneToast(null), 5000);
@@ -166,6 +170,20 @@ const GachaScreen: React.FC = () => {
       )}
 
       <CardDetailModal card={detailCard} onClose={() => setDetailCard(null)} />
+
+      {/* Collection Milestone Burst */}
+      {milestoneBurst && (
+        <div className="gacha-ms-burst" aria-hidden="true">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className={`gacha-ms-particle gacha-ms-particle--${i % 5}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="gacha-ms-burst__inner">
+            <div className="gacha-ms-burst__icon">{milestoneBurst.icon}</div>
+            <div className="gacha-ms-burst__label">{milestoneBurst.label}</div>
+            <div className="gacha-ms-burst__reward">+{milestoneBurst.crystals.toLocaleString('de-DE')} 💎</div>
+          </div>
+        </div>
+      )}
 
       {/* Collection Milestone Toast */}
       {milestoneToast && (
