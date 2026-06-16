@@ -5168,3 +5168,113 @@
   0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(255,80,0,0.35); }
   50%       { opacity: 0.78; box-shadow: 0 0 14px rgba(255,100,0,0.65); }
 }
+
+/* ── VERSUS Intro Overlay ───────────────────────────────────── */
+.arena-versus {
+  position: absolute; inset: 0; z-index: 90;
+  background: radial-gradient(ellipse at center, rgba(12,6,24,0.97), rgba(4,2,10,0.99));
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  cursor: pointer;
+  animation: versusIn 0.35s ease-out;
+}
+
+@keyframes versusIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.arena-versus__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 12px;
+}
+
+.arena-versus__tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #44aaff;
+  text-shadow: 0 0 18px rgba(68,170,255,0.6);
+  animation: playerTagIn 0.4s ease-out 0.15s both;
+}
+
+@keyframes playerTagIn {
+  from { transform: translateX(-30px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+.arena-versus__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+.arena-versus__vs {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(200,150,255,0.4);
+  animation: vsPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s both, vsBreathe 0.9s ease-in-out 0.6s infinite alternate;
+}
+
+@keyframes vsPop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes vsBreathe {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+.arena-versus__bolt {
+  font-size: 1.6rem;
+  animation: boltFlash 0.3s ease-in-out 0.5s infinite alternate;
+}
+
+@keyframes boltFlash {
+  from { filter: brightness(1); opacity: 0.8; }
+  to   { filter: brightness(2.5) drop-shadow(0 0 8px #ffee00); opacity: 1; }
+}
+
+.arena-versus__enemy-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 10px currentColor);
+  animation: enemyIconIn 0.4s ease-out 0.2s both, enemyIconGlow 1s ease-in-out 0.6s infinite alternate;
+}
+
+@keyframes enemyIconIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes enemyIconGlow {
+  from { filter: drop-shadow(0 0 8px currentColor); }
+  to   { filter: drop-shadow(0 0 18px currentColor) brightness(1.2); }
+}
+
+.arena-versus__enemy-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ff5544;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 14px rgba(255,60,44,0.5);
+  max-width: 120px;
+  animation: enemyNameIn 0.4s ease-out 0.3s both;
+}
+
+@keyframes enemyNameIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}

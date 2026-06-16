@@ -2630,6 +2630,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
   const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
   const [rageToast,      setRageToast]      = useState(false);
+  const [showVersus,     setShowVersus]     = useState(true);
   const lastComboBurstRef  = useRef(0);
   const lastAwakenedCount  = useRef(0);
   const lastLogId          = useRef(0);
@@ -2641,6 +2642,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const rageTriggeredRef   = useRef(false);
   const arenaRef           = useRef<HTMLDivElement>(null);
   const popupId = React.useRef(0);
+
+  // VERSUS intro: auto-dismiss after 1.6s (or tap to skip)
+  useEffect(() => {
+    const id = setTimeout(() => setShowVersus(false), 1600);
+    return () => clearTimeout(id);
+  }, []);
 
   // Screen-Shake via Web Animations API (retriggert zuverlässig).
   const triggerShake = useCallback((level: 1 | 2) => {
@@ -2952,6 +2959,28 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       <div className="arena-bg-pulse" aria-hidden="true" />
       {isDangerZone && <div className="arena-danger-vignette" aria-hidden="true" />}
       {comboFeverTier && <div className={`arena-combo-vignette arena-combo-vignette--${comboFeverTier}`} aria-hidden="true" />}
+
+      {/* ── VERSUS intro ── */}
+      {showVersus && (
+        <div className="arena-versus" onClick={() => setShowVersus(false)} aria-hidden="true">
+          <div className="arena-versus__side arena-versus__side--player">
+            <div className="arena-versus__tag">KÄMPFER</div>
+          </div>
+          <div className="arena-versus__center">
+            <div className="arena-versus__vs">VS</div>
+            <div className="arena-versus__bolt">⚡</div>
+          </div>
+          <div className="arena-versus__side arena-versus__side--enemy">
+            <div
+              className="arena-versus__enemy-icon"
+              style={{ color: ELEMENT_META[state.enemyData.element]?.color ?? '#ff4444' }}
+            >
+              {ELEMENT_META[state.enemyData.element]?.icon ?? '⚔'}
+            </div>
+            <div className="arena-versus__enemy-name">{state.enemyData.name}</div>
+          </div>
+        </div>
+      )}
 
       {/* Schwimmende Schadenszahlen — fixed über der Gegner-Zone */}
       <div className="damage-numbers-layer">
