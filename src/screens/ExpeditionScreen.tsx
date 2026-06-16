@@ -17,6 +17,9 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
   const [selectedExp, setSelectedExp] = useState<ExpeditionDef | null>(null);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [tick,        setTick]        = useState(0);
+  const [expeditionBurst, setExpeditionBurst] = useState<{
+    cardName: string; crystals: number; potions: number; crystalCards: number;
+  } | null>(null);
 
   // 1-second tick for countdown updates
   useEffect(() => {
@@ -47,6 +50,8 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
     if (reward.potions > 0) parts.push(`🧪 +${reward.potions}`);
     if (reward.crystalCards > 0) parts.push(`💎Karte +${reward.crystalCards}`);
     showToast(`${exp.cardName} kehrt zurück! ${parts.join(' · ')}`);
+    setExpeditionBurst({ cardName: exp.cardName, crystals: reward.crystals, potions: reward.potions, crystalCards: reward.crystalCards });
+    setTimeout(() => setExpeditionBurst(null), 2200);
     QuestService.recordEvent('complete_expedition');
     AchievementService.recordProgress('expedition_first');
     AchievementService.recordProgress('expedition_master');
@@ -119,6 +124,24 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
   return (
     <div className="exp-screen">
       {toast && <div className="exp-toast">{toast}</div>}
+
+      {expeditionBurst && (
+        <div className="exp-return-burst" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className={`exp-return-particle exp-return-particle--${i % 5}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="exp-return-burst__inner">
+            <div className="exp-return-burst__icon">⚔</div>
+            <div className="exp-return-burst__hero">{expeditionBurst.cardName}</div>
+            <div className="exp-return-burst__label">ZURÜCKGEKEHRT!</div>
+            <div className="exp-return-burst__rewards">
+              💎 +{expeditionBurst.crystals.toLocaleString('de-DE')}
+              {expeditionBurst.potions > 0 && ` · 🧪 +${expeditionBurst.potions}`}
+              {expeditionBurst.crystalCards > 0 && ` · 💎Karte`}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="exp-header">
         <button className="exp-header__back" onClick={onBack}>← Zurück</button>

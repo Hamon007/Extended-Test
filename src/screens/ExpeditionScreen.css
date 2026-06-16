@@ -461,3 +461,136 @@
 }
 .exp-quickfill-btn:hover  { box-shadow: 0 2px 16px rgba(124,77,255,0.6); }
 .exp-quickfill-btn:active { transform: scale(0.97); }
+
+/* ── Expedition return burst overlay ─────────────────────────── */
+.exp-return-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: expBurstFade 2.2s ease forwards;
+}
+
+@keyframes expBurstFade {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.exp-return-burst__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(160deg, rgba(10,4,28,0.92), rgba(25,10,55,0.96));
+  border: 2px solid #c9a84c;
+  border-radius: 18px;
+  padding: 22px 32px 18px;
+  box-shadow: 0 0 60px rgba(201,168,76,0.5), 0 0 120px rgba(124,77,255,0.25);
+  animation: expBurstScale 2.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+@keyframes expBurstScale {
+  0%   { transform: scale(0.5); }
+  12%  { transform: scale(1.08); }
+  22%  { transform: scale(0.97); }
+  30%  { transform: scale(1.0); }
+  80%  { transform: scale(1.0); }
+  100% { transform: scale(0.85); }
+}
+
+.exp-return-burst__icon {
+  font-size: 2.2rem;
+  animation: expIconSpin 0.6s ease-out;
+}
+
+@keyframes expIconSpin {
+  0%   { transform: rotate(-30deg) scale(0.5); opacity: 0; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
+.exp-return-burst__hero {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #e8d5b0;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+
+.exp-return-burst__label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.35rem;
+  color: #ffd700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(201,168,76,0.5);
+  animation: expLabelPop 0.5s 0.1s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes expLabelPop {
+  from { transform: scale(0.4) translateY(10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.exp-return-burst__rewards {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #c9a84c;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+  animation: expRewardsFade 0.4s 0.3s ease both;
+}
+
+@keyframes expRewardsFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Radiating particles ─────────────────────────────────────── */
+.exp-return-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  animation: expParticleOut 2.2s cubic-bezier(0.15, 0.5, 0.5, 1) forwards;
+  animation-delay: calc(var(--i) * 0.04s);
+  transform-origin: center;
+}
+
+.exp-return-particle--0 { background: radial-gradient(circle, #ffd700, #c9a84c); }
+.exp-return-particle--1 { background: radial-gradient(circle, #fff8dc, #ffd700); width: 5px; height: 5px; }
+.exp-return-particle--2 { background: radial-gradient(circle, #b39ddb, #7c4dff); }
+.exp-return-particle--3 { background: radial-gradient(circle, #f0d080, #e8a000); width: 6px; height: 6px; }
+.exp-return-particle--4 { background: radial-gradient(circle, #ffffff, #c9a84c); width: 4px; height: 4px; }
+
+@keyframes expParticleOut {
+  0%   {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--i) * 22.5deg))
+      translateY(-8px)
+      scale(0.4);
+  }
+  30%  {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--i) * 22.5deg))
+      translateY(-90px)
+      scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--i) * 22.5deg))
+      translateY(-140px)
+      scale(0.2);
+  }
+}
