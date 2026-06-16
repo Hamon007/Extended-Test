@@ -218,9 +218,10 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
 
       {/* Result overlay */}
       {showResult && prize && (() => {
-        const isJackpot = (prize.crystals ?? 0) >= 3000;
-        const isBigWin  = (prize.crystals ?? 0) >= 1000;
-        const resultClass = isJackpot ? 'spin-result--jackpot' : isBigWin ? 'spin-result--big' : '';
+        const isJackpot    = (prize.crystals ?? 0) >= 3000;
+        const isBigWin     = (prize.crystals ?? 0) >= 1000;
+        const isMediumWin  = !isBigWin && (prize.crystals ?? 0) >= 200;
+        const resultClass  = isJackpot ? 'spin-result--jackpot' : isBigWin ? 'spin-result--big' : isMediumWin ? 'spin-result--medium' : '';
         return (
           <div className={`spin-result ${resultClass}`} onClick={() => setShowResult(false)}>
             {isJackpot && (
@@ -230,10 +231,17 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
                 ))}
               </div>
             )}
-            <div className={`spin-result__box ${isJackpot ? 'spin-result__box--jackpot' : isBigWin ? 'spin-result__box--big' : ''}`}>
+            {isMediumWin && (
+              <div className="spin-medium-particles" aria-hidden="true">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className={`spin-mw-particle spin-mw-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+                ))}
+              </div>
+            )}
+            <div className={`spin-result__box ${isJackpot ? 'spin-result__box--jackpot' : isBigWin ? 'spin-result__box--big' : isMediumWin ? 'spin-result__box--medium' : ''}`}>
               <div className={`spin-result__icon ${isJackpot ? 'spin-result__icon--jackpot' : ''}`}>{prize.icon}</div>
-              <div className={`spin-result__label ${isJackpot ? 'spin-result__label--jackpot' : ''}`}>
-                {isJackpot ? '🎉 JACKPOT!' : isBigWin ? '⭐ GROSSER GEWINN!' : 'Glückwunsch!'}
+              <div className={`spin-result__label ${isJackpot ? 'spin-result__label--jackpot' : isMediumWin ? 'spin-result__label--medium' : ''}`}>
+                {isJackpot ? '🎉 JACKPOT!' : isBigWin ? '⭐ GROSSER GEWINN!' : isMediumWin ? '✦ GUTER GEWINN!' : 'Glückwunsch!'}
               </div>
               <div className="spin-result__prize" style={{ color: prize.color }}>{prize.label}</div>
               {streakBonus && streakBonus > 0 && (

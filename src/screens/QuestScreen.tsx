@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { QuestService } from '../services/QuestService';
 import { AccountProgressionService } from '../services/AccountProgressionService';
 import { SaveService } from '../services/SaveService';
+import { AudioService } from '../services/AudioService';
 import './QuestScreen.css';
 
 interface Props { onBack: () => void; }
@@ -75,6 +76,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
     : resetMs < 12 * 3600_000 && incompleteCount > 0;
 
   const [claimAnim, setClaimAnim] = useState(false);
+  const [claimBurst, setClaimBurst] = useState<{ crystals: number; xp: number } | null>(null);
 
   function handleClaim(questId: string) {
     const reward = QuestService.claimReward(questId);
@@ -99,15 +101,34 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       const acct = SaveService.loadAccountState();
       const result = AccountProgressionService.addAccountXp(acct, totalXp);
       SaveService.saveAccountState(result.newState);
+      AudioService.super();
+      AudioService.vibrate([20, 30, 40, 30]);
       showToast(`ALLE ABGEHOLT! +${totalCrystals.toLocaleString('de-DE')} 💎 · +${totalXp.toLocaleString('de-DE')} XP`);
       setClaimAnim(true);
       setTimeout(() => setClaimAnim(false), 800);
+      setClaimBurst({ crystals: totalCrystals, xp: totalXp });
+      setTimeout(() => setClaimBurst(null), 2200);
     }
     refresh();
   }
 
   return (
     <div className="quest-screen">
+
+      {/* Claim-All Crystal Burst */}
+      {claimBurst !== null && (
+        <div className="quest-claim-burst" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className={`quest-burst-particle quest-burst-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="quest-claim-burst__inner">
+            <div className="quest-claim-burst__icon">✦</div>
+            <div className="quest-claim-burst__amount">+{claimBurst.crystals.toLocaleString('de-DE')} 💎</div>
+            <div className="quest-claim-burst__xp">+{claimBurst.xp.toLocaleString('de-DE')} XP</div>
+          </div>
+        </div>
+      )}
+
       {toast && <div className="quest-toast">{toast}</div>}
 
       <div className="quest-header">

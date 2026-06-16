@@ -345,3 +345,118 @@
   color: #c9e880;
   flex-shrink: 0;
 }
+
+/* ── Claim-All Crystal Burst ─────────────────────────────────── */
+
+.quest-claim-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: questBurstFade 2.2s ease-out forwards;
+}
+
+@keyframes questBurstFade {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.quest-claim-burst__inner {
+  background: linear-gradient(160deg, #0a1a08 0%, #1a3010 50%, #0d2008 100%);
+  border: 2px solid #64c832;
+  border-radius: 16px;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 0 40px rgba(100, 200, 50, 0.4), 0 0 80px rgba(80, 180, 30, 0.15);
+  animation: questBurstScale 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes questBurstScale {
+  0%   { transform: scale(0.3); }
+  15%  { transform: scale(1.1); }
+  25%  { transform: scale(0.96); }
+  35%  { transform: scale(1.02); }
+  45%  { transform: scale(1); }
+  80%  { transform: scale(1); }
+  100% { transform: scale(0.85); }
+}
+
+.quest-claim-burst__icon {
+  font-size: 2rem;
+  color: #90e040;
+  animation: questIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes questIconPop {
+  from { transform: scale(0) rotate(-30deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.quest-claim-burst__amount {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #c9e880;
+  text-shadow: 0 0 20px rgba(150, 230, 60, 0.8);
+  animation: questAmountPop 0.5s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes questAmountPop {
+  from { transform: scale(0.3) translateY(10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.quest-claim-burst__xp {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: #80d860;
+  letter-spacing: 0.06em;
+  animation: questXpPop 0.5s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes questXpPop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* Burst particles */
+.quest-burst-particle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  animation: questParticleOut 2s cubic-bezier(0.1, 0.6, 0.4, 1) both;
+  animation-delay: calc(var(--i) * 0.04s);
+}
+
+.quest-burst-particle--0 { width: 8px;  height: 8px;  background: radial-gradient(circle, #90e040, transparent); }
+.quest-burst-particle--1 { width: 5px;  height: 5px;  background: radial-gradient(circle, #ffffff, #90e040); }
+.quest-burst-particle--2 { width: 6px;  height: 6px;  background: radial-gradient(circle, #64c832, transparent); }
+.quest-burst-particle--3 { width: 4px;  height: 4px;  background: radial-gradient(circle, #c9e880, transparent); }
+
+@keyframes questParticleOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 22.5deg)) translateY(-5px) scale(0.2);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 22.5deg)) translateY(-80px) scale(1);
+  }
+  70% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 22.5deg)) translateY(-130px) scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 22.5deg)) translateY(-170px) scale(0.2);
+  }
+}

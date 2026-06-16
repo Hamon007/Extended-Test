@@ -701,3 +701,69 @@
   color: rgba(255,190,120,0.75);
   margin-top: 2px;
 }
+
+/* ── Medium-Win Treatment ────────────────────────────────────── */
+
+.spin-result--medium {
+  background: rgba(5, 0, 20, 0.82);
+}
+
+.spin-result__box--medium {
+  border-color: #b39ddb;
+  box-shadow: 0 0 30px rgba(179, 157, 219, 0.4);
+  animation: mediumWinGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes mediumWinGlow {
+  from { box-shadow: 0 0 20px rgba(179, 157, 219, 0.3); }
+  to   { box-shadow: 0 0 50px rgba(179, 157, 219, 0.65), 0 0 80px rgba(124, 77, 255, 0.2); }
+}
+
+.spin-result__label--medium {
+  font-size: 1.1rem;
+  color: #ce93d8;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 12px rgba(206, 147, 216, 0.6);
+}
+
+/* Medium-win particle burst */
+.spin-medium-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spin-mw-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  animation: mwParticleOut 1.4s cubic-bezier(0.1, 0.6, 0.4, 1) both;
+  animation-delay: calc(var(--i) * 0.05s);
+}
+
+.spin-mw-particle--0 { width: 7px; height: 7px; background: radial-gradient(circle, #b39ddb, transparent); }
+.spin-mw-particle--1 { width: 5px; height: 5px; background: radial-gradient(circle, #80d8ff, #b39ddb); }
+.spin-mw-particle--2 { width: 6px; height: 6px; background: radial-gradient(circle, #7c4dff, transparent); }
+.spin-mw-particle--3 { width: 4px; height: 4px; background: radial-gradient(circle, #ffffff, #ce93d8); }
+
+@keyframes mwParticleOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 45deg)) translateY(-5px) scale(0.2);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 45deg)) translateY(-70px) scale(1);
+  }
+  70% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 45deg)) translateY(-100px) scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 45deg)) translateY(-130px) scale(0.2);
+  }
+}
