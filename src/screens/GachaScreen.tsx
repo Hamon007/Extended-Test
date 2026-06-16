@@ -374,6 +374,20 @@ interface SingleResultProps {
   onMultiAgain: () => void;
 }
 
+const RARITY_TIER = (r: string): 'lr' | 'mr' | 'ssr' | null => {
+  const base = r.replace(/\+/g, '');
+  if (base === 'LR')  return 'lr';
+  if (base === 'MR')  return 'mr';
+  if (base === 'SSR') return 'ssr';
+  return null;
+};
+
+const RARITY_BURST_LABEL: Record<string, string> = {
+  lr: 'LEGENDARY!',
+  mr: 'MYTHISCH!!',
+  ssr: 'SELTEN!',
+};
+
 const SingleResult: React.FC<SingleResultProps> = ({
   result, isPulling, onClose, onCardClick, onSingleAgain, onMultiAgain,
 }) => {
@@ -381,13 +395,28 @@ const SingleResult: React.FC<SingleResultProps> = ({
   const card = CardDatabase.getById(instance.cardId);
   const rarityColor = RARITY_COLOR[instance.rarity] ?? '#9e9e9e';
   const [imgError, setImgError] = useState(false);
+  const rareTier = RARITY_TIER(instance.rarity);
+  const [rareBurst, setRareBurst] = useState(() => rareTier !== null);
 
   useEffect(() => {
     AudioService.reveal(rarityIntensity(instance.rarity));
+    if (rareTier !== null) {
+      const id = setTimeout(() => setRareBurst(false), rareTier === 'lr' ? 2200 : 1600);
+      return () => clearTimeout(id);
+    }
   }, [instance.uuid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="result-single">
+      {rareBurst && rareTier && (
+        <div className={`gacha-rare-burst gacha-rare-burst--${rareTier}`} aria-hidden="true" style={{ '--rc': rarityColor } as React.CSSProperties}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className={`gacha-rare-particle gacha-rare-particle--${i % 5}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="gacha-rare-burst__label">{RARITY_BURST_LABEL[rareTier]}</div>
+          <div className="gacha-rare-burst__rarity">{instance.rarity}</div>
+        </div>
+      )}
       <div
         className="result-single__card"
         style={{ '--rc': rarityColor } as React.CSSProperties}
