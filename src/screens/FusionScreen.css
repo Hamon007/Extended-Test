@@ -501,6 +501,47 @@
   to   { transform: scale(1);   opacity: 1; }
 }
 
+/* ── Fusion result particles ── */
+.fusion-result-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fusion-result-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  animation: fusionResultParticle 1.8s cubic-bezier(0.1, 0.6, 0.4, 1) both;
+  animation-delay: calc(var(--i) * 0.05s);
+}
+
+.fusion-result-particle--0 { width: 8px; height: 8px; background: var(--rc, #f0d080); }
+.fusion-result-particle--1 { width: 5px; height: 5px; background: radial-gradient(circle, #ffffff, var(--rc, #f0d080)); }
+.fusion-result-particle--2 { width: 7px; height: 7px; background: radial-gradient(circle, var(--rc, #f0d080), transparent); }
+.fusion-result-particle--3 { width: 4px; height: 4px; background: #fffde7; }
+
+@keyframes fusionResultParticle {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(-5px) scale(0.2);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(-90px) scale(1);
+  }
+  65% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(-130px) scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(-175px) scale(0.2);
+  }
+}
+
 .fusion-overlay__spark {
   font-size: 2.4rem;
   color: var(--rc, #f0d080);

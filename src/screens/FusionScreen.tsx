@@ -309,6 +309,16 @@ const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) =>
   const dHp  = afterStats && beforeStats ? afterStats.hp  - beforeStats.hp  : 0;
   return (
     <div className="fusion-overlay" onClick={onClose}>
+      {/* Rarity-colored particle burst */}
+      <div className="fusion-result-burst" aria-hidden="true">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className={`fusion-result-particle fusion-result-particle--${i % 4}`}
+            style={{ '--i': i, '--rc': toColor } as React.CSSProperties}
+          />
+        ))}
+      </div>
       <div className="fusion-overlay__box" style={{ '--rc': toColor } as React.CSSProperties}>
         <div className="fusion-overlay__spark">✦</div>
         <div className="fusion-overlay__title">FUSION ERFOLGREICH</div>
