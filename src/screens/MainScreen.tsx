@@ -954,21 +954,35 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       )}
 
       {/* ── Primärer Call-to-Action ── */}
-      {onNavigate && (
-        <button
-          className={`main-cta ${energy.energy < 1 ? 'main-cta--empty' : ''}`}
-          onClick={() => onNavigate('battle')}
-        >
-          <span className="main-cta__icon">🗼</span>
-          <span className="main-cta__text">
-            <span className="main-cta__title">{energy.energy < 1 ? 'TURM DER PRÜFUNG' : 'IN DEN TURM'}</span>
-            <span className="main-cta__sub">
-              Etage {towerFloor} · {energy.energy < 1 ? 'Keine Energie' : `${energy.energy}/${energyMax} ⚡`}
+      {onNavigate && (() => {
+        const isEmpty  = energy.energy < 1;
+        const isHot    = !isEmpty && winStreak >= 3 && winStreak < 5;
+        const isFire   = !isEmpty && winStreak >= 5;
+        const ctaClass = `main-cta${isEmpty ? ' main-cta--empty' : isHot ? ' main-cta--hot' : isFire ? ' main-cta--fire' : ''}`;
+        const ctaIcon  = isFire ? '🔥' : isHot ? '🔥' : '🗼';
+        const ctaTitle = isEmpty
+          ? 'TURM DER PRÜFUNG'
+          : isFire
+          ? `🔥 FEUERSTRÄHNE! ×${winStreak}`
+          : isHot
+          ? `🔥 SERIE LÄUFT! ×${winStreak}`
+          : 'IN DEN TURM';
+        const ctaSub = isEmpty
+          ? 'Keine Energie'
+          : (isHot || isFire)
+          ? `Etage ${towerFloor} · ${winStreak}× Siegesserie 🔥`
+          : `Etage ${towerFloor} · ${energy.energy}/${energyMax} ⚡`;
+        return (
+          <button className={ctaClass} onClick={() => onNavigate('battle')}>
+            <span className="main-cta__icon">{ctaIcon}</span>
+            <span className="main-cta__text">
+              <span className="main-cta__title">{ctaTitle}</span>
+              <span className="main-cta__sub">{ctaSub}</span>
             </span>
-          </span>
-          <span className="main-cta__arrow">▶</span>
-        </button>
-      )}
+            <span className="main-cta__arrow">▶</span>
+          </button>
+        );
+      })()}
 
       {/* ── Quick Potion Button (shown when energy=0 and potions available) ── */}
       {energy.energy < 1 && energy.potions > 0 && (
