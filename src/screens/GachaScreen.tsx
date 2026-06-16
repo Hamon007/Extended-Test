@@ -501,6 +501,8 @@ const MultiResult: React.FC<MultiResultProps> = ({
 }) => {
   const [revealed, setRevealed] = useState(0);
   const allRevealed = revealed >= results.length;
+  const [ssrBanner, setSsrBanner] = useState(false);
+  const prevAllRevealed = React.useRef(false);
 
   useEffect(() => {
     if (allRevealed) return;
@@ -520,8 +522,33 @@ const MultiResult: React.FC<MultiResultProps> = ({
     return { ssrPlus, newCards, bestRarity: best?.instance.rarity ?? '', bestUuid: best?.instance.uuid ?? '' };
   }, [allRevealed, results]);
 
+  // SSR+ celebration banner fires once when all cards revealed and SSR+ found
+  useEffect(() => {
+    if (allRevealed && !prevAllRevealed.current && summary && summary.ssrPlus > 0) {
+      AudioService.vibrate([15, 30, 50, 30]);
+      setSsrBanner(true);
+      const id = setTimeout(() => setSsrBanner(false), 1600);
+      return () => clearTimeout(id);
+    }
+    prevAllRevealed.current = allRevealed;
+  }, [allRevealed, summary]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const bestRarityTier = summary ? RARITY_TIER(summary.bestRarity) : null;
+
   return (
     <div className="result-multi">
+
+      {ssrBanner && summary && (
+        <div className={`multi-ssr-banner multi-ssr-banner--${bestRarityTier ?? 'ssr'}`} aria-hidden="true"
+             style={{ '--rc': (RARITY_COLOR as Record<string,string>)[summary.bestRarity.replace(/\+/g,'')] ?? '#ffc107' } as React.CSSProperties}>
+          <span className="multi-ssr-banner__stars">✦</span>
+          <span className="multi-ssr-banner__text">
+            {summary.ssrPlus > 1 ? `${summary.ssrPlus}× ` : ''}{summary.bestRarity} BESCHWOREN!
+          </span>
+          <span className="multi-ssr-banner__stars">✦</span>
+        </div>
+      )}
+
       <div className="result-multi__grid">
         {results.map((pr, i) => (
           <MultiCard
