@@ -3,6 +3,7 @@ import { SaveService } from '../services/SaveService';
 import { ShopService, type ShopItem } from '../services/ShopService';
 import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { PULL_COST_SINGLE, PULL_COST_MULTI } from '../config/GameConfig';
+import { AudioService } from '../services/AudioService';
 import './ShopScreen.css';
 
 function msUntilMidnightUtc(): number {
@@ -24,9 +25,10 @@ interface ShopScreenProps {
 }
 
 const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
-  const [crystals,   setCrystals]   = useState(() => SaveService.loadGachaState().crystals);
-  const [toast,      setToast]      = useState('');
-  const [resetMs,    setResetMs]    = useState(() => msUntilMidnightUtc());
+  const [crystals,       setCrystals]       = useState(() => SaveService.loadGachaState().crystals);
+  const [toast,          setToast]          = useState('');
+  const [purchaseBurst,  setPurchaseBurst]  = useState<ShopItem | null>(null);
+  const [resetMs,        setResetMs]        = useState(() => msUntilMidnightUtc());
   const [flashSale,  setFlashSale]  = useState<FlashSale>(() => FlashSaleService.getCurrent());
   const [flashMs,    setFlashMs]    = useState(() => FlashSaleService.msUntilEnd());
 
@@ -57,8 +59,12 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
     if (!result.ok) {
       setToast(`❌ ${result.reason}`);
     } else {
+      AudioService.reward();
+      AudioService.vibrate([15, 25, 20]);
       setCrystals(SaveService.loadGachaState().crystals);
       setToast(`✓ ${item.name} gekauft!`);
+      setPurchaseBurst(item);
+      setTimeout(() => setPurchaseBurst(null), 1600);
     }
     setTimeout(() => setToast(''), 2500);
   }, []);
@@ -94,6 +100,19 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
 
   return (
     <div className="shop-screen">
+
+      {/* Purchase burst */}
+      {purchaseBurst && (
+        <div className="shop-purchase-burst" aria-hidden="true">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className={`shop-purchase-particle shop-purchase-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="shop-purchase-burst__card">
+            <div className="shop-purchase-burst__icon">{purchaseBurst.icon}</div>
+            <div className="shop-purchase-burst__name">{purchaseBurst.name}</div>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="shop-header">

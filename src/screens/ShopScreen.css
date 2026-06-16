@@ -483,3 +483,75 @@
   opacity: 0.4;
   cursor: default;
 }
+
+/* ── Purchase Burst ─────────────────────────────────────────────── */
+.shop-purchase-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 700;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: shopBurstFade 1.6s ease both;
+}
+@keyframes shopBurstFade {
+  0%   { opacity: 1; }
+  65%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.shop-purchase-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: shopParticleOut 1.3s cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+/* 8 particles × 45° = 360° */
+.shop-purchase-particle--0 { background: #c9a84c; }
+.shop-purchase-particle--1 { background: #9c27b0; }
+.shop-purchase-particle--2 { background: #ffd700; }
+.shop-purchase-particle--3 { background: #e040fb; }
+@keyframes shopParticleOut {
+  0%   { transform: translate(-50%,-50%) rotate(calc(var(--i) * 45deg)) translateY(0)     scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%,-50%) rotate(calc(var(--i) * 45deg)) translateY(-110px) scale(0);   opacity: 0; }
+}
+.shop-purchase-burst__card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 16px 28px;
+  background: rgba(10,6,14,0.92);
+  border: 2px solid rgba(156,39,176,0.7);
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(156,39,176,0.25);
+  animation: shopCardPop 1.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes shopCardPop {
+  0%   { transform: scale(0);   opacity: 0; }
+  18%  { transform: scale(1.1); opacity: 1; }
+  30%  { transform: scale(0.96); }
+  40%  { transform: scale(1.0); opacity: 1; }
+  65%  { transform: scale(1.0); opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0; }
+}
+.shop-purchase-burst__icon {
+  font-size: 2.2rem;
+  animation: shopIconPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes shopIconPop {
+  from { transform: scale(0) rotate(-90deg); }
+  to   { transform: scale(1) rotate(0deg); }
+}
+.shop-purchase-burst__name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  color: #e040fb;
+  text-shadow: 0 0 10px rgba(224,64,251,0.5);
+}
