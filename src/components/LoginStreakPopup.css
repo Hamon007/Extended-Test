@@ -206,3 +206,105 @@
 
 .streak-popup__btn:hover  { transform: scale(1.04); box-shadow: 0 0 16px rgba(255,215,0,0.4); }
 .streak-popup__btn:active { transform: scale(0.97); }
+
+/* ── Milestone Styling ───────────────────────────────────────── */
+
+.streak-popup--milestone {
+  border-color: #ffd700;
+  box-shadow: 0 0 60px rgba(255,215,0,0.4), 0 0 120px rgba(255,140,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.streak-popup--legendary {
+  border-color: transparent;
+  animation: legendaryBorder 2s linear infinite;
+}
+
+@keyframes legendaryBorder {
+  0%   { box-shadow: 0 0 40px #ff006688, 0 0 80px #ff006644; border-color: #ff0066; }
+  16%  { box-shadow: 0 0 40px #ffd70088, 0 0 80px #ffd70044; border-color: #ffd700; }
+  33%  { box-shadow: 0 0 40px #00ff9988, 0 0 80px #00ff9944; border-color: #00ff99; }
+  50%  { box-shadow: 0 0 40px #0099ff88, 0 0 80px #0099ff44; border-color: #0099ff; }
+  66%  { box-shadow: 0 0 40px #cc00ff88, 0 0 80px #cc00ff44; border-color: #cc00ff; }
+  83%  { box-shadow: 0 0 40px #ffd70088, 0 0 80px #ffd70044; border-color: #ffd700; }
+  100% { box-shadow: 0 0 40px #ff006688, 0 0 80px #ff006644; border-color: #ff0066; }
+}
+
+/* Milestone banner */
+.streak-milestone-banner {
+  text-align: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.9rem;
+  color: #ffd700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 16px rgba(255,215,0,0.8);
+  padding: 6px 12px;
+  background: rgba(255,215,0,0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(255,215,0,0.3);
+  animation: msBannerPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.streak-milestone-banner--legendary {
+  background: linear-gradient(90deg, #ff0066, #ffd700, #00ff99, #0099ff, #cc00ff, #ff0066);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border-color: rgba(255,215,0,0.5);
+  animation:
+    msBannerPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both,
+    legendaryTextShift 2s linear infinite;
+}
+
+@keyframes msBannerPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes legendaryTextShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* Particle burst */
+.streak-milestone-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.streak-ms-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  animation: msBurstOut 1.6s cubic-bezier(0.1,0.6,0.4,1) both;
+  animation-delay: calc(var(--i) * 0.04s);
+}
+
+.streak-ms-particle--0 { width: 8px; height: 8px; background: radial-gradient(circle, #ffd700, transparent); }
+.streak-ms-particle--1 { width: 5px; height: 5px; background: radial-gradient(circle, #ffffff, #ffd700); }
+.streak-ms-particle--2 { width: 6px; height: 6px; background: radial-gradient(circle, #ff9900, transparent); }
+.streak-ms-particle--3 { width: 4px; height: 4px; background: radial-gradient(circle, #fff8dc, transparent); }
+
+@keyframes msBurstOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%,-50%) rotate(calc(var(--i) * 22.5deg)) translateY(-5px) scale(0.2);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%,-50%) rotate(calc(var(--i) * 22.5deg)) translateY(-70px) scale(1);
+  }
+  70% {
+    opacity: 0.5;
+    transform: translate(-50%,-50%) rotate(calc(var(--i) * 22.5deg)) translateY(-120px) scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%,-50%) rotate(calc(var(--i) * 22.5deg)) translateY(-160px) scale(0.2);
+  }
+}

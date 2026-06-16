@@ -12,8 +12,18 @@ interface Props {
   onClose: () => void;
 }
 
+const MILESTONE_DAYS = new Set([7, 14, 21, 30]);
+const MILESTONE_LABELS: Record<number, string> = {
+  7:  '🏆 WOCHE 1 VOLLSTÄNDIG!',
+  14: '🌟 2 WOCHEN DABEI!',
+  21: '✦ 3 WOCHEN DURCHGEHALTEN!',
+  30: '👑 EIN GANZER MONAT!',
+};
+
 const LoginStreakPopup: React.FC<Props> = ({ result, onClose }) => {
   const { newStreak, reward } = result;
+  const isMilestone = MILESTONE_DAYS.has(newStreak);
+  const isLegendary = newStreak === 30;
 
   // Zeige Tage 1-7 (aktuelle Woche in der Streak)
   const weekStart = Math.floor((newStreak - 1) / 7) * 7 + 1;
@@ -29,11 +39,27 @@ const LoginStreakPopup: React.FC<Props> = ({ result, onClose }) => {
 
   return (
     <div className="streak-overlay" onClick={onClose}>
-      <div className="streak-popup" onClick={e => e.stopPropagation()}>
+      <div className={`streak-popup ${isMilestone ? 'streak-popup--milestone' : ''} ${isLegendary ? 'streak-popup--legendary' : ''}`} onClick={e => e.stopPropagation()}>
+
+        {/* Milestone particle burst */}
+        {isMilestone && (
+          <div className="streak-milestone-burst" aria-hidden="true">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <div key={i} className={`streak-ms-particle streak-ms-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+            ))}
+          </div>
+        )}
+
+        {/* Milestone banner */}
+        {isMilestone && (
+          <div className={`streak-milestone-banner ${isLegendary ? 'streak-milestone-banner--legendary' : ''}`}>
+            {MILESTONE_LABELS[newStreak] ?? `🏆 MEILENSTEIN TAG ${newStreak}!`}
+          </div>
+        )}
 
         {/* Header */}
         <div className="streak-popup__header">
-          <div className="streak-popup__flame">🔥</div>
+          <div className="streak-popup__flame">{isLegendary ? '👑' : '🔥'}</div>
           <h2 className="streak-popup__title">
             {newStreak === 1 ? 'Willkommen zurück!' : `${newStreak} Tage in Folge!`}
           </h2>
