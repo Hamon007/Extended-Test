@@ -90,7 +90,8 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
   const [category, setCategory] = useState<Category>('all');
   const [items,    setItems]    = useState(() => AchievementService.getAll());
   const [toast,    setToast]    = useState('');
-  const [claimBurst, setClaimBurst] = useState<number | null>(null);
+  const [claimBurst,       setClaimBurst]       = useState<number | null>(null);
+  const [singleClaimBurst, setSingleClaimBurst] = useState<number | null>(null);
 
   const unclaimable = items.filter(({ progress }) => progress.unlocked && !progress.claimed).length;
   const totalCrystalsLeft = items
@@ -106,6 +107,8 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
       AudioService.vibrate([10, 20, 30]);
       setToast(`+${crystals} 💎 erhalten!`);
       setTimeout(() => setToast(''), 2000);
+      setSingleClaimBurst(crystals);
+      setTimeout(() => setSingleClaimBurst(null), 1400);
       refresh();
     }
   }, []);
@@ -160,6 +163,16 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
 
   return (
     <div className="ach-screen">
+
+      {/* Single-claim mini burst */}
+      {singleClaimBurst !== null && (
+        <div className="ach-single-burst" aria-hidden="true">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className={`ach-single-particle ach-single-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="ach-single-burst__label">+{singleClaimBurst} 💎</div>
+        </div>
+      )}
 
       {/* Claim-All Crystal Burst */}
       {claimBurst !== null && (

@@ -497,3 +497,56 @@
     transform: translate(-50%,-50%) rotate(calc(var(--i) * 22.5deg)) translateY(-190px) scale(0.2);
   }
 }
+
+/* ── Single-claim mini burst ── */
+.ach-single-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: achSingleFade 1.4s ease both;
+}
+@keyframes achSingleFade {
+  0%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.ach-single-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: achSingleParticle 1.2s cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+/* 8 particles × 45° = 360° */
+.ach-single-particle--0 { background: #ffd700; }
+.ach-single-particle--1 { background: #ff9944; }
+.ach-single-particle--2 { background: #ffffff; }
+.ach-single-particle--3 { background: #c9a84c; }
+@keyframes achSingleParticle {
+  0%   { transform: translate(-50%,-50%) rotate(calc(var(--i) * 45deg)) translateY(0)     scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%,-50%) rotate(calc(var(--i) * 45deg)) translateY(-100px) scale(0);   opacity: 0; }
+}
+.ach-single-burst__label {
+  position: relative;
+  z-index: 2;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 0 0 14px rgba(255,215,0,0.8), 0 0 28px rgba(201,168,76,0.4);
+  animation: achSingleLabelPop 1.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes achSingleLabelPop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  25%  { transform: scale(1.15); opacity: 1; }
+  40%  { transform: scale(0.95); }
+  55%  { transform: scale(1.0); opacity: 1; }
+  80%  { transform: scale(1.0); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
+}

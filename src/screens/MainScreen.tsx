@@ -49,6 +49,7 @@ import { LuckyDayService } from '../services/LuckyDayService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
+import { AudioService } from '../services/AudioService';
 import './MainScreen.css';
 
 // ── Typen ─────────────────────────────────────────────────────
@@ -335,9 +336,15 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
     const reward = DailyLoginService.claim();
     if (reward) {
       setLoginReward(reward);
-      // Refresh crystals/energy display after claim
       setAccount(SaveService.loadAccountState());
       setEnergy(EnergyService.load());
+      if (reward.day === 7) {
+        AudioService.super();
+        AudioService.vibrate([30, 20, 50, 20, 80, 30, 100]);
+      } else {
+        AudioService.reward();
+        AudioService.vibrate([20, 30, 20]);
+      }
     }
   }, []);
 
@@ -1708,6 +1715,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         const nextDay = DailyLoginService.DAY_REWARDS[loginReward.day % 7]; // wraps back to Day 1 after Day 7
         return (
           <div className="login-bonus-overlay" onClick={() => setLoginReward(null)}>
+            {/* Particle burst — 20 rainbow for Day 7, 8 gold otherwise */}
+            <div className={`login-bonus-particles ${isDay7 ? 'login-bonus-particles--mega' : ''}`} aria-hidden="true">
+              {Array.from({ length: isDay7 ? 20 : 8 }).map((_, i) => (
+                <div key={i} className={`login-bonus-particle login-bonus-particle--${i % (isDay7 ? 5 : 4)}`} style={{ '--i': i } as React.CSSProperties} />
+              ))}
+            </div>
             <div
               className={`login-bonus-modal${isDay7 ? ' login-bonus-modal--mega' : ''}`}
               onClick={e => e.stopPropagation()}
