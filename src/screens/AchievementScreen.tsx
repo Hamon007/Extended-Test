@@ -90,6 +90,7 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
   const [category, setCategory] = useState<Category>('all');
   const [items,    setItems]    = useState(() => AchievementService.getAll());
   const [toast,    setToast]    = useState('');
+  const [claimBurst, setClaimBurst] = useState<number | null>(null);
 
   const unclaimable = items.filter(({ progress }) => progress.unlocked && !progress.claimed).length;
   const totalCrystalsLeft = items
@@ -116,6 +117,8 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
       AudioService.vibrate([20, 30, 40, 30]);
       setToast(`+${total} 💎 erhalten!`);
       setTimeout(() => setToast(''), 2500);
+      setClaimBurst(total);
+      setTimeout(() => setClaimBurst(null), 2200);
       refresh();
     }
   }, []);
@@ -157,6 +160,20 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
 
   return (
     <div className="ach-screen">
+
+      {/* Claim-All Crystal Burst */}
+      {claimBurst !== null && (
+        <div className="ach-claim-burst" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className={`ach-burst-particle ach-burst-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="ach-claim-burst__inner">
+            <div className="ach-claim-burst__icon">🏆</div>
+            <div className="ach-claim-burst__amount">+{claimBurst.toLocaleString('de-DE')}</div>
+            <div className="ach-claim-burst__gem">💎</div>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="ach-header">
