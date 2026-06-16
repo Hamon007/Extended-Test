@@ -23,6 +23,7 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   });
   const [toast,          setToast]          = useState<string | null>(null);
   const [levelUpAnim,    setLevelUpAnim]    = useState(false);
+  const [levelUpBurst,   setLevelUpBurst]   = useState<{ prevLevel: number; newLevel: number; isMax: boolean } | null>(null);
 
   const inventory = gState.inventory;
 
@@ -154,9 +155,12 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setCrystalQty({ small: 0, medium: 0, large: 0 });
 
     if (didLevelUp) {
+      const isMax = updated.level >= cap;
       setLevelUpAnim(true);
+      setLevelUpBurst({ prevLevel, newLevel: updated.level, isMax });
       setTimeout(() => setLevelUpAnim(false), 1200);
-      showToast(`Level Up! ${prevLevel} → ${updated.level} ✦`);
+      setTimeout(() => setLevelUpBurst(null), 1800);
+      showToast(isMax ? `✦ MAX LEVEL! ${prevLevel} → ${updated.level} ✦` : `Level Up! ${prevLevel} → ${updated.level} ✦`);
     } else {
       showToast(`+${totalXpGain.toLocaleString('de-DE')} XP erhalten`);
     }
@@ -206,6 +210,17 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="opfern-section">
           <div className="training-target-label">ZIELKARTE</div>
           <div className={`opfern-target ${levelUpAnim ? 'opfern-target--levelup' : ''}`}>
+            {/* Level-up particle burst */}
+            {levelUpBurst && (
+              <div className={`training-lvlup-burst ${levelUpBurst.isMax ? 'training-lvlup-burst--max' : ''}`} aria-hidden="true">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className={`training-lvlup-particle training-lvlup-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+                ))}
+                <div className="training-lvlup-label">
+                  {levelUpBurst.isMax ? 'MAX!' : `Lv.${levelUpBurst.newLevel}`}
+                </div>
+              </div>
+            )}
             {target && targetCard ? (
               <>
                 <div className="opfern-target__art" onClick={() => setPicker('target')}>

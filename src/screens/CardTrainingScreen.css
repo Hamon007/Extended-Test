@@ -688,6 +688,7 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  position: relative;
 }
 .opfern-target--levelup { animation: lvlup-flash 1.4s ease both; border-radius: 6px; }
 
@@ -1050,4 +1051,62 @@
   background: linear-gradient(135deg, #1e0a30, #40187a, #1e0a30);
   border: 2px solid #9c27b0;
   cursor: pointer;
+}
+
+/* ── Level-Up Particle Burst ── */
+.training-lvlup-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.training-lvlup-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd700;
+  animation: lvlupParticle 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) calc(var(--i) * 0.04s) both;
+}
+.training-lvlup-particle--0 { background: #ffd700; }
+.training-lvlup-particle--1 { background: #ff9944; }
+.training-lvlup-particle--2 { background: #ffffff; }
+.training-lvlup-particle--3 { background: #ffee88; }
+@keyframes lvlupParticle {
+  0%   { transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(0) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(calc(var(--i) * 30deg)) translateY(-55px) scale(0); opacity: 0; }
+}
+.training-lvlup-burst--max .training-lvlup-particle--0 { background: #ff44aa; }
+.training-lvlup-burst--max .training-lvlup-particle--1 { background: #aa44ff; }
+.training-lvlup-burst--max .training-lvlup-particle--2 { background: #44aaff; }
+.training-lvlup-burst--max .training-lvlup-particle--3 { background: #ffee00; }
+.training-lvlup-label {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 16px rgba(255,215,0,0.9), 0 0 32px rgba(255,180,0,0.5);
+  animation: lvlupLabelPop 1.0s cubic-bezier(0.34,1.56,0.64,1) both;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+}
+.training-lvlup-burst--max .training-lvlup-label {
+  color: #ff88ff;
+  text-shadow: 0 0 20px rgba(255,100,255,0.9), 0 0 40px rgba(180,60,220,0.6);
+  font-size: 1.7rem;
+}
+@keyframes lvlupLabelPop {
+  0%   { transform: scale(0.2); opacity: 0; }
+  50%  { transform: scale(1.2); opacity: 1; }
+  70%  { transform: scale(0.95); }
+  80%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
 }
