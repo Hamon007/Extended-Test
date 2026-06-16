@@ -6,6 +6,7 @@ import { FusionSystem }  from '../services/FusionSystem';
 import type { CardInstance } from '../types/GachaTypes';
 import type { Card, Rarity } from '../types/Card';
 import { RARITY_COLOR, RARITY_MAJORS, RARITY_ORDER, rarityMajor } from '../types/Card';
+import { AudioService } from '../services/AudioService';
 import './CardTrainingScreen.css';
 
 const MAX_SACRIFICE = 10;
@@ -158,8 +159,10 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       const isMax = updated.level >= cap;
       setLevelUpAnim(true);
       setLevelUpBurst({ prevLevel, newLevel: updated.level, isMax });
+      if (isMax) { AudioService.super(); AudioService.vibrate([30, 20, 50, 20, 80]); }
+      else        { AudioService.synergy(); AudioService.vibrate([20, 30, 30]); }
       setTimeout(() => setLevelUpAnim(false), 1200);
-      setTimeout(() => setLevelUpBurst(null), 1800);
+      setTimeout(() => setLevelUpBurst(null), 2500);
       showToast(isMax ? `✦ MAX LEVEL! ${prevLevel} → ${updated.level} ✦` : `Level Up! ${prevLevel} → ${updated.level} ✦`);
     } else {
       showToast(`+${totalXpGain.toLocaleString('de-DE')} XP erhalten`);
@@ -169,6 +172,20 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="training-screen">
       {toast && <div className="training-toast">{toast}</div>}
+
+      {/* Screen-level Level-Up Overlay */}
+      {levelUpBurst && (
+        <div className={`training-lvlup-fixed ${levelUpBurst.isMax ? 'training-lvlup-fixed--max' : ''}`} aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className={`training-fixed-particle training-fixed-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="training-lvlup-fixed__card">
+            <div className="training-lvlup-fixed__icon">{levelUpBurst.isMax ? '★' : '⭐'}</div>
+            <div className="training-lvlup-fixed__eyebrow">{levelUpBurst.isMax ? 'MAX LEVEL!' : 'LEVEL UP!'}</div>
+            <div className="training-lvlup-fixed__level">Lv. {levelUpBurst.newLevel}</div>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="training-header">
@@ -210,17 +227,6 @@ const CardTrainingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="opfern-section">
           <div className="training-target-label">ZIELKARTE</div>
           <div className={`opfern-target ${levelUpAnim ? 'opfern-target--levelup' : ''}`}>
-            {/* Level-up particle burst */}
-            {levelUpBurst && (
-              <div className={`training-lvlup-burst ${levelUpBurst.isMax ? 'training-lvlup-burst--max' : ''}`} aria-hidden="true">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div key={i} className={`training-lvlup-particle training-lvlup-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
-                ))}
-                <div className="training-lvlup-label">
-                  {levelUpBurst.isMax ? 'MAX!' : `Lv.${levelUpBurst.newLevel}`}
-                </div>
-              </div>
-            )}
             {target && targetCard ? (
               <>
                 <div className="opfern-target__art" onClick={() => setPicker('target')}>
