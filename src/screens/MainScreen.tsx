@@ -157,7 +157,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const nearestAch = AchievementService.getNearestIncomplete();
   const winStreak  = WinStreakService.get();
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
-  const [offlineResult, setOfflineResult] = useState<OfflineResult | null>(null);
+  const [offlineResult,  setOfflineResult]  = useState<OfflineResult | null>(null);
+  const [comebackActive, setComebackActive] = useState(false);
   const [pvpRecord] = useState(() => {
     const hist = PvpHistoryService.getAll();
     if (hist.length === 0) return null;
@@ -323,7 +324,8 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
 
   // Offline Income — claim crystals earned while away (comeback check must run first)
   useEffect(() => {
-    ComebackBonusService.checkOnStart(); // reads ci_last_active before OfflineIncome resets it
+    const wasAway = ComebackBonusService.checkOnStart(); // reads ci_last_active before OfflineIncome resets it
+    if (wasAway) setComebackActive(ComebackBonusService.isActive());
     const result = OfflineIncomeService.claim();
     if (result) {
       setOfflineResult(result);
@@ -472,6 +474,18 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             <span className="main-power-milestone__fx">⚡</span>
           </div>
         </>
+      )}
+
+      {/* ── Comeback Bonus Banner ── */}
+      {comebackActive && !offlineResult && (
+        <div className="main-comeback-banner" onClick={() => onNavigate?.('battle')}>
+          <span className="main-comeback-banner__fire">🔥</span>
+          <div className="main-comeback-banner__text">
+            <span className="main-comeback-banner__title">COMEBACK-BONUS!</span>
+            <span className="main-comeback-banner__sub">Nächste {ComebackBonusService.COMEBACK_BATTLES} Siege: +25% Kristalle</span>
+          </div>
+          <span className="main-comeback-banner__cta">Kämpfen →</span>
+        </div>
       )}
 
       {/* ── Kristall-Leiste ── */}
@@ -1699,6 +1713,16 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
               <span className="offline-modal__reward-val">+{offlineResult.crystals.toLocaleString('de-DE')}</span>
               <span className="offline-modal__reward-label">KRISTALLE</span>
             </div>
+            {/* Comeback bonus chip — shown when player was away ≥24h */}
+            {comebackActive && (
+              <div className="offline-modal__comeback">
+                <span className="offline-modal__comeback__icon">🔥</span>
+                <div className="offline-modal__comeback__text">
+                  <span className="offline-modal__comeback__title">COMEBACK-BONUS AKTIV!</span>
+                  <span className="offline-modal__comeback__sub">Nächste {ComebackBonusService.COMEBACK_BATTLES} Siege: +25% Kristalle</span>
+                </div>
+              </div>
+            )}
             <div className="offline-modal__actions">
               <button
                 className="offline-modal__btn offline-modal__btn--battle"

@@ -1525,6 +1525,79 @@
   background: rgba(255,255,255,0.08);
 }
 
+/* Comeback bonus chip inside offline modal */
+.offline-modal__comeback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, rgba(255,80,0,0.12), rgba(255,140,0,0.08));
+  border: 1px solid rgba(255,120,0,0.4);
+  border-radius: 8px;
+  animation: comebackPulse 2s ease-in-out infinite alternate;
+}
+@keyframes comebackPulse {
+  from { border-color: rgba(255,120,0,0.3); }
+  to   { border-color: rgba(255,180,0,0.7); box-shadow: 0 0 14px rgba(255,150,0,0.2); }
+}
+.offline-modal__comeback__icon { font-size: 1.5rem; flex-shrink: 0; }
+.offline-modal__comeback__text { display: flex; flex-direction: column; gap: 2px; }
+.offline-modal__comeback__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  color: #ff8800;
+  font-weight: 700;
+}
+.offline-modal__comeback__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.75rem;
+  color: rgba(255,200,100,0.8);
+}
+
+/* ── Comeback Bonus Banner on MainScreen ── */
+.main-comeback-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  margin: 0 0 2px;
+  background: linear-gradient(135deg, rgba(255,80,0,0.14), rgba(180,50,0,0.1));
+  border-bottom: 1px solid rgba(255,120,0,0.35);
+  cursor: pointer;
+  flex-shrink: 0;
+  animation: comebackBannerGlow 2.5s ease-in-out infinite alternate;
+  transition: background 0.15s;
+}
+.main-comeback-banner:active { background: linear-gradient(135deg, rgba(255,100,0,0.22), rgba(200,60,0,0.16)); }
+@keyframes comebackBannerGlow {
+  from { border-bottom-color: rgba(255,120,0,0.25); }
+  to   { border-bottom-color: rgba(255,200,0,0.55); box-shadow: 0 2px 14px rgba(255,150,0,0.12); }
+}
+.main-comeback-banner__fire { font-size: 1.3rem; flex-shrink: 0; }
+.main-comeback-banner__text { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.main-comeback-banner__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  color: #ff8800;
+  font-weight: 700;
+}
+.main-comeback-banner__sub {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.72rem;
+  color: rgba(255,200,100,0.75);
+}
+.main-comeback-banner__cta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: #ffcc44;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+
 .main-card__action-btn--spin {
   background: linear-gradient(135deg, rgba(80, 0, 120, 0.4), rgba(150, 0, 80, 0.3));
   border-color: rgba(200, 100, 255, 0.5);
