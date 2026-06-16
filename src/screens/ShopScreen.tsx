@@ -155,8 +155,12 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack }) => {
                 if (!result.ok) {
                   setToast(`❌ ${result.reason}`);
                 } else {
+                  AudioService.reward();
+                  AudioService.vibrate([15, 25, 20]);
                   setCrystals(SaveService.loadGachaState().crystals);
                   setToast(`⚡ Blitzangebot: ${flashSale.name} gekauft!`);
+                  setPurchaseBurst({ ...discountedItem, icon: flashSale.icon, name: flashSale.name });
+                  setTimeout(() => setPurchaseBurst(null), 1600);
                 }
                 setTimeout(() => setToast(''), 2500);
               }}

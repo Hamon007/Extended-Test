@@ -21,6 +21,7 @@ import {
   type GuildApplication,
 } from '../services/GuildNetworkService';
 import { AuthService } from '../services/AuthService';
+import { AudioService } from '../services/AudioService';
 import './GuildScreen.css';
 
 const DONATE_OPTIONS = [100, 500, 1_000] as const;
@@ -47,9 +48,10 @@ function formatHMS(ms: number): string {
 const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const deck      = useDeckStore();
   const [state,   setState]   = useState(() => GuildService.load());
-  const [toast,   setToast]   = useState<string | null>(null);
-  const [attack,  setAttack]  = useState<BossAttackResult | null>(null);
-  const [shaking, setShaking] = useState(false);
+  const [toast,        setToast]        = useState<string | null>(null);
+  const [attack,       setAttack]       = useState<BossAttackResult | null>(null);
+  const [shaking,      setShaking]      = useState(false);
+  const [bossBurst,    setBossBurst]    = useState(false);
   const [activeTab, setActiveTab] = useState<'kampf' | 'gilde'>('kampf');
   const [resetMs,   setResetMs]   = useState(() => msUntilNextMonday());
 
@@ -97,6 +99,10 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setAttack(result);
     setState(GuildService.load());
     if (result.cleared) {
+      AudioService.super();
+      AudioService.vibrate([40, 20, 60, 20, 100]);
+      setBossBurst(true);
+      setTimeout(() => setBossBurst(false), 3500);
       showToast(`✦ BOSS BESIEGT! +${GUILD_BOSS_REWARD_CRYSTALS} 💎 +${GUILD_BOSS_REWARD_POTIONS} 🧪`);
     }
   }, [deck.deck.uuids, state.bossCleared]);
@@ -104,6 +110,22 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="guild-screen">
       {toast && <div className="guild-toast">{toast}</div>}
+
+      {/* Boss defeat burst */}
+      {bossBurst && (
+        <div className="guild-boss-burst" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className={`guild-boss-particle guild-boss-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="guild-boss-burst__card">
+            <div className="guild-boss-burst__skull">💀</div>
+            <div className="guild-boss-burst__title">BOSS BESIEGT!</div>
+            <div className="guild-boss-burst__rewards">
+              +{GUILD_BOSS_REWARD_CRYSTALS} 💎 · +{GUILD_BOSS_REWARD_POTIONS} 🧪
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div className="guild-header">
