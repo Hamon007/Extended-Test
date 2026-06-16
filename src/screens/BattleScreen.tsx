@@ -2631,6 +2631,8 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
   const [rageToast,      setRageToast]      = useState(false);
   const [showVersus,     setShowVersus]     = useState(true);
+  const [roundBanner,    setRoundBanner]    = useState<number | null>(null);
+  const lastRoundRef       = useRef(state.round);
   const lastComboBurstRef  = useRef(0);
   const lastAwakenedCount  = useRef(0);
   const lastLogId          = useRef(0);
@@ -2648,6 +2650,17 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     const id = setTimeout(() => setShowVersus(false), 1600);
     return () => clearTimeout(id);
   }, []);
+
+  // Round transition banner — flash "RUNDE X" when a new round starts (round 2+)
+  useEffect(() => {
+    if (state.round > lastRoundRef.current && state.round > 1 && state.phase === 'player_turn' && !state.result) {
+      setRoundBanner(state.round);
+      const id = setTimeout(() => setRoundBanner(null), 900);
+      lastRoundRef.current = state.round;
+      return () => clearTimeout(id);
+    }
+    lastRoundRef.current = state.round;
+  }, [state.round, state.phase, state.result]);
 
   // Screen-Shake via Web Animations API (retriggert zuverlässig).
   const triggerShake = useCallback((level: 1 | 2) => {
@@ -2978,6 +2991,16 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
               {ELEMENT_META[state.enemyData.element]?.icon ?? '⚔'}
             </div>
             <div className="arena-versus__enemy-name">{state.enemyData.name}</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Round transition banner ── */}
+      {roundBanner !== null && (
+        <div className="arena-round-banner" aria-hidden="true">
+          <div className="arena-round-banner__inner">
+            <span className="arena-round-banner__label">RUNDE</span>
+            <span className="arena-round-banner__num">{roundBanner}</span>
           </div>
         </div>
       )}
