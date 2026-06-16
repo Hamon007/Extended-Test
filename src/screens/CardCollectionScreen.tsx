@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { CardDatabase } from '../services/CardDatabase';
 import { SaveService } from '../services/SaveService';
-import { CollectionMilestoneService } from '../services/CollectionMilestoneService';
+import { CollectionMilestoneService, type CollectionMilestone } from '../services/CollectionMilestoneService';
 import { RARITY_COLOR, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Card, Rarity } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -49,6 +49,7 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
   const [sortKey,         setSortKey]         = useState<SortKey>('name');
   const [ownedOnly,       setOwnedOnly]       = useState(false);
   const [milestoneToast,  setMilestoneToast]  = useState<string | null>(null);
+  const [milestoneBurst,  setMilestoneBurst]  = useState<CollectionMilestone | null>(null);
 
   // Eigene Karten aus Inventar laden
   const ownedMap = useMemo(() => {
@@ -67,6 +68,8 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
       const best = results[results.length - 1];
       setMilestoneToast(`${best.milestone.icon} ${best.milestone.label} — +${best.milestone.crystals.toLocaleString('de-DE')} 💎`);
       setTimeout(() => setMilestoneToast(null), 4000);
+      setMilestoneBurst(best.milestone);
+      setTimeout(() => setMilestoneBurst(null), 4000);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -133,6 +136,20 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
 
   return (
     <div className="card-col-screen">
+
+      {/* ── Milestone burst overlay ── */}
+      {milestoneBurst && (
+        <div className="col-ms-burst" aria-hidden="true">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className={`col-ms-particle col-ms-particle--${i % 5}`} style={{ '--i': i } as React.CSSProperties} />
+          ))}
+          <div className="col-ms-burst__inner">
+            <div className="col-ms-burst__icon">{milestoneBurst.icon}</div>
+            <div className="col-ms-burst__label">{milestoneBurst.label}</div>
+            <div className="col-ms-burst__reward">+{milestoneBurst.crystals.toLocaleString('de-DE')} 💎</div>
+          </div>
+        </div>
+      )}
 
       {/* ── Meilenstein-Toast ── */}
       {milestoneToast && (

@@ -593,3 +593,89 @@
   text-overflow: ellipsis;
   color: rgba(232,213,176,0.7);
 }
+
+/* ── Collection Milestone Burst ─────────────────────────────────── */
+.col-ms-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 700;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: colMsFade 4s ease both;
+}
+@keyframes colMsFade {
+  0%   { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.col-ms-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  animation: colMsParticle 3.5s cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+/* 20 particles × 18° = 360° */
+.col-ms-particle--0 { background: #ffd700; }
+.col-ms-particle--1 { background: #ff9900; }
+.col-ms-particle--2 { background: #ffffff; }
+.col-ms-particle--3 { background: #ffee44; }
+.col-ms-particle--4 { background: #ffc844; }
+@keyframes colMsParticle {
+  0%   { transform: translate(-50%,-50%) rotate(calc(var(--i) * 18deg)) translateY(0)     scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%,-50%) rotate(calc(var(--i) * 18deg)) translateY(-220px) scale(0);   opacity: 0; }
+}
+.col-ms-burst__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 38px;
+  background: rgba(10,6,14,0.93);
+  border: 2px solid rgba(201,168,76,0.85);
+  border-radius: 14px;
+  box-shadow: 0 0 50px rgba(255,215,0,0.25), 0 0 100px rgba(201,168,76,0.1);
+  animation: colMsInnerScale 4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes colMsInnerScale {
+  0%   { transform: scale(0);    opacity: 0; }
+  12%  { transform: scale(1.1);  opacity: 1; }
+  20%  { transform: scale(0.96); }
+  28%  { transform: scale(1.0);  opacity: 1; }
+  72%  { transform: scale(1.0);  opacity: 1; }
+  100% { transform: scale(0.88); opacity: 0; }
+}
+.col-ms-burst__icon {
+  font-size: 2.8rem;
+  animation: colMsIconPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes colMsIconPop {
+  from { transform: scale(0) rotate(-180deg); }
+  to   { transform: scale(1) rotate(0deg); }
+}
+.col-ms-burst__label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: #f0d080;
+  text-shadow: 0 0 10px rgba(240,208,128,0.5);
+  animation: colMsLabelPop 0.5s 0.15s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.col-ms-burst__reward {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255,215,0,0.8);
+  animation: colMsLabelPop 0.5s 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes colMsLabelPop {
+  from { transform: scale(0.4) translateY(8px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
