@@ -340,17 +340,37 @@ const AwakenResultOverlay: React.FC<AwakenOverlayProps> = ({ lastAwakening, onCl
   useEffect(() => { AudioService.awaken(); AudioService.vibrate([20, 30, 50, 30, 60]); }, []);
   const lrColor = RARITY_COLOR.LR;
   return (
-    <div className="fusion-overlay" onClick={onClose}>
+    <div className="fusion-overlay awaken-overlay" onClick={onClose}>
+      {/* Radial burst particles */}
+      <div className="awaken-burst" aria-hidden="true">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <div
+            key={i}
+            className={`awaken-particle awaken-particle--${i % 6}`}
+            style={{ '--ai': i, '--atotal': 24 } as React.CSSProperties}
+          />
+        ))}
+      </div>
+      {/* Expanding rings */}
+      <div className="awaken-ring awaken-ring--1" aria-hidden="true" />
+      <div className="awaken-ring awaken-ring--2" aria-hidden="true" />
+      <div className="awaken-ring awaken-ring--3" aria-hidden="true" />
       <div className="fusion-overlay__box fusion-overlay__box--awaken"
            style={{ '--rc': lrColor } as React.CSSProperties}>
-        <div className="fusion-overlay__spark">✦</div>
-        <div className="fusion-overlay__title">TRUE AWAKENING</div>
-        <div className="fusion-overlay__rarities">
-          <span className="fusion-overlay__awaken-from">{lastAwakening.fromName}</span>
-          <span className="fusion-overlay__arrow">→</span>
-          <span className="fusion-overlay__to" style={{ color: lrColor }}>{lastAwakening.toName}</span>
+        <div className="awaken-overlay__crown">👑</div>
+        <div className="fusion-overlay__spark awaken-spark">✦</div>
+        <div className="fusion-overlay__title awaken-title">TRUE AWAKENING</div>
+        <div className="awaken-overlay__names">
+          <span className="awaken-overlay__from">{lastAwakening.fromName}</span>
+          <div className="awaken-overlay__arrow-wrap">
+            <span className="awaken-overlay__arrow">→</span>
+          </div>
+          <span className="awaken-overlay__to" style={{ color: lrColor }}>
+            {lastAwakening.toName}
+          </span>
         </div>
-        <button className="fusion-overlay__btn" onClick={onClose}>Weiter</button>
+        <div className="awaken-overlay__subtitle">Die Karte hat ihre wahre Form angenommen!</div>
+        <button className="fusion-overlay__btn awaken-btn" onClick={onClose}>✦ Fortfahren</button>
       </div>
     </div>
   );

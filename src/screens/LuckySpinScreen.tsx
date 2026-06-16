@@ -32,6 +32,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
   const [rotation,     setRotation]     = useState(0);
   const [prize,        setPrize]        = useState<SpinPrize | null>(null);
   const [streakBonus,  setStreakBonus]  = useState<number | null>(null);
+  const [nearMiss,     setNearMiss]     = useState<SpinPrize | null>(null);
   const [showResult,   setShowResult]   = useState(false);
   const [streak,       setStreak]       = useState(() => LuckySpinService.getStreak());
   const [history,      setHistory]      = useState<SpinPrize[]>(() => LuckySpinService.getHistory());
@@ -50,6 +51,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     setShowResult(false);
     setPrize(null);
     setStreakBonus(null);
+    setNearMiss(null);
     setSpinning(true);
 
     const result = LuckySpinService.spin();
@@ -67,9 +69,17 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     baseRotationRef.current = newRotation % 360;
     setRotation(newRotation);
 
+    // Near-miss: find the adjacent prize that would have been worth more
+    const wonValue    = won.crystals ?? 0;
+    const leftPrize   = SPIN_PRIZES[(prizeIndex - 1 + SEG_COUNT) % SEG_COUNT]!;
+    const rightPrize  = SPIN_PRIZES[(prizeIndex + 1) % SEG_COUNT]!;
+    const bestAdj     = (leftPrize.crystals ?? 0) >= (rightPrize.crystals ?? 0) ? leftPrize : rightPrize;
+    const nearMissPrize = (bestAdj.crystals ?? 0) > wonValue ? bestAdj : null;
+
     setTimeout(() => {
       setPrize(won);
       setStreakBonus(bonus);
+      setNearMiss(nearMissPrize);
       setShowResult(true);
       setSpinning(false);
       setCanSpin(false);
@@ -229,6 +239,16 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
               {streakBonus && streakBonus > 0 && (
                 <div className="spin-result__streak-bonus">
                   🔥 Serien-Bonus: +{streakBonus.toLocaleString('de-DE')} 💎
+                </div>
+              )}
+              {nearMiss && (
+                <div className="spin-near-miss">
+                  <div className="spin-near-miss__label">SO NAH!</div>
+                  <div className="spin-near-miss__content">
+                    <span className="spin-near-miss__icon">{nearMiss.icon}</span>
+                    <span className="spin-near-miss__prize" style={{ color: nearMiss.color }}>{nearMiss.label}</span>
+                  </div>
+                  <div className="spin-near-miss__sub">wäre es fast geworden — morgen wieder! 🍀</div>
                 </div>
               )}
               <div className="spin-result__note">Tippe zum Schließen.</div>

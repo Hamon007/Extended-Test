@@ -5138,3 +5138,33 @@
   color: var(--lc, #ffee00);
   text-shadow: 0 0 4px var(--lc, #ffee00);
 }
+
+/* ── Enemy Danger Zone ──────────────────────────────────────── */
+.arena-danger-zone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(90deg, rgba(200,34,0,0.22), rgba(255,100,0,0.12));
+  border: 1px solid rgba(255,80,0,0.55);
+  border-radius: 6px;
+  padding: 3px 10px;
+  margin-top: 4px;
+  animation: dangerZonePulse 0.9s ease-in-out infinite;
+}
+
+.arena-danger-zone__icon {
+  font-size: 0.78rem;
+}
+
+.arena-danger-zone__text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ff7744;
+  letter-spacing: 0.05em;
+}
+
+@keyframes dangerZonePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(255,80,0,0.35); }
+  50%       { opacity: 0.78; box-shadow: 0 0 14px rgba(255,100,0,0.65); }
+}

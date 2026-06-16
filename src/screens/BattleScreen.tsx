@@ -3055,6 +3055,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           <div className="arena-enemy-name">{enemyData.name}</div>
           <HpBar current={enemy.hp} max={enemy.hpMax} color="#cc2200" showMarkers />
           <MpBar current={enemy.mp} max={enemy.mpMax} />
+          {/* Enemy danger zone — persistent when HP critically low */}
+          {enemyHpPct > 0 && enemyHpPct < 0.15 && canPlay && !state.result && (
+            <div className="arena-danger-zone">
+              <span className="arena-danger-zone__icon">⚔</span>
+              <span className="arena-danger-zone__text">JETZT ZUSCHLAGEN! · {Math.round(enemyHpPct * 100)}% HP</span>
+            </div>
+          )}
           <div className="arena-enemy-cards-row">
             {enemy.hand.map(c => <EnemyCardMini key={c.instanceId} card={c} />)}
           </div>
