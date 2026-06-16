@@ -384,3 +384,69 @@
   background: linear-gradient(135deg, #7b2fbe, #b39ddb);
   color: #fff;
 }
+
+/* ── Account Level-Up Banner ─────────────────────────────────── */
+
+.inv-levelup-banner {
+  position: fixed;
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #1a0d30 0%, #2d1050 60%, #1a0d30 100%);
+  border: 2px solid #ffd700;
+  border-radius: 14px;
+  padding: 14px 24px;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.5), 0 0 80px rgba(255, 150, 0, 0.2);
+  pointer-events: none;
+  animation: invLuBanner 3s ease forwards;
+}
+
+@keyframes invLuBanner {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.6) translateY(20px); }
+  12%  { opacity: 1; transform: translateX(-50%) scale(1.06) translateY(0); }
+  22%  { transform: translateX(-50%) scale(0.98); }
+  30%  { transform: translateX(-50%) scale(1); }
+  72%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.92) translateY(-10px); }
+}
+
+.inv-levelup-banner__icon {
+  font-size: 2.2rem;
+  animation: invLuIconSpin 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes invLuIconSpin {
+  from { transform: scale(0) rotate(-180deg); }
+  to   { transform: scale(1) rotate(0deg); }
+}
+
+.inv-levelup-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inv-levelup-banner__eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 215, 0, 0.8);
+}
+
+.inv-levelup-banner__level {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 180, 0, 0.5);
+  animation: invLuLevelPop 0.5s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes invLuLevelPop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}

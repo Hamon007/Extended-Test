@@ -77,6 +77,12 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
 
   const [claimAnim, setClaimAnim] = useState(false);
   const [claimBurst, setClaimBurst] = useState<{ crystals: number; xp: number } | null>(null);
+  const [accountLevelUp, setAccountLevelUp] = useState<number | null>(null);
+
+  function triggerLevelUp(newLevel: number) {
+    setAccountLevelUp(newLevel);
+    setTimeout(() => setAccountLevelUp(null), 3000);
+  }
 
   function handleClaim(questId: string) {
     const reward = QuestService.claimReward(questId);
@@ -84,7 +90,12 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
     const acct   = SaveService.loadAccountState();
     const result = AccountProgressionService.addAccountXp(acct, reward.xp);
     SaveService.saveAccountState(result.newState);
-    showToast(`+${reward.crystals} 💎 · +${reward.xp.toLocaleString('de-DE')} XP`);
+    if (result.leveledUp) {
+      triggerLevelUp(result.newLevel);
+      showToast(`+${reward.crystals} 💎 · LEVEL UP! Lv.${result.newLevel} ⭐`);
+    } else {
+      showToast(`+${reward.crystals} 💎 · +${reward.xp.toLocaleString('de-DE')} XP`);
+    }
     refresh();
   }
 
@@ -101,9 +112,10 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       const acct = SaveService.loadAccountState();
       const result = AccountProgressionService.addAccountXp(acct, totalXp);
       SaveService.saveAccountState(result.newState);
+      if (result.leveledUp) triggerLevelUp(result.newLevel);
       AudioService.super();
       AudioService.vibrate([20, 30, 40, 30]);
-      showToast(`ALLE ABGEHOLT! +${totalCrystals.toLocaleString('de-DE')} 💎 · +${totalXp.toLocaleString('de-DE')} XP`);
+      showToast(`ALLE ABGEHOLT! +${totalCrystals.toLocaleString('de-DE')} 💎${result.leveledUp ? ` · LEVEL UP! Lv.${result.newLevel} ⭐` : ` · +${totalXp.toLocaleString('de-DE')} XP`}`);
       setClaimAnim(true);
       setTimeout(() => setClaimAnim(false), 800);
       setClaimBurst({ crystals: totalCrystals, xp: totalXp });
@@ -125,6 +137,17 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
             <div className="quest-claim-burst__icon">✦</div>
             <div className="quest-claim-burst__amount">+{claimBurst.crystals.toLocaleString('de-DE')} 💎</div>
             <div className="quest-claim-burst__xp">+{claimBurst.xp.toLocaleString('de-DE')} XP</div>
+          </div>
+        </div>
+      )}
+
+      {/* Account Level-Up Banner */}
+      {accountLevelUp !== null && (
+        <div className="quest-levelup-banner" aria-live="assertive">
+          <div className="quest-levelup-banner__icon">⭐</div>
+          <div className="quest-levelup-banner__text">
+            <div className="quest-levelup-banner__eyebrow">LEVEL UP!</div>
+            <div className="quest-levelup-banner__level">Lv. {accountLevelUp}</div>
           </div>
         </div>
       )}

@@ -39,10 +39,16 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
   const [sort,    setSort]    = useState<SortKey>('rarity');
   const [detail,  setDetail]  = useState<CardInstance | null>(null);
   const [toast,   setToast]   = useState('');
+  const [accountLevelUp, setAccountLevelUp] = useState<number | null>(null);
 
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(''), 2400);
+  }
+
+  function triggerLevelUp(newLevel: number) {
+    setAccountLevelUp(newLevel);
+    setTimeout(() => setAccountLevelUp(null), 3000);
   }
 
   function refresh() {
@@ -61,7 +67,12 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
     const result = AccountProgressionService.addAccountXp(acct, xpMap[size]);
     SaveService.saveAccountState(result.newState);
     SaveService.saveGachaState({ ...gs, crystalCards: newStock });
-    showToast(`+${xpMap[size].toLocaleString('de-DE')} XP erhalten!`);
+    if (result.leveledUp) {
+      triggerLevelUp(result.newLevel);
+      showToast(`+${xpMap[size].toLocaleString('de-DE')} XP · LEVEL UP! Lv.${result.newLevel} ⭐`);
+    } else {
+      showToast(`+${xpMap[size].toLocaleString('de-DE')} XP erhalten!`);
+    }
     refresh();
   }
 
@@ -131,6 +142,16 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
 
   return (
     <div className="inv-screen">
+      {/* Account Level-Up Banner */}
+      {accountLevelUp !== null && (
+        <div className="inv-levelup-banner" aria-live="assertive">
+          <div className="inv-levelup-banner__icon">⭐</div>
+          <div className="inv-levelup-banner__text">
+            <div className="inv-levelup-banner__eyebrow">LEVEL UP!</div>
+            <div className="inv-levelup-banner__level">Lv. {accountLevelUp}</div>
+          </div>
+        </div>
+      )}
       {toast && <div className="inv-toast">{toast}</div>}
 
       <div className="inv-header">
