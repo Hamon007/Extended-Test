@@ -454,16 +454,24 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         <button className="main-topbar__refresh" onClick={handleRefresh} aria-label="Aktualisieren">↺</button>
       </div>
 
-      {/* ── Power Milestone Toast ── */}
+      {/* ── Power Milestone Toast + Burst ── */}
       {powerMilestone && (
-        <div className={`main-power-milestone main-power-milestone--${powerMilestone.tier}`}>
-          <span className="main-power-milestone__icon">{powerMilestone.icon}</span>
-          <div className="main-power-milestone__text">
-            <span className="main-power-milestone__title">KAMPFKRAFT ERREICHT!</span>
-            <span className="main-power-milestone__value">{powerMilestone.label}</span>
+        <>
+          {/* Fixed particle burst behind the banner */}
+          <div className={`main-power-burst main-power-burst--${powerMilestone.tier}`} aria-hidden="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className={`main-power-particle main-power-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
+            ))}
           </div>
-          <span className="main-power-milestone__fx">⚡</span>
-        </div>
+          <div className={`main-power-milestone main-power-milestone--${powerMilestone.tier}`}>
+            <span className="main-power-milestone__icon">{powerMilestone.icon}</span>
+            <div className="main-power-milestone__text">
+              <span className="main-power-milestone__title">KAMPFKRAFT ERREICHT!</span>
+              <span className="main-power-milestone__value">{powerMilestone.label}</span>
+            </div>
+            <span className="main-power-milestone__fx">⚡</span>
+          </div>
+        </>
       )}
 
       {/* ── Kristall-Leiste ── */}

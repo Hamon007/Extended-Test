@@ -3080,6 +3080,44 @@
   to   { opacity: 1.0; transform: scale(1.1); }
 }
 
+/* ── Power Milestone Burst Particles ────────────────────────── */
+.main-power-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 899; /* below the toast (z-index: 900) */
+  pointer-events: none;
+}
+.main-power-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: mainPowerParticle 1.4s cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+/* 12 particles × 30° = 360° */
+.main-power-burst--bronze .main-power-particle--0 { background: #e8954a; }
+.main-power-burst--bronze .main-power-particle--1 { background: #c87941; }
+.main-power-burst--bronze .main-power-particle--2 { background: #ffcc88; }
+.main-power-burst--bronze .main-power-particle--3 { background: #ffffff; }
+.main-power-burst--silver .main-power-particle--0 { background: #c8dce8; }
+.main-power-burst--silver .main-power-particle--1 { background: #9ab0c8; }
+.main-power-burst--silver .main-power-particle--2 { background: #e8f0f8; }
+.main-power-burst--silver .main-power-particle--3 { background: #ffffff; }
+.main-power-burst--gold .main-power-particle--0   { background: #ffd700; }
+.main-power-burst--gold .main-power-particle--1   { background: #d4a800; }
+.main-power-burst--gold .main-power-particle--2   { background: #ffee88; }
+.main-power-burst--gold .main-power-particle--3   { background: #ffffff; }
+.main-power-burst--legend .main-power-particle--0 { background: #d88aff; }
+.main-power-burst--legend .main-power-particle--1 { background: #b44fff; }
+.main-power-burst--legend .main-power-particle--2 { background: #ff88ff; }
+.main-power-burst--legend .main-power-particle--3 { background: #ffffff; }
+@keyframes mainPowerParticle {
+  0%   { transform: translate(-50%,-50%) rotate(calc(var(--i) * 30deg)) translateY(0)     scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%,-50%) rotate(calc(var(--i) * 30deg)) translateY(-150px) scale(0);   opacity: 0; }
+}
+
 /* ── Bonus Hour Banner ──────────────────────────────────────── */
 
 .main-bonushour {
