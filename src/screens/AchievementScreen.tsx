@@ -190,7 +190,7 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
 
       {/* Header */}
       <div className="ach-header">
-        <button className="ach-header__back" onClick={onBack}>← Zurück</button>
+        <button className="ach-header__back" onClick={() => { AudioService.tap(); onBack(); }}>← Zurück</button>
         <h1 className="ach-header__title">🏆 Achievements</h1>
         <div className="ach-header__count">{stats.unlocked}/{stats.total}</div>
       </div>
@@ -245,7 +245,7 @@ const AchievementScreen: React.FC<Props> = ({ onBack }) => {
             <button
               key={cat}
               className={`ach-tab ${category === cat ? 'ach-tab--active' : ''}`}
-              onClick={() => setCategory(cat)}
+              onClick={() => { AudioService.tap(); setCategory(cat); }}
             >
               {CATEGORY_LABELS[cat]}
               {badge > 0 && <span className="ach-tab__badge">{badge}</span>}

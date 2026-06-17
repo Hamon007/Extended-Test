@@ -400,14 +400,14 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
           {onRetry && (
             <button
               className={`defeat-btn defeat-btn--retry ${!canRetry ? 'defeat-btn--retry-disabled' : ''}`}
-              onClick={canRetry ? onRetry : undefined}
+              onClick={canRetry ? () => { AudioService.tap(); onRetry!(); } : undefined}
               disabled={!canRetry}
               title={!canRetry ? 'Keine Energie' : undefined}
             >
               {canRetry ? '⚡ Nochmal!' : '⚡ Keine Energie'}
             </button>
           )}
-          <button className="defeat-btn defeat-btn--return" onClick={onReturnToSelect}>
+          <button className="defeat-btn defeat-btn--return" onClick={() => { AudioService.tap(); onReturnToSelect(); }}>
             ◀ Zurück
           </button>
         </div>

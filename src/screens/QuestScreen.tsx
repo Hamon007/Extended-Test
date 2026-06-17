@@ -157,7 +157,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       {toast && <div className="quest-toast">{toast}</div>}
 
       <div className="quest-header">
-        <button className="quest-header__back" onClick={onBack}>← Zurück</button>
+        <button className="quest-header__back" onClick={() => { AudioService.tap(); onBack(); }}>← Zurück</button>
         <h1 className="quest-header__title">Aufgaben</h1>
         <div />
       </div>
@@ -165,7 +165,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       <div className="quest-tabs">
         <button
           className={`quest-tab ${tab === 'daily' ? 'quest-tab--active' : ''}`}
-          onClick={() => { setTab('daily'); setResetMs(msUntilMidnightUtc()); }}
+          onClick={() => { AudioService.tap(); setTab('daily'); setResetMs(msUntilMidnightUtc()); }}
         >
           Täglich
           {dailyClaimable > 0 && (
@@ -174,7 +174,7 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
         </button>
         <button
           className={`quest-tab ${tab === 'weekly' ? 'quest-tab--active' : ''}`}
-          onClick={() => { setTab('weekly'); setResetMs(msUntilNextMonday()); }}
+          onClick={() => { AudioService.tap(); setTab('weekly'); setResetMs(msUntilNextMonday()); }}
         >
           Wöchentlich
           {weeklyClaimable > 0 && (

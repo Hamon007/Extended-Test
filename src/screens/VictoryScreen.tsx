@@ -211,7 +211,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
       {showLevelUp && details.accountLevelUp && (
         <div
           className="victory-levelup-overlay"
-          onClick={() => setShowLevelUp(false)}
+          onClick={() => { AudioService.tap(); setShowLevelUp(false); }}
           aria-label="Level-Up"
         >
           <div className="victory-levelup-overlay__burst" aria-hidden="true">
@@ -956,7 +956,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
               <button
                 key={a.screen}
                 className="victory-quick-btn"
-                onClick={() => { onContinue(); onNavigate?.(a.screen); }}
+                onClick={() => { AudioService.tap(); onContinue(); onNavigate?.(a.screen); }}
               >
                 <span className="victory-quick-btn__icon">{a.icon}</span>
                 <span className="victory-quick-btn__label">{a.label}</span>
@@ -969,7 +969,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
         {mvpTrainable && (
           <div
             className="victory-mvp-nudge"
-            onClick={() => { onContinue(); onNavigate?.('training'); }}
+            onClick={() => { AudioService.tap(); onContinue(); onNavigate?.('training'); }}
             role="button"
             tabIndex={0}
           >
@@ -994,7 +994,7 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
           const battlesLeft = estPer > 0 ? Math.max(1, Math.ceil(needed / estPer)) : null;
           if (crystals < 200 || needed > PULL_COST_MULTI * 0.9) return null;
           return (
-            <div className="victory-pull-nudge" onClick={() => { onContinue(); onNavigate?.('gacha'); }}>
+            <div className="victory-pull-nudge" onClick={() => { AudioService.tap(); onContinue(); onNavigate?.('gacha'); }}>
               <span className="victory-pull-nudge__icon">✨</span>
               <div className="victory-pull-nudge__text">
                 <span className="victory-pull-nudge__label">
@@ -1044,13 +1044,13 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
 
         {/* Quick Fight — skip lobby, start next floor */}
         {onQuickFight && details.towerFloor && (
-          <button className="victory-quickfight-btn" onClick={onQuickFight}>
+          <button className="victory-quickfight-btn" onClick={() => { AudioService.tap(); onQuickFight!(); }}>
             ⚔ ETAGE {details.towerFloor + 1} ANGREIFEN!
           </button>
         )}
 
         {/* Weiter-Button */}
-        <button className={`victory-btn${onQuickFight ? ' victory-btn--secondary' : ''}`} onClick={onContinue}>
+        <button className={`victory-btn${onQuickFight ? ' victory-btn--secondary' : ''}`} onClick={() => { AudioService.tap(); onContinue(); }}>
           ◀ Zurück zur Auswahl
         </button>
 
