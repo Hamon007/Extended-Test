@@ -47,6 +47,7 @@ import { BattleStatsService } from '../services/BattleStatsService';
 import { BattleHistoryService } from '../services/BattleHistoryService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
+import { LevelSystem } from '../services/LevelSystem';
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { RecoveryService } from '../services/RecoveryService';
 import { LoginStreakService, STREAK_REWARDS } from '../services/LoginStreakService';
@@ -1326,6 +1327,28 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             if (rew) {
               suggestions.push({ icon: '🔥', text: `Morgen: Meilenstein Tag ${nextMs30}!`, sub: `${rew.label} warten — heute und morgen einloggen!`, screen: 'main', priority: 13 });
             }
+          }
+        }
+
+        // Deck cards that can level up (training available)
+        {
+          const trainableCount = deck.uuids.reduce((n, uuid) => {
+            const inst = gs.inventory.find(i => i.uuid === uuid);
+            if (!inst) return n;
+            const canLevel = (inst.level ?? 1) < LevelSystem.levelCap(inst.rarity);
+            return n + (canLevel ? 1 : 0);
+          }, 0);
+          if (trainableCount >= 2) {
+            suggestions.push({ icon: '⬆', text: `${trainableCount} Deck-Karten trainierbar!`, sub: 'Level-Ups steigern ATK sofort — stärke jetzt dein Deck', screen: 'training', priority: 7 });
+          }
+        }
+
+        // Win streak near multiplier tier
+        if (winStreak > 0) {
+          const winsToNext = winStreak < 3 ? 3 - winStreak : winStreak < 5 ? 5 - winStreak : winStreak < 10 ? 10 - winStreak : 0;
+          const nextLabel  = winStreak < 3 ? '×1.2' : winStreak < 5 ? '×1.4' : winStreak < 10 ? '×1.8' : '';
+          if (winsToNext > 0 && winsToNext <= 2) {
+            suggestions.push({ icon: '🔥', text: `Noch ${winsToNext} Sieg${winsToNext > 1 ? 'e' : ''} bis ${nextLabel} Bonus!`, sub: `Kristall-Multiplikator steigt auf ${nextLabel} — halt die Serie!`, screen: 'battle', priority: 14 });
           }
         }
 
