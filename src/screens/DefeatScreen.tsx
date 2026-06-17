@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import type { RewardDetails } from '../types/ProgressionTypes';
 import { DEFEAT_CONSOLATION } from '../types/ProgressionTypes';
 import { MAX_ROUNDS } from '../types/BattleTypes';
@@ -12,6 +12,7 @@ import { BountyService }   from '../services/BountyService';
 import { WorldBossService } from '../services/WorldBossService';
 import { WinStreakService } from '../services/WinStreakService';
 import { QuestService } from '../services/QuestService';
+import { AudioService } from '../services/AudioService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import './DefeatScreen.css';
 
@@ -178,6 +179,23 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
   const tips         = buildTips(details);
   const dmgPct       = damageProgress(enemyHpPct);
   const barColor     = dmgPct >= 0.85 ? '#44cc44' : dmgPct >= 0.6 ? '#f0c040' : dmgPct >= 0.35 ? '#e07020' : '#cc2200';
+
+  // Entry audio
+  useEffect(() => {
+    const isRage = RageModeService.getLossCount() >= RageModeService.RAGE_THRESHOLD;
+    if (wasClose) {
+      // Tantalizingly close — synergy tone to "almost!" feeling
+      AudioService.synergy();
+      AudioService.vibrate([30, 10, 30]);
+    } else if (isRage) {
+      // Rage threshold hit — low rumble then hit
+      AudioService.defeat();
+      AudioService.vibrate([40, 30, 80, 30, 120]);
+    } else {
+      AudioService.defeat();
+      AudioService.vibrate([20, 20, 50]);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="defeat-screen">

@@ -50,6 +50,7 @@ import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { LuckyDayService } from '../services/LuckyDayService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
+import { getSurgeElement, msRemaining as surgeMs, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
 import type { Card } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
 import { AudioService } from '../services/AudioService';
@@ -230,6 +231,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [flashChalMs,     setFlashChalMs]     = useState(() => FlashChallengeService.msRemaining());
   const [flashChalDone,   setFlashChalDone]   = useState(() => FlashChallengeService.isCompleted());
   const [nemesisId]                           = useState(() => NemesisService.getNemesisId());
+  const [hourSurgeMs,     setHourSurgeMs]     = useState(() => surgeMs());
 
   // Countdown-Tick + Energy-Regen-Ticker
   useEffect(() => {
@@ -257,6 +259,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setFlashChalActive(fcActive);
       setFlashChalMs(FlashChallengeService.msRemaining());
       if (fcActive) setFlashChalDone(FlashChallengeService.isCompleted());
+      setHourSurgeMs(surgeMs());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -1013,6 +1016,47 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         );
       })()}
 
+      {/* ── Hour Surge Chip ── */}
+      {(() => {
+        const surge = getSurgeElement();
+        const color = SURGE_ELEMENT_COLORS[surge];
+        const icon  = SURGE_ELEMENT_ICONS[surge];
+        const name  = SURGE_ELEMENT_NAMES[surge];
+        const mins  = Math.ceil(hourSurgeMs / 60000);
+        // Check if active deck has matching element
+        const deck  = SaveService.loadDeck();
+        const inv   = SaveService.loadGachaState().inventory;
+        const deckMatches = deck.uuids.some(uuid => {
+          const inst = inv.find(i => i.uuid === uuid);
+          if (!inst) return false;
+          const card = CardDatabase.getById(inst.cardId);
+          return card?.element === surge;
+        });
+        return (
+          <div
+            className={`main-surge-chip${deckMatches ? ' main-surge-chip--match' : ''}`}
+            style={{ '--surge-color': color } as React.CSSProperties}
+            onClick={() => onNavigate?.('battle')}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="main-surge-chip__icon">{icon}</span>
+            <div className="main-surge-chip__body">
+              <div className="main-surge-chip__header">
+                <span className="main-surge-chip__title">{name.toUpperCase()} SURGE · +50% 💎</span>
+                <span className="main-surge-chip__timer">{mins}min</span>
+              </div>
+              <span className="main-surge-chip__sub">
+                {deckMatches
+                  ? '✓ Dein Deck passt — Bonus aktiv!'
+                  : `Wechsle zu ${name}-Karten für Bonus!`}
+              </span>
+            </div>
+            <span className="main-surge-chip__cta">KÄMPFEN ▶</span>
+          </div>
+        );
+      })()}
+
       {/* ── Daily Boss Alert ── */}
       {dailyBossActive && onNavigate && (
         <button
@@ -1552,7 +1596,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <div
             className={`main-world-boss-chip ${isDead ? 'main-world-boss-chip--dead' : ''}`}
             onClick={() => {
-              if (canClaim) { WorldBossService.claimReward(); }
+              if (canClaim) {
+                WorldBossService.claimReward();
+                AudioService.super();
+                AudioService.vibrate([30, 20, 50, 20, 80]);
+              }
               onNavigate?.('battle');
             }}
             role="button"
