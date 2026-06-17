@@ -161,6 +161,14 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
     return () => clearTimeout(id);
   }, [showLevelUp]);
 
+  // Milestone burst (shows for 2s on win count milestones)
+  const [showMilestoneBurst, setShowMilestoneBurst] = useState(isVictoryMilestone);
+  useEffect(() => {
+    if (!isVictoryMilestone) return;
+    const id = setTimeout(() => setShowMilestoneBurst(false), 2000);
+    return () => clearTimeout(id);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Entry audio: level-up > SSS > milestone > normal
   useEffect(() => {
     if (details.accountLevelUp) {
@@ -234,6 +242,15 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
         <div className="crystal-rain-overlay" aria-hidden="true">
           {Array.from({ length: 20 }).map((_, i) => (
             <div key={i} className={`crystal-drop crystal-drop--${i % 5}`}>💎</div>
+          ))}
+        </div>
+      )}
+
+      {/* Victory milestone burst */}
+      {showMilestoneBurst && (
+        <div className="victory-ms-burst" aria-hidden="true">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className={`victory-ms-particle victory-ms-particle--${i % 4}`} style={{ '--i': i } as React.CSSProperties} />
           ))}
         </div>
       )}

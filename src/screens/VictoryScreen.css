@@ -2090,3 +2090,40 @@
   letter-spacing: 0.06em;
   flex-shrink: 0;
 }
+
+/* ── Victory Milestone Burst ──────────────────────────────────── */
+.victory-ms-burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: vMsBurstFade 2s ease-out forwards;
+}
+
+@keyframes vMsBurstFade {
+  0%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.victory-ms-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: vMsParticleOut 1.6s ease-out 0.1s forwards;
+  transform-origin: center;
+}
+
+@keyframes vMsParticleOut {
+  0%   { transform: rotate(calc(var(--i) * 30deg)) translateY(0)    scale(1);   opacity: 1; }
+  100% { transform: rotate(calc(var(--i) * 30deg)) translateY(-130px) scale(0); opacity: 0; }
+}
+
+.victory-ms-particle--0 { background: #ffd700; width: 9px;  height: 9px; }
+.victory-ms-particle--1 { background: #ffffff; width: 6px;  height: 6px; }
+.victory-ms-particle--2 { background: #ff9800; width: 8px;  height: 8px; }
+.victory-ms-particle--3 { background: #ff6060; width: 7px;  height: 7px; }

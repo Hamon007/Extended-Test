@@ -35,6 +35,8 @@ import { LuckyFloorService } from '../services/LuckyFloorService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
 import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
 import { FlashChallengeService } from '../services/FlashChallengeService';
+import { NemesisService } from '../services/NemesisService';
+import { EnemyDatabase } from '../services/EnemyDatabase';
 import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
@@ -227,6 +229,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [flashChalActive, setFlashChalActive] = useState(() => FlashChallengeService.isActive());
   const [flashChalMs,     setFlashChalMs]     = useState(() => FlashChallengeService.msRemaining());
   const [flashChalDone,   setFlashChalDone]   = useState(() => FlashChallengeService.isCompleted());
+  const [nemesisId]                           = useState(() => NemesisService.getNemesisId());
 
   // Countdown-Tick + Energy-Regen-Ticker
   useEffect(() => {
@@ -1032,6 +1035,30 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <span className="main-energy-overflow__text">Ausdauer voll! Kämpfe jetzt — du verlierst Regeneration!</span>
         </div>
       )}
+
+      {/* ── Nemesis Banner ── */}
+      {nemesisId && onNavigate && (() => {
+        const nemEnemy   = EnemyDatabase.getAll().find(e => e.id === nemesisId);
+        const nemName    = nemEnemy?.name ?? 'Unbekannter Feind';
+        const defeatCnt  = NemesisService.getNemesisCount(nemesisId);
+        return (
+          <div
+            className="main-nemesis-banner"
+            onClick={() => onNavigate('battle')}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="main-nemesis-banner__skull">💀</span>
+            <div className="main-nemesis-banner__text">
+              <span className="main-nemesis-banner__title">NEMESIS: {nemName}</span>
+              <span className="main-nemesis-banner__sub">
+                Hat dich {defeatCnt}× besiegt · +50% 💎 bei Rache!
+              </span>
+            </div>
+            <span className="main-nemesis-banner__cta">RACHE ⚔</span>
+          </div>
+        );
+      })()}
 
       {/* ── Primärer Call-to-Action ── */}
       {onNavigate && (() => {
