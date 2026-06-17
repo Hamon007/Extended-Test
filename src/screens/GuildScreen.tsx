@@ -83,6 +83,8 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       showToast('Zu wenig Kristalle');
       return;
     }
+    AudioService.reward();
+    AudioService.vibrate([10, 15]);
     setState(GuildService.load());
     showToast(`+${amount} 💎 gespendet!`);
   }, []);
@@ -99,11 +101,14 @@ const GuildScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setAttack(result);
     setState(GuildService.load());
     if (result.cleared) {
-      AudioService.super();
+      AudioService.jackpot();
       AudioService.vibrate([40, 20, 60, 20, 100]);
       setBossBurst(true);
       setTimeout(() => setBossBurst(false), 3500);
       showToast(`✦ BOSS BESIEGT! +${GUILD_BOSS_REWARD_CRYSTALS} 💎 +${GUILD_BOSS_REWARD_POTIONS} 🧪`);
+    } else {
+      AudioService.hit(Math.min(1, result.damage / 500_000));
+      AudioService.vibrate([20, 15]);
     }
   }, [deck.deck.uuids, state.bossCleared]);
 
