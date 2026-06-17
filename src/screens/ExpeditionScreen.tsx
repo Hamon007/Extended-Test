@@ -4,6 +4,7 @@ import { CardDatabase } from '../services/CardDatabase';
 import { ExpeditionService, type ActiveExpedition, type ExpeditionDef } from '../services/ExpeditionService';
 import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
+import { AudioService } from '../services/AudioService';
 import { RARITY_COLOR } from '../types/Card';
 import './ExpeditionScreen.css';
 
@@ -50,6 +51,8 @@ const ExpeditionScreen: React.FC<Props> = ({ onBack }) => {
     if (reward.potions > 0) parts.push(`🧪 +${reward.potions}`);
     if (reward.crystalCards > 0) parts.push(`💎Karte +${reward.crystalCards}`);
     showToast(`${exp.cardName} kehrt zurück! ${parts.join(' · ')}`);
+    AudioService.reward();
+    AudioService.vibrate([15, 20, 30]);
     setExpeditionBurst({ cardName: exp.cardName, crystals: reward.crystals, potions: reward.potions, crystalCards: reward.crystalCards });
     setTimeout(() => setExpeditionBurst(null), 2200);
     QuestService.recordEvent('complete_expedition');

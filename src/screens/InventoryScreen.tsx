@@ -9,6 +9,7 @@ import { AccountProgressionService } from '../services/AccountProgressionService
 import { RARITY_COLOR, rarityMajor } from '../types/Card';
 import type { Rarity } from '../types/Card';
 import type { CardInstance } from '../types/GachaTypes';
+import { AudioService } from '../services/AudioService';
 import './InventoryScreen.css';
 
 interface Props { onBack: () => void; onNavigate?: (screen: string) => void; }
@@ -48,6 +49,8 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
 
   function triggerLevelUp(newLevel: number) {
     setAccountLevelUp(newLevel);
+    AudioService.super();
+    AudioService.vibrate([20, 30, 60, 30, 80]);
     setTimeout(() => setAccountLevelUp(null), 3000);
   }
 
@@ -71,6 +74,8 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
       triggerLevelUp(result.newLevel);
       showToast(`+${xpMap[size].toLocaleString('de-DE')} XP · LEVEL UP! Lv.${result.newLevel} ⭐`);
     } else {
+      AudioService.reward();
+      AudioService.vibrate([15, 20]);
       showToast(`+${xpMap[size].toLocaleString('de-DE')} XP erhalten!`);
     }
     refresh();
@@ -81,6 +86,8 @@ const InventoryScreen: React.FC<Props> = ({ onBack, onNavigate }) => {
     if (energy.potions <= 0) return;
     const next = EnergyService.usePotion();
     setEnergy(next);
+    AudioService.synergy();
+    AudioService.vibrate([10, 15, 20]);
     showToast('Ausdauertrank verwendet! +1 Energie');
   }
 

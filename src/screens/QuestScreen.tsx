@@ -94,6 +94,8 @@ const QuestScreen: React.FC<Props> = ({ onBack }) => {
       triggerLevelUp(result.newLevel);
       showToast(`+${reward.crystals} 💎 · LEVEL UP! Lv.${result.newLevel} ⭐`);
     } else {
+      AudioService.reward();
+      AudioService.vibrate([15, 20]);
       showToast(`+${reward.crystals} 💎 · +${reward.xp.toLocaleString('de-DE')} XP`);
     }
     refresh();
