@@ -3066,6 +3066,18 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             ? `⚠ ${MAX_ROUNDS - round} Runden!`
             : `Runde ${round} / ${MAX_ROUNDS}`}
         </span>
+        {phase !== 'ended' && (() => {
+          const hpPct   = player.hpMax > 0 ? player.hp / player.hpMax : 1;
+          const maxCmb  = state.maxComboReached ?? 0;
+          const score   = hpPct * 40 + Math.min(40, (maxCmb / 10) * 40) + Math.max(0, (MAX_ROUNDS - round) * 2);
+          const lg = score >= 95 ? 'SSS' : score >= 80 ? 'SS' : score >= 65 ? 'S' : score >= 45 ? 'A' : score >= 30 ? 'B' : score >= 15 ? 'C' : 'D';
+          const GRADE_CLR: Record<string, string> = { SSS: '#ff8c00', SS: '#ffd700', S: '#c8a020', A: '#44cc44', B: '#4488ff', C: '#aaaaaa', D: '#886644' };
+          return (
+            <span className={`arena-live-grade arena-live-grade--${lg.toLowerCase()}`} style={{ color: GRADE_CLR[lg] }} title="Live-Wertung">
+              {lg}
+            </span>
+          );
+        })()}
         <span className={`arena-phase arena-phase--${phase}`}>
           {phase === 'player_turn' && 'Dein Zug'}
           {phase === 'enemy_turn'  && '⚔ Gegnerzug …'}

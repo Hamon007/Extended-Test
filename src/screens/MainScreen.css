@@ -1877,9 +1877,58 @@
   background: rgba(255,87,34,0.18);
   border: 1px solid rgba(255,120,50,0.5);
   border-radius: 12px;
-  padding: 3px 10px;
+  padding: 4px 10px 5px;
   letter-spacing: 0.06em;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.main-streak-chip__top {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
+}
+.main-streak-chip__shield-line {
+  font-size: 0.58rem;
+  color: #80d8ff;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+.main-streak-chip__progress {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.main-streak-chip__pips {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.main-streak-chip__pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,150,50,0.4);
+  flex-shrink: 0;
+}
+.main-streak-chip__pip--done {
+  background: #ffb74d;
+  border-color: #ffcc66;
+  box-shadow: 0 0 3px rgba(255,180,70,0.6);
+}
+.main-streak-chip__hint {
+  font-size: 0.56rem;
+  color: #ffcc88;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+.main-streak-chip__next-mult {
+  font-size: 0.56rem;
+  color: #ffcc44;
+  white-space: nowrap;
+  opacity: 0.8;
+  letter-spacing: 0.03em;
 }
 
 .main-streak-chip--hot {

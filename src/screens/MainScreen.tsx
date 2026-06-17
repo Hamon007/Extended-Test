@@ -909,7 +909,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         const earned = DailyGoalService.getEarned();
         const pct    = DailyGoalService.getProgress();
         const done   = DailyGoalService.isClaimed();
-        if (earned === 0 && !done) return null;
+        if (done && earned === 0) return null;
         return (
           <div
             className={`main-daily-goal${done ? ' main-daily-goal--done' : ''}`}
@@ -960,12 +960,40 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             );
           })()}
           {winStreak > 0 && (() => {
-            const sr = WinStreakService.getRewardMultiplier(winStreak);
+            const sr            = WinStreakService.getRewardMultiplier(winStreak);
+            const hasShield     = WinStreakService.hasShield();
+            const SHIELD_TH     = [5, 10, 15, 20, 30, 50] as const;
+            const nextShield    = SHIELD_TH.find(t => t > winStreak);
+            const prevShield    = [...SHIELD_TH].reverse().find(t => t <= winStreak) ?? 0;
+            const shieldPips    = nextShield ? nextShield - prevShield : 0;
+            const shieldDone    = nextShield ? winStreak - prevShield : shieldPips;
+            const nextMult      = winStreak < 3 ? { wins: 3 - winStreak, label: '×1.2' } :
+                                  winStreak < 5 ? { wins: 5 - winStreak, label: '×1.4' } :
+                                  winStreak < 10 ? { wins: 10 - winStreak, label: '×1.8' } : null;
             return (
               <div className={`main-streak-chip ${winStreak >= 3 ? 'main-streak-chip--hot' : ''} ${sr.multiplier > 1 ? 'main-streak-chip--boost' : ''}`}>
-                🔥 {winStreak}× SERIE
-                {sr.multiplier > 1 && (
-                  <span className="main-streak-chip__mult"> ×{sr.multiplier.toFixed(1)}</span>
+                <div className="main-streak-chip__top">
+                  <span>🔥 {winStreak}× SERIE</span>
+                  {sr.multiplier > 1 && (
+                    <span className="main-streak-chip__mult"> ×{sr.multiplier.toFixed(1)}</span>
+                  )}
+                </div>
+                {hasShield ? (
+                  <div className="main-streak-chip__shield-line">🛡 Schutzschild aktiv</div>
+                ) : nextShield ? (
+                  <div className="main-streak-chip__progress">
+                    <div className="main-streak-chip__pips">
+                      {Array.from({ length: shieldPips }, (_, i) => (
+                        <span key={i} className={`main-streak-chip__pip${i < shieldDone ? ' main-streak-chip__pip--done' : ''}`} />
+                      ))}
+                    </div>
+                    <span className="main-streak-chip__hint">🛡 {nextShield - winStreak} bis Schild</span>
+                  </div>
+                ) : null}
+                {!hasShield && nextMult && (
+                  <div className="main-streak-chip__next-mult">
+                    {nextMult.wins} Siege → {nextMult.label}
+                  </div>
                 )}
               </div>
             );
