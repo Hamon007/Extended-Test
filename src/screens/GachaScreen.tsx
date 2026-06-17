@@ -119,10 +119,11 @@ const GachaScreen: React.FC = () => {
 
           <div className="gacha-actions">
             <button
-              className={`gacha-btn gacha-btn--single ${!GachaSystem.canSinglePull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
+              className={`gacha-btn gacha-btn--single${state.pityCounter >= 99 ? ' gacha-btn--guaranteed' : ''} ${!GachaSystem.canSinglePull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
               onClick={store.doSingle}
               disabled={isPulling || !GachaSystem.canSinglePull(state.crystals)}
             >
+              {state.pityCounter >= 99 && <span className="gacha-btn__guaranteed-crown" aria-hidden="true">★ SSR GARANTIERT ★</span>}
               <span className="gacha-btn__label">EINZELN BESCHWÖREN</span>
               <span className="gacha-btn__cost">
                 💎 {PULL_COST_SINGLE.toLocaleString('de-DE')}
@@ -130,10 +131,11 @@ const GachaScreen: React.FC = () => {
             </button>
 
             <button
-              className={`gacha-btn gacha-btn--multi ${!GachaSystem.canMultiPull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
+              className={`gacha-btn gacha-btn--multi${state.pityCounter >= 99 ? ' gacha-btn--guaranteed' : ''} ${!GachaSystem.canMultiPull(state.crystals) ? 'gacha-btn--disabled' : ''}`}
               onClick={store.doMulti}
               disabled={isPulling || !GachaSystem.canMultiPull(state.crystals)}
             >
+              {state.pityCounter >= 99 && <span className="gacha-btn__guaranteed-crown" aria-hidden="true">★ SSR GARANTIERT ★</span>}
               <span className="gacha-btn__label">10× BESCHWÖREN</span>
               <span className="gacha-btn__cost">
                 💎 {PULL_COST_MULTI.toLocaleString('de-DE')}
