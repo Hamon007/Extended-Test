@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { AudioService } from '../services/AudioService';
 import { AuthService } from '../services/AuthService';
 import { ProfileService, type Profile, canChangeUsername, nextChangeDate } from '../services/ProfileService';
 import { SaveService } from '../services/SaveService';
@@ -159,6 +160,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
   const handleCopy = () => {
     if (!profile) return;
     navigator.clipboard?.writeText(profile.friend_code).catch(() => {});
+    AudioService.tap();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -170,6 +172,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBack }) => {
     setNameSaving(false);
     if (err) { setNameError(err); return; }
     setProfile(p => p ? { ...p, username: nameInput.trim(), username_changed_at: new Date().toISOString() } : p);
+    AudioService.reward();
+    AudioService.vibrate([10, 15]);
     setEditing(false);
   };
 

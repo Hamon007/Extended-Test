@@ -3,6 +3,7 @@ import { AuthService } from '../services/AuthService';
 import { TradeService, type Trade, type TradeOffer } from '../services/TradeService';
 import { SaveService } from '../services/SaveService';
 import { CardDatabase } from '../services/CardDatabase';
+import { AudioService } from '../services/AudioService';
 import type { CardInstance } from '../types/GachaTypes';
 import type { Card, Rarity } from '../types/Card';
 import { RARITY_COLOR, rarityMajor } from '../types/Card';
@@ -105,6 +106,7 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
     const newInv = myInventory.filter(c => c.uuid !== offerCard.uuid);
     SaveService.saveGachaState({ ...gachaState, inventory: newInv });
 
+    AudioService.tap();
     setMsg('Inserat aufgegeben! ✓');
     setStep('list');
     resetNew();
@@ -128,6 +130,8 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
     setAccepting(false);
     setAcceptTrade(null);
     setAcceptCard(null);
+    AudioService.synergy();
+    AudioService.vibrate([20, 20, 40]);
     setMsg('Handel abgeschlossen! ✓');
     load();
   };
@@ -142,6 +146,7 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
     if (err) { setMsg('Fehler: ' + err); return; }
     setCounterTrade(null);
     setCounterCard(null);
+    AudioService.tap();
     setMsg('Gegenangebot gesendet! ✓');
   };
 
@@ -156,6 +161,8 @@ const TradeScreen: React.FC<Props> = ({ onBack }) => {
       .filter(c => c.uuid !== trade.offered_card.uuid)
       .concat({ ...offer.offered_card });
     SaveService.saveGachaState({ ...gachaState, inventory: newInv });
+    AudioService.synergy();
+    AudioService.vibrate([20, 20, 40]);
 
     setMsg('Gegenangebot angenommen! ✓');
     load();
