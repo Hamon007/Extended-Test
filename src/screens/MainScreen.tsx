@@ -1204,6 +1204,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           suggestions.push({ icon: '🎰', text: 'Glücksrad verfügbar!', sub: 'Einmal täglich kostenlos drehen', screen: 'spin', priority: 6 });
         }
 
+        // Claimable achievements
+        const achPending = AchievementService.getUnclaimedCount();
+        if (achPending > 0) {
+          suggestions.push({ icon: '🏆', text: `${achPending} Achievement${achPending > 1 ? 's' : ''} einfordern!`, sub: 'Kristall-Belohnungen warten auf dich', screen: 'achievements', priority: 12 });
+        }
+
+        // WorldBoss reward claimable
+        if (WorldBossService.canClaim()) {
+          suggestions.push({ icon: WorldBossService.getBossIcon(), text: 'Weltboss-Belohnung abholen!', sub: `+${WorldBossService.REWARD_CRYSTALS} 💎 — Boss wurde besiegt`, screen: 'battle', priority: 10 });
+        }
+
         // Energy available → battle
         if (energy.energy >= 1 && suggestions.length < 2) {
           suggestions.push({ icon: '⚔', text: `Etage ${towerFloor} herausfordern`, sub: 'Ausdauer vorhanden — Zeit zu kämpfen!', screen: 'battle', priority: 5 });
