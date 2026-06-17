@@ -4,7 +4,7 @@ import { FusionSystem, type FusionGroup } from '../services/FusionSystem';
 import { AwakeningSystem } from '../services/AwakeningSystem';
 import { CardDatabase } from '../services/CardDatabase';
 import { AudioService } from '../services/AudioService';
-import { RARITY_COLOR } from '../types/Card';
+import { RARITY_COLOR, rarityMajor } from '../types/Card';
 import type { CardStats } from '../types/Card';
 import './FusionScreen.css';
 
@@ -300,7 +300,16 @@ interface OverlayProps {
 }
 
 const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) => {
-  useEffect(() => { AudioService.reveal(0.7); AudioService.vibrate([15, 25, 40]); }, []);
+  const isMajorRankUp = rarityMajor(lastFusion.from) !== rarityMajor(lastFusion.to);
+  useEffect(() => {
+    if (isMajorRankUp) {
+      AudioService.jackpot();
+      AudioService.vibrate([20, 15, 40, 15, 70, 15, 100]);
+    } else {
+      AudioService.reveal(0.7);
+      AudioService.vibrate([15, 25, 40]);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const toColor = RARITY_COLOR[lastFusion.to as keyof typeof RARITY_COLOR] ?? '#f0d080';
   const card = CardDatabase.getById(lastFusion.cardId);
   const beforeStats = card ? FusionSystem.getEffectiveStats(card, lastFusion.from) : null;
@@ -309,9 +318,9 @@ const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) =>
   const dHp  = afterStats && beforeStats ? afterStats.hp  - beforeStats.hp  : 0;
   return (
     <div className="fusion-overlay" onClick={onClose}>
-      {/* Rarity-colored particle burst */}
+      {/* Rarity-colored particle burst — more particles for major rank-up */}
       <div className="fusion-result-burst" aria-hidden="true">
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: isMajorRankUp ? 24 : 12 }).map((_, i) => (
           <div
             key={i}
             className={`fusion-result-particle fusion-result-particle--${i % 4}`}
@@ -319,9 +328,18 @@ const FusionResultOverlay: React.FC<OverlayProps> = ({ lastFusion, onClose }) =>
           />
         ))}
       </div>
-      <div className="fusion-overlay__box" style={{ '--rc': toColor } as React.CSSProperties}>
+      {isMajorRankUp && (
+        <>
+          <div className="fusion-rankup-ring fusion-rankup-ring--1" aria-hidden="true" style={{ '--rc': toColor } as React.CSSProperties} />
+          <div className="fusion-rankup-ring fusion-rankup-ring--2" aria-hidden="true" style={{ '--rc': toColor } as React.CSSProperties} />
+        </>
+      )}
+      <div className={`fusion-overlay__box${isMajorRankUp ? ' fusion-overlay__box--rankup' : ''}`} style={{ '--rc': toColor } as React.CSSProperties}>
+        {isMajorRankUp && <div className="fusion-overlay__rankup-crown">⭐</div>}
         <div className="fusion-overlay__spark">✦</div>
-        <div className="fusion-overlay__title">FUSION ERFOLGREICH</div>
+        <div className={`fusion-overlay__title${isMajorRankUp ? ' fusion-overlay__title--rankup' : ''}`}>
+          {isMajorRankUp ? 'RANG-AUFSTIEG!' : 'FUSION ERFOLGREICH'}
+        </div>
         <div className="fusion-overlay__rarities">
           <span>{lastFusion.from}</span>
           <span className="fusion-overlay__arrow">→</span>

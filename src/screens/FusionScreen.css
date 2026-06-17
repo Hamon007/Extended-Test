@@ -797,3 +797,67 @@
   0%, 100% { box-shadow: 0 0 8px rgba(255,200,0,0.3); }
   50%       { box-shadow: 0 0 20px rgba(255,200,0,0.6); }
 }
+
+/* ── Major Rank-Up Overlay Enhancements ─────────────────────── */
+.fusion-rankup-ring {
+  position: fixed;
+  top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 2px solid var(--rc, #f0d080);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fusion-rankup-ring--1 {
+  width: 180px; height: 180px;
+  animation: fusionRankRing 1.0s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s both;
+  box-shadow: 0 0 20px var(--rc, #f0d080);
+}
+
+.fusion-rankup-ring--2 {
+  width: 260px; height: 260px;
+  animation: fusionRankRing 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.25s both;
+  box-shadow: 0 0 30px var(--rc, #f0d080);
+}
+
+@keyframes fusionRankRing {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+.fusion-overlay__box--rankup {
+  border-color: var(--rc, #f0d080) !important;
+  box-shadow:
+    0 0 30px rgba(var(--rc, 240, 208, 128), 0.35),
+    0 0 60px rgba(var(--rc, 240, 208, 128), 0.15),
+    inset 0 0 20px rgba(var(--rc, 240, 208, 128), 0.07) !important;
+  animation: fusionRankBoxPulse 1.0s ease-in-out infinite alternate;
+}
+
+@keyframes fusionRankBoxPulse {
+  from { box-shadow: 0 0 20px rgba(255,200,80,0.3), inset 0 0 10px rgba(255,200,80,0.05); }
+  to   { box-shadow: 0 0 50px rgba(255,200,80,0.7), inset 0 0 25px rgba(255,200,80,0.12); }
+}
+
+.fusion-overlay__rankup-crown {
+  font-size: 1.8rem;
+  animation: fusionCrownBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+
+@keyframes fusionCrownBounce {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+}
+
+.fusion-overlay__title--rankup {
+  font-size: 1.1rem !important;
+  color: var(--rc, #f0d080) !important;
+  text-shadow: 0 0 15px var(--rc, #f0d080), 0 0 30px rgba(255,200,80,0.4) !important;
+  animation: fusionRankTitlePulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes fusionRankTitlePulse {
+  from { letter-spacing: 0.20em; }
+  to   { letter-spacing: 0.28em; }
+}
