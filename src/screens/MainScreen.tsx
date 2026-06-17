@@ -48,6 +48,7 @@ import { BattleHistoryService } from '../services/BattleHistoryService';
 import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
+import { RecoveryService } from '../services/RecoveryService';
 import { LuckyDayService } from '../services/LuckyDayService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import { getSurgeElement, msRemaining as surgeMs, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
@@ -163,6 +164,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [streakDay]  = useState(() => DailyLoginService.getStreakDay());
   const [offlineResult,  setOfflineResult]  = useState<OfflineResult | null>(null);
   const [comebackActive, setComebackActive] = useState(false);
+  const [recoveryActive, setRecoveryActive] = useState(() => RecoveryService.isActive());
   const [pvpRecord] = useState(() => {
     const hist = PvpHistoryService.getAll();
     if (hist.length === 0) return null;
@@ -260,6 +262,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       setFlashChalMs(FlashChallengeService.msRemaining());
       if (fcActive) setFlashChalDone(FlashChallengeService.isCompleted());
       setHourSurgeMs(surgeMs());
+      setRecoveryActive(RecoveryService.isActive());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -499,6 +502,23 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             <span className="main-comeback-banner__sub">Nächste {ComebackBonusService.COMEBACK_BATTLES} Siege: +25% Kristalle</span>
           </div>
           <span className="main-comeback-banner__cta">Kämpfen →</span>
+        </div>
+      )}
+
+      {/* ── Recovery Bonus Chip (post-defeat +50% next victory) ── */}
+      {recoveryActive && (
+        <div
+          className="main-recovery-chip"
+          onClick={() => onNavigate?.('battle')}
+          role="button"
+          tabIndex={0}
+        >
+          <span className="main-recovery-chip__icon">⚡</span>
+          <div className="main-recovery-chip__body">
+            <span className="main-recovery-chip__title">REVENGE-BONUS AKTIV</span>
+            <span className="main-recovery-chip__sub">Nächster Sieg: <strong>+50% 💎</strong> — Steh wieder auf!</span>
+          </div>
+          <span className="main-recovery-chip__cta">KÄMPFEN ▶</span>
         </div>
       )}
 
@@ -1213,6 +1233,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         // WorldBoss reward claimable
         if (WorldBossService.canClaim()) {
           suggestions.push({ icon: WorldBossService.getBossIcon(), text: 'Weltboss-Belohnung abholen!', sub: `+${WorldBossService.REWARD_CRYSTALS} 💎 — Boss wurde besiegt`, screen: 'battle', priority: 10 });
+        }
+
+        // Recovery bonus active (post-defeat +50%)
+        if (RecoveryService.isActive()) {
+          suggestions.push({ icon: '⚡', text: 'Comeback-Bonus aktiv — +50% 💎!', sub: 'Nächster Sieg gibt 50% mehr Kristalle — kämpf jetzt!', screen: 'battle', priority: 15 });
         }
 
         // Energy available → battle

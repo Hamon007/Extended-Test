@@ -3,6 +3,7 @@ import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
 import { ExpeditionService } from '../services/ExpeditionService';
 import { LuckySpinService } from '../services/LuckySpinService';
+import { AudioService } from '../services/AudioService';
 import './MenuScreen.css';
 
 // ── Typen ─────────────────────────────────────────────────────
@@ -90,7 +91,7 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
 
       {/* ── Header ── */}
       <div className="menu-header">
-        <button className="menu-header__back" onClick={onBack}>← Zurück</button>
+        <button className="menu-header__back" onClick={() => { AudioService.tap(); onBack(); }}>← Zurück</button>
         <h1 className="menu-header__title">
           Menü
           {totalPending > 0 && (
@@ -106,22 +107,22 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
           <div className="menu-glance__label">◆ HEUTE ZU TUN</div>
           <div className="menu-glance__chips">
             {badges.quests > 0 && (
-              <button className="menu-glance__chip menu-glance__chip--quest" onClick={() => onNav('quests')}>
+              <button className="menu-glance__chip menu-glance__chip--quest" onClick={() => { AudioService.tap(); onNav('quests'); }}>
                 📜 {badges.quests} Quest{badges.quests !== 1 ? 's' : ''}
               </button>
             )}
             {badges.achievements > 0 && (
-              <button className="menu-glance__chip menu-glance__chip--ach" onClick={() => onNav('achievements')}>
+              <button className="menu-glance__chip menu-glance__chip--ach" onClick={() => { AudioService.tap(); onNav('achievements'); }}>
                 🏆 {badges.achievements} Erfolg{badges.achievements !== 1 ? 'e' : ''}
               </button>
             )}
             {badges.expedition > 0 && (
-              <button className="menu-glance__chip menu-glance__chip--exp" onClick={() => onNav('expedition')}>
+              <button className="menu-glance__chip menu-glance__chip--exp" onClick={() => { AudioService.tap(); onNav('expedition'); }}>
                 ⚔ {badges.expedition} Exp.
               </button>
             )}
             {badges.spin > 0 && (
-              <button className="menu-glance__chip menu-glance__chip--spin" onClick={() => onNav('lucky_spin')}>
+              <button className="menu-glance__chip menu-glance__chip--spin" onClick={() => { AudioService.tap(); onNav('lucky_spin'); }}>
                 🎰 Gratis-Dreh!
               </button>
             )}
@@ -142,7 +143,7 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNav, onBack }) => {
             <button
               key={item.label}
               className={`menu-item ${item.target === null ? 'menu-item--disabled' : ''} ${isUrgent ? 'menu-item--urgent' : ''}`}
-              onClick={() => item.target !== null && onNav(item.target)}
+              onClick={() => { if (item.target !== null) { AudioService.tap(); onNav(item.target); } }}
               disabled={item.target === null}
             >
               <span className="menu-item__icon">{item.icon}</span>
