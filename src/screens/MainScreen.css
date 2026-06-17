@@ -4216,3 +4216,121 @@
   flex-shrink: 0;
   letter-spacing: 0.04em;
 }
+
+/* ── 30-Day Login Streak Chip ──────────────────────────────── */
+.main-login-streak30 {
+  margin: 0 12px 10px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, rgba(0,180,255,0.10) 0%, rgba(0,80,200,0.06) 100%);
+  border: 1px solid rgba(0,180,255,0.25);
+  border-left: 3px solid #00b4ff;
+  border-radius: 10px;
+}
+
+.main-login-streak30--near {
+  border-color: rgba(255,160,0,0.5);
+  border-left-color: #ffaa00;
+  background: linear-gradient(135deg, rgba(255,140,0,0.12) 0%, rgba(200,80,0,0.06) 100%);
+  animation: streak30NearPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes streak30NearPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,140,0,0.2); }
+  50%       { box-shadow: 0 0 18px rgba(255,140,0,0.5); }
+}
+
+.main-login-streak30__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.main-login-streak30__icon {
+  font-size: 13px;
+}
+
+.main-login-streak30__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: #00b4ff;
+  flex: 1;
+}
+
+.main-login-streak30--near .main-login-streak30__title {
+  color: #ffaa00;
+}
+
+.main-login-streak30__day {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #80d8ff;
+}
+
+.main-login-streak30__record {
+  font-size: 0.5rem;
+  color: #ffd700;
+  margin-left: 3px;
+}
+
+.main-login-streak30__bar-track {
+  position: relative;
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: visible;
+  margin-bottom: 5px;
+}
+
+.main-login-streak30__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0088cc, #00b4ff);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.main-login-streak30--near .main-login-streak30__bar-fill {
+  background: linear-gradient(90deg, #cc6600, #ffaa00);
+}
+
+.main-login-streak30__pip {
+  position: absolute;
+  top: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(0,180,255,0.40);
+  transform: translateX(-50%);
+}
+
+.main-login-streak30__pip--done {
+  background: #00b4ff;
+  border-color: #80d8ff;
+  box-shadow: 0 0 6px rgba(0,180,255,0.7);
+}
+
+.main-login-streak30--near .main-login-streak30__pip--done {
+  background: #ffaa00;
+  border-color: #ffe066;
+  box-shadow: 0 0 6px rgba(255,160,0,0.8);
+}
+
+.main-login-streak30__next {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.65rem;
+  color: rgba(0,180,255,0.75);
+  font-style: italic;
+}
+
+.main-login-streak30__next--near {
+  color: #ffaa00;
+  font-style: normal;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+}

@@ -135,7 +135,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
   return (
     <div className="spin-screen">
       <div className="spin-header">
-        <button className="spin-back" onClick={onBack}>← Zurück</button>
+        <button className="spin-back" onClick={() => { AudioService.tap(); onBack(); }}>← Zurück</button>
         <h1 className="spin-title">🎰 Glücksrad</h1>
         {streak >= 1 && (
           <span className={`spin-streak-badge ${streak >= 7 ? 'spin-streak-badge--hot' : ''}`}>
@@ -258,7 +258,7 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
         const isMediumWin  = !isBigWin && (prize.crystals ?? 0) >= 200;
         const resultClass  = isJackpot ? 'spin-result--jackpot' : isBigWin ? 'spin-result--big' : isMediumWin ? 'spin-result--medium' : '';
         return (
-          <div className={`spin-result ${resultClass}`} onClick={() => setShowResult(false)}>
+          <div className={`spin-result ${resultClass}`} onClick={() => { AudioService.tap(); setShowResult(false); }}>
             {isJackpot && (
               <div className="spin-jackpot-particles" aria-hidden="true">
                 {Array.from({ length: 16 }).map((_, i) => (

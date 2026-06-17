@@ -49,6 +49,7 @@ import { getDeckTier, getNextTier } from '../services/DeckTierService';
 import { PULL_COST_MULTI } from '../config/GameConfig';
 import { ComebackBonusService } from '../services/ComebackBonusService';
 import { RecoveryService } from '../services/RecoveryService';
+import { LoginStreakService, STREAK_REWARDS } from '../services/LoginStreakService';
 import { LuckyDayService } from '../services/LuckyDayService';
 import { getUpcomingBlessings, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import { getSurgeElement, msRemaining as surgeMs, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
@@ -165,6 +166,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [offlineResult,  setOfflineResult]  = useState<OfflineResult | null>(null);
   const [comebackActive, setComebackActive] = useState(false);
   const [recoveryActive, setRecoveryActive] = useState(() => RecoveryService.isActive());
+  const [loginStreak30] = useState(() => LoginStreakService.getState());
   const [pvpRecord] = useState(() => {
     const hist = PvpHistoryService.getAll();
     if (hist.length === 0) return null;
@@ -521,6 +523,51 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
           <span className="main-recovery-chip__cta">KÄMPFEN ▶</span>
         </div>
       )}
+
+      {/* ── 30-Day Login Streak Progress ── */}
+      {loginStreak30.streak >= 1 && (() => {
+        const MILESTONE_DAYS = [7, 14, 21, 30];
+        const streak = loginStreak30.streak;
+        const nextMs = MILESTONE_DAYS.find(d => d > streak);
+        const prevMs = [...MILESTONE_DAYS].reverse().find(d => d <= streak) ?? 0;
+        const pct    = nextMs
+          ? Math.min(100, ((streak - prevMs) / (nextMs - prevMs)) * 100)
+          : 100;
+        const nextRew = nextMs ? STREAK_REWARDS.find(r => r.day === nextMs) : null;
+        const daysLeft = nextMs ? nextMs - streak : 0;
+        const isNearMilestone = daysLeft > 0 && daysLeft <= 2;
+        return (
+          <div className={`main-login-streak30${isNearMilestone ? ' main-login-streak30--near' : ''}`}>
+            <div className="main-login-streak30__header">
+              <span className="main-login-streak30__icon">🔥</span>
+              <span className="main-login-streak30__title">EINLOGG-SERIE</span>
+              <span className="main-login-streak30__day">
+                Tag {streak}
+                {streak === loginStreak30.longest && streak > 1 && <span className="main-login-streak30__record"> ★REC</span>}
+              </span>
+            </div>
+            <div className="main-login-streak30__bar-track">
+              <div className="main-login-streak30__bar-fill" style={{ width: `${pct}%` }} />
+              {MILESTONE_DAYS.map(d => (
+                <div
+                  key={d}
+                  className={`main-login-streak30__pip${streak >= d ? ' main-login-streak30__pip--done' : ''}`}
+                  style={{ left: `${(d / 30) * 100}%` }}
+                  title={`Tag ${d}`}
+                />
+              ))}
+            </div>
+            {nextRew && (
+              <div className={`main-login-streak30__next${isNearMilestone ? ' main-login-streak30__next--near' : ''}`}>
+                {isNearMilestone
+                  ? `⚡ Nur noch ${daysLeft} Tag${daysLeft > 1 ? 'e' : ''}! → ${nextRew.label}`
+                  : `Tag ${nextMs}: ${nextRew.label}`}
+              </div>
+            )}
+            {!nextMs && <div className="main-login-streak30__next">✦ Alle Meilensteine erreicht! Weiter so!</div>}
+          </div>
+        );
+      })()}
 
       {/* ── Kristall-Leiste ── */}
       <div className="main-crystal-bar">
@@ -1238,6 +1285,20 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         // Recovery bonus active (post-defeat +50%)
         if (RecoveryService.isActive()) {
           suggestions.push({ icon: '⚡', text: 'Comeback-Bonus aktiv — +50% 💎!', sub: 'Nächster Sieg gibt 50% mehr Kristalle — kämpf jetzt!', screen: 'battle', priority: 15 });
+        }
+
+        // Login streak near milestone (within 2 days)
+        {
+          const MILESTONE_DAYS30 = [7, 14, 21, 30];
+          const st30 = loginStreak30.streak;
+          const nextMs30 = MILESTONE_DAYS30.find(d => d > st30);
+          const daysLeft30 = nextMs30 ? nextMs30 - st30 : 0;
+          if (daysLeft30 === 1) {
+            const rew = STREAK_REWARDS.find(r => r.day === nextMs30);
+            if (rew) {
+              suggestions.push({ icon: '🔥', text: `Morgen: Meilenstein Tag ${nextMs30}!`, sub: `${rew.label} warten — heute und morgen einloggen!`, screen: 'main', priority: 13 });
+            }
+          }
         }
 
         // Energy available → battle
