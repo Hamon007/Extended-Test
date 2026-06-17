@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { CardDatabase } from '../services/CardDatabase';
 import { SaveService } from '../services/SaveService';
 import { CollectionMilestoneService, type CollectionMilestone } from '../services/CollectionMilestoneService';
+import { AudioService } from '../services/AudioService';
 import { RARITY_COLOR, RARITY_MAJORS, rarityMajor } from '../types/Card';
 import type { Card, Rarity } from '../types/Card';
 import CardDetailModal from '../components/CardDetailModal';
@@ -70,6 +71,13 @@ const CardCollectionScreen: React.FC<CardCollectionScreenProps> = ({ onBack }) =
       setTimeout(() => setMilestoneToast(null), 4000);
       setMilestoneBurst(best.milestone);
       setTimeout(() => setMilestoneBurst(null), 4000);
+      if (best.milestone.crystals >= 500) {
+        AudioService.super();
+        AudioService.vibrate([20, 30, 60, 30, 80]);
+      } else {
+        AudioService.reward();
+        AudioService.vibrate([15, 20, 30]);
+      }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

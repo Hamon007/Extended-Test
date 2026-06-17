@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SeasonService,
   RANK_THRESHOLDS,
@@ -8,6 +8,7 @@ import {
   SP_REWARDS,
   type SeasonRank,
 } from '../services/SeasonService';
+import { AudioService } from '../services/AudioService';
 import './SeasonScreen.css';
 
 interface SeasonScreenProps {
@@ -45,6 +46,18 @@ const SeasonScreen: React.FC<SeasonScreenProps> = ({ onBack }) => {
   const spPerDayNeeded = nextRank && daysLeft > 0 ? Math.ceil(spNeeded / daysLeft) : null;
   const isUrgent = daysLeft <= 7 && nextRank && spNeeded > 0;
   const canStillReach = isUrgent && daysLeft > 0 && (daysToNextRank === null || daysToNextRank <= daysLeft);
+
+  // Entry audio based on current season rank
+  useEffect(() => {
+    const HIGH_RANKS: SeasonRank[] = ['Champion', 'Meister', 'Legende'];
+    if (HIGH_RANKS.includes(rank)) {
+      AudioService.super();
+      AudioService.vibrate([20, 30, 50]);
+    } else if (isUrgent) {
+      AudioService.synergy();
+      AudioService.vibrate([15, 20]);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="season-screen">

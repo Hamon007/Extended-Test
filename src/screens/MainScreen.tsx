@@ -1508,6 +1508,16 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
                     if (m.reached && !m.claimed) {
                       WeeklyPassService.claimMilestone(m.id);
                       setForceRefresh(c => c + 1);
+                      if (m.crystals >= 1000) {
+                        AudioService.jackpot();
+                        AudioService.vibrate([30, 20, 50, 20, 80]);
+                      } else if (m.crystals >= 400) {
+                        AudioService.super();
+                        AudioService.vibrate([20, 30, 50]);
+                      } else {
+                        AudioService.reward();
+                        AudioService.vibrate([15, 20]);
+                      }
                     }
                   }}
                   title={`${m.label}: ${m.crystals} 💎 (${m.winsNeeded} Siege)`}

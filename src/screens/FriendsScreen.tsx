@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AuthService } from '../services/AuthService';
 import { FriendService, otherSide, type Friendship } from '../services/FriendService';
+import { AudioService } from '../services/AudioService';
 import './FriendsScreen.css';
 
 interface Props { onBack: () => void; }
@@ -41,11 +42,14 @@ const FriendsScreen: React.FC<Props> = ({ onBack }) => {
     const err = await FriendService.sendRequest(codeInput);
     setSending(false);
     if (err) { setAddErr(err); return; }
+    AudioService.tap();
     setAddMsg('Freundschaftsanfrage gesendet! ✓');
     setCodeInput('');
   };
 
   const handleAccept = async (id: string) => {
+    AudioService.synergy();
+    AudioService.vibrate([15, 20, 30]);
     await FriendService.acceptRequest(id);
     load();
   };
