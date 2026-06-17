@@ -183,12 +183,18 @@ const DefeatScreen: React.FC<Props> = ({ details, onReturnToSelect, onRetry, can
   // Entry audio
   useEffect(() => {
     const isRage = RageModeService.getLossCount() >= RageModeService.RAGE_THRESHOLD;
-    if (wasClose) {
-      // Tantalizingly close — synergy tone to "almost!" feeling
+    if (details.streakShielded) {
+      // Shield absorbed the defeat — celebratory, not sad
+      AudioService.synergy();
+      AudioService.vibrate([15, 10, 30, 10, 15]);
+    } else if ((details.winStreak ?? 0) >= 3 && !details.streakShielded) {
+      // Significant streak broken — extra dramatic defeat
+      AudioService.defeat();
+      AudioService.vibrate([50, 30, 100, 30, 150]);
+    } else if (wasClose) {
       AudioService.synergy();
       AudioService.vibrate([30, 10, 30]);
     } else if (isRage) {
-      // Rage threshold hit — low rumble then hit
       AudioService.defeat();
       AudioService.vibrate([40, 30, 80, 30, 120]);
     } else {

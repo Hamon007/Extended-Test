@@ -169,11 +169,16 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
     return () => clearTimeout(id);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Entry audio: level-up > SSS > milestone > normal
+  // Entry audio: level-up > streak milestone > SSS > win milestone > normal
   useEffect(() => {
+    const streakMilestones = [5, 10, 15, 20, 30, 50];
     if (details.accountLevelUp) {
       AudioService.super();
       AudioService.vibrate([20, 30, 60, 30, 80]);
+    } else if (streakMilestones.includes(winStreak)) {
+      // New streak shield earned — jackpot fanfare
+      AudioService.jackpot();
+      AudioService.vibrate([20, 20, 50, 20, 80, 20, 100]);
     } else if (grade === 'SSS') {
       AudioService.synergy();
       AudioService.vibrate([20, 20, 40]);
