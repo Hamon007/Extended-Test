@@ -36,6 +36,10 @@ import { AudioService }          from './services/AudioService';
 import { LoginStreakService, type StreakCheckResult } from './services/LoginStreakService';
 import type { StreakState }      from './services/LoginStreakService';
 import { AchievementService, registerToastFn } from './services/AchievementService';
+import { QuestService } from './services/QuestService';
+import { ExpeditionService } from './services/ExpeditionService';
+import { LuckySpinService } from './services/LuckySpinService';
+import { GuildService } from './services/GuildService';
 import { getInitialScreenStack, type Screen } from './navigation';
 import './App.css';
 
@@ -298,18 +302,37 @@ const App: React.FC = () => {
               item.key === 'menu'
                 ? screen === 'menu' || screen === 'cardCollection'
                 : screen === item.key;
+
+            // Notification badges per nav item
+            let badge = 0;
+            if (item.key === 'menu') {
+              const allQuests = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()];
+              badge += allQuests.filter(q => q.progress.completed && !q.progress.claimed).length;
+              badge += AchievementService.getUnclaimedCount();
+              badge += ExpeditionService.getCompleted().length;
+              badge += LuckySpinService.canSpin() ? 1 : 0;
+            } else if (item.key === 'guild') {
+              const gs = GuildService.load();
+              if (!gs.bossCleared && gs.bossAttacksLeft > 0) badge = gs.bossAttacksLeft;
+            }
+
             return (
               <button
                 key={item.key}
                 className={`app-nav__btn${isActive ? ' app-nav__btn--active' : ''}`}
                 onClick={() => navTo(item.action)}
               >
-                <img
-                  src={item.img}
-                  alt={item.label}
-                  className="app-nav__img"
-                  draggable={false}
-                />
+                <div className="app-nav__icon-wrap">
+                  <img
+                    src={item.img}
+                    alt={item.label}
+                    className="app-nav__img"
+                    draggable={false}
+                  />
+                  {badge > 0 && (
+                    <span className="app-nav__badge">{badge > 9 ? '9+' : badge}</span>
+                  )}
+                </div>
                 <span className="app-nav__label">{item.label}</span>
               </button>
             );
