@@ -14,6 +14,7 @@ import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService, BOND_ICONS, BOND_NAMES, BOND_ATK_BONUS } from '../services/CardBondService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
 import { DailyDuoService } from '../services/DailyDuoService';
+import { getSurgeElement, msRemaining as surgeMs, SURGE_ELEMENT_NAMES, SURGE_ELEMENT_ICONS, SURGE_ELEMENT_COLORS } from '../services/HourSurgeService';
 import { AudioService } from '../services/AudioService';
 import './DeckBuilderScreen.css';
 
@@ -153,6 +154,20 @@ const DeckBuilderScreen: React.FC = () => {
       return inst ? CardDatabase.getById(inst.cardId)?.element === blessedElement : false;
     }).length;
   }, [deck.uuids, inventory, blessedElement]);
+
+  // Hour Surge integration
+  const surgeElement = useMemo(() => getSurgeElement(), []);
+  const surgeColor   = SURGE_ELEMENT_COLORS[surgeElement] ?? '#888';
+  const surgeIcon    = SURGE_ELEMENT_ICONS[surgeElement] ?? '⚡';
+  const surgeName    = SURGE_ELEMENT_NAMES[surgeElement] ?? surgeElement;
+  const surgeMinutes = Math.ceil(surgeMs() / 60000);
+  const surgeCount   = useMemo(() => {
+    const invMap = new Map(inventory.map(i => [i.uuid, i]));
+    return deck.uuids.filter(uuid => {
+      const inst = invMap.get(uuid);
+      return inst ? CardDatabase.getById(inst.cardId)?.element === surgeElement : false;
+    }).length;
+  }, [deck.uuids, inventory, surgeElement]);
 
   // Near-formations: tags that need 1-2 more cards to activate (count === 2)
   const nearFormations = useMemo(() => {
@@ -305,6 +320,21 @@ const DeckBuilderScreen: React.FC = () => {
                 ? `${blessingCount}/3 → Synergie-Bonus`
                 : `0/3 · +100 💎/Karte ab 3`}
           </span>
+        </div>
+
+        {/* Hour Surge indicator */}
+        <div
+          className={`db-surge-bar${surgeCount >= 1 ? ' db-surge-bar--active' : ''}`}
+          style={{ '--surge-color': surgeColor } as React.CSSProperties}
+        >
+          <span className="db-surge-bar__icon">{surgeIcon}</span>
+          <span className="db-surge-bar__label">SURGE: {surgeName.toUpperCase()}</span>
+          <span className="db-surge-bar__count">
+            {surgeCount >= 1
+              ? `${surgeCount}× → +50% 💎 aktiv!`
+              : `0 Karten · Tausche für +50% 💎`}
+          </span>
+          <span className="db-surge-bar__timer">{surgeMinutes}min</span>
         </div>
 
         {/* Element distribution */}

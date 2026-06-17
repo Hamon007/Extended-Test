@@ -700,6 +700,51 @@
   color: color-mix(in srgb, var(--bless-color, #888) 90%, white);
 }
 
+/* ── Hour Surge Bar ────────────────────────────────────────── */
+.db-surge-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(20,20,30,0.6);
+  border: 1px solid rgba(var(--surge-color, #888), 0.25);
+  border: 1px solid rgba(120,120,160,0.2);
+  margin-bottom: 6px;
+  font-size: 0.6rem;
+  color: rgba(180,170,200,0.7);
+}
+.db-surge-bar--active {
+  border-color: color-mix(in srgb, var(--surge-color, #ff8c00) 55%, transparent);
+  background: color-mix(in srgb, var(--surge-color, #ff8c00) 10%, rgba(10,10,20,0.7));
+  animation: surgeBarPulse 1.6s ease-in-out infinite alternate;
+}
+@keyframes surgeBarPulse {
+  from { box-shadow: 0 0 4px color-mix(in srgb, var(--surge-color, #ff8c00) 25%, transparent); }
+  to   { box-shadow: 0 0 14px color-mix(in srgb, var(--surge-color, #ff8c00) 55%, transparent); }
+}
+.db-surge-bar__icon { font-size: 0.9rem; flex-shrink: 0; }
+.db-surge-bar__label {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex: 1;
+  color: color-mix(in srgb, var(--surge-color, #ff8c00) 80%, white);
+}
+.db-surge-bar__count {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--surge-color, #ff8c00) 90%, white);
+}
+.db-surge-bar__timer {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 /* ── Formation Bonuses ─────────────────────────────────────── */
 .db-formations {
   padding: 4px 2px 8px;
