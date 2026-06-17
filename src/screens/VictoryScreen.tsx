@@ -12,7 +12,7 @@ import { SeasonService } from '../services/SeasonService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { FusionSystem } from '../services/FusionSystem';
 import { LevelSystem } from '../services/LevelSystem';
-import { PULL_COST_MULTI } from '../config/GameConfig';
+import { PULL_COST_MULTI, PITY_THRESHOLD } from '../config/GameConfig';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyLoginService } from '../services/DailyLoginService';
@@ -1009,6 +1009,32 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
                 )}
               </div>
               <span className="victory-pull-nudge__crystals">{crystals.toLocaleString('de-DE')} 💎</span>
+            </div>
+          );
+        })()}
+
+        {/* Pity counter progress nudge */}
+        {(() => {
+          const gs   = SaveService.loadGachaState();
+          const pity = gs.pityCounter ?? 0;
+          if (pity < 50) return null;
+          const zone =
+            pity >= 99 ? 'guaranteed' :
+            pity >= 90 ? 'near'       :
+            pity >= 75 ? 'soft'       : 'climbing';
+          const msg =
+            zone === 'guaranteed' ? '★ NÄCHSTER PULL GARANTIERT SSR!' :
+            zone === 'near'       ? `⚡ Noch ${PITY_THRESHOLD - pity} Pulls bis Garantie!` :
+            zone === 'soft'       ? `🔥 Soft Pity aktiv — erhöhte SSR-Chance! (${pity}/100)` :
+                                    `⬆ Pity: ${pity}/100 — auf Kurs zur Garantie`;
+          return (
+            <div
+              className={`victory-pity-nudge victory-pity-nudge--${zone}`}
+              onClick={() => { AudioService.tap(); onContinue(); onNavigate?.('gacha'); }}
+            >
+              <span className="victory-pity-nudge__icon">✨</span>
+              <span className="victory-pity-nudge__text">{msg}</span>
+              <span className="victory-pity-nudge__arrow">›</span>
             </div>
           );
         })()}

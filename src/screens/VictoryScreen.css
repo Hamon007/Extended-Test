@@ -2127,3 +2127,64 @@
 .victory-ms-particle--1 { background: #ffffff; width: 6px;  height: 6px; }
 .victory-ms-particle--2 { background: #ff9800; width: 8px;  height: 8px; }
 .victory-ms-particle--3 { background: #ff6060; width: 7px;  height: 7px; }
+
+/* ── Pity Counter Progress Nudge ──────────────────────────────────────── */
+.victory-pity-nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 16px 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: none;
+}
+.victory-pity-nudge:active { opacity: 0.75; }
+
+.victory-pity-nudge__icon { font-size: 1.1rem; flex-shrink: 0; }
+.victory-pity-nudge__text { flex: 1; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em; }
+.victory-pity-nudge__arrow { font-size: 1.3rem; opacity: 0.7; flex-shrink: 0; }
+
+/* climbing: blue */
+.victory-pity-nudge--climbing {
+  border-color: rgba(80, 160, 255, 0.45);
+  background: rgba(30, 80, 160, 0.18);
+}
+.victory-pity-nudge--climbing .victory-pity-nudge__text { color: #90c8ff; }
+
+/* soft: orange */
+.victory-pity-nudge--soft {
+  border-color: rgba(255, 150, 40, 0.55);
+  background: rgba(140, 60, 0, 0.22);
+}
+.victory-pity-nudge--soft .victory-pity-nudge__text { color: #ffb060; }
+
+/* near: red pulsing */
+.victory-pity-nudge--near {
+  border-color: rgba(255, 60, 60, 0.7);
+  background: rgba(120, 20, 20, 0.28);
+  animation: pityNearPulse 0.7s ease-in-out infinite alternate;
+}
+.victory-pity-nudge--near .victory-pity-nudge__text { color: #ff8080; }
+@keyframes pityNearPulse {
+  from { box-shadow: 0 0 8px rgba(255,60,60,0.3); }
+  to   { box-shadow: 0 0 20px rgba(255,60,60,0.65); }
+}
+
+/* guaranteed: gold flashing */
+.victory-pity-nudge--guaranteed {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, #1a1000, #2a1a00, #1a1000);
+  animation: pityGuaranteedFlash 0.45s ease-in-out infinite alternate;
+}
+.victory-pity-nudge--guaranteed .victory-pity-nudge__text {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255,215,0,0.8);
+}
+@keyframes pityGuaranteedFlash {
+  from { box-shadow: 0 0 10px rgba(255,215,0,0.4), inset 0 0 8px rgba(255,180,0,0.08); }
+  to   { box-shadow: 0 0 24px rgba(255,215,0,0.8), inset 0 0 16px rgba(255,200,0,0.15); }
+}
