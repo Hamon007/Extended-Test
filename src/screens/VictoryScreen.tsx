@@ -18,6 +18,7 @@ import { FloorTitleService } from '../services/FloorTitleService';
 import { DailyLoginService } from '../services/DailyLoginService';
 import { LuckySpinService } from '../services/LuckySpinService';
 import { BattleStatsService } from '../services/BattleStatsService';
+import { AudioService } from '../services/AudioService';
 import './VictoryScreen.css';
 
 interface Props {
@@ -159,6 +160,20 @@ const VictoryScreen: React.FC<Props> = ({ details, onContinue, onNavigate, onQui
     const id = setTimeout(() => setShowLevelUp(false), 3500);
     return () => clearTimeout(id);
   }, [showLevelUp]);
+
+  // Entry audio: level-up > SSS > milestone > normal
+  useEffect(() => {
+    if (details.accountLevelUp) {
+      AudioService.super();
+      AudioService.vibrate([20, 30, 60, 30, 80]);
+    } else if (grade === 'SSS') {
+      AudioService.synergy();
+      AudioService.vibrate([20, 20, 40]);
+    } else if (isVictoryMilestone) {
+      AudioService.reward();
+      AudioService.vibrate([20, 30, 40]);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Next floor preview (tower mode only)
   const currentFloor   = details.towerFloor;

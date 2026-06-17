@@ -142,6 +142,22 @@ export const AudioService = {
     tone({ freq: 520, endFreq: 660, dur: 0.05, type: 'triangle', gain: 0.12 });
   },
 
+  /** Rad/Slot-Tick — kurzer perkussiver Klick. */
+  tick(): void {
+    if (muted) return;
+    noise({ dur: 0.04, gain: 0.10, type: 'bandpass', freq: 900, endFreq: 400 });
+    tone({ freq: 660, endFreq: 330, dur: 0.03, type: 'square', gain: 0.07 });
+  },
+
+  /** Fanfare für großen Gewinn — kurze aufsteigende Trompete. */
+  jackpot(): void {
+    if (muted) return;
+    [523, 659, 784, 1047, 1319].forEach((f, i) =>
+      tone({ freq: f, dur: 0.3, type: 'sawtooth', gain: 0.12, attack: 0.04, delay: i * 0.08 }));
+    noise({ dur: 0.6, gain: 0.16, type: 'highpass', freq: 600, endFreq: 5000 });
+    tone({ freq: 110, endFreq: 220, dur: 0.7, type: 'sine', gain: 0.25, delay: 0.1 });
+  },
+
   // ── Combat ──
   /** Karte wird ausgespielt — leichter Saiten-Anschlag. */
   cardPlay(): void {

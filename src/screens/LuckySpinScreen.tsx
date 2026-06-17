@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LuckySpinService, SPIN_PRIZES, STREAK_MILESTONES, type SpinPrize } from '../services/LuckySpinService';
 import { AchievementService } from '../services/AchievementService';
+import { AudioService } from '../services/AudioService';
 import './LuckySpinScreen.css';
 
 function msUntilMidnightUtc(): number {
@@ -37,9 +38,14 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
   const [streak,       setStreak]       = useState(() => LuckySpinService.getStreak());
   const [history,      setHistory]      = useState<SpinPrize[]>(() => LuckySpinService.getHistory());
   const [resetMs,      setResetMs]      = useState(() => msUntilMidnightUtc());
-  const baseRotationRef = useRef(0);
+  const baseRotationRef  = useRef(0);
+  const tickTimersRef    = useRef<number[]>([]);
 
-  useEffect(() => { setPrize(null); setShowResult(false); }, []);
+  useEffect(() => {
+    setPrize(null);
+    setShowResult(false);
+    return () => { tickTimersRef.current.forEach(id => clearTimeout(id)); };
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setResetMs(msUntilMidnightUtc()), 1000);
@@ -69,6 +75,20 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     baseRotationRef.current = newRotation % 360;
     setRotation(newRotation);
 
+    // Schedule wheel tick sounds: fast at start, slow near the end
+    tickTimersRef.current.forEach(id => clearTimeout(id));
+    const ids: number[] = [];
+    let t = 0;
+    let interval = 60; // start fast
+    while (t < 3800) {
+      const capturedT = t;
+      ids.push(window.setTimeout(() => AudioService.tick(), capturedT));
+      interval = Math.min(280, interval + 4); // gradually decelerate
+      t += interval;
+    }
+    tickTimersRef.current = ids;
+    AudioService.vibrate(20);
+
     // Near-miss: find the adjacent prize that would have been worth more
     const wonValue    = won.crystals ?? 0;
     const leftPrize   = SPIN_PRIZES[(prizeIndex - 1 + SEG_COUNT) % SEG_COUNT]!;
@@ -77,6 +97,21 @@ const LuckySpinScreen: React.FC<Props> = ({ onBack }) => {
     const nearMissPrize = (bestAdj.crystals ?? 0) > wonValue ? bestAdj : null;
 
     setTimeout(() => {
+      // Play result sound based on prize tier
+      const crystals = won.crystals ?? 0;
+      if (crystals >= 3000) {
+        AudioService.jackpot();
+        AudioService.vibrate([30, 20, 50, 20, 80, 20, 100]);
+      } else if (crystals >= 1000) {
+        AudioService.super();
+        AudioService.vibrate([20, 30, 50, 30, 60]);
+      } else if (crystals >= 200) {
+        AudioService.synergy();
+        AudioService.vibrate([20, 25, 30]);
+      } else {
+        AudioService.reward();
+        AudioService.vibrate([15, 20]);
+      }
       setPrize(won);
       setStreakBonus(bonus);
       setNearMiss(nearMissPrize);

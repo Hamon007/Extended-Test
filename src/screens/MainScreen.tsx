@@ -34,6 +34,7 @@ import { SimulatedFeedService } from '../services/SimulatedFeedService';
 import { LuckyFloorService } from '../services/LuckyFloorService';
 import { WeeklyPassService } from '../services/WeeklyPassService';
 import { FlashSaleService, type FlashSale } from '../services/FlashSaleService';
+import { FlashChallengeService } from '../services/FlashChallengeService';
 import { BountyService } from '../services/BountyService';
 import { WinStreakService as WinStreakSvc } from '../services/WinStreakService';
 import { WorldBossService } from '../services/WorldBossService';
@@ -223,6 +224,9 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
   const [luckyDayMs,     setLuckyDayMs]     = useState(() =>
     LuckyDayService.isActive() ? LuckyDayService.msRemaining() : LuckyDayService.msUntilWindow()
   );
+  const [flashChalActive, setFlashChalActive] = useState(() => FlashChallengeService.isActive());
+  const [flashChalMs,     setFlashChalMs]     = useState(() => FlashChallengeService.msRemaining());
+  const [flashChalDone,   setFlashChalDone]   = useState(() => FlashChallengeService.isCompleted());
 
   // Countdown-Tick + Energy-Regen-Ticker
   useEffect(() => {
@@ -246,6 +250,10 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
       const ldActive = LuckyDayService.isActive();
       setLuckyDayActive(ldActive);
       setLuckyDayMs(ldActive ? LuckyDayService.msRemaining() : LuckyDayService.msUntilWindow());
+      const fcActive = FlashChallengeService.isActive();
+      setFlashChalActive(fcActive);
+      setFlashChalMs(FlashChallengeService.msRemaining());
+      if (fcActive) setFlashChalDone(FlashChallengeService.isCompleted());
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -661,6 +669,49 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
             </div>
           </div>
         ) : null
+      )}
+
+      {/* ── Flash-Challenge ── */}
+      {flashChalActive && !flashChalDone && (() => {
+        const fc  = FlashChallengeService.getActiveChallenge();
+        const prog = FlashChallengeService.getProgress();
+        const mins = Math.ceil(flashChalMs / 60000);
+        const pct  = Math.min(1, prog / fc.target);
+        const urgent = flashChalMs < 900_000; // < 15 min
+        return (
+          <div
+            className={`main-flash-challenge${urgent ? ' main-flash-challenge--urgent' : ''}`}
+            onClick={() => onNavigate?.('battle')}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="main-flash-challenge__icon">{fc.icon}</span>
+            <div className="main-flash-challenge__body">
+              <div className="main-flash-challenge__header">
+                <span className="main-flash-challenge__title">⚡ FLASH-CHALLENGE</span>
+                <span className="main-flash-challenge__timer">{mins}min</span>
+              </div>
+              <div className="main-flash-challenge__label">{fc.label}</div>
+              <div className="main-flash-challenge__bar-track">
+                <div className="main-flash-challenge__bar-fill" style={{ width: `${Math.round(pct * 100)}%` }} />
+              </div>
+              <div className="main-flash-challenge__foot">
+                <span className="main-flash-challenge__prog">{prog}/{fc.target}</span>
+                <span className="main-flash-challenge__reward">+{fc.crystals} 💎</span>
+              </div>
+            </div>
+            <span className="main-flash-challenge__cta">KÄMPFEN ▶</span>
+          </div>
+        );
+      })()}
+      {flashChalActive && flashChalDone && (
+        <div className="main-flash-challenge main-flash-challenge--done">
+          <span className="main-flash-challenge__icon">✅</span>
+          <div className="main-flash-challenge__body">
+            <span className="main-flash-challenge__title">⚡ FLASH-CHALLENGE</span>
+            <span className="main-flash-challenge__label">ABGESCHLOSSEN! Nächste Challenge läuft bald.</span>
+          </div>
+        </div>
       )}
 
       {/* ── Blitzangebot (Flash Sale) ── */}
