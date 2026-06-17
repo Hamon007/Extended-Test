@@ -2792,6 +2792,56 @@
   letter-spacing: 0.06em;
 }
 
+/* ── Streak Shield Approaching Chip ─────────────────────────── */
+.battle-shield-approaching {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 12px 8px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, rgba(68,170,255,0.14) 0%, rgba(0,80,200,0.08) 100%);
+  border: 1px solid rgba(68,170,255,0.38);
+  border-left: 3px solid #44aaff;
+  border-radius: 10px;
+  animation: shieldApproachIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both,
+             shieldApproachPulse 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes shieldApproachIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes shieldApproachPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(68,170,255,0.18); }
+  50%       { box-shadow: 0 0 20px rgba(68,170,255,0.5), 0 0 40px rgba(68,170,255,0.18); }
+}
+
+.battle-shield-approaching__icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.battle-shield-approaching__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.battle-shield-approaching__title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #44aaff;
+  text-shadow: 0 0 10px rgba(68,170,255,0.5);
+}
+
+.battle-shield-approaching__sub {
+  font-size: 0.6rem;
+  color: rgba(180,220,255,0.65);
+}
+
 /* ── First Win of Day Chip ────────────────────────────────── */
 .battle-firstwin-chip {
   display: flex;

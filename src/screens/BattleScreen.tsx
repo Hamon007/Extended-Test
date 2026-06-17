@@ -1563,6 +1563,23 @@ const BattleScreen: React.FC<BattleScreenProps> = ({ onNavigate }) => {
         );
       })()}
 
+      {/* Streak Shield approaching — one win away from 5/10/15/20/30/50 threshold */}
+      {(() => {
+        const oneAway = [5, 10, 15, 20, 30, 50].find(t => t - winStreak === 1);
+        if (!oneAway) return null;
+        return (
+          <div className="battle-shield-approaching">
+            <span className="battle-shield-approaching__icon">🛡</span>
+            <div className="battle-shield-approaching__body">
+              <span className="battle-shield-approaching__title">SCHILD IN REICHWEITE!</span>
+              <span className="battle-shield-approaching__sub">
+                Noch 1 Sieg → Streak-Schild schützt deine {winStreak + 1}× Serie!
+              </span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Revenge chip — appears when the player returns to their last defeat floor */}
       {revengeFloor === towerFloor && (
         <div className="battle-revenge-chip">
