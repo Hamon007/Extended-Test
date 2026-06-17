@@ -2648,6 +2648,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
   const [feverMode,      setFeverMode]      = useState(false);
   const [feverBurst,     setFeverBurst]     = useState(false);
+  const [feverCount,     setFeverCount]     = useState(0);
   const [rageToast,      setRageToast]      = useState(false);
   const [showVersus,     setShowVersus]     = useState(true);
   const [roundBanner,    setRoundBanner]    = useState<number | null>(null);
@@ -2727,6 +2728,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       lastComboBurstRef.current = 0;
       maxComboHitsRef.current = 0;
       setFeverMode(false);
+      setFeverCount(0);
     }
     wasBreakingRef.current = combo.isBreaking;
   }, [combo.isBreaking]);
@@ -2746,7 +2748,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   // Combo milestone burst at 3× and MAX_COMBO; reset fever if combo drops
   useEffect(() => {
     const c = combo.count;
-    if (c < 5) { maxComboHitsRef.current = 0; setFeverMode(false); }
+    if (c < 5) { maxComboHitsRef.current = 0; setFeverMode(false); setFeverCount(0); }
     if (c <= lastComboBurstRef.current) return;
     if (c >= 5 && lastComboBurstRef.current < 5) {
       lastComboBurstRef.current = c;
@@ -2794,9 +2796,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       if (maxComboHitsRef.current === 3) {
         setFeverMode(true);
         setFeverBurst(true);
+        setFeverCount(3);
         AudioService.jackpot();
         AudioService.vibrate([30, 20, 60, 20, 100, 20, 130]);
         setTimeout(() => setFeverBurst(false), 1600);
+      } else if (maxComboHitsRef.current > 3) {
+        setFeverCount(maxComboHitsRef.current);
       }
     }
   }, [state.log]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -3133,7 +3138,9 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       )}
       {/* Persistent FEVER badge — shown while sustained max combo is active */}
       {feverMode && !state.result && (
-        <div className="arena-fever-badge" aria-hidden="true">🔥 FEVER</div>
+        <div className="arena-fever-badge" aria-hidden="true">
+          🔥 FEVER {feverCount > 3 ? `×${feverCount}` : ''}
+        </div>
       )}
 
       {/* Enemy Rage Mode Toast */}
