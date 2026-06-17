@@ -2629,11 +2629,14 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const [limitBreakUsed,   setLimitBreakUsed]   = useState(false);
   const [limitBreakAnim,   setLimitBreakAnim]   = useState(false);
   const [comboBurst,     setComboBurst]     = useState<'triple' | 'max' | null>(null);
+  const [feverMode,      setFeverMode]      = useState(false);
+  const [feverBurst,     setFeverBurst]     = useState(false);
   const [rageToast,      setRageToast]      = useState(false);
   const [showVersus,     setShowVersus]     = useState(true);
   const [roundBanner,    setRoundBanner]    = useState<number | null>(null);
   const lastRoundRef       = useRef(state.round);
   const lastComboBurstRef  = useRef(0);
+  const maxComboHitsRef    = useRef(0);
   const lastAwakenedCount  = useRef(0);
   const lastLogId          = useRef(0);
   const lastEnemyHpRef     = useRef(state.enemy.hp);
@@ -2700,11 +2703,13 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     lastPlayerHpRef.current = state.player.hp;
   }, [state.player.hp, triggerShake]);
 
-  // Combo gebrochen → dumpfer Sound + reset burst threshold
+  // Combo gebrochen → dumpfer Sound + reset burst threshold + reset fever
   useEffect(() => {
     if (combo.isBreaking && !wasBreakingRef.current) {
       AudioService.comboBreak();
       lastComboBurstRef.current = 0;
+      maxComboHitsRef.current = 0;
+      setFeverMode(false);
     }
     wasBreakingRef.current = combo.isBreaking;
   }, [combo.isBreaking]);
@@ -2721,9 +2726,10 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     }
   }, [state.enemy.hp]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Combo milestone burst at 3× and MAX_COMBO
+  // Combo milestone burst at 3× and MAX_COMBO; reset fever if combo drops
   useEffect(() => {
     const c = combo.count;
+    if (c < 5) { maxComboHitsRef.current = 0; setFeverMode(false); }
     if (c <= lastComboBurstRef.current) return;
     if (c >= 5 && lastComboBurstRef.current < 5) {
       lastComboBurstRef.current = c;
@@ -2749,7 +2755,7 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
     }
   }, [state.result]);
 
-  // Super-Attack-Toast + Critical-Flash basierend auf neuestem Log-Eintrag
+  // Super-Attack-Toast + Critical-Flash + FEVER MODE tracking
   useEffect(() => {
     const lastLog = state.log[state.log.length - 1];
     if (!lastLog || lastLog.id === lastLogId.current) return;
@@ -2765,7 +2771,18 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
       setCritFlash(true);
       setTimeout(() => setCritFlash(false), 600);
     }
-  }, [state.log]);
+    // FEVER MODE: triggers once on the 3rd consecutive max-combo player hit
+    if (lastLog.actor === 'player' && combo.count >= 5) {
+      maxComboHitsRef.current += 1;
+      if (maxComboHitsRef.current === 3) {
+        setFeverMode(true);
+        setFeverBurst(true);
+        AudioService.jackpot();
+        AudioService.vibrate([30, 20, 60, 20, 100, 20, 130]);
+        setTimeout(() => setFeverBurst(false), 1600);
+      }
+    }
+  }, [state.log]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Awakening-Toast wenn neue Karte erwacht
   useEffect(() => {
@@ -2962,16 +2979,20 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
   const playerHpPct2 = state.player.hpMax > 0 ? state.player.hp / state.player.hpMax : 1;
   const isDangerZone = playerHpPct2 > 0 && playerHpPct2 < 0.25 && result?.outcome !== 'victory' && result?.outcome !== 'defeat';
   const comboFeverTier = combo.count >= 5 ? 'max' : combo.count >= 4 ? 'high' : combo.count >= 3 ? 'mid' : combo.count >= 2 ? 'low' : null;
+  const versusStreak    = WinStreakService.get();
+  const versusHasShield = WinStreakService.hasShield();
 
   return (
     <div className={[
       'battle-arena',
       isDangerZone ? 'battle-arena--danger' : '',
-      comboFeverTier ? `battle-arena--combo-${comboFeverTier}` : '',
+      feverMode ? 'battle-arena--fever' : (comboFeverTier ? `battle-arena--combo-${comboFeverTier}` : ''),
     ].filter(Boolean).join(' ')} ref={arenaRef}>
       <div className="arena-bg-pulse" aria-hidden="true" />
       {isDangerZone && <div className="arena-danger-vignette" aria-hidden="true" />}
-      {comboFeverTier && <div className={`arena-combo-vignette arena-combo-vignette--${comboFeverTier}`} aria-hidden="true" />}
+      {(feverMode || comboFeverTier) && (
+        <div className={`arena-combo-vignette arena-combo-vignette--${feverMode ? 'fever' : comboFeverTier}`} aria-hidden="true" />
+      )}
 
       {/* ── VERSUS intro ── */}
       {showVersus && (
@@ -2992,6 +3013,12 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
             </div>
             <div className="arena-versus__enemy-name">{state.enemyData.name}</div>
           </div>
+          {versusStreak >= 3 && (
+            <div className="arena-versus__streak" aria-hidden="true">
+              🔥 {versusStreak}× SERIE AUF DEM SPIEL
+              {versusHasShield && <span className="arena-versus__streak-shield"> · 🛡 SCHILD</span>}
+            </div>
+          )}
         </div>
       )}
 
@@ -3076,6 +3103,20 @@ const BattleArena: React.FC<BattleArenaProps> = ({ state, battle, tacticalConfig
           <div className="combo-burst__ring combo-burst__ring--delay" />
           <div className="combo-burst__text">MAX COMBO!!</div>
         </div>
+      )}
+
+      {/* FEVER MODE burst — one-shot intro on 3rd sustained max-combo hit */}
+      {feverBurst && (
+        <div className="combo-burst combo-burst--fever" aria-hidden="true">
+          <div className="combo-burst__ring" />
+          <div className="combo-burst__ring combo-burst__ring--delay" />
+          <div className="combo-burst__ring combo-burst__ring--delay2" />
+          <div className="combo-burst__text">🔥 FEVER!! 🔥</div>
+        </div>
+      )}
+      {/* Persistent FEVER badge — shown while sustained max combo is active */}
+      {feverMode && !state.result && (
+        <div className="arena-fever-badge" aria-hidden="true">🔥 FEVER</div>
       )}
 
       {/* Enemy Rage Mode Toast */}

@@ -76,11 +76,20 @@
   flex: 1;
 }
 
-.pity-bar-count--urgent { color: #f0d080; animation: urgent-pulse 0.8s ease-in-out infinite; }
+/* Zone-based pity counter colors */
+.pity-bar-count--normal   { color: #c9a84c; }
+.pity-bar-count--climbing { color: #d4aa60; }
+.pity-bar-count--soft     { color: #ff8c00; }
+.pity-bar-count--near     { color: #ff4400; animation: pityNearPulse 0.55s ease-in-out infinite alternate; }
+.pity-bar-count--guaranteed { color: #ffd700; animation: pityGuaranteedFlash 0.4s ease-in-out infinite alternate; }
 
-@keyframes urgent-pulse {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.6; }
+@keyframes pityNearPulse {
+  from { opacity: 0.85; }
+  to   { opacity: 1; text-shadow: 0 0 10px rgba(255,80,0,0.8); }
+}
+@keyframes pityGuaranteedFlash {
+  from { opacity: 0.9; text-shadow: 0 0 8px rgba(255,215,0,0.6); }
+  to   { opacity: 1;   text-shadow: 0 0 18px rgba(255,215,0,1), 0 0 36px rgba(255,160,0,0.5); }
 }
 
 .pity-bar-total {
@@ -90,12 +99,26 @@
 }
 
 .pity-bar-track {
-  height: 6px;
+  height: 7px;
   background: #1a1018;
   border-radius: 3px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid #2a1525;
+  position: relative;
 }
+
+/* Milestone tick marks at pull 50 (50%) and pull 75 (75%) */
+.pity-bar-milestone {
+  position: absolute;
+  top: -2px;
+  width: 1px;
+  height: calc(100% + 4px);
+  background: rgba(255,255,255,0.15);
+  pointer-events: none;
+  z-index: 2;
+}
+.pity-bar-milestone--50 { left: 50%; }
+.pity-bar-milestone--75 { left: 75%; background: rgba(255,140,0,0.3); }
 
 .pity-bar-fill {
   height: 100%;
@@ -104,17 +127,33 @@
   transition: width 0.4s ease;
 }
 
-.pity-bar-fill--urgent {
-  background: linear-gradient(90deg, #e65100, #f0d080);
+.pity-bar-fill--normal   { background: linear-gradient(90deg, #6a4818, #c9a84c); }
+.pity-bar-fill--climbing { background: linear-gradient(90deg, #8a6020, #d4aa60); }
+.pity-bar-fill--soft     { background: linear-gradient(90deg, #b05000, #ff8c00); }
+.pity-bar-fill--near     { background: linear-gradient(90deg, #cc2200, #ff5500); animation: pityNearGlow 0.5s ease-in-out infinite alternate; }
+.pity-bar-fill--guaranteed { background: linear-gradient(90deg, #b08800, #ffd700); animation: pityGuaranteedGlow 0.4s ease-in-out infinite alternate; }
+
+@keyframes pityNearGlow {
+  from { box-shadow: 0 0 4px rgba(255,60,0,0.5); }
+  to   { box-shadow: 0 0 12px rgba(255,80,0,0.9), 0 0 24px rgba(255,40,0,0.4); }
+}
+@keyframes pityGuaranteedGlow {
+  from { box-shadow: 0 0 6px rgba(255,200,0,0.6); }
+  to   { box-shadow: 0 0 16px rgba(255,215,0,1), 0 0 32px rgba(255,160,0,0.5); }
 }
 
 .pity-bar-note {
   font-family: 'EB Garamond', serif;
   font-size: 10px;
-  color: #3a2030;
-  margin-top: 4px;
+  margin-top: 5px;
   font-style: italic;
 }
+
+.pity-bar-note--normal   { color: #3a2030; }
+.pity-bar-note--climbing { color: #6a5020; }
+.pity-bar-note--soft     { color: #994400; }
+.pity-bar-note--near     { color: #cc3300; font-style: normal; font-weight: 700; }
+.pity-bar-note--guaranteed { color: #c9a84c; font-style: normal; font-weight: 700; animation: pityGuaranteedFlash 0.4s ease-in-out infinite alternate; }
 
 /* ── Pull History Strip ──────────────────────────────────── */
 .pull-history {

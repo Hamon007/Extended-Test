@@ -263,28 +263,39 @@ const PullHistoryStrip: React.FC<{ inventory: CardInstance[] }> = ({ inventory }
 interface PityBarProps { pity: number; total: number; }
 
 const PityBar: React.FC<PityBarProps> = ({ pity, total }) => {
-  const pct = Math.min(100, (pity / PITY_THRESHOLD) * 100);
-  const urgent = pity >= 80;
+  const pct    = Math.min(100, (pity / PITY_THRESHOLD) * 100);
+  const zone   = pity >= 99 ? 'guaranteed'
+               : pity >= 90 ? 'near'
+               : pity >= 75 ? 'soft'
+               : pity >= 50 ? 'climbing'
+               : 'normal';
+
+  const zoneMsg: Record<string, string> = {
+    guaranteed: '🌟 NÄCHSTER PULL GARANTIERT SSR!',
+    near:       '⚡ SEHR NAH! SSR fast in Griffweite!',
+    soft:       '🔥 Soft Pity — SSR-Rate steigt!',
+    climbing:   '↑ Auf dem Weg zur Garantie…',
+    normal:     `Reset bei SSR/MR ✦ Garantie bei Pull ${PITY_THRESHOLD}`,
+  };
 
   return (
     <div className="pity-bar-wrap">
       <div className="pity-bar-header">
         <span className="pity-bar-label">PITY</span>
-        <span className={`pity-bar-count ${urgent ? 'pity-bar-count--urgent' : ''}`}>
+        <span className={`pity-bar-count pity-bar-count--${zone}`}>
           {pity} / {PITY_THRESHOLD}
-          {pity >= PITY_THRESHOLD - 1 && ' ← GARANTIERTER SSR!'}
         </span>
         <span className="pity-bar-total">Pull #{total}</span>
       </div>
       <div className="pity-bar-track">
+        <div className="pity-bar-milestone pity-bar-milestone--50" title="Pull 50" />
+        <div className="pity-bar-milestone pity-bar-milestone--75" title="Soft Pity" />
         <div
-          className={`pity-bar-fill ${urgent ? 'pity-bar-fill--urgent' : ''}`}
+          className={`pity-bar-fill pity-bar-fill--${zone}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="pity-bar-note">
-        Reset bei SSR oder MR ✦ Bei Pull {PITY_THRESHOLD} garantierter SSR
-      </p>
+      <p className={`pity-bar-note pity-bar-note--${zone}`}>{zoneMsg[zone]}</p>
     </div>
   );
 };
