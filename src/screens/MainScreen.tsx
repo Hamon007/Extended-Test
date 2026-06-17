@@ -9,7 +9,7 @@ import { CardDatabase } from '../services/CardDatabase';
 import { TowerService } from '../services/TowerService';
 import { QuestService } from '../services/QuestService';
 import { AchievementService } from '../services/AchievementService';
-import { ExpeditionService } from '../services/ExpeditionService';
+import { ExpeditionService, EXPEDITION_DEFS } from '../services/ExpeditionService';
 import { SeasonService } from '../services/SeasonService';
 import { DailyLoginService, type DayReward } from '../services/DailyLoginService';
 import { OfflineIncomeService, type OfflineResult } from '../services/OfflineIncomeService';
@@ -1143,6 +1143,21 @@ const MainScreen: React.FC<MainScreenProps> = ({ onBack, onNavigate }) => {
         const claimableQuests = [...QuestService.getDailyQuests(), ...QuestService.getWeeklyQuests()].filter(q => q.progress.completed && !q.progress.claimed);
         if (claimableQuests.length > 0) {
           suggestions.push({ icon: '🎁', text: `${claimableQuests.length} Quest${claimableQuests.length > 1 ? 's' : ''} abholbereit!`, sub: 'Kristall-Belohnung wartet auf dich', screen: 'quests', priority: 11 });
+        }
+
+        // Expedition ready to collect
+        const readyExps = ExpeditionService.getActive().filter(e => Date.now() >= e.endsAt);
+        if (readyExps.length > 0) {
+          const totalCrystals = readyExps.reduce((s, e) => {
+            const def = EXPEDITION_DEFS.find(d => d.id === e.expeditionId);
+            return s + (def ? Math.round((def.rewards.crystalsMin + def.rewards.crystalsMax) / 2) : 150);
+          }, 0);
+          suggestions.push({ icon: '🗺', text: `${readyExps.length} Expedition${readyExps.length > 1 ? 'en' : ''} abholbereit!`, sub: `~${totalCrystals} 💎 wartet auf dich`, screen: 'expedition', priority: 8 });
+        }
+
+        // Lucky spin available
+        if (LuckySpinService.canSpin()) {
+          suggestions.push({ icon: '🎰', text: 'Glücksrad verfügbar!', sub: 'Einmal täglich kostenlos drehen', screen: 'spin', priority: 6 });
         }
 
         // Energy available → battle
