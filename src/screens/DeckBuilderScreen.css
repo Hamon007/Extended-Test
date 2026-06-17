@@ -804,3 +804,71 @@
   background: linear-gradient(90deg, #c060ff, #ffe8ff);
   box-shadow: 0 0 6px rgba(200,168,255,0.7);
 }
+
+/* ── Daily Duo Chip ──────────────────────────────────────────── */
+.db-duo-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(40,10,60,0.9), rgba(60,20,80,0.7));
+  border: 1px solid rgba(180,80,220,0.4);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 0 12px 8px;
+  font-size: 0.62rem;
+  animation: duoChipIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes duoChipIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.db-duo-chip--active {
+  border-color: rgba(220,120,255,0.65);
+  box-shadow: 0 0 14px rgba(200,80,255,0.2);
+}
+
+.db-duo-chip__icon { font-size: 1rem; flex-shrink: 0; }
+
+.db-duo-chip__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.db-duo-chip__title {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(200,140,255,0.85);
+  text-transform: uppercase;
+}
+
+.db-duo-chip__cards { color: rgba(200,200,220,0.8); }
+
+.db-duo-chip__card--in  { color: rgba(100,240,120,0.95); font-weight: 600; }
+.db-duo-chip__card--out { color: rgba(180,160,200,0.65); }
+
+.db-duo-chip__reward {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(120,220,100,0.9);
+  flex-shrink: 0;
+}
+
+/* ── Duo badge on inventory cards ────────────────────────────── */
+.inv-card__duo-badge {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: rgba(180,60,255,0.85);
+  color: #fff;
+  font-size: 0.48rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  z-index: 2;
+}

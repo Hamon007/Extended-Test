@@ -13,6 +13,8 @@ import { AchievementService } from '../services/AchievementService';
 import { CardMasteryService } from '../services/CardMasteryService';
 import { CardBondService, BOND_ICONS, BOND_NAMES, BOND_ATK_BONUS } from '../services/CardBondService';
 import { getBlessedElement, ELEMENT_LABELS, ELEMENT_COLORS } from '../services/DailyElementService';
+import { DailyDuoService } from '../services/DailyDuoService';
+import { AudioService } from '../services/AudioService';
 import './DeckBuilderScreen.css';
 
 type SortKey = 'rarity' | 'name' | 'atk' | 'hp' | 'mp';
@@ -77,6 +79,14 @@ const DeckBuilderScreen: React.FC = () => {
       : inventory.filter(e => rarityMajor(e.rarity) === rarityFilter);
     return sortInventory(filtered, sortKey);
   }, [inventory, rarityFilter, sortKey]);
+
+  // Daily Duo
+  const dailyDuo = useMemo(() => DailyDuoService.getDailyDuo(), []);
+  const duoIds   = useMemo(() => dailyDuo ? new Set([dailyDuo[0].id, dailyDuo[1].id]) : new Set<string>(), [dailyDuo]);
+  const deckCardIds = useMemo(() => deck.uuids.map(uuid => inventory.find(i => i.uuid === uuid)?.cardId ?? ''), [deck.uuids, inventory]);
+  const duoInDeck   = dailyDuo
+    ? (deckCardIds.includes(dailyDuo[0].id) ? 1 : 0) + (deckCardIds.includes(dailyDuo[1].id) ? 1 : 0)
+    : 0;
 
   // Deck total ATK power (effective stats incl. level + mastery)
   const deckPower = useMemo(() => {
@@ -198,11 +208,15 @@ const DeckBuilderScreen: React.FC = () => {
     if (!ok) {
       const preview = DeckBuilder.previewAdd(uuid, cardId, rarity, deck, inventory);
       showToast(RULE_LABEL[preview.reason ?? 'DECK_FULL']);
+    } else {
+      AudioService.tap();
     }
   }
 
   function handleSave() {
     saveDeck();
+    AudioService.synergy();
+    AudioService.vibrate([15, 20, 25]);
     showToast('✓ Deck gespeichert');
     if (deck.uuids.length >= DECK_SIZE) AchievementService.recordProgress('deck_complete');
   }
@@ -347,6 +361,28 @@ const DeckBuilderScreen: React.FC = () => {
         </div>
       </div>
 
+      {/* ── Daily Duo Chip ── */}
+      {dailyDuo && (
+        <div className={`db-duo-chip${duoInDeck >= 2 ? ' db-duo-chip--active' : ''}`}>
+          <span className="db-duo-chip__icon">💞</span>
+          <div className="db-duo-chip__body">
+            <span className="db-duo-chip__title">TAGES-DUO</span>
+            <span className="db-duo-chip__cards">
+              <span className={deckCardIds.includes(dailyDuo[0].id) ? 'db-duo-chip__card--in' : 'db-duo-chip__card--out'}>
+                {deckCardIds.includes(dailyDuo[0].id) ? '✓' : '○'} {dailyDuo[0].name}
+              </span>
+              {' + '}
+              <span className={deckCardIds.includes(dailyDuo[1].id) ? 'db-duo-chip__card--in' : 'db-duo-chip__card--out'}>
+                {deckCardIds.includes(dailyDuo[1].id) ? '✓' : '○'} {dailyDuo[1].name}
+              </span>
+            </span>
+          </div>
+          <span className="db-duo-chip__reward">
+            {duoInDeck >= 2 ? '✓ +100 💎/Sieg' : `${duoInDeck}/2 · +100 💎`}
+          </span>
+        </div>
+      )}
+
       {/* ── Deck-Tipp: Schwächste Karte ── */}
       {weakestCard && (
         <div className="db-weak-hint">
@@ -425,6 +461,7 @@ const DeckBuilderScreen: React.FC = () => {
                 deck={deck}
                 inventory={inventory}
                 onAdd={handleAddCard}
+                isDuo={duoIds.has(entry.cardId)}
               />
             ))}
           </div>
@@ -539,10 +576,11 @@ interface InventoryCardProps {
   deck:      Deck;
   inventory: CardInstance[];
   onAdd:     (uuid: string, cardId: string, rarity: Rarity) => void;
+  isDuo?:    boolean;
 }
 
 const InventoryCard: React.FC<InventoryCardProps> = ({
-  instance, deck, inventory, onAdd,
+  instance, deck, inventory, onAdd, isDuo,
 }) => {
   const [imgErr, setImgErr] = useState(false);
   const card    = CardDatabase.getById(instance.cardId);
@@ -599,6 +637,7 @@ const InventoryCard: React.FC<InventoryCardProps> = ({
             {'★'.repeat(mastery.level)}
           </div>
         )}
+        {isDuo && <div className="inv-card__duo-badge">💞 DUO</div>}
         {inDeck && <div className="inv-card__in-deck-badge">Im Deck</div>}
         {addBlocked && (
           <div className="inv-card__block-overlay">
